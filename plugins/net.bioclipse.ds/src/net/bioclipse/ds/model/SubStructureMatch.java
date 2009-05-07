@@ -24,5 +24,14 @@ public class SubStructureMatch extends SimpleResult implements ISubstructureMatc
     public void setMatchingAtoms( List<Integer> matchingAtoms ) {
         this.matchingAtoms = matchingAtoms;
     }
+    
+    @Override
+    public String toString() {
+        String ret="SubstructureMath: Name=" + getName() + ", Matching atoms: ";
+        for (int i : getMatchingAtoms()){
+            ret=ret+ i + ",";
+        }
+        return ret;
+    }
 
 }
