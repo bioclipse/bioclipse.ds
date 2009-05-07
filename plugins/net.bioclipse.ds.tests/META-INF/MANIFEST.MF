@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Decision Support Tests
+Bundle-SymbolicName: net.bioclipse.ds.tests
+Bundle-Version: 0.1.1
+Bundle-Activator: net.bioclipse.ds.tests.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit4;bundle-version="4.3.1",
+ net.bioclipse.ds;bundle-version="0.1.1",
+ net.bioclipse.ds.dblookup;bundle-version="0.1.1",
+ net.bioclipse.ds.dblookup.bursi;bundle-version="0.1.1",
+ net.bioclipse.ds.signsig;bundle-version="0.1.1",
+ net.bioclipse.ds.signsig.bursi;bundle-version="0.1.1",
+ net.bioclipse.ds.smarts;bundle-version="0.1.1",
+ net.bioclipse.ds.smarts.bursi;bundle-version="0.1.1",
+ net.bioclipse.core;bundle-version="2.0.0",
+ net.bioclipse.ui;bundle-version="2.0.0",
+ net.bioclipse.ui.business;bundle-version="2.0.0",
+ net.bioclipse.scripting;bundle-version="2.0.0",
+ net.bioclipse.scripting.ui;bundle-version="2.0.0",
+ net.bioclipse.cdk.business;bundle-version="2.0.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: The Bioclipse Team
