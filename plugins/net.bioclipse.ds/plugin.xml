@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension-point id="net.bioclipse.ds.test" name="Decision Support Test" schema="schema/net.bioclipse.ds.test.exsd"/>
+
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="net.bioclipse.ds.views"
+            name="Decision Support">
+      </category>
+      <view
+            category="net.bioclipse.ds.views"
+            class="net.bioclipse.ds.ui.views.TestsView"
+            icon="icons/tsuite.gif"
+            id="net.bioclipse.ds.ui.views.TestsView"
+            name="Tests View">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="net.bioclipse.ds.ui.PerspectiveFactory"
+            id="com.genettasoft.warningsystem.ui.perspective"
+            name="Warning System">
+      </perspective>
+   </extension>
+</plugin>

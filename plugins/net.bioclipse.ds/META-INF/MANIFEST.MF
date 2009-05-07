@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Bioclipse Decision Support
+Bundle-SymbolicName: net.bioclipse.ds;singleton:=true
+Bundle-Version: 0.1.1
+Bundle-Activator: net.bioclipse.ds.Activator
+Bundle-Vendor: The Bioclipse Team
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.bioclipse.core;bundle-version="2.0.0",
+ net.bioclipse.scripting;bundle-version="2.0.0",
+ net.bioclipse.scripting.ui;bundle-version="2.0.0",
+ net.bioclipse.ui;bundle-version="2.0.0",
+ net.bioclipse.ui.business;bundle-version="2.0.0",
+ net.bioclipse.cdk.business;bundle-version="2.0.0",
+ net.bioclipse.cdk.jchempaint;bundle-version="2.0.0",
+ net.bioclipse.cdk.jchempaint.view;bundle-version="2.0.0",
+ net.bioclipse.cdk.smartsmatching;bundle-version="2.0.0",
+ net.bioclipse.cdk.ui;bundle-version="2.0.0",
+ net.bioclipse.cdk.ui.sdfeditor;bundle-version="2.0.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.log4j;version="1.2.15"
+Export-Package: net.bioclipse.ds,
+ net.bioclipse.ds.business,
+ net.bioclipse.ds.model,
+ net.bioclipse.ds.model.impl,
+ net.bioclipse.ds.ui,
+ net.bioclipse.ds.ui.views

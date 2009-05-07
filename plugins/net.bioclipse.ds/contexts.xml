@@ -1,0 +1,7 @@
+<contexts>
+	<context id="net.bioclipse.ds.ui.views.TestsView" title="Tests View">
+		<description>
+		This view allows for running tests while editing chemical structures.
+		</description>
+	</context>
+</contexts>
