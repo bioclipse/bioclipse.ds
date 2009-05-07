@@ -1,0 +1,28 @@
+[$(O=N(~O)a);!$(O=N(O)c[$(aS(=O)=O),$(aaS(=O)=O),$(aaaS(=O)=O),$(aC((F)F)F),$(aaC((F)F)F),$(aaaC((F)F)F)])]	Specific arom nitro
+[$(a[NH2]);!$([NH2]a[$(a[$(C((F)F)F),$(S(=O)=O),$(C(=O)O)]),$(aa[$(C((F)F)F),$(S(=O)=O),$(C(=O)O)]),$(aaa[$(C((F)F)F),$(S(=O)=O),$(C(=O)O)])])]	Specific arom amine
+a[N;X2]=O	Aromatic nitroso
+CO[N;X2]=O	Alkyl nitrite
+N[N;X2]=O	Nitrosamine
+O1[c,C]-[c,C]1	Epoxide
+C1NC1	Aziridine
+N=[N+]=[N-]	Azide
+C=[N+]=[N-]	Diazo
+N=N-N	Triazine
+[$(c[N;X2]!@;=[N;X2]c);!$([$([N;X2]([$(acS((=O)=O)),$(aacS((=O)=O)),$(aaacS((=O)=O)),$(aaaacS((=O)=O))])=[N;X2][$(acS((=O)=O)),$(aacS((=O)=O)),$(aaacS((=O)=O)),$(aaaacS((=O)=O))])])]	Aromatic azo
+[$([OH,NH2][N,O]);!$(O=N(O)[O-])]	Unsubstituted heteroatombonded heteroatom
+[OH]Na	Aromatic hydroxylamine
+[Cl,Br,I]C	Aliphatic halide
+[Cl,Br,I]C=O	Carboxylic acid halide
+[N,S]!@[C;X4]!@[CH2][Cl,Br,I]	Nitrogen or sulphur mustard
+[cH]1[cH]ccc2c1c3c(cc2)cc[cH][cH]3	Bay-region in polycyclic aromatic hydrocarbons
+[cH]1cccc2c1[cH][cH]c3c2ccc[cH]3	K-region in polycyclic aromatic hydrocarbons
+[$(a13~a~a~a~a2~a1~a(~a~a~a~3)~a~a~a~2),$(a1~a~a~a2~a~1~a~a3~a(~a~2)~a~a~a~3),$(a1~a~a~a2~a~1~a~a~a3~a~2~a~a~a~3),$(a1~a~a~a~a2~a~1~a3~a(~a~2)~a~a~a~a~3),$(a1~a~a~a~a2~a~1~a~a3~a(~a~2)~a~a~a~3),$(a1~a~a~a~a2~a~1~a~a3~a(~a~2)~a~a~a~a~3),$(a1~a~a~a~a2~a~1~a~a~a3~a~2~a~a~a~3),$(a1~a~a~a~a2~a~1~a~a~a3~a~2~a~a~a~a~3),$(a13~a~a~a~a2~a1~a(~a~a~a~3)~a~a~2)]	Polycyclic aromatic and planar systems
+[$([C,c]OS((=O)=O)O!@[c,C]),$([c,C]S((=O)=O)O!@[c,C])]	Sulphonatebonded carbon (alkyl alkane sulphonate or dialkyl sulphate)
+O=N(~O)N	Aliphatic N-nitro
+[$(O=[CH]C=C),$(O=[CH]C=O);!$(O=[CH]C([N,O,S])=C);!$(O=[CH]C=C[N,O,S]);!$(O=[CH]C=Ca)]	Alpha, beta unsaturated aldehyde
+[N;v4]#N	Diazonium
+O=C1CCO1	Beta-propiolactone
+[CH]=[CH]O	Alpha, beta unsaturated alkoxy group
+[NH;!R][NH;!R]a	1-aryl-2-monoalkyl hydrazine
+[$([CH3][NH]a);!$([CH3][NH]a[$(a[$(C((F)F)F),$(S=O),$(C(=O)O)]),$(aa[$(C((F)F)F),$(S=O),$(C(=O)O)]),$(aaa[$(C((F)F)F),$(S=O),$(C(=O)O)])])]	Aromatic methylamine
+aN([$([OH]),$(O*=O)])[$([#1]),$(C(=O)[CH3]),$([CH3]),$([OH]),$(O*=O)]	Ester derivative of aromatic hydroxylamine

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.bioclipse.ds.test">
+      <test
+            id="smarts.sample"
+            name="Sample simple SMARTS"
+            icon="icons/sample.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
+            <resource name="file"
+                  path="data/sample.txt">
+            </resource>
+      </test>
+      <test
+            id="smarts.bursi"
+            name="Bursi toxicophores"
+            icon="icons/sample.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
+            <resource name="file"
+                  path="data/bursiApprovedCDKCorrected.txt">
+            </resource>
+      </test>
+      <test
+            id="smarts.bursi.inclexcl"
+            name="Bursi inclusive/exclusive toxicophores"
+            icon="icons/sample.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsInclusiveExclusiveTest">
+            <resource name="file"
+                  path="data/bursiApprovedInclExclCDKCorrected.txt">
+            </resource>
+      </test>
+   </extension>
+</plugin>
