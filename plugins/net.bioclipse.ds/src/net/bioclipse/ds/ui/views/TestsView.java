@@ -17,8 +17,10 @@ import java.util.Map;
 
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.ISubstructureMatch;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
@@ -200,13 +202,21 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
         
         if ( part instanceof JChemPaintEditor ) {
             JChemPaintEditor jcp = (JChemPaintEditor) part;
+
+            IDSManager ds = Activator.getDefault().getManager();
             
             //JCP contains only one mol
             IMolecule mol = jcp.getCDKMolecule();
             
-            for (IDSTest test : TestHelper.readTestsFromEP()){
-                TestRun newTestRun=new TestRun(mol,test);
-                newTestRuns.add( newTestRun );
+            try {
+                for (String testid : Activator.getDefault().getManager().getTests()){
+                    IDSTest test = ds.getTest( testid );
+                    TestRun newTestRun=new TestRun(mol,test);
+                    newTestRuns.add( newTestRun );
+                }
+            } catch ( BioclipseException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             
             editorTestMap.put( part, newTestRuns );

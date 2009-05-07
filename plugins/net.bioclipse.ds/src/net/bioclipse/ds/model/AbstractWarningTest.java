@@ -13,6 +13,8 @@ package net.bioclipse.ds.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.bioclipse.ds.model.impl.DSException;
+
 
 public abstract class AbstractWarningTest implements IDSTest{
 
@@ -24,10 +26,11 @@ public abstract class AbstractWarningTest implements IDSTest{
     private Map<String, String > parameters;
     
     
-    public AbstractWarningTest() {
+    public AbstractWarningTest(){
         parameters=new HashMap<String, String>();
     }
-    
+
+
     public Map<String, String> getParameters() {
         return parameters;
     }
