@@ -45,6 +45,8 @@ public class DSManager implements IDSManager {
 
         if (tests==null)
             tests = TestHelper.readTestsFromEP();
+        if (tests==null)
+            throw new BioclipseException("No existing tests available.");
         
         List<String> testIDS=new ArrayList<String>();
         for (IDSTest test : tests){
@@ -59,6 +61,11 @@ public class DSManager implements IDSManager {
 
         if (testID==null)
             throw new BioclipseException("Test: " + testID + " must not be null.");
+        
+        if (tests==null)
+            tests = TestHelper.readTestsFromEP();
+        if (tests==null)
+            throw new BioclipseException("No existing tests available.");
 
         for (IDSTest test : tests){
             if (testID.equals( test.getId() ))
