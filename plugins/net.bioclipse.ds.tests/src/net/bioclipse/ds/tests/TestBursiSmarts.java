@@ -27,7 +27,7 @@ import net.bioclipse.ds.model.impl.DSException;
 import org.junit.Test;
 
 
-public class TestDSManager {
+public class TestBursiSmarts {
 
     @Test
     public void testListTests() throws BioclipseException{
@@ -40,7 +40,7 @@ public class TestDSManager {
             System.out.println("   -" + test);
         }
         System.out.println("=============================");
-        assertEquals( "Number of tests not 3", 3, ds.getTests().size() );
+        assertEquals( "Number of tests", 4, ds.getTests().size() );
 
     }
 
