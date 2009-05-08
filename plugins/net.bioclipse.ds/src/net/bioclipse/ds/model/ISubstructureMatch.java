@@ -25,4 +25,6 @@ public interface ISubstructureMatch extends ITestResult{
      */
     public List<Integer> getMatchingAtoms();
 
+    public void setMatchingAtoms( List<Integer> matchingAtoms );
+
 }

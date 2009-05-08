@@ -126,7 +126,7 @@ public class TestHelper {
             try {
                 List<ITestResult> matches = test.runWarningTest(mol);
                 for (ITestResult match : matches){
-                    ((SimpleResult)match).setTestRun( testrun );
+                    match.setTestRun( testrun );
                 }
                 testrun.setEditor( part );
                 testrun.setMatches( matches );

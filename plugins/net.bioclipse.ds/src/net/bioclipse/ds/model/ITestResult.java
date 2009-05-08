@@ -23,11 +23,15 @@ public interface ITestResult {
      * @return
      */
     public String getName();
-    
+
+    public void setName( String name );
+
     /**
      * The parent TestRun. Required in e.g. TreeViewer.
      * @return
      */
     public TestRun getTestRun();
+
+    public void setTestRun( TestRun testRun );
 
 }
