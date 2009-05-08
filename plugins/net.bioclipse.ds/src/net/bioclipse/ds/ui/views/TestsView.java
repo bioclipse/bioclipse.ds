@@ -201,10 +201,12 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
             viewer.setInput( activeTestRuns.toArray() );
             viewer.refresh();
         }else{
-            
+         //ok, we have nothing.
+            viewer.setInput(TestHelper.readTestsFromEP().toArray());
+            viewer.refresh();
         }
 
-        System.out.println("Should update view here. NOT IMPL.");
+//        System.out.println("Should update view here. NOT IMPL.");
         
     }
 
@@ -289,6 +291,7 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
         
         if (editorTestMap.keySet().contains( part )){
             editorTestMap.remove( part );
+            activeTestRuns=null;
             updateView();
         }
     }

@@ -11,6 +11,7 @@
 package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
@@ -30,7 +31,7 @@ public class TestsViewLabelProvider implements ILabelProvider{
             ITestResult match = (ITestResult) element;
             if (match.getTestRun().isRun()){
                 if (match.getTestRun().getMatches().size()>0){
-                    desc=Activator.getImageDecriptor( "icons/testerr.gif" );
+                    desc=Activator.getImageDecriptor( "icons/hit.png" );
                 }
                 else{
                     desc=Activator.getImageDecriptor( "icons/testok.gif" );
@@ -38,6 +39,14 @@ public class TestsViewLabelProvider implements ILabelProvider{
             }
             else{
                 desc=Activator.getImageDecriptor( "icons/test.gif" );
+            }
+        }
+        else if ( element instanceof IDSTest ) {
+            IDSTest test = (IDSTest)element;
+            try{
+                desc=Activator.imageDescriptorFromPlugin( test.getPluginID(), test.getIcon() );
+            }catch (Exception e){
+                desc=null;
             }
         }
         else if ( element instanceof TestRun ) {
