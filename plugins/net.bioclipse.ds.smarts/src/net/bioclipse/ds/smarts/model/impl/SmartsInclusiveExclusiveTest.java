@@ -296,10 +296,10 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                 inclQuerytool = new SMARTSQueryTool(inclSmart);
                 inclStatus = inclQuerytool.matches(ac);
             } catch ( CDKException e ) {
-//                logger.debug(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
-//                                   exclSmart +" )" + " failed to query.");
-                
-                System.out.println(inclSmart);
+                logger.debug(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
+                                   exclSmart +" )" + " failed to query.");
+//                
+//                System.out.println(inclSmart);
                 
                 //                logger.debug(e.getMessage());
                 //                throw new WarningSystemException("Unable to query smartsmol: " + e.getMessage());
@@ -318,10 +318,10 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                 }
 
             } catch ( CDKException e ) {
-//                logger.debug(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
-//                                   exclSmart +" )" + " failed to query.");
+                logger.debug(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
+                                   exclSmart +" )" + " failed to query.");
                 
-                System.out.println(exclSmart);
+//                System.out.println(exclSmart);
                 
                 //                logger.debug(e.getMessage());
                 //                throw new WarningSystemException("Unable to query smartsmol: " + e.getMessage());
