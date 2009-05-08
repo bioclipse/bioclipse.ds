@@ -13,6 +13,7 @@ package net.bioclipse.ds.model;
 import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 
 public class SubStructureMatch extends SimpleResult implements ISubstructureMatch{
@@ -41,7 +42,11 @@ public class SubStructureMatch extends SimpleResult implements ISubstructureMatc
 
         if (adapter.isAssignableFrom(IPropertySource.class)) {
             return new SubStructureMatchPropertySource(this);
-        }
+        }else
+            if( adapter.isAssignableFrom( IAtomContainer.class )) {
+                // need a the original molecule to be able to to get the
+                // atoms corsponding to the nubmers
+            }
         
         return super.getAdapter( adapter );
     }
