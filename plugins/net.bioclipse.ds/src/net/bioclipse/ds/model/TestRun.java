@@ -12,13 +12,17 @@ package net.bioclipse.ds.model;
 
 import java.util.List;
 
-import net.bioclipse.core.domain.IMolecule;
+import org.eclipse.ui.IEditorPart;
 
-
+/**
+ * Class to associate an editor with a test
+ * @author ola
+ *
+ */
 public class TestRun {
 
     private IDSTest test;
-    private IMolecule mol;
+    private IEditorPart editor;
     private List<ITestResult> matches;
     private boolean run;
     
@@ -27,8 +31,8 @@ public class TestRun {
         setRun( false );
     }
     
-    public TestRun(IMolecule mol, IDSTest test) {
-        this.mol=mol;
+    public TestRun(IEditorPart editor, IDSTest test) {
+        this.editor=editor;
         this.test=test;
         setRun( false );
     }
@@ -41,13 +45,6 @@ public class TestRun {
         this.test = test;
     }
     
-    public IMolecule getMol() {
-        return mol;
-    }
-    
-    public void setMol( IMolecule mol ) {
-        this.mol = mol;
-    }
     
     public List<ITestResult> getMatches() {
         return matches;
@@ -69,7 +66,7 @@ public class TestRun {
     
     @Override
     public String toString() {
-        String ret="TestRun: mol=" + mol +", Test=" + test + ",isRun=" + isRun();
+        String ret="TestRun: Editor=" + editor +", Test=" + test + ",isRun=" + isRun();
         if (matches!=null)
             ret=ret +", matches="+ matches.size();
         else
@@ -81,6 +78,18 @@ public class TestRun {
     public boolean hasMatches() {
         if (matches!=null && matches.size()>0) return true;
         return false;
+    }
+
+    
+    public IEditorPart getEditor() {
+    
+        return editor;
+    }
+
+    
+    public void setEditor( IEditorPart editor ) {
+    
+        this.editor = editor;
     }
     
 }

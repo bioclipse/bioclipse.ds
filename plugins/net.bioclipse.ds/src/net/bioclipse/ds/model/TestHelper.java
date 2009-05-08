@@ -13,6 +13,9 @@ package net.bioclipse.ds.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.impl.DSException;
 
@@ -23,6 +26,7 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ui.IEditorPart;
 
 
 public class TestHelper {
@@ -95,7 +99,7 @@ public class TestHelper {
         return retlist;
     }
 
-    public static void runTests( List<TestRun> testRuns ) {
+    public static void runTests( List<TestRun> testRuns ) throws BioclipseException {
 
         List<String> errorStrings=new ArrayList<String>();
         
@@ -105,12 +109,26 @@ public class TestHelper {
 
             logger.debug( "Before run: " + testrun);
             
-            IMolecule mol=testrun.getMol();
+            IEditorPart part=testrun.getEditor();
+            
+            ICDKMolecule mol=null;
+            if ( part instanceof JChemPaintEditor ) {
+                JChemPaintEditor jcp = (JChemPaintEditor) part;
+                mol=jcp.getCDKMolecule();
+            }else{
+                throw new BioclipseException("The editor: " + part + " is not " +
+                		"supported to run DS tests on.");
+            }
+            
             IDSTest test = testrun.getTest();
             
             //Should run test on mol and produce matches
             try {
-                List<ITestResult> matches = test.runWarningTest(mol, testrun);
+                List<ITestResult> matches = test.runWarningTest(mol);
+                for (ITestResult match : matches){
+                    ((SimpleResult)match).setTestRun( testrun );
+                }
+                testrun.setEditor( part );
                 testrun.setMatches( matches );
                 testrun.setRun( true );
             } catch ( DSException e ) {

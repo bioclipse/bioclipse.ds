@@ -27,6 +27,7 @@ import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;
@@ -37,6 +38,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 
 public class TestsView extends ViewPart implements IPartListener, ISelectionChangedListener{
+
+    private static final Logger logger = Logger.getLogger(ViewPart.class);
 
     public static final String COLOR_PROP = "SMARTS_MATCHING_COLOR";
 
@@ -140,7 +143,12 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
                     return;
                 }
                 
-                TestHelper.runTests(activeTestRuns);
+                try {
+                    TestHelper.runTests(activeTestRuns);
+                } catch ( BioclipseException e ) {
+                    logger.error( "TEST failed: " + e.getMessage() );
+                    showError("TEST failed: " + e.getMessage());
+                }
                 viewer.refresh();
 
                 System.out.println("Running tests completed.");
@@ -155,7 +163,13 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
     private void showMessage(String message) {
         MessageDialog.openInformation(
                                       viewer.getControl().getShell(),
-                                      "Warning Test",
+                                      "Decision support",
+                                      message);
+    }
+    private void showError(String message) {
+        MessageDialog.openError( 
+                                      viewer.getControl().getShell(),
+                                      "Decision support",
                                       message);
     }
 
@@ -205,13 +219,10 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
 
             IDSManager ds = Activator.getDefault().getManager();
             
-            //JCP contains only one mol
-            IMolecule mol = jcp.getCDKMolecule();
-            
             try {
                 for (String testid : Activator.getDefault().getManager().getTests()){
                     IDSTest test = ds.getTest( testid );
-                    TestRun newTestRun=new TestRun(mol,test);
+                    TestRun newTestRun=new TestRun(jcp,test);
                     newTestRuns.add( newTestRun );
                 }
             } catch ( BioclipseException e ) {
