@@ -12,6 +12,8 @@ package net.bioclipse.ds.model;
 
 import java.util.List;
 
+import org.eclipse.ui.views.properties.IPropertySource;
+
 
 public class SubStructureMatch extends SimpleResult implements ISubstructureMatch{
 
@@ -33,5 +35,16 @@ public class SubStructureMatch extends SimpleResult implements ISubstructureMatc
         }
         return ret;
     }
+    
+    
+    public Object getAdapter( Class adapter ) {
+
+        if (adapter.isAssignableFrom(IPropertySource.class)) {
+            return new SubStructureMatchPropertySource(this);
+        }
+        
+        return super.getAdapter( adapter );
+    }
+
 
 }
