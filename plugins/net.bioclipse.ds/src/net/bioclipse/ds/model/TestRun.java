@@ -12,14 +12,16 @@ package net.bioclipse.ds.model;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.views.properties.IPropertySource;
 
 /**
  * Class to associate an editor with a test
  * @author ola
  *
  */
-public class TestRun {
+public class TestRun implements IAdaptable{
 
     private IDSTest test;
     private IEditorPart editor;
@@ -91,5 +93,13 @@ public class TestRun {
     
         this.editor = editor;
     }
-    
+
+    public Object getAdapter( Class adapter ) {
+
+        if (adapter.isAssignableFrom(IPropertySource.class)) {
+            return new TestRunPropertySource(this);
+        }
+        
+        return null;
+    }
 }

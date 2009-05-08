@@ -80,7 +80,10 @@ public class TestsViewLabelProvider implements ILabelProvider{
         }
         else if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
-            return run.getTest().getName();
+            if (run.hasMatches())
+                return run.getTest().getName() + " [" + run.getMatches().size()+" hits]";
+            else
+                return run.getTest().getName();
         }
 
         return element.toString();
