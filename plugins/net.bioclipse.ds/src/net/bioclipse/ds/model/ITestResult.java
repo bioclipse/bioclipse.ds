@@ -10,12 +10,14 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 /**
  * A base interface for all test results
  * @author ola
  *
  */
-public interface ITestResult {
+public interface ITestResult extends IAdaptable{
 
     
     /**

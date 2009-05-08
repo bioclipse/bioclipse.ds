@@ -85,6 +85,9 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
         
         //Listen for part lifecycle events to react on editors
         getSite().getWorkbenchWindow().getPartService().addPartListener(this);
+        
+        getSite().setSelectionProvider(viewer);
+
     }
 
     /**

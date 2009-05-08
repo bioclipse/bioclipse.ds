@@ -10,6 +10,10 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import net.bioclipse.cdk.domain.CDKMoleculePropertySource;
+
+import org.eclipse.ui.views.properties.IPropertySource;
+
 public class SimpleResult implements ITestResult{
 
     private TestRun testRun;
@@ -30,6 +34,15 @@ public class SimpleResult implements ITestResult{
     
     public void setName( String name ) {
         this.name = name;
+    }
+
+    public Object getAdapter( Class adapter ) {
+
+        if (adapter.isAssignableFrom(IPropertySource.class)) {
+            return new SimpleResultPropertySource(this);
+        }
+        
+        return null;
     }
 
     
