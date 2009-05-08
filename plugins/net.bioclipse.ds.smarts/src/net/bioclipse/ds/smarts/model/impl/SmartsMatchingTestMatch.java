@@ -10,27 +10,12 @@
  ******************************************************************************/
 package net.bioclipse.ds.smarts.model.impl;
 
-import java.util.List;
+import net.bioclipse.ds.model.SubStructureMatch;
 
-import net.bioclipse.ds.model.ISubstructureMatch;
-import net.bioclipse.ds.model.TestRun;
+public class SmartsMatchingTestMatch extends SubStructureMatch{
 
-public class SmartsMatchingTestMatch implements ISubstructureMatch{
-
-    private List<Integer> matchingAtoms;
     private String smartsString;
     private String smartsName;
-    private TestRun testRun;
-    
-    public List<Integer> getMatchingAtoms() {
-    
-        return matchingAtoms;
-    }
-    
-    public void setMatchingAtoms( List<Integer> matchingAtoms ) {
-    
-        this.matchingAtoms = matchingAtoms;
-    }
     
     public String getSmartsString() {
     
@@ -47,21 +32,11 @@ public class SmartsMatchingTestMatch implements ISubstructureMatch{
         return smartsName;
     }
 
-    public TestRun getTestRun() {
-        return testRun;
-    }
-
-    public void setTestRun( TestRun testRun ) {
-        this.testRun = testRun;
-    }
-
-    
     public String getSmartsName() {
     
         return smartsName;
     }
 
-    
     public void setSmartsName( String smartsName ) {
     
         this.smartsName = smartsName;
