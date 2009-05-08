@@ -197,6 +197,10 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
 
     private void updateView() {
         
+        if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
+          activeTestRuns=null;
+        }
+        
         if (activeTestRuns!=null && activeTestRuns.size()>0){
             viewer.setInput( activeTestRuns.toArray() );
             viewer.refresh();
@@ -291,7 +295,6 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
         
         if (editorTestMap.keySet().contains( part )){
             editorTestMap.remove( part );
-            activeTestRuns=null;
             updateView();
         }
     }
