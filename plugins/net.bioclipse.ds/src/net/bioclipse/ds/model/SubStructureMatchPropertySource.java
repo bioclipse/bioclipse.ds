@@ -7,6 +7,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.openscience.cdk.interfaces.IAtom;
 
 import net.bioclipse.core.domain.props.BasicPropertySource;
 
@@ -25,7 +26,7 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
             { ATOMS, new TextPropertyDescriptor(ATOMS,"Matching atoms")}
     };
 
-    public SubStructureMatchPropertySource(ISubstructureMatch item) {
+    public SubStructureMatchPropertySource(SubStructureMatch item) {
         super( item );
 
         // clean the table
@@ -48,8 +49,8 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
         addToValueMap(TEST,item.getTestRun().getTest().getName());
 
         String atoms="";
-        for (int i : item.getMatchingAtoms()){
-            atoms=atoms+ i + ", ";
+        for (IAtom atom : item.getAtomContainer().atoms()){
+            atoms=atoms+ item.getAtomContainer().getAtomNumber( atom ) + ", ";
         }
         if (atoms.length()>=2){
             //remove last comma

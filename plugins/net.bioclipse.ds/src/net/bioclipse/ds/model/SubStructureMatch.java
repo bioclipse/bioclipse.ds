@@ -10,29 +10,22 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import java.util.List;
+import net.bioclipse.cdk.domain.ISubStructure;
 
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 
-public class SubStructureMatch extends SimpleResult implements ISubstructureMatch{
+public class SubStructureMatch extends SimpleResult implements ISubStructure{
 
-    private List<Integer> matchingAtoms;
-
-    public List<Integer> getMatchingAtoms() {
-        return matchingAtoms;
-    }
-    
-    public void setMatchingAtoms( List<Integer> matchingAtoms ) {
-        this.matchingAtoms = matchingAtoms;
-    }
+    private IAtomContainer ac;
     
     @Override
     public String toString() {
-        String ret="SubstructureMath: Name=" + getName() + ", Matching atoms: ";
-        for (int i : getMatchingAtoms()){
-            ret=ret+ i + ",";
+        String ret="SubstructureMatch: Name=" + getName() + ", Matching atoms: ";
+        for (IAtom atom : getAtomContainer().atoms()){
+            ret=ret+ getAtomContainer().getAtomNumber( atom ) + ",";
         }
         return ret;
     }
@@ -43,13 +36,26 @@ public class SubStructureMatch extends SimpleResult implements ISubstructureMatc
         if (adapter.isAssignableFrom(IPropertySource.class)) {
             return new SubStructureMatchPropertySource(this);
         }else
-            if( adapter.isAssignableFrom( IAtomContainer.class )) {
-                // need a the original molecule to be able to to get the
-                // atoms corsponding to the nubmers
+            if( adapter.isAssignableFrom( ISubStructure.class )) {
+                return this;
             }
         
         return super.getAdapter( adapter );
     }
+
+
+    /**
+     * Return the IAtomContainer with the atoms in the substructure
+     */
+    public IAtomContainer getAtomContainer() {
+        return ac;
+    }
+    
+    public void setAtomContainer( IAtomContainer ac ) {
+        this.ac = ac;
+    }
+    
+    
 
 
 }

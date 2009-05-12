@@ -18,11 +18,8 @@ import java.util.Map;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
-import net.bioclipse.ds.model.ISubstructureMatch;
-import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
@@ -37,7 +34,7 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 
-public class TestsView extends ViewPart implements IPartListener, ISelectionChangedListener{
+public class TestsView extends ViewPart implements IPartListener{
 
     private static final Logger logger = Logger.getLogger(ViewPart.class);
 
@@ -71,9 +68,6 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
 
         //Init with available tests
         viewer.setInput(TestHelper.readTestsFromEP().toArray());
-        
-        //Listen to selections in the viewer
-        viewer.addSelectionChangedListener( this );
 
         // Create the help context id for the viewer's control
         PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "com.genettasoft.warningsystem.ui.viewer");
@@ -197,6 +191,10 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
 
     private void updateView() {
         
+        if (getSite()==null) return;
+        if (getSite().getWorkbenchWindow()==null) return;
+        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
+        
         if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
           activeTestRuns=null;
         }
@@ -315,55 +313,5 @@ public class TestsView extends ViewPart implements IPartListener, ISelectionChan
     }
 
     
-    public void selectionChanged( SelectionChangedEvent event ) {
-
-        //Verify JCP is active part
-        IEditorPart part=PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-        if (!( part instanceof JChemPaintEditor )) return;
-        JChemPaintEditor jcp=(JChemPaintEditor)part;
-
-        //Check selection is not Text
-        if (!( event.getSelection() instanceof IStructuredSelection )){
-            colorAtomsInJCP( jcp, new ArrayList<Integer>() );
-            return;
-        }
-
-        //We are interested in collecting atoms to highlight
-        List<Integer> toHighlight=new ArrayList<Integer>();
-        
-        IStructuredSelection ssel = (IStructuredSelection) event.getSelection();
-        for (Object obj : ssel.toList()){
-            if ( obj instanceof ISubstructureMatch) {
-                ISubstructureMatch match=(ISubstructureMatch) obj;
-                toHighlight.addAll( match.getMatchingAtoms() );
-            }
-            else if ( obj instanceof TestRun ) {
-                //Add all matches if a testrun is clicked
-                TestRun run = (TestRun)obj;
-                if (run.getMatches()!=null){
-                    for (ITestResult match : run.getMatches()){
-                        if ( match instanceof ISubstructureMatch ) {
-                            ISubstructureMatch submatch = (ISubstructureMatch) match;
-                            toHighlight.addAll( submatch.getMatchingAtoms() );
-                        }
-                    }
-                }
-            }
-        }
-
-        if (toHighlight.isEmpty()){
-            colorAtomsInJCP( jcp, new ArrayList<Integer>() );
-            return;
-        }
-
-        colorAtomsInJCP(jcp, toHighlight);
-        
-    }
-    
-    private void colorAtomsInJCP( JChemPaintEditor jcp, List<Integer> atomIndices ) {
-
-        //TODO: implement
-     
-    }
 
 }
