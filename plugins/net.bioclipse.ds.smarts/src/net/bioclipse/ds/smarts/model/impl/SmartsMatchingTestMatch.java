@@ -42,18 +42,18 @@ public class SmartsMatchingTestMatch extends SubStructureMatch{
         this.smartsName = smartsName;
     }
 
-    @Override
-    public String toString() {
-
-        String ret="SmartsMatchingTestMatch: Name=" + getName() + ", Smarts=" + getSmartsString() + 
-        ", Matching atoms: ";
-        
-        for (int i : getMatchingAtoms()){
-            ret=ret+ i + ",";
-        }
-
-        return ret;
-    }
+//    @Override
+//    public String toString() {
+//
+//        String ret="SmartsMatchingTestMatch: Name=" + getName() + ", Smarts=" + getSmartsString() + 
+//        ", Matching atoms: ";
+//        
+//        for (int i : getMatchingAtoms()){
+//            ret=ret+ i + ",";
+//        }
+//
+//        return ret;
+//    }
 
 
 }

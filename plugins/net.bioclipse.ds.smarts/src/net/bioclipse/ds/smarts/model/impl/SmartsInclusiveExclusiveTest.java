@@ -340,10 +340,16 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                     List<Integer> atomIndices = (List<Integer>) mappings.get(i);
                     matchingAtoms.addAll( atomIndices );
                 }
-                match.setMatchingAtoms( matchingAtoms );
-                match.setSmartsString( inclSmart );
+ 
+                //Create new ac to hold substructure
+                IAtomContainer subAC=ac.getBuilder().newAtomContainer();
+                for (int aindex : matchingAtoms){
+                    subAC.addAtom( ac.getAtom( aindex ) );
+                }
+                match.setAtomContainer( subAC );
+
+                match.setSmartsString( inclSmart + " ; " + exclSmart );
                 match.setSmartsName( smartName);
-                //                match.setTestRun( testRun );
 
                 results.add( match );
 

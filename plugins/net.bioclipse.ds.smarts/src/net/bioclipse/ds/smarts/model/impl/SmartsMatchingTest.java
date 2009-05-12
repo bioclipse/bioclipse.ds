@@ -245,10 +245,16 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                     List<Integer> atomIndices = (List<Integer>) mappings.get(i);
                     matchingAtoms.addAll( atomIndices );
                 }
-                match.setMatchingAtoms( matchingAtoms );
+
+                //Create new ac to hold substructure
+                IAtomContainer subAC=ac.getBuilder().newAtomContainer();
+                for (int aindex : matchingAtoms){
+                    subAC.addAtom( ac.getAtom( aindex ) );
+                }
+                match.setAtomContainer( subAC );
                 match.setSmartsString( currentSmarts );
                 match.setSmartsName( smarts.get( currentSmarts ));
-
+                
                 results.add( match );
 
             }else{
