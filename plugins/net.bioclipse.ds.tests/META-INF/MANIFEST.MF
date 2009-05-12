@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ui.business;bundle-version="2.0.0",
  net.bioclipse.scripting;bundle-version="2.0.0",
  net.bioclipse.scripting.ui;bundle-version="2.0.0",
- net.bioclipse.cdk.business;bundle-version="2.0.0"
+ net.bioclipse.cdk.business;bundle-version="2.0.0",
+ org.openscience.cdk.interfaces;bundle-version="1.2.2"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: The Bioclipse Team
