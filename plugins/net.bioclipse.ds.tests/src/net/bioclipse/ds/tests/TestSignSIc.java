@@ -55,7 +55,7 @@ public class TestSignSIc {
         assertTrue( testres instanceof ISubstructureMatch );
         ISubstructureMatch submatch=(ISubstructureMatch)testres;
         
-        assertEquals( "WEEHOOW", testres.getName());
+        assertEquals( "HIT 1", testres.getName());
         assertTrue( submatch.getMatchingAtoms().contains( 1 ) );
         assertTrue( submatch.getMatchingAtoms().contains( 5 ) );
         assertTrue( submatch.getMatchingAtoms().contains( 8 ) );
