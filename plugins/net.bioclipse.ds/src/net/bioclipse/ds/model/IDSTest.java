@@ -12,6 +12,7 @@ package net.bioclipse.ds.model;
 
 import java.util.List;
 
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.impl.DSException;
 
@@ -37,7 +38,9 @@ public interface IDSTest {
      * @param molecule IMolecule, input for the test
      * @return List of ITestResults
      * @throws DSException
+     * @throws BioclipseException 
      */
-    public List<ITestResult> runWarningTest(IMolecule molecule) throws DSException;
+    public List<ITestResult> runWarningTest(IMolecule molecule) 
+                                throws DSException, BioclipseException;
 
 }
