@@ -80,6 +80,11 @@ public class TestHelper {
                                     String path=subelement.getAttribute( "path" );
                                     test.addParameter(name,path);
                                 }
+                                else if ("parameter".equals( subelement.getName() )){
+                                    String name=subelement.getAttribute( "name" );
+                                    String path=subelement.getAttribute( "value" );
+                                    test.addParameter(name,path);
+                                }
                             }
                             retlist.add( test );
 
