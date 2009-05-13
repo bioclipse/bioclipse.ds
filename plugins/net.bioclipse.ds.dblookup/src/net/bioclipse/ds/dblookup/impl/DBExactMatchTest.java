@@ -69,6 +69,9 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
 
         String filepath=getParameters().get( "file" );
         logger.debug("Filename is: "+ filepath);
+        
+        if (filepath==null)
+            throw new DSException("No file provided for DBExactMatchTest: " + getId());
 
         
         String path="";
