@@ -7,7 +7,7 @@
       <test
             class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
             icon="icons/test.gif"
-            id="dblookup.bursi"
+            id="dblookup.exact.bursi"
             name="Bursi exact DB lookup">
       </test>
    </extension>
