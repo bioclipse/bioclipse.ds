@@ -93,7 +93,13 @@ public abstract class AbstractWarningTest implements IDSTest{
     
         this.pluginID = pluginID;
     }
-    
-    
+
+    /**
+     * Default toString is the name of the test
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
     
 }
