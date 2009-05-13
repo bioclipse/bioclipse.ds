@@ -9,6 +9,9 @@
             icon="icons/test.gif"
             id="dblookup.exact.bursi"
             name="Bursi exact DB lookup">
+            <resource name="file"
+                  path="data/cas_withprops.sdf">
+            </resource>
       </test>
    </extension>
 
