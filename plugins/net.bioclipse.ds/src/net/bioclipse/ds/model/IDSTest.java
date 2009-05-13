@@ -28,15 +28,16 @@ public interface IDSTest {
     public void setName( String name );    
     public String getIcon();
     public void setIcon( String icon );    
-
-    @Deprecated
-    public List<ITestResult> runWarningTest(IMolecule molecule, TestRun testrun) throws DSException;
-
-    public List<ITestResult> runWarningTest(IMolecule molecule) throws DSException;
-
     public void addParameter( String name, String path );
-    void setPluginID( String pluginID );
-    String getPluginID();
-    
+    public void setPluginID( String pluginID );
+    public String getPluginID();
+
+    /**
+     * This is the test that is run on a molecule
+     * @param molecule IMolecule, input for the test
+     * @return List of ITestResults
+     * @throws DSException
+     */
+    public List<ITestResult> runWarningTest(IMolecule molecule) throws DSException;
 
 }
