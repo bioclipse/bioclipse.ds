@@ -135,7 +135,7 @@ public class TestsView extends ViewPart implements IPartListener{
         runAction = new Action() {
             public void run() {
                 
-                System.out.println("Running tests...");
+                logger.debug("Running tests...");
                 
                 if (activeTestRuns==null || activeTestRuns.size()<=0){
                     showMessage( "No active testruns to run" );
@@ -150,7 +150,7 @@ public class TestsView extends ViewPart implements IPartListener{
                 }
                 viewer.refresh();
 
-                System.out.println("Running tests completed.");
+                logger.debug("Running tests completed.");
 
             }
         };
@@ -210,7 +210,7 @@ public class TestsView extends ViewPart implements IPartListener{
             viewer.refresh();
         }
 
-//        System.out.println("Should update view here. NOT IMPL.");
+//        logger.debug("Should update view here. NOT IMPL.");
         
     }
 
@@ -221,10 +221,8 @@ public class TestsView extends ViewPart implements IPartListener{
      */
     private void addNewTestRuns(IWorkbenchPart part) {
 
-        List<TestRun> newTestRuns=new ArrayList<TestRun>();
-        
         if ( part instanceof JChemPaintEditor ) {
-            JChemPaintEditor jcp = (JChemPaintEditor) part;
+            final JChemPaintEditor jcp = (JChemPaintEditor) part;
             // Register interest in changes from editor
             //    as a
             jcp.addPropertyChangedListener( new IPropertyChangeListener() {
@@ -232,33 +230,25 @@ public class TestsView extends ViewPart implements IPartListener{
 
                     if(event.getProperty().equals( JChemPaintEditor.
                                                    STRUCUTRE_CHANGED_EVENT )) {
+                        
+                        
 
                         // editor model has changed
                         // do stuff...
                         logger.debug(
                            ((JChemPaintEditor)event.getSource()).getTitle()
                            +" editor has changed");
-//                        System.out.println(
+                        
+                        doClearNewTests( jcp );
+
+//                        logger.debug(
 //                            ((JChemPaintEditor)event.getSource()).getTitle()
 //                            + " editor has changed");
                     }
                 }
             });
 
-            IDSManager ds = Activator.getDefault().getManager();
-            
-            try {
-                for (String testid : Activator.getDefault().getManager().getTests()){
-                    IDSTest test = ds.getTest( testid );
-                    TestRun newTestRun=new TestRun(jcp,test);
-                    newTestRuns.add( newTestRun );
-                }
-            } catch ( BioclipseException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
-            editorTestMap.put( part, newTestRuns );
+            doClearNewTests( jcp );
 
             return;
         }
@@ -267,13 +257,36 @@ public class TestsView extends ViewPart implements IPartListener{
 //            MoleculesEditor moleditor = (MoleculesEditor) part;
 
             showMessage( "MOLTABLE NOT YET SUPPORTED!" );
-            System.out.println("MOLTABLE NOT YET SUPPORTED!");
+            logger.debug("MOLTABLE NOT YET SUPPORTED!");
 
             return;
         }
 
     }
 
+    private void doClearNewTests( JChemPaintEditor jcp ) {
+
+        List<TestRun> newTestRuns=new ArrayList<TestRun>();
+
+        IDSManager ds = Activator.getDefault().getManager();
+        
+        try {
+            for (String testid : Activator.getDefault().getManager().getTests()){
+                IDSTest test = ds.getTest( testid );
+                TestRun newTestRun=new TestRun(jcp,test);
+                newTestRuns.add( newTestRun );
+            }
+        } catch ( BioclipseException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        editorTestMap.put( jcp, newTestRuns );
+        updateView();
+    }
+
+    
+    
     
     /* ================================
      * Below is for part lifecycle events
@@ -284,7 +297,7 @@ public class TestsView extends ViewPart implements IPartListener{
      */
     public void partActivated( IWorkbenchPart part ) {
         if (!(isSupportedEditor(part))) return;
-        System.out.println("Part:" + part.getTitle() + " activated");
+//        logger.debug("Part:" + part.getTitle() + " activated");
 
         if (editorTestMap.keySet().contains( part )){
             activeTestRuns=editorTestMap.get( part );
@@ -297,7 +310,7 @@ public class TestsView extends ViewPart implements IPartListener{
 
     public void partBroughtToTop( IWorkbenchPart part ) {
         if (!(isSupportedEditor(part))) return;
-        System.out.println("Part:" + part.getTitle() + " brought to top");
+//        logger.debug("Part:" + part.getTitle() + " brought to top");
         
         if (editorTestMap.keySet().contains( part )){
             activeTestRuns=editorTestMap.get( part );
@@ -310,7 +323,7 @@ public class TestsView extends ViewPart implements IPartListener{
 
     public void partClosed( IWorkbenchPart part ) {
         if (!(isSupportedEditor(part))) return;
-        System.out.println("Part:" + part.getTitle() + " closed");
+//        logger.debug("Part:" + part.getTitle() + " closed");
         
         if (editorTestMap.keySet().contains( part )){
             editorTestMap.remove( part );
@@ -325,12 +338,12 @@ public class TestsView extends ViewPart implements IPartListener{
      */
     public void partDeactivated( IWorkbenchPart part ) {
         if (!(isSupportedEditor(part))) return;
-        System.out.println("Part:" + part.getTitle() + " deactivated");
+//        logger.debug("Part:" + part.getTitle() + " deactivated");
     }
 
     public void partOpened( IWorkbenchPart part ) {
         if (!(isSupportedEditor(part))) return;
-        System.out.println("Part:" + part.getTitle() + " opened");
+//        logger.debug("Part:" + part.getTitle() + " opened");
     }
 
     
