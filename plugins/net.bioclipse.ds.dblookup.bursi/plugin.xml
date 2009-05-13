@@ -5,13 +5,30 @@
    <extension
          point="net.bioclipse.ds.test">
       <test
-            class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
-            icon="icons/test.gif"
             id="dblookup.exact.bursi"
-            name="Bursi exact DB lookup">
+            name="Bursi exact DB lookup"
+            class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
+            icon="icons/test.gif">
             <resource name="file"
                   path="data/cas_withprops.sdf">
             </resource>
+      </test>
+   </extension>
+
+   <extension
+         point="net.bioclipse.ds.test">
+      <test
+            id="dblookup.nearest.bursi"
+            name="Bursi exact DB lookup"
+            class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
+            icon="icons/test.gif">
+            <resource name="file"
+                  path="data/cas_withprops.sdf">
+            </resource>
+            <parameter
+                  name="distance.tanimoto"
+                  value="15">
+            </parameter>
       </test>
    </extension>
 
