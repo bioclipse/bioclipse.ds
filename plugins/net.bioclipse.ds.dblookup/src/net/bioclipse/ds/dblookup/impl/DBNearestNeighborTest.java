@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +53,9 @@ import net.bioclipse.ds.model.impl.DSException;
  * @author ola
  *
  */
-public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
+public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTest{
 
-    private static final Logger logger = Logger.getLogger(DBExactMatchTest.class);
+    private static final Logger logger = Logger.getLogger(DBNearestNeighborTest.class);
     private SDFileIndex sdfIndex;
 
     
@@ -68,12 +69,18 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         ICDKManager cdk=Activator.getDefault().getCDKManager();
 
         String filepath=getParameters().get( "file" );
-        logger.debug("Filename is: "+ filepath);
+        logger.debug("File parameter is: "+ filepath);
         
-        if (filepath==null)
-            throw new DSException("No file provided for DBExactMatchTest: " + getId());
+        String tanimoto=getParameters().get( "distance.tanimoto" );
+        logger.debug("NearestTest tanimoto parameter is : "+ tanimoto);
 
-        
+        //Assert parameters are present
+        if (filepath==null)
+            throw new DSException("No file provided for DBNearestNeighbourTest: " + getId());
+        if (tanimoto==null)
+            throw new DSException("No tanimoto distance provided for DBNearestNeighbourTest: " + getId());
+
+        //Read the file
         String path="";
         try {
             URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
@@ -120,17 +127,12 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
 
         //Start by searching for inchiKey
         //================================
-        String molInchiKey = cdkmol.getInChIKey( false );
-        logger.debug( "Inchikey to search for: " + molInchiKey);
-        //Search the index for this InchiKey
-        //TODO
+        BitSet molFP = cdkmol.getFingerprint( false );
+        logger.debug( "FP to search for: " + molFP);
+        //Search the index for this FP
+        //TODO: implement
 
-        //Next, search by inchi (Maybe only do this part)
-        //================================
-        String molInchi = cdkmol.getInChI( false );
-        logger.debug( "Inchi to search for: " + molInchi);
-        //Search the remainder of the index for this Inchi
-        //TODO
+        //TODO: come up with better serialization than the default java serialization of FP
 
         return results;
     }
