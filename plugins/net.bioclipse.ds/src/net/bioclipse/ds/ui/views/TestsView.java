@@ -27,6 +27,8 @@ import net.bioclipse.ds.model.TestRun;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -223,6 +225,25 @@ public class TestsView extends ViewPart implements IPartListener{
         
         if ( part instanceof JChemPaintEditor ) {
             JChemPaintEditor jcp = (JChemPaintEditor) part;
+            // Register interest in changes from editor
+            //    as a
+            jcp.addPropertyChangedListener( new IPropertyChangeListener() {
+                public void propertyChange( PropertyChangeEvent event ) {
+
+                    if(event.getProperty().equals( JChemPaintEditor.
+                                                   STRUCUTRE_CHANGED_EVENT )) {
+
+                        // editor model has changed
+                        // do stuff...
+                        logger.debug(
+                           ((JChemPaintEditor)event.getSource()).getTitle()
+                           +" editor has changed");
+//                        System.out.println(
+//                            ((JChemPaintEditor)event.getSource()).getTitle()
+//                            + " editor has changed");
+                    }
+                }
+            });
 
             IDSManager ds = Activator.getDefault().getManager();
             
