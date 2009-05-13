@@ -68,6 +68,9 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         String filepath=getParameters().get( "file" );
         logger.debug("Filename is: "+ filepath);
 
+        if (filepath==null)
+            throw new DSException("No data file provided for SmartsInclusiveExclusiveTest: " + getId());
+
         String path="";
         try {
             URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));

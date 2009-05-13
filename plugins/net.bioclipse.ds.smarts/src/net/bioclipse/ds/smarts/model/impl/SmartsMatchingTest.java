@@ -65,6 +65,9 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         String filepath=getParameters().get( "file" );
         logger.debug("Filename is: "+ filepath);
 
+        if (filepath==null)
+            throw new DSException("No data file provided for SmartsMatchingTest: " + getId());
+
         
         String path="";
         try {
