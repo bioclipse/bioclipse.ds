@@ -36,7 +36,6 @@ import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractWarningTest;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.impl.DSException;
 
 
@@ -56,92 +55,6 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
     //Smarts Name -> incl smarts, exkl smarts
     Map<String, Map<String,String>> smarts;
 
-    /**
-     * Run and return any hits in the smartsmatching, excluding smarts on column 2
-     * @throws WarningSystemException 
-     */
-    public List<ITestResult> runWarningTest( IMolecule molecule , TestRun testRun) throws DSException {
-
-        if (smarts==null){
-            initialize();
-        }
-
-        //Store results here
-        List<ITestResult> ret=new ArrayList<ITestResult>();
-
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
-        ICDKMolecule cdkmol;
-        try {
-            cdkmol = cdk.create( molecule );
-        } catch ( BioclipseException e ) {
-            throw new DSException("Unable to create CDKMolceule: " + e.getMessage());
-        }
-
-        //TODO: implement as manager call
-        /*        
-        IAtomContainer ac = cdkmol.getAtomContainer();
-
-        for (String smartName : smarts.keySet()){
-
-            String inclSmart=(String) smarts.get( smartName ).keySet().toArray()[0];
-            String exclSmart=(String) smarts.get( smartName ).get( inclSmart );
-
-            System.out.println("Query: Incl smarts=" + inclSmart + " excl smarts=" + exclSmart+ " for mol: " + cdkmol);
-
-            SMARTSQueryTool inclQuerytool=null;
-            SMARTSQueryTool exclQuerytool=null;
-            boolean inclStatus=false;
-            boolean exclStatus=false;
-            boolean status=false;
-            try {
-                inclQuerytool = new SMARTSQueryTool(inclSmart);
-                inclStatus = inclQuerytool.matches(ac);
-
-                if (exclSmart!=null){
-                    exclQuerytool = new SMARTSQueryTool(exclSmart);
-                    exclStatus = exclQuerytool.matches(ac);
-
-                    if (inclStatus && (!exclStatus)){
-                        status=true;
-                    }
-                }else{
-                    //If only inclSmarts, then this is the result
-                    status=inclStatus;
-                }
-
-            } catch ( CDKException e ) {
-                logger.debug("Smarts: " + smartName + " (" + inclSmart + " ; " +
-                                   exclSmart +" )" + " failed to query.");
-                //                logger.debug(e.getMessage());
-                //                throw new WarningSystemException("Unable to query smartsmol: " + e.getMessage());
-            }
-            if (status) {
-                //At least one match
-                SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
-
-                int nmatch = inclQuerytool.countMatches();
-                logger.debug("Found " + nmatch + " in mol");
-
-                List<Integer> matchingAtoms=new ArrayList<Integer>();
-                List<List<Integer>> mappings = inclQuerytool.getMatchingAtoms();
-                for (int i = 0; i < nmatch; i++) {
-                    logger.debug("Match no: " + i);
-                    List<Integer> atomIndices = (List<Integer>) mappings.get(i);
-                    matchingAtoms.addAll( atomIndices );
-                }
-                match.setMatchingAtoms( matchingAtoms );
-                match.setSmartsString( inclSmart );
-                match.setSmartsName( smartName);
-                match.setTestRun( testRun );
-
-                ret.add( match );
-
-            }
-
-        }
-         */
-        return ret;
-    }
 
 
     /**
@@ -258,7 +171,9 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         return getName();
     }
 
-
+    /**
+     * Run and return any hits in the smartsmatching, excluding smarts on column 2
+     */
     public List<ITestResult> runWarningTest( IMolecule molecule )
     throws DSException {
 

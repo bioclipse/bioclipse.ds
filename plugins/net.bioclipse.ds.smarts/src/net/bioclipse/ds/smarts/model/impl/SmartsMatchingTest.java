@@ -36,7 +36,6 @@ import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractWarningTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.impl.DSException;
 
 
@@ -53,75 +52,6 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
 
     String smartsFile;
     Map<String, String> smarts;  //Smarts string -> Smarts Name
-
-    /**
-     * Run and return any hits in the smartsmatching
-     * @throws WarningSystemException 
-     */
-    public List<ITestResult> runWarningTest( IMolecule molecule , TestRun testRun) throws DSException {
-        
-        if (smarts==null){
-            initialize();
-        }
-
-        //Store results here
-        List<ITestResult> ret=new ArrayList<ITestResult>();
-        
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
-        ICDKMolecule cdkmol=null;
-        try {
-            cdkmol = cdk.create( molecule );
-        } catch ( BioclipseException e ) {
-            throw new DSException("Unable to create CDKMolceule: " + e.getMessage());
-        }
-        
-        //TODO: Replace with manager call
-        
-/*        
-        IAtomContainer ac = cdkmol.getAtomContainer();
-
-        for (String currentSmarts : smarts.keySet()){
-            
-            logger.debug("Querying smarts: " + currentSmarts + " for mol: " + cdkmol);
-            
-            SMARTSQueryTool querytool=null;
-            boolean status=false;
-            try {
-                querytool = new SMARTSQueryTool(currentSmarts);
-                status = querytool.matches(ac);
-            } catch ( CDKException e ) {
-                logger.debug("Smarts: " + currentSmarts + " failed to query.");
-//                logger.debug(e.getMessage());
-//                throw new WarningSystemException("Unable to query smartsmol: " + e.getMessage());
-            }
-            if (status) {
-                //At least one match
-                SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
-
-
-                int nmatch = querytool.countMatches();
-                logger.debug("Found " + nmatch + " in mol");
-
-                List<Integer> matchingAtoms=new ArrayList<Integer>();
-                List<List<Integer>> mappings = querytool.getMatchingAtoms();
-                for (int i = 0; i < nmatch; i++) {
-                    logger.debug("Match no: " + i);
-                    List<Integer> atomIndices = (List<Integer>) mappings.get(i);
-                    matchingAtoms.addAll( atomIndices );
-                }
-                match.setMatchingAtoms( matchingAtoms );
-                match.setSmartsString( currentSmarts );
-                match.setSmartsName( smarts.get( currentSmarts ));
-                match.setTestRun( testRun );
-
-                ret.add( match );
-
-            }
-            
-        }
-*/
-        return ret;
-    }
 
 
     /**
