@@ -1,11 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Bursi Dataset Test
-Bundle-SymbolicName: net.bioclipse.ds.dblookup.bursi
+Bundle-SymbolicName: net.bioclipse.ds.dblookup.bursi;singleton:=true
 Bundle-Version: 0.1.1
 Bundle-Activator: net.bioclipse.ds.dblookup.bursi.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ net.bioclipse.ds;bundle-version="0.1.1",
+ net.bioclipse.ds.dblookup;bundle-version="0.1.1"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy

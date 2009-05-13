@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.ds.test">
+      <test
+            class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
+            icon="icons/test.gif"
+            id="dblookup.bursi"
+            name="Bursi exact DB lookup">
+      </test>
+   </extension>
+
+</plugin>
