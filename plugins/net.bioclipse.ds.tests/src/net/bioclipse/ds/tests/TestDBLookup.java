@@ -34,7 +34,7 @@ public class TestDBLookup {
     public void runExactMatchTest() throws BioclipseException, DSException {
 
         IDSManager ds = Activator.getDefault().getManager();
-        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getCDKManager();
+        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
         ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
         List<ITestResult> ret = ds.runTest( "dblookup.exact.bursi", mol );
@@ -54,7 +54,7 @@ public class TestDBLookup {
     public void runNearestNeighbourTest() throws BioclipseException, DSException {
 
         IDSManager ds = Activator.getDefault().getManager();
-        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getCDKManager();
+        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
         ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
         List<ITestResult> ret = ds.runTest( "dblookup.nearest.bursi", mol );

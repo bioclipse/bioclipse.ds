@@ -34,7 +34,7 @@ public class TestSignSIc {
     public void runSmartsBursiInclexclTest() throws BioclipseException, DSException{
 
         IDSManager ds = Activator.getDefault().getManager();
-        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getCDKManager();
+        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
         ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
         List<ITestResult> ret = ds.runTest( "signsic.bursi", mol );
