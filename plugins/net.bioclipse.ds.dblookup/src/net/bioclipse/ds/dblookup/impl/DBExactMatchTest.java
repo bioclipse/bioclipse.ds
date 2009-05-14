@@ -65,7 +65,7 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
      */
     private void initialize() throws DSException {
         
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
         String filepath=getParameters().get( "file" );
         logger.debug("Filename is: "+ filepath);
@@ -88,11 +88,8 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
             throw new DSException("File: " + filepath + " could not be read.");
         }
 
-        logger.debug( "Untransformed file: " + path );
-        IFile file=ResourcePathTransformer.getInstance().transform( path );
-        logger.debug( "Transformed file: " + file.getFullPath() );
-        
-        sdfIndex = cdk.createSDFIndex( file, new NullProgressMonitor() );
+        logger.debug( "file path: " + path );
+        sdfIndex = cdk.createSDFIndex( path);
         
         logger.debug("Loaded SDF index successfully. No mols: " + sdfIndex.size());
         
@@ -101,7 +98,7 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
     }
 
     public List<ITestResult> runWarningTest( IMolecule molecule )
-                                                                 throws DSException, BioclipseException {
+                                       throws DSException, BioclipseException {
         //Read database file if not already done that
         if (sdfIndex==null)
             initialize();
@@ -109,7 +106,7 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
 
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         
         ICDKMolecule cdkmol=null;
         try {
@@ -120,14 +117,16 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
 
         //Start by searching for inchiKey
         //================================
-        String molInchiKey = cdkmol.getInChIKey( false );
+        String molInchiKey = cdkmol.getInChIKey( 
+                                 IMolecule.Property.USE_CACHED_OR_CALCULATED  );
         logger.debug( "Inchikey to search for: " + molInchiKey);
         //Search the index for this InchiKey
         //TODO
 
         //Next, search by inchi (Maybe only do this part)
         //================================
-        String molInchi = cdkmol.getInChI( false );
+        String molInchi = cdkmol.getInChI(
+                                IMolecule.Property.USE_CACHED_OR_CALCULATED  );
         logger.debug( "Inchi to search for: " + molInchi);
         //Search the remainder of the index for this Inchi
         //TODO

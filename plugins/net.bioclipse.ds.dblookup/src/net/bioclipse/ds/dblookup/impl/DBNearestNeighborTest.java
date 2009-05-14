@@ -66,7 +66,7 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
      */
     private void initialize() throws DSException {
         
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
         String filepath=getParameters().get( "file" );
         logger.debug("File parameter is: "+ filepath);
@@ -95,11 +95,8 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             throw new DSException("File: " + filepath + " could not be read.");
         }
 
-        logger.debug( "Untransformed file: " + path );
-        IFile file=ResourcePathTransformer.getInstance().transform( path );
-        logger.debug( "Transformed file: " + file.getFullPath() );
-        
-        sdfIndex = cdk.createSDFIndex( file, new NullProgressMonitor() );
+        logger.debug( "File path: " + path );
+        sdfIndex = cdk.createSDFIndex( path);
         
         logger.debug("Loaded SDF index successfully. No mols: " + sdfIndex.size());
         
@@ -116,7 +113,7 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
 
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         
         ICDKMolecule cdkmol=null;
         try {
@@ -127,7 +124,7 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
 
         //Start by searching for inchiKey
         //================================
-        BitSet molFP = cdkmol.getFingerprint( false );
+        BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.USE_CACHED_OR_CALCULATED );
         logger.debug( "FP to search for: " + molFP);
         //Search the index for this FP
         //TODO: implement
