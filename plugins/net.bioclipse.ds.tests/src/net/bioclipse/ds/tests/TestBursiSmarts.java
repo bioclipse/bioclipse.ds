@@ -40,7 +40,7 @@ public class TestBursiSmarts {
             System.out.println("   -" + test);
         }
         System.out.println("=============================");
-        assertEquals( "Number of tests", 4, ds.getTests().size() );
+        assertEquals( "Number of tests", 6, ds.getTests().size() );
 
     }
 
