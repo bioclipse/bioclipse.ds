@@ -27,7 +27,7 @@
             </resource>
             <parameter
                   name="distance.tanimoto"
-                  value="15">
+                  value="0.7">
             </parameter>
       </test>
    </extension>
