@@ -142,7 +142,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
         
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol=null;
         try {
             cdkmol = cdk.create( molecule );

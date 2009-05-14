@@ -188,7 +188,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
 
-        ICDKManager cdk=Activator.getDefault().getCDKManager();
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol;
         try {
             cdkmol = cdk.create( molecule );
