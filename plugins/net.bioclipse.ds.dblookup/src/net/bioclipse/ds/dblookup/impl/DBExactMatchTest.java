@@ -99,12 +99,15 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
 
     public List<ITestResult> runWarningTest( IMolecule molecule )
                                        throws DSException, BioclipseException {
+        //Store results here
+        List<ITestResult> results=new ArrayList<ITestResult>();
+        
+        if (true) return results;
+        
         //Read database file if not already done that
         if (sdfIndex==null)
             initialize();
 
-        //Store results here
-        List<ITestResult> results=new ArrayList<ITestResult>();
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         
