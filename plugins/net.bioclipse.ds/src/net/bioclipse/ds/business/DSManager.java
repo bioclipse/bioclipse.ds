@@ -21,13 +21,14 @@ import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.managers.business.IBioclipseManager;
 
 /**
  * A Bioclipse Manager Decision Support
  * 
  * @author ola
  */
-public class DSManager implements IDSManager {
+public class DSManager implements IBioclipseManager {
 
     private static final Logger logger =Logger.getLogger( DSManager.class );
 

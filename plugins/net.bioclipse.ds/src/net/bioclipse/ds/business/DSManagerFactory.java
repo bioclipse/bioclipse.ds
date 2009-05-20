@@ -32,9 +32,9 @@ public class DSManagerFactory implements IExecutableExtension,
     public void setInitializationData(IConfigurationElement config,
             String propertyName, Object data) throws CoreException {
         
-        dsManager = Activator.getDefault().getManager();
-        if(dsManager==null) {
-            dsManager = new Object();
+        dsManager = Activator.getDefault().getJavaScriptManager();
+        if (dsManager==null) {
+            throw new RuntimeException("The dsManager returned was null");
         }
     }
 

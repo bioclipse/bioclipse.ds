@@ -268,10 +268,10 @@ public class TestsView extends ViewPart implements IPartListener{
 
         List<TestRun> newTestRuns=new ArrayList<TestRun>();
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         
         try {
-            for (String testid : Activator.getDefault().getManager().getTests()){
+            for (String testid : Activator.getDefault().getJavaManager().getTests()){
                 IDSTest test = ds.getTest( testid );
                 TestRun newTestRun=new TestRun(jcp,test);
                 newTestRuns.add( newTestRun );
