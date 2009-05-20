@@ -28,7 +28,7 @@ import net.bioclipse.managers.business.IBioclipseManager;
  * @author ola
  *
  */
-public interface IDSManager extends IBioclipseManager{
+public interface IDSManager extends IBioclipseManager {
 
     public List<String> getTests() throws BioclipseException;
 
@@ -40,7 +40,8 @@ public interface IDSManager extends IBioclipseManager{
      * @throws BioclipseException 
      * @throws DSException 
      */
-    public List<ITestResult> runTest(String testID, IMolecule mol) throws BioclipseException, DSException;
+    public List<ITestResult> runTest(String testID, IMolecule mol) 
+                             throws BioclipseException, DSException;
 
     public IDSTest getTest( String string ) throws BioclipseException;
     

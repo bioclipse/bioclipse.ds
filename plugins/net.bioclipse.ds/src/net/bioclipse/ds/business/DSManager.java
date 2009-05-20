@@ -60,7 +60,8 @@ public class DSManager implements IDSManager {
     public IDSTest getTest( String testID ) throws BioclipseException {
 
         if (testID==null)
-            throw new BioclipseException("Test: " + testID + " must not be null.");
+            throw new BioclipseException(
+                          "Test: " + testID + " must not be null." );
         
         if (tests==null)
             tests = TestHelper.readTestsFromEP();
@@ -73,14 +74,14 @@ public class DSManager implements IDSManager {
         }
 
         logger.debug("Test: " + testID + " could not be found.");
-        throw new BioclipseException("Test: " + testID + " could not be found.");
+        throw new BioclipseException(
+                      "Test: " + testID + " could not be found." );
     }
  
     
-    public List<ITestResult> runTest( String testID, IMolecule mol ) throws BioclipseException, DSException {
+    public List<ITestResult> runTest( String testID, IMolecule mol ) 
+                             throws BioclipseException, DSException {
         IDSTest test = getTest( testID );
         return test.runWarningTest( mol);
     }
-
-    
 }
