@@ -164,6 +164,8 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             } catch ( CDKException e ) {
                 logger.debug(" ## Smarts: " + currentSmarts + " failed to query");
 //                System.out.println("===============\n" + e.getMessage());
+            } catch ( IllegalArgumentException e ) {
+                logger.debug(" ## Smarts: " + currentSmarts + " failed to query: " + e.getMessage());
             }
             if (status) {
                 //At least one match
