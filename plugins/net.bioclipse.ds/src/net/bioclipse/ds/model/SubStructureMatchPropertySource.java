@@ -1,14 +1,18 @@
 package net.bioclipse.ds.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
+import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.core.domain.props.BasicPropertySource;
 
 
@@ -48,9 +52,22 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
         addToValueMap(NAME,item.getName());
         addToValueMap(TEST,item.getTestRun().getTest().getName());
 
-        String atoms="";
+        //Collect atoms in list and sort it
+        List<Integer> atomnumbers=new ArrayList<Integer>();
         for (IAtom atom : item.getAtomContainer().atoms()){
-            atoms=atoms+ item.getAtomContainer().getAtomNumber( atom ) + ", ";
+            
+            if ( item.getTestRun().getEditor() instanceof JChemPaintEditor ) {
+                JChemPaintEditor jcp=(JChemPaintEditor)item.getTestRun().getEditor();
+                IAtomContainer origac = jcp.getCDKMolecule().getAtomContainer();
+                atomnumbers.add( origac.getAtomNumber( atom ));
+            }
+        }
+        Collections.sort( atomnumbers );
+
+        //Create readable string
+        String atoms="";
+        for (Integer i : atomnumbers){
+            atoms=atoms+ i + ", ";
         }
         if (atoms.length()>=2){
             //remove last comma
