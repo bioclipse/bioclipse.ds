@@ -11,13 +11,16 @@
 package net.bioclipse.ds.business;
 
 import java.util.List;
+import java.util.Map;
 
+import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 
@@ -45,4 +48,10 @@ public interface IDSManager extends IBioclipseManager {
 
     public IDSTest getTest( String string ) throws BioclipseException;
     
+    public void runTest( String testID, IMolecule mol, 
+                                         BioclipseUIJob<List<ITestResult>> job);
+
+    public void runAllTests( ICDKMolecule mol,
+                           BioclipseUIJob<Map<String, List<ITestResult>>> job );
+
 }

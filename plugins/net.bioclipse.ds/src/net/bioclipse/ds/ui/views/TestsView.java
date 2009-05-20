@@ -15,14 +15,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.jobs.BioclipseUIJob;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
@@ -38,7 +41,7 @@ import org.eclipse.swt.SWT;
 
 public class TestsView extends ViewPart implements IPartListener{
 
-    private static final Logger logger = Logger.getLogger(ViewPart.class);
+    private static final Logger logger = Logger.getLogger(TestsView.class);
 
     public static final String COLOR_PROP = "SMARTS_MATCHING_COLOR";
 
@@ -141,14 +144,58 @@ public class TestsView extends ViewPart implements IPartListener{
                     showMessage( "No active testruns to run" );
                     return;
                 }
+
+                //Get the molecule from the editor
+                //Asumption: All testruns operate on the same molecule
+                IEditorPart part=activeTestRuns.get( 0 ).getEditor();
                 
-                try {
-                    TestHelper.runTests(activeTestRuns);
-                } catch ( BioclipseException e ) {
-                    logger.error( "TEST failed: " + e.getMessage() );
-                    showError("TEST failed: " + e.getMessage());
+                ICDKMolecule mol=null;
+                if ( part instanceof JChemPaintEditor ) {
+                    JChemPaintEditor jcp = (JChemPaintEditor) part;
+                    mol=jcp.getCDKMolecule();
+                }else{
+                    showError("The editor: " + part + " is not " +
+                        "supported to run DS tests on.");
+                    return;
                 }
-                viewer.refresh();
+
+                
+//                try {
+
+                IDSManager ds=Activator.getDefault().getJavaManager();
+                for (final TestRun tr : activeTestRuns){
+                    
+                    logger.debug( "===== Testrun: " + tr + " started" );
+                    
+                    ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
+
+                        @Override
+                        public void runInUI() {
+                            List<ITestResult> matches = getReturnValue();
+
+                            for (ITestResult match : matches){
+                                match.setTestRun( tr );
+                            }
+                            tr.setMatches( matches );
+                            tr.setRun( true );
+                            
+                            logger.debug( "===== Testrun: " + tr + " finished" );
+
+                            viewer.refresh( tr );
+                        }
+                        
+                    });
+                }
+
+                logger.debug( "===== All testruns started" );
+
+                    
+//                    TestHelper.runTests(activeTestRuns);
+//                } catch ( BioclipseException e ) {
+//                    logger.error( "TEST failed: " + e.getMessage() );
+//                    showError("TEST failed: " + e.getMessage());
+//                }
+//                viewer.refresh();
 
                 logger.debug("Running tests completed.");
 
