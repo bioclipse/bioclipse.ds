@@ -13,6 +13,7 @@ package net.bioclipse.ds.tests;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
@@ -23,6 +24,7 @@ import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.jobs.BioclipseUIJob;
 
 import org.junit.Test;
 import org.openscience.cdk.interfaces.IAtom;
@@ -46,9 +48,35 @@ public class TestDBLookup {
             System.out.println(res);
         }
         System.out.println("=============================");
-
-        
     }
+
+    @Test
+    public void runExactMatchTestAsUIJob() throws BioclipseException, DSException {
+
+        IDSManager ds = Activator.getDefault().getJavaManager();
+        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
+
+        ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
+        ds.runTest( "dblookup.exact.bursi", mol, new BioclipseUIJob<List<ITestResult>>(){
+
+            @Override
+            public void runInUI() {
+                List<ITestResult> ret = getReturnValue();
+                assertNotNull( ret);
+
+                System.out.println("=============================");
+                System.out.println("Results from job:");
+                for (ITestResult res : ret){
+                    System.out.println(res);
+                }
+                System.out.println("=============================");
+                
+            }
+            
+        });
+
+    }
+
     
     @Test
     public void runNearestNeighbourTest() throws BioclipseException, DSException {
@@ -68,5 +96,39 @@ public class TestDBLookup {
         System.out.println("=============================");
 
         
+    }
+    
+    
+    
+    @Test
+    public void runAllTestAsUIJob() throws BioclipseException, DSException {
+
+        IDSManager ds = Activator.getDefault().getJavaManager();
+        ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
+
+        ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
+        ds.runAllTests(mol, new BioclipseUIJob<Map<String, List<ITestResult>>>(){
+
+            @Override
+            public void runInUI() {
+                Map<String, List<ITestResult>> map = getReturnValue();
+                for (String testid : map.keySet()){
+                    List<ITestResult> ret = map.get( testid );
+                    
+                    assertNotNull( ret);
+
+                    System.out.println("=============================");
+                    System.out.println("Results from test: " + testid);
+                    for (ITestResult res : ret){
+                        System.out.println(res);
+                    }
+                    System.out.println("=============================");
+                    
+                }
+                
+            }
+            
+        });
+
     }
 }
