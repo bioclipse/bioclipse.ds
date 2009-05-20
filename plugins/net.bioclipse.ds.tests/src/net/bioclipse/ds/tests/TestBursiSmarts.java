@@ -32,7 +32,7 @@ public class TestBursiSmarts {
     @Test
     public void testListTests() throws BioclipseException{
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
 
         System.out.println("=============================");
         System.out.println("Available tests:");
@@ -47,7 +47,7 @@ public class TestBursiSmarts {
     @Test
     public void testGetTests() throws BioclipseException{
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         
         //Get an existing test
         IDSTest t = ds.getTest("smarts.sample");
@@ -81,7 +81,7 @@ public class TestBursiSmarts {
     @Test
     public void runSmartsSampleTest() throws BioclipseException, DSException{
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
         
         IMolecule mol = cdk.fromSMILES( "C1CCCCC1CCN(CC)CC" );
@@ -103,7 +103,7 @@ public class TestBursiSmarts {
     @Test
     public void runSmartsBursiTest() throws BioclipseException, DSException{
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
         
         IMolecule mol = cdk.fromSMILES( "O=C1CCO1CC" );
@@ -124,7 +124,7 @@ public class TestBursiSmarts {
     @Test
     public void runSmartsBursiInclexclTest() throws BioclipseException, DSException{
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
         
         IMolecule mol = cdk.fromSMILES( "O=C1CCO1CC" );

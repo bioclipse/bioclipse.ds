@@ -33,7 +33,7 @@ public class TestDBLookup {
     @Test
     public void runExactMatchTest() throws BioclipseException, DSException {
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
         ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
@@ -53,7 +53,7 @@ public class TestDBLookup {
     @Test
     public void runNearestNeighbourTest() throws BioclipseException, DSException {
 
-        IDSManager ds = Activator.getDefault().getManager();
+        IDSManager ds = Activator.getDefault().getJavaManager();
         ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
         ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
