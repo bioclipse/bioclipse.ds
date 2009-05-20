@@ -102,7 +102,7 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
         
-        if (true) return results;
+//        if (true) return results;
         
         //Read database file if not already done that
         if (sdfIndex==null)
