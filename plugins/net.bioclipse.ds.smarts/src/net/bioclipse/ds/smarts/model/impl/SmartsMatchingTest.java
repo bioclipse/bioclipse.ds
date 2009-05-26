@@ -34,6 +34,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractWarningTest;
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.impl.DSException;
@@ -132,11 +133,14 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
     }
 
 
-    public List<ITestResult> runWarningTest( IMolecule molecule )
-                                                                 throws DSException {
+    public List<ITestResult> runWarningTest( IMolecule molecule ){
         //Read smarts file if not already done that
         if (smarts==null){
-            initialize();
+            try {
+                initialize();
+            } catch ( DSException e1 ) {
+                return returnError( e1.getMessage());
+            }
         }
 
         //Store results here
@@ -147,7 +151,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         try {
             cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
-            throw new DSException("Unable to create CDKMolceule: " + e.getMessage());
+            return returnError( "Unable to create CDKMolceule: " + e.getMessage());
         }
 
         IAtomContainer ac = cdkmol.getAtomContainer();
@@ -161,12 +165,11 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             try {
                 querytool = new SMARTSQueryTool(currentSmarts);
                 status = querytool.matches(ac);
-            } catch ( CDKException e ) {
+            } catch(Exception e){
                 logger.debug(" ## Smarts: " + currentSmarts + " failed to query");
-//                System.out.println("===============\n" + e.getMessage());
-            } catch ( IllegalArgumentException e ) {
-                logger.debug(" ## Smarts: " + currentSmarts + " failed to query: " + e.getMessage());
+                results.add( new ErrorResult( "Smarts: " + currentSmarts + " failed to query" ) );
             }
+            
             if (status) {
                 //At least one match
                 SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();

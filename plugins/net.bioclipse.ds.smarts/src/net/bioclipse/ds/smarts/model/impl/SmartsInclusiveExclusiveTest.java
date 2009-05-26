@@ -34,6 +34,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractWarningTest;
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.impl.DSException;
@@ -177,12 +178,15 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
     /**
      * Run and return any hits in the smartsmatching, excluding smarts on column 2
      */
-    public List<ITestResult> runWarningTest( IMolecule molecule )
-    throws DSException {
+    public List<ITestResult> runWarningTest( IMolecule molecule ){
 
 
         if (smarts==null){
-            initialize();
+            try {
+                initialize();
+            } catch ( DSException e1 ) {
+                return returnError( e1.getMessage());
+            }
         }
 
         //Store results here
@@ -193,7 +197,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         try {
             cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
-            throw new DSException("Unable to create CDKMolceule: " + e.getMessage());
+            return returnError( "Unable to create CDKMolceule: " + e.getMessage());
         }
 
         IAtomContainer ac = cdkmol.getAtomContainer();
@@ -213,14 +217,11 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             try {
                 inclQuerytool = new SMARTSQueryTool(inclSmart);
                 inclStatus = inclQuerytool.matches(ac);
-            } catch ( CDKException e ) {
-                logger.debug(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
-                                   exclSmart +" )" + " failed to query.");
-//                
-//                System.out.println(inclSmart);
-                
-                //                logger.debug(e.getMessage());
-                //                throw new WarningSystemException("Unable to query smartsmol: " + e.getMessage());
+            } catch(Exception e){
+                logger.error(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
+                             exclSmart +" )" + " failed to query.");
+                results.add( new ErrorResult( "Smarts: " + smartName + " (" + inclSmart + " ; " +
+                             exclSmart +" )" + " failed to query." ) );
             }
             try{
                 if (exclSmart!=null){
