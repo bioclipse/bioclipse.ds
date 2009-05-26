@@ -44,14 +44,16 @@ public interface IDSManager extends IBioclipseManager {
      * @throws DSException 
      */
     public List<ITestResult> runTest(String testID, IMolecule mol) 
-                             throws BioclipseException, DSException;
+                                         throws BioclipseException, DSException;
 
     public IDSTest getTest( String string ) throws BioclipseException;
     
     public void runTest( String testID, IMolecule mol, 
-                                         BioclipseUIJob<List<ITestResult>> job);
+                                         BioclipseUIJob<List<ITestResult>> job)
+                                         throws BioclipseException, DSException;
 
     public void runAllTests( ICDKMolecule mol,
-                           BioclipseUIJob<Map<String, List<ITestResult>>> job );
+                           BioclipseUIJob<Map<String, List<ITestResult>>> job )
+                                         throws BioclipseException, DSException;
 
 }
