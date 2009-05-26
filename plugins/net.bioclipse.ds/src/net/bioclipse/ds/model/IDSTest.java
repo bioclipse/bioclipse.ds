@@ -36,11 +36,8 @@ public interface IDSTest {
     /**
      * This is the test that is run on a molecule
      * @param molecule IMolecule, input for the test
-     * @return List of ITestResults
-     * @throws DSException
-     * @throws BioclipseException 
+     * @return List of ITestResults where ITestREsult may be an ErrorResult
      */
-    public List<ITestResult> runWarningTest(IMolecule molecule) 
-                                throws DSException, BioclipseException;
+    public List<ITestResult> runWarningTest(IMolecule molecule) ;
 
 }

@@ -21,11 +21,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseUIJob;
+import net.bioclipse.jobs.IPartialReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 /**
@@ -85,23 +87,31 @@ public class DSManager implements IBioclipseManager {
     }
  
     
-    public List<ITestResult> runTest( String testID, IMolecule mol, IProgressMonitor monitor) 
-                             throws BioclipseException, DSException {
+    public void runTest( String testID, IMolecule mol, 
+                             IPartialReturner returner, IProgressMonitor monitor) 
+                             throws BioclipseException{
+
         IDSTest test = getTest( testID );
-        return test.runWarningTest( mol);
+//        try{
+            returner.completeReturn( test.runWarningTest( mol));
+//        }catch (DSException e){
+//            List<ITestResult> ret=new ArrayList<ITestResult>();
+//            ret.add( new ErrorResult() );
+//            returner.completeReturn( ret );
+//        }
     }
     
-    public Map<String, List<ITestResult>> runAllTests( ICDKMolecule mol, 
-                                         IProgressMonitor monitor ) 
-                                         throws BioclipseException, DSException{
-
-        Map<String, List<ITestResult>> resmap=new HashMap<String, List<ITestResult>>();
-        for (String testID : getTests()){
-            List<ITestResult> res = runTest( testID, mol, monitor );
-            resmap.put( testID, res);
-        }
-        return resmap;
-    }
-
+//    public Map<String, List<ITestResult>> runAllTests( ICDKMolecule mol, 
+//                                         IProgressMonitor monitor ) 
+//                                         throws BioclipseException, DSException{
+//
+//        Map<String, List<ITestResult>> resmap=new HashMap<String, List<ITestResult>>();
+//        for (String testID : getTests()){
+//            List<ITestResult> res = runTest( testID, mol, monitor );
+//            resmap.put( testID, res);
+//        }
+//        return resmap;
+//    }
+//
 
 }

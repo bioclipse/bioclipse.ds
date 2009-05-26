@@ -128,7 +128,6 @@ public class TestHelper {
             IDSTest test = testrun.getTest();
             
             //Should run test on mol and produce matches
-            try {
                 List<ITestResult> matches = test.runWarningTest(mol);
                 for (ITestResult match : matches){
                     match.setTestRun( testrun );
@@ -136,21 +135,18 @@ public class TestHelper {
                 testrun.setEditor( part );
                 testrun.setMatches( matches );
                 testrun.setRun( true );
-            } catch ( DSException e ) {
-                errorStrings.add( e.getMessage() );
-            }
 
             logger.debug( "After run: " + testrun);
 
         }
         
-        if (errorStrings.size()>0){
-            String emsg="The following errors were detected:\n\n";
-            for (String ms : errorStrings){
-                emsg=emsg+ms+"\n";
-            }
-            logger.error( emsg );
-        }
+//        if (errorStrings.size()>0){
+//            String emsg="The following errors were detected:\n\n";
+//            for (String ms : errorStrings){
+//                emsg=emsg+ms+"\n";
+//            }
+//            logger.error( emsg );
+//        }
         
     }
 

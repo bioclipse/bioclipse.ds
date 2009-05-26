@@ -27,8 +27,6 @@ public class TestRun implements IAdaptable{
     private IEditorPart editor;
     private List<ITestResult> matches;
     private boolean run;
-    private boolean successful;
-    private String errorMessage; 
     
     
     public TestRun() {
@@ -105,27 +103,4 @@ public class TestRun implements IAdaptable{
         return null;
     }
 
-    
-    public boolean isSuccessful() {
-    
-        return successful;
-    }
-
-    
-    public void setSuccessful( boolean successful ) {
-    
-        this.successful = successful;
-    }
-
-    
-    public String getErrorMessage() {
-    
-        return errorMessage;
-    }
-
-    
-    public void setErrorMessage( String errorMessage ) {
-    
-        this.errorMessage = errorMessage;
-    }
 }

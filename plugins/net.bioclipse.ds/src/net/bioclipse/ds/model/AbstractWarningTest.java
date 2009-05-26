@@ -10,7 +10,9 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.ds.model.impl.DSException;
@@ -101,5 +103,15 @@ public abstract class AbstractWarningTest implements IDSTest{
     public String toString() {
         return getName();
     }
+
+    
+    protected List<ITestResult> returnError(String errorMessage) {
+
+        ITestResult er=new ErrorResult(errorMessage);
+        List<ITestResult> trlist=new ArrayList<ITestResult>();
+        trlist.add( er );
+        return trlist;
+    }
+
     
 }

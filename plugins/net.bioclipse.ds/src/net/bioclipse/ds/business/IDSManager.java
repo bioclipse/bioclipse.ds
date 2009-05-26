@@ -50,10 +50,10 @@ public interface IDSManager extends IBioclipseManager {
     
     public void runTest( String testID, IMolecule mol, 
                                          BioclipseUIJob<List<ITestResult>> job)
-                                         throws BioclipseException, DSException;
+                                         throws BioclipseException;
 
-    public void runAllTests( ICDKMolecule mol,
-                           BioclipseUIJob<Map<String, List<ITestResult>>> job )
-                                         throws BioclipseException, DSException;
+//    public void runAllTests( ICDKMolecule mol,
+//                           BioclipseUIJob<Map<String, List<ITestResult>>> job )
+//                                         throws BioclipseException, DSException;
 
 }

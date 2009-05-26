@@ -178,10 +178,10 @@ public class TestsView extends ViewPart implements IPartListener{
 
                                 for (ITestResult match : matches){
                                     match.setTestRun( tr );
-                                }
+                                } 
+                                //FIXME: adapt for ErrorResult herec and in UI
                                 tr.setMatches( matches );
                                 tr.setRun( true );
-                                tr.setSuccessful( true );
                                 
                                 logger.debug( "===== Testrun: " + tr + " finished" );
 
@@ -193,15 +193,7 @@ public class TestsView extends ViewPart implements IPartListener{
                         logger.error( "Error running test: " + tr.getTest() + 
                                       ": " + e.getMessage());
                         LogUtils.debugTrace( logger, e );
-                        tr.setSuccessful( false );
-                        tr.setErrorMessage( e.getMessage() );
-                    } catch ( DSException e ) {
-                        logger.error( "Error running test: " + tr.getTest() + 
-                                      ": " + e.getMessage());
-                        LogUtils.debugTrace( logger, e );
-                        tr.setSuccessful( false );
-                        tr.setErrorMessage( e.getMessage() );
-                    }
+                    } 
                 }
 
                 logger.debug( "===== All testruns started" );
