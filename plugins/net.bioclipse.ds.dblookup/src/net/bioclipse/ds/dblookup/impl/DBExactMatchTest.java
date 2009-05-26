@@ -39,6 +39,7 @@ import net.bioclipse.core.ResourcePathTransformer;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractWarningTest;
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestRun;
@@ -89,16 +90,15 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         }
 
         logger.debug( "file path: " + path );
-        sdfIndex = cdk.createSDFIndex( path);
+//        sdfIndex = cdk.createSDFIndex( path);
         
-        logger.debug("Loaded SDF index successfully. No mols: " + sdfIndex.size());
+//        logger.debug("Loaded SDF index successfully. No mols: " + sdfIndex.size());
         
         //TODO: load property from file to index
         
     }
 
-    public List<ITestResult> runWarningTest( IMolecule molecule )
-                                       throws DSException, BioclipseException {
+    public List<ITestResult> runWarningTest( IMolecule molecule ){
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
         
@@ -106,7 +106,11 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         
         //Read database file if not already done that
         if (sdfIndex==null)
-            initialize();
+            try {
+                initialize();
+            } catch ( DSException e1 ) {
+                return returnError(e1.getMessage());
+            }
 
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
@@ -114,9 +118,6 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         ICDKMolecule cdkmol=null;
         try {
             cdkmol = cdk.create( molecule );
-        } catch ( BioclipseException e ) {
-            throw new DSException("Unable to create CDKMolceule: " + e.getMessage());
-        }
 
         //Start by searching for inchiKey
         //================================
@@ -133,8 +134,14 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         logger.debug( "Inchi to search for: " + molInchi);
         //Search the remainder of the index for this Inchi
         //TODO
+        
+        } catch ( BioclipseException e ) {
+            return returnError("Unable to create CDKMolceule: " + e.getMessage());
+        }
+
 
         return results;
     }
+
 
 }

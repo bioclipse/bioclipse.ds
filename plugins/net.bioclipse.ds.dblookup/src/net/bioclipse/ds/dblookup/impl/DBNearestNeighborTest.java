@@ -58,32 +58,35 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
     private static final Logger logger = Logger.getLogger(DBNearestNeighborTest.class);
     private SDFileIndex sdfIndex;
 
-    
+
 
     /**
      * Read database file into memory
      * @throws WarningSystemException 
      */
     private void initialize() throws DSException {
-        
+
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
         String filepath=getParameters().get( "file" );
         logger.debug("File parameter is: "+ filepath);
-        
+
         String tanimoto=getParameters().get( "distance.tanimoto" );
         logger.debug("NearestTest tanimoto parameter is : "+ tanimoto);
 
         //Assert parameters are present
         if (filepath==null)
-            throw new DSException("No file provided for DBNearestNeighbourTest: " + getId());
+            throw new DSException("No file provided for DBNearestNeighbourTest: " 
+                                  + getId());
         if (tanimoto==null)
-            throw new DSException("No tanimoto distance provided for DBNearestNeighbourTest: " + getId());
+            throw new DSException("No tanimoto distance provided for " +
+            		"DBNearestNeighbourTest: " + getId());
 
         //Read the file
         String path="";
         try {
-            URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
+            URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).
+                                             getEntry(filepath));
             path=url2.getFile();
         } catch ( IOException e1 ) {
             e1.printStackTrace();
@@ -96,45 +99,50 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
         }
 
         logger.debug( "File path: " + path );
-        sdfIndex = cdk.createSDFIndex( path);
-        
-        logger.debug("Loaded SDF index successfully. No mols: " + sdfIndex.size());
-        
+//        sdfIndex = cdk.createSDFIndex( path);
+
+//        logger.debug("Loaded SDF index successfully NOT implemented. No mols: " + sdfIndex.size());
+
         //TODO: load property from file to index
-        
+
     }
 
-    public List<ITestResult> runWarningTest( IMolecule molecule )
-                                                                 throws DSException, BioclipseException {
+    public List<ITestResult> runWarningTest( IMolecule molecule ){
 
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
-        
-//        if (true) return results;
+
+        //        if (true) return results;
 
         //Read database file if not already done that
         if (sdfIndex==null)
-            initialize();
+            try {
+                initialize();
+            } catch ( DSException e1 ) {
+                return returnError( e1.getMessage());
+            }
+            ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
-        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
-        
-        ICDKMolecule cdkmol=null;
-        try {
-            cdkmol = cdk.create( molecule );
-        } catch ( BioclipseException e ) {
-            throw new DSException("Unable to create CDKMolceule: " + e.getMessage());
-        }
+            ICDKMolecule cdkmol=null;
+            try {
+                cdkmol = cdk.create( molecule );
 
-        //Start by searching for inchiKey
-        //================================
-        BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.USE_CACHED_OR_CALCULATED );
-        logger.debug( "FP to search for: " + molFP);
-        //Search the index for this FP
-        //TODO: implement
+            //Start by searching for inchiKey
+            //================================
+            BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.
+                                                  USE_CACHED_OR_CALCULATED );
+            logger.debug( "FP to search for: " + molFP);
+            //Search the index for this FP
+            //TODO: implement
 
-        //TODO: come up with better serialization than the default java serialization of FP
+            //TODO: come up with better serialization than the default java serialization of FP
 
-        return results;
+            } catch ( BioclipseException e ) {
+                return returnError( "Unable to create CDKMolceule: " + e.getMessage());
+            }
+
+
+            return results;
     }
 
 }
