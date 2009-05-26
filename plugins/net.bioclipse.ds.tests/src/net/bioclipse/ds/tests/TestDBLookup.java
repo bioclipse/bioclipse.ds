@@ -110,31 +110,25 @@ public class TestDBLookup {
 
         for (final String testid : ds.getTests()){
 
-            try{
-                ds.runTest( testid, mol, new BioclipseUIJob<List<ITestResult>>(){
+            ds.runTest( testid, mol, new BioclipseUIJob<List<ITestResult>>(){
 
-                    @Override
-                    public void runInUI() {
-                        List<ITestResult> ret = getReturnValue();
+                @Override
+                public void runInUI() {
+                    List<ITestResult> ret = getReturnValue();
 
-                        assertNotNull( ret);
+                    assertNotNull( ret);
 
-                        System.out.println("=============================");
-                        System.out.println("Results from test: " + testid);
-                        for (ITestResult res : ret){
-                            System.out.println(res);
-                        }
-                        System.out.println("=============================");
-
-
+                    System.out.println("=============================");
+                    System.out.println("Results from test: " + testid);
+                    for (ITestResult res : ret){
+                        System.out.println(res);
                     }
+                    System.out.println("=============================");
 
-                });
-            }
-            catch(DSException e){
-                System.out.println("The test " + testid + " failed with " +
-                		"exception: " + e.getMessage());
-            }
+
+                }
+
+            });
         }
     }
 }
