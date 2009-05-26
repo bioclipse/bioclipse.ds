@@ -43,7 +43,7 @@ public class TestDBLookup {
         assertNotNull( ret);
 
         System.out.println("=============================");
-        System.out.println("Results:");
+        System.out.println("Results runExactMatchTest:");
         for (ITestResult res : ret){
             System.out.println(res);
         }
@@ -65,19 +65,19 @@ public class TestDBLookup {
                 assertNotNull( ret);
 
                 System.out.println("=============================");
-                System.out.println("Results from job:");
+                System.out.println("Results runExactMatchTestAsUIJob:");
                 for (ITestResult res : ret){
                     System.out.println(res);
                 }
                 System.out.println("=============================");
-                
+
             }
-            
+
         });
 
     }
 
-    
+
     @Test
     public void runNearestNeighbourTest() throws BioclipseException, DSException {
 
@@ -95,11 +95,11 @@ public class TestDBLookup {
         }
         System.out.println("=============================");
 
-        
+
     }
-    
-    
-    
+
+
+
     @Test
     public void runAllTestAsUIJob() throws BioclipseException, DSException {
 
@@ -107,14 +107,15 @@ public class TestDBLookup {
         ICDKManager cdk=net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
         ICDKMolecule mol = cdk.fromSMILES( "C1CCCCC1CC(CCC)CCC" );
-        ds.runAllTests(mol, new BioclipseUIJob<Map<String, List<ITestResult>>>(){
 
-            @Override
-            public void runInUI() {
-                Map<String, List<ITestResult>> map = getReturnValue();
-                for (String testid : map.keySet()){
-                    List<ITestResult> ret = map.get( testid );
-                    
+        for (final String testid : ds.getTests()){
+
+            ds.runTest( testid, mol, new BioclipseUIJob<List<ITestResult>>(){
+
+                @Override
+                public void runInUI() {
+                    List<ITestResult> ret = getReturnValue();
+
                     assertNotNull( ret);
 
                     System.out.println("=============================");
@@ -123,12 +124,12 @@ public class TestDBLookup {
                         System.out.println(res);
                     }
                     System.out.println("=============================");
-                    
+
+
                 }
-                
-            }
-            
-        });
+
+            });
+        }
 
     }
 }
