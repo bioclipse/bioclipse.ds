@@ -19,12 +19,14 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseUIJob;
 
 import org.apache.log4j.Logger;
@@ -167,24 +169,39 @@ public class TestsView extends ViewPart implements IPartListener{
                     
                     logger.debug( "===== Testrun: " + tr + " started" );
                     
-                    ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
+                    try {
+                        ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
 
-                        @Override
-                        public void runInUI() {
-                            List<ITestResult> matches = getReturnValue();
+                            @Override
+                            public void runInUI() {
+                                List<ITestResult> matches = getReturnValue();
 
-                            for (ITestResult match : matches){
-                                match.setTestRun( tr );
+                                for (ITestResult match : matches){
+                                    match.setTestRun( tr );
+                                }
+                                tr.setMatches( matches );
+                                tr.setRun( true );
+                                tr.setSuccessful( true );
+                                
+                                logger.debug( "===== Testrun: " + tr + " finished" );
+
+                                viewer.refresh( tr );
                             }
-                            tr.setMatches( matches );
-                            tr.setRun( true );
                             
-                            logger.debug( "===== Testrun: " + tr + " finished" );
-
-                            viewer.refresh( tr );
-                        }
-                        
-                    });
+                        });
+                    } catch ( BioclipseException e ) {
+                        logger.error( "Error running test: " + tr.getTest() + 
+                                      ": " + e.getMessage());
+                        LogUtils.debugTrace( logger, e );
+                        tr.setSuccessful( false );
+                        tr.setErrorMessage( e.getMessage() );
+                    } catch ( DSException e ) {
+                        logger.error( "Error running test: " + tr.getTest() + 
+                                      ": " + e.getMessage());
+                        LogUtils.debugTrace( logger, e );
+                        tr.setSuccessful( false );
+                        tr.setErrorMessage( e.getMessage() );
+                    }
                 }
 
                 logger.debug( "===== All testruns started" );
