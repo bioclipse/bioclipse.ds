@@ -45,7 +45,7 @@ public class DSManager implements IBioclipseManager {
      * Defines the Bioclipse namespace for DS.
      * Appears in the scripting language as the namespace/prefix
      */
-    public String getNamespace() {
+    public String getManagerName() {
         return "ds";
     }
 
