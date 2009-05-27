@@ -158,7 +158,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
 
         for (String currentSmarts : smarts.keySet()){
             
-            logger.debug("Querying smarts: " + currentSmarts + " for mol: " + cdkmol);
+            logger.debug("Querying smarts: " + currentSmarts + " for mol: " + cdkmol.getName());
             
             SMARTSQueryTool querytool=null;
             boolean status=false;
