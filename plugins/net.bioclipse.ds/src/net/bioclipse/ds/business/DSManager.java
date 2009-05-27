@@ -27,7 +27,7 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseUIJob;
-import net.bioclipse.jobs.IPartialReturner;
+import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 /**
@@ -88,7 +88,7 @@ public class DSManager implements IBioclipseManager {
  
     
     public void runTest( String testID, IMolecule mol, 
-                             IPartialReturner returner, IProgressMonitor monitor) 
+                             IReturner returner, IProgressMonitor monitor) 
                              throws BioclipseException{
 
         IDSTest test = getTest( testID );
