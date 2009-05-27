@@ -12,7 +12,10 @@ package net.bioclipse.ds.model;
 
 import net.bioclipse.cdk.domain.CDKMoleculePropertySource;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 public class SimpleResult implements ITestResult{
 
@@ -42,6 +45,20 @@ public class SimpleResult implements ITestResult{
             return new SimpleResultPropertySource(this);
         }
         
+        return null;
+    }
+
+    /**
+     * No substructure by default. Subclasses may override.
+     */
+    public IAtomContainer getAtomContainer() {
+        return null;
+    }
+
+    /**
+     * No substructure color by default. Subclasses may override.
+     */
+    public Color getHighlightingColor( IAtom atom ) {
         return null;
     }
 

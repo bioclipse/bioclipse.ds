@@ -11,6 +11,7 @@
 package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
@@ -29,17 +30,21 @@ public class TestsViewLabelProvider implements ILabelProvider{
 
         if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
-            if (match.getTestRun().isRun()){
+            if ( match instanceof ErrorResult ) {
+                desc=Activator.getImageDecriptor( "icons2/cancel.png" );
+            }
+            else if (match.getTestRun().getStatus()==TestRun.FINISHED || 
+                    match.getTestRun().getStatus()==TestRun.FINISHED_WITH_ERRORS){
                 if (match.getTestRun().getMatches().size()>0){
-                    desc=Activator.getImageDecriptor( "icons/hit.png" );
+                    desc=Activator.getImageDecriptor( "icons2/lightning.png" );
                 }
                 else{
-                    desc=Activator.getImageDecriptor( "icons/testok.gif" );
+                    desc=Activator.getImageDecriptor( "icons2/check.png" );
                 }
             }
-            else{
-                desc=Activator.getImageDecriptor( "icons/test.gif" );
-            }
+//            else if(match.getTestRun().getStatus()==TestRun.NOT_STARTED){
+//                desc=Activator.getImageDecriptor( "icons2/box-q.gif" );
+//            }
         }
         else if ( element instanceof IDSTest ) {
             IDSTest test = (IDSTest)element;
@@ -52,27 +57,28 @@ public class TestsViewLabelProvider implements ILabelProvider{
         else if ( element instanceof TestRun ) {
 
             TestRun run = (TestRun) element;
-            if (run.isRun()){
+            if (run.getStatus()==TestRun.FINISHED){
                 //If we have matches, test has failed
                 if (run.hasMatches()){
-                    desc=Activator.getImageDecriptor( "icons/tsuiteerror.gif" );
+                    desc=Activator.getImageDecriptor( "icons2/warning16.gif" );
                 }
 
-                //If not, all is well
+                //If not, all is well, no matches
                 else{
-                    desc=Activator.getImageDecriptor( "icons/tsuiteok.gif" );
+                    desc=Activator.getImageDecriptor( "icons2/check.png" );
                 }
             }
             
-            //If not run yet...
+            else if (run.getStatus()==TestRun.FINISHED_WITH_ERRORS){
+                desc=Activator.getImageDecriptor( "icons2/delete.gif" );
+            }
+            else if (run.getStatus()==TestRun.RUNNING){
+                desc=Activator.getImageDecriptor( "icons2/refresh2.png" );
+            }
             else{
-                desc=Activator.getImageDecriptor( "icons/tsuite.gif" );
+                desc=Activator.getImageDecriptor( "icons2/box-q.gif" );
             }
 
-            //            if (run.getTest().getIcon()!=null)
-            //                desc=Activator.getImageDecriptor( run.getTest().getIcon() );
-            //            else
-            //                desc=null;
         }
 
         if (desc==null)
@@ -89,8 +95,24 @@ public class TestsViewLabelProvider implements ILabelProvider{
         }
         else if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
-            if (run.hasMatches())
-                return run.getTest().getName() + " [" + run.getMatches().size()+" hits]";
+            if (run.hasMatches()){
+                int hits=0;
+                int errors=0;
+                for (ITestResult hit : run.getMatches()){
+                    if (!( hit instanceof ErrorResult )) {
+                        hits++;
+                    }else{
+                        errors++;
+                    }
+                }
+                if (hits>0 && errors<=0)
+                    return run.getTest().getName() + " [" + hits+" hits]";
+                else if (hits>0 && errors>0)
+                    return run.getTest().getName() + " [" + hits+" hits, " + errors + " errors]";
+                else if (hits<=0 && errors>0)
+                    return run.getTest().getName() + " [" + errors + " errors]";
+                
+            }
             else
                 return run.getTest().getName();
         }

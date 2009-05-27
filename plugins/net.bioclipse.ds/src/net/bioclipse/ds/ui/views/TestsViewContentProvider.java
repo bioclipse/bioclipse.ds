@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.ui.views;
 
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
@@ -39,8 +40,13 @@ public class TestsViewContentProvider implements ITreeContentProvider{
     public boolean hasChildren( Object element ) {
         if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
-            if (run.getMatches() != null && run.getMatches().size()>0)
-                return true;
+            if (run.getMatches() != null && run.getMatches().size()>0){
+//                for (ITestResult hit : run.getMatches()){
+//                    if (!( hit instanceof ErrorResult )) {
+                        return true;
+                    }
+//                }
+//            }
         }
         return false;
     }

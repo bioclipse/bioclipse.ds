@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Color;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import net.bioclipse.ds.model.impl.DSException;
 
 
@@ -113,5 +117,17 @@ public abstract class AbstractWarningTest implements IDSTest{
         return trlist;
     }
 
+    
+    public IAtomContainer getAtomContainer() {
+        return null;
+    }
+    
+    public Color getHighlightingColor( IAtom atom ) {
+        return null;
+    }
+    
+    public Object getAdapter( Class adapter ) {
+        return null;
+    }
     
 }

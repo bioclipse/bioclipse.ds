@@ -20,5 +20,10 @@ public class ErrorResult extends SimpleResult{
     public String getErrorMessage() {
         return errorMessage;
     }
+    
+    @Override
+    public String toString() {
+        return "ErrorResult: "+ getName() + " - message=" + getErrorMessage();
+    }
 
 }

@@ -10,33 +10,51 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.cdk.domain.ISubStructure;
+
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
  * Class to associate an editor with a test
  * @author ola
  *
  */
-public class TestRun implements IAdaptable{
+public class TestRun implements ISubStructure{
 
+    public static final int NOT_STARTED=0x1;
+    public static final int RUNNING=0x2;
+    public static final int FINISHED=0x3;
+    public static final int FINISHED_WITH_ERRORS=0x4;
+    
     private IDSTest test;
     private IEditorPart editor;
     private List<ITestResult> matches;
-    private boolean run;
+    private int status;
     
     
     public TestRun() {
-        setRun( false );
+        setStatus( NOT_STARTED );
     }
     
     public TestRun(IEditorPart editor, IDSTest test) {
         this.editor=editor;
         this.test=test;
-        setRun( false );
+        setStatus( NOT_STARTED );
+    }
+
+    public int getStatus() {
+        return status;
+    }
+    public void setStatus( int status ) {
+        this.status = status;
     }
 
     public IDSTest getTest() {
@@ -56,19 +74,10 @@ public class TestRun implements IAdaptable{
         this.matches = matches;
     }
 
-    public void setRun( boolean run ) {
-
-        this.run = run;
-    }
-
-    public boolean isRun() {
-
-        return run;
-    }
-    
     @Override
     public String toString() {
-        String ret="TestRun: Editor=" + editor +", Test=" + test + ",isRun=" + isRun();
+        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Ststus=" 
+                                                                  + getStatus();
         if (matches!=null)
             ret=ret +", matches="+ matches.size();
         else
@@ -101,6 +110,20 @@ public class TestRun implements IAdaptable{
         }
         
         return null;
+    }
+
+    public IAtomContainer getAtomContainer() {
+        return null;
+    }
+
+    public Color getHighlightingColor( IAtom atom ) {
+        return null;
+    }
+
+    public void addMatch( ITestResult result ) {
+        if (matches==null)
+            matches=new ArrayList<ITestResult>();
+        matches.add( result );
     }
 
 }

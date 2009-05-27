@@ -22,6 +22,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
+import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
@@ -32,6 +33,8 @@ import net.bioclipse.jobs.BioclipseUIJob;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -56,10 +59,20 @@ public class TestsView extends ViewPart implements IPartListener{
     //The active test runs. Initializes upon test run, and updates on editor switch
     private List<TestRun> activeTestRuns;
 
+    //Tracks the state in the view. True if a run has been made.
+    private boolean executed;
+    
     /**
      * The constructor.
      */
     public TestsView() {
+    }
+
+    public boolean isExecuted() {
+        return executed;
+    }
+    public void setExecuted( boolean executed ) {
+        this.executed = executed;
     }
 
     /**
@@ -72,6 +85,7 @@ public class TestsView extends ViewPart implements IPartListener{
         viewer.setContentProvider(new TestsViewContentProvider());
         viewer.setLabelProvider(new TestsViewLabelProvider());
         viewer.setSorter(new ViewerSorter());
+//        viewer.addFilter( new NoErrorsFilter() );
 
         //Init with available tests
         viewer.setInput(TestHelper.readTestsFromEP().toArray());
@@ -139,80 +153,102 @@ public class TestsView extends ViewPart implements IPartListener{
     private void makeActions() {
         runAction = new Action() {
             public void run() {
-                
-                logger.debug("Running tests...");
-                
-                if (activeTestRuns==null || activeTestRuns.size()<=0){
-                    showMessage( "No active testruns to run" );
-                    return;
-                }
 
-                //Get the molecule from the editor
-                //Asumption: All testruns operate on the same molecule
-                IEditorPart part=activeTestRuns.get( 0 ).getEditor();
-                
-                ICDKMolecule mol=null;
-                if ( part instanceof JChemPaintEditor ) {
-                    JChemPaintEditor jcp = (JChemPaintEditor) part;
-                    mol=jcp.getCDKMolecule();
-                }else{
-                    showError("The editor: " + part + " is not " +
-                        "supported to run DS tests on.");
-                    return;
-                }
-
-                
-//                try {
-
-                IDSManager ds=Activator.getDefault().getJavaManager();
-                for (final TestRun tr : activeTestRuns){
-                    
-                    logger.debug( "===== Testrun: " + tr + " started" );
-                    
-                    try {
-                        ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
-
-                            @Override
-                            public void runInUI() {
-                                List<ITestResult> matches = getReturnValue();
-
-                                for (ITestResult match : matches){
-                                    match.setTestRun( tr );
-                                } 
-                                //FIXME: adapt for ErrorResult herec and in UI
-                                tr.setMatches( matches );
-                                tr.setRun( true );
-                                
-                                logger.debug( "===== Testrun: " + tr + " finished" );
-
-                                viewer.refresh( tr );
-                            }
-                            
-                        });
-                    } catch ( BioclipseException e ) {
-                        logger.error( "Error running test: " + tr.getTest() + 
-                                      ": " + e.getMessage());
-                        LogUtils.debugTrace( logger, e );
-                    } 
-                }
-
-                logger.debug( "===== All testruns started" );
-
-                    
-//                    TestHelper.runTests(activeTestRuns);
-//                } catch ( BioclipseException e ) {
-//                    logger.error( "TEST failed: " + e.getMessage() );
-//                    showError("TEST failed: " + e.getMessage());
-//                }
-//                viewer.refresh();
-
-                logger.debug("Running tests completed.");
+                doRunAllTests();
 
             }
         };
         runAction.setText("Run Tests");
         runAction.setToolTipText("Runs the WarningTests on the active content");
         runAction.setImageDescriptor(Activator.getImageDecriptor( "icons/testrun.gif" ));
+    }
+    
+    private void doRunAllTests() {
+
+        logger.debug("Running tests...");
+
+        if (activeTestRuns==null || activeTestRuns.size()<=0){
+            showMessage( "No active testruns to run" );
+            return;
+        }
+
+        //Get the molecule from the editor
+        //Asumption: All testruns operate on the same molecule
+        IEditorPart part=activeTestRuns.get( 0 ).getEditor();
+        if (!( part instanceof JChemPaintEditor )) {
+            showError("The editor: " + part + " is not " +
+            "supported to run DS tests on.");
+            return;
+        }
+        JChemPaintEditor jcp = (JChemPaintEditor) part;
+        final ICDKMolecule mol=jcp.getCDKMolecule();
+
+        //We need to clear previous tests if already run
+        if (isExecuted()==true){
+            doClearNewTests( jcp );
+            activeTestRuns=editorTestMap.get( part );
+//            partActivated( jcp );
+            viewer.refresh();
+        }
+        setExecuted( true );
+
+        IDSManager ds=Activator.getDefault().getJavaManager();
+        for (final TestRun tr : activeTestRuns){
+
+            logger.debug( "===== Testrun: " + tr + " started" );
+            tr.setStatus( TestRun.RUNNING );
+            viewer.refresh(tr);
+
+            try {
+                ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
+
+                    @Override
+                    public void runInUI() {
+                        List<ITestResult> matches = new ArrayList<ITestResult>(getReturnValue());
+
+                        boolean hasErrors=false;
+
+                        for (ITestResult result : matches){
+                            
+                            if ( result instanceof ErrorResult ) {
+                                ErrorResult eres = (ErrorResult) result;
+                                //TODO: handle how errors should be presented in UI here
+                                logger.debug("Test: " + tr + " returned error: " + eres);
+                                result.setTestRun( tr );
+                                hasErrors=true;
+//                                try {
+//                                    IMarker marker = mol.getResource().createMarker( IMarker.PROBLEM );
+//                                    marker.setAttribute( IMarker.MESSAGE, eres );
+//                                    marker.setAttribute( IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+//                                } catch ( CoreException e ) {
+//                                    e.printStackTrace();
+//                                }
+                            }
+//                            else{
+                                result.setTestRun( tr );
+                                tr.addMatch(result);
+//                            }
+                        } 
+                        tr.setMatches( matches );
+                        if (hasErrors==true)
+                            tr.setStatus( TestRun.FINISHED_WITH_ERRORS );
+                        else
+                            tr.setStatus( TestRun.FINISHED );
+
+                        logger.debug( "===== Testrun: " + tr + " finished" );
+
+                        viewer.refresh( tr );
+                    }
+
+                });
+            } catch ( BioclipseException e ) {
+                logger.error( "Error running test: " + tr.getTest() + 
+                              ": " + e.getMessage());
+                LogUtils.debugTrace( logger, e );
+            } 
+        }
+
+        logger.debug( "===== All testruns started" );
     }
 
     private void showMessage(String message) {
@@ -338,6 +374,7 @@ public class TestsView extends ViewPart implements IPartListener{
         }
         
         editorTestMap.put( jcp, newTestRuns );
+        setExecuted( false );
         updateView();
     }
 

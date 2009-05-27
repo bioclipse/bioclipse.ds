@@ -12,6 +12,7 @@ package net.bioclipse.ds.model;
 
 import java.util.List;
 
+import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.impl.DSException;
@@ -21,7 +22,7 @@ import net.bioclipse.ds.model.impl.DSException;
  * @author ola
  *
  */
-public interface IDSTest {
+public interface IDSTest extends ISubStructure{
 
     public String getId();    
     public void setId( String id );    

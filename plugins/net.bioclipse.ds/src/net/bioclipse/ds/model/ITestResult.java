@@ -10,14 +10,16 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import org.eclipse.core.runtime.IAdaptable;
+import net.bioclipse.cdk.domain.ISubStructure;
+
 
 /**
- * A base interface for all test results
+ * A base interface for all test results. Extends ISubStructure since even if 
+ * no substructure is returned it should clear previous substructure selections.
  * @author ola
  *
  */
-public interface ITestResult extends IAdaptable{
+public interface ITestResult extends ISubStructure{
 
     
     /**
