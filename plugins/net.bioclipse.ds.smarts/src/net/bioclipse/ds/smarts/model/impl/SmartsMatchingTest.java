@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
@@ -155,10 +154,9 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         }
 
         IAtomContainer ac = cdkmol.getAtomContainer();
-
+        int noHits=0;
+        int noErr=0;
         for (String currentSmarts : smarts.keySet()){
-            
-            logger.debug("Querying smarts: " + currentSmarts + " for mol: " + cdkmol.getName());
             
             SMARTSQueryTool querytool=null;
             boolean status=false;
@@ -166,16 +164,18 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 querytool = new SMARTSQueryTool(currentSmarts);
                 status = querytool.matches(ac);
             } catch(Exception e){
-                logger.debug(" ## Smarts: " + currentSmarts + " failed to query");
-                results.add( new ErrorResult( "Smarts: " + currentSmarts + " failed to query" ) );
+                logger.error("*-*-** Test: " + getName() + " failed to query smarts: " + currentSmarts);
+                results.add( new ErrorResult( "Smarts: " + currentSmarts + " failed to query", e.getMessage() ) );
+                noErr++;
             }
             
             if (status) {
+                noHits++;
                 //At least one match
                 SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
 
                 int nmatch = querytool.countMatches();
-                logger.debug("    Found " + nmatch + " match(es)");
+                logger.debug("*-*-** Test: " + getName() + " found " + nmatch + " match(es) for smarts: " + currentSmarts);
 
                 List<Integer> matchingAtoms=new ArrayList<Integer>();
                 List<List<Integer>> mappings = querytool.getMatchingAtoms();
@@ -200,6 +200,8 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             }
             
         }
+        
+        logger.debug("Queried " + smarts.keySet().size() + " smarts. # hits=" +noHits +", # errors=" + noErr);
 
         return results;
     }
