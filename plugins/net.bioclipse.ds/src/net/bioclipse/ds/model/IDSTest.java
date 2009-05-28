@@ -33,6 +33,8 @@ public interface IDSTest extends ISubStructure{
     public void addParameter( String name, String path );
     public void setPluginID( String pluginID );
     public String getPluginID();
+    public boolean isExcluded();
+    public void setExcluded(boolean excluded);
 
     /**
      * This is the test that is run on a molecule

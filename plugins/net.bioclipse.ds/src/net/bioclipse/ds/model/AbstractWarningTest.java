@@ -30,10 +30,20 @@ public abstract class AbstractWarningTest implements IDSTest{
     private IDSTest test;
     private String pluginID;
     private Map<String, String > parameters;
-    
+    private boolean excluded;
+
     
     public AbstractWarningTest(){
         parameters=new HashMap<String, String>();
+        excluded=false;
+    }
+
+    
+    public boolean isExcluded() {
+        return excluded;
+    }
+    public void setExcluded( boolean excluded ) {
+        this.excluded = excluded;
     }
 
 

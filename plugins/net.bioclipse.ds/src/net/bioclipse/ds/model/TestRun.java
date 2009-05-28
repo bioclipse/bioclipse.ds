@@ -38,16 +38,25 @@ public class TestRun implements ISubStructure{
     private IEditorPart editor;
     private List<ITestResult> matches;
     private int status;
+    private boolean excluded;
     
     
     public TestRun() {
         setStatus( NOT_STARTED );
+        excluded=false;
     }
     
     public TestRun(IEditorPart editor, IDSTest test) {
+        this();
         this.editor=editor;
         this.test=test;
-        setStatus( NOT_STARTED );
+    }
+
+    public boolean isExcluded() {
+        return excluded;
+    }
+    public void setExcluded( boolean excluded ) {
+        this.excluded = excluded;
     }
 
     public int getStatus() {

@@ -61,6 +61,16 @@ public class TestsView extends ViewPart implements IPartListener{
 
     //Tracks the state in the view. True if a run has been made.
     private boolean executed;
+
+    private Action clearAction;
+
+    private Action excludeAction;
+
+    private Action includeAction;
+
+    private Action expandAllAction;
+
+    private Action collapseAllAction;
     
     /**
      * The constructor.
@@ -119,8 +129,10 @@ public class TestsView extends ViewPart implements IPartListener{
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
+                updateActionStates();
                 TestsView.this.fillContextMenu(manager);
             }
+
         });
         Menu menu = menuMgr.createContextMenu(viewer.getControl());
         viewer.getControl().setMenu(menu);
@@ -138,31 +150,142 @@ public class TestsView extends ViewPart implements IPartListener{
 
     private void fillContextMenu(IMenuManager manager) {
         manager.add(runAction);
+        manager.add(clearAction);
         manager.add(new Separator());
-//        drillDownAdapter.addNavigationActions(manager);
-        // Other plug-ins can contribute there actions here
+        manager.add(includeAction);
+        manager.add(excludeAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
         manager.add(runAction);
+        manager.add(clearAction);
         manager.add(new Separator());
+        manager.add(includeAction);
+        manager.add(excludeAction);
+        manager.add(new Separator());
+        manager.add(expandAllAction);
+        manager.add(collapseAllAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+    }
+    
+    private void updateActionStates() {
+
+        if (activeTestRuns!=null && activeTestRuns.size()>0)
+            runAction.setEnabled( true );
+        else
+            runAction.setEnabled( false );
+        
+        boolean testSelected=false;
+        for (Object obj : ((IStructuredSelection)viewer.getSelection()).toList()){
+            if ( obj instanceof TestRun ) {
+                testSelected=true;
+            }
+            else if ( obj instanceof IDSTest ) {
+                testSelected=true;
+            }
+        }
+        if (testSelected){
+            includeAction.setEnabled( true );
+            excludeAction.setEnabled( true );
+        }
+        else{
+            includeAction.setEnabled( false );
+            excludeAction.setEnabled( false );
+        }
     }
 
     private void makeActions() {
         runAction = new Action() {
             public void run() {
-
                 doRunAllTests();
-
             }
         };
-        runAction.setText("Run Tests");
-        runAction.setToolTipText("Runs the WarningTests on the active content");
-        runAction.setImageDescriptor(Activator.getImageDecriptor( "icons/testrun.gif" ));
+        runAction.setText("Run all Tests");
+        runAction.setToolTipText("Runs the Decision Support Tests " +
+        		"on the active molecule(s)");
+        runAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/smallRun.gif" ));
+        runAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons2/smallRun_dis.gif" ));
+
+        clearAction = new Action() {
+            public void run() {
+                doClearAllTests();
+            }
+        };
+        clearAction.setText("Clear all Tests");
+        clearAction.setToolTipText("Clear all active tests");
+        clearAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/broom.png" ));
+
+        excludeAction = new Action() {
+            public void run() {
+                doExcludeSelectedTests();
+            }
+        };
+        excludeAction.setText("Exclude test");
+        excludeAction.setToolTipText("Exclude selected test(s)");
+        excludeAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/item_delete.gif" ));
+        excludeAction.setDisabledImageDescriptor(Activator.getImageDecriptor( "icons2/item_delete_dis.gif" ));
+
+        includeAction = new Action() {
+            public void run() {
+                doExcludeSelectedTests();
+            }
+        };
+        includeAction.setText("Include test");
+        includeAction.setToolTipText("Include selected test(s)");
+        includeAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/item_add.gif" ));
+        includeAction.setDisabledImageDescriptor(Activator.getImageDecriptor( "icons2/item_add_dis.gif" ));
+
+        
+        collapseAllAction = new Action() {
+            public void run() {
+                viewer.collapseAll();
+            }
+        };
+        collapseAllAction.setText("Collapse all");
+        collapseAllAction.setToolTipText("Collapse all tests");
+        collapseAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/collapseall.gif" ));
+
+        expandAllAction = new Action() {
+            public void run() {
+                viewer.expandAll();
+            }
+        };
+        expandAllAction.setText("Expand all");
+        expandAllAction.setToolTipText("Expand all tests to reveal hits");
+        expandAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/expandall.gif" ));
+
     }
     
+    protected void doExcludeSelectedTests() {
+
+        IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+        for (Object obj : sel.toList()){
+            if ( obj instanceof IDSTest ) {
+                IDSTest dstest = (IDSTest) obj;
+                dstest.setExcluded( true );
+            }
+            else if ( obj instanceof TestRun ) {
+                TestRun testrun = (TestRun) obj;
+                testrun.setExcluded( true );
+            }
+        }
+        
+    }
+
+    protected void doClearAllTests() {
+
+        IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                                            .getActivePage().getActiveEditor();
+        if ( editor instanceof JChemPaintEditor ) {
+            JChemPaintEditor jcp = (JChemPaintEditor) editor;
+            doClearNewTests( jcp );
+        }else{
+            showError( "NOT IMPLEMENTED FOR EDITOR: " + editor );
+        }
+        
+    }
+
     private void doRunAllTests() {
 
         logger.debug("Running tests...");
@@ -302,8 +425,8 @@ public class TestsView extends ViewPart implements IPartListener{
             viewer.refresh();
         }
 
-//        logger.debug("Should update view here. NOT IMPL.");
-        
+        updateActionStates();
+
     }
 
     /**

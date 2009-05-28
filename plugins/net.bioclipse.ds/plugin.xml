@@ -14,7 +14,7 @@
       <view
             category="net.bioclipse.ds.views"
             class="net.bioclipse.ds.ui.views.TestsView"
-            icon="icons/tsuite.gif"
+            icon="icons2/warning16.gif"
             id="net.bioclipse.ds.ui.views.TestsView"
             name="Tests View">
       </view>
