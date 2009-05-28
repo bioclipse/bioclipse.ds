@@ -119,7 +119,7 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             try {
                 initialize();
             } catch ( DSException e1 ) {
-                return returnError( e1.getMessage());
+                return returnError( e1.getMessage(), e1.getStackTrace().toString());
             }
             ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
@@ -138,8 +138,12 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             //TODO: come up with better serialization than the default java serialization of FP
 
             } catch ( BioclipseException e ) {
-                return returnError( "Unable to create CDKMolceule: " + e.getMessage());
+                return returnError( "Unable to create CDKMolceule" , e.getMessage());
             }
+
+            //TODO: Remove when implemented
+            if (true)
+            return returnError("Exact DB lookup is not yet implemented.", "");
 
 
             return results;
