@@ -93,7 +93,7 @@ public class DSManager implements IBioclipseManager {
 
         IDSTest test = getTest( testID );
 //        try{
-            returner.completeReturn( test.runWarningTest( mol));
+            returner.completeReturn( test.runWarningTest( mol, monitor));
 //        }catch (DSException e){
 //            List<ITestResult> ret=new ArrayList<ITestResult>();
 //            ret.add( new ErrorResult() );

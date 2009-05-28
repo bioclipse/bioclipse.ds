@@ -78,11 +78,17 @@ public class TestsView extends ViewPart implements IPartListener{
     private Action collapseAllAction;
 
     private Action refreshAction;
+
+    private List<BioclipseJob<List<ITestResult>>> runningJobs;
     
     /**
      * The constructor.
      */
     public TestsView() {
+    }
+
+    public List<BioclipseJob<List<ITestResult>>> getRunningJobs() {
+        return runningJobs;
     }
 
     public boolean isExecuted() {
@@ -114,6 +120,9 @@ public class TestsView extends ViewPart implements IPartListener{
         contributeToActionBars();
 
         editorTestMap=new HashMap<IWorkbenchPart, List<TestRun>>();
+        
+        runningJobs=new ArrayList<BioclipseJob<List<ITestResult>>>();
+
         
         //Listen for part lifecycle events to react on editors
         getSite().getWorkbenchWindow().getPartService().addPartListener(this);
@@ -323,6 +332,25 @@ public class TestsView extends ViewPart implements IPartListener{
         }
         JChemPaintEditor jcp = (JChemPaintEditor) part;
         final ICDKMolecule mol=jcp.getCDKMolecule();
+        
+        //Cancel all running tests
+        for (BioclipseJob<List<ITestResult>> job : runningJobs){
+            //Ask job to cancel
+            job.cancel();
+            logger.debug("Job: " + job.getName() + " asked to cancel.");
+        }
+
+        //Wait for all runnig jobs to cancel
+        for (BioclipseJob<List<ITestResult>> job : runningJobs){
+            //Ask job to cancel
+            logger.debug("Waiting for Job: " + job.getName() + " to finish...");
+            try {
+                job.join();
+            } catch ( InterruptedException e ) {
+            }
+            logger.debug("Job: " + job.getName() + " finished.");
+        }
+
 
         //We need to clear previous tests if already run
         if (isExecuted()==true){
@@ -340,8 +368,8 @@ public class TestsView extends ViewPart implements IPartListener{
             tr.setStatus( TestRun.RUNNING );
             viewer.refresh(tr);
 
-//            runTestAsJobs( mol, ds, tr ); 
-            runTestAsJobWithGuiUpdate( mol, ds, tr ); 
+            runTestAsJobs( mol, ds, tr ); 
+//            runTestAsJobWithGuiUpdate( mol, ds, tr ); 
         }
 
         logger.debug( "===== All testruns started" );
@@ -350,12 +378,16 @@ public class TestsView extends ViewPart implements IPartListener{
     private void runTestAsJobs( final ICDKMolecule mol, IDSManager ds, final TestRun tr ) {
 
             try {
-                //Run and store ref to job
+
+                
+                //Start up a job with the test
                 BioclipseJob<List<ITestResult>> job = 
                     ds.runTest( tr.getTest().getId(), mol, 
                     new BioclipseJobUpdateHook(tr.getTest().getName()));
                 
-                //TODO: store ref to job in list
+                //Store ref to job in list
+                runningJobs.add(job);
+                
 
             job.addJobChangeListener( new IJobChangeListener(){
 
@@ -368,7 +400,7 @@ public class TestsView extends ViewPart implements IPartListener{
                 @SuppressWarnings("unchecked")
                 public void done( IJobChangeEvent event ) {
 
-                    BioclipseJob<List<ITestResult>> job=(BioclipseJob<List<ITestResult>>) event.getJob();
+                    final BioclipseJob<List<ITestResult>> job=(BioclipseJob<List<ITestResult>>) event.getJob();
                     final List<ITestResult> matches = job.getReturnValue();
                     
                     //Update viewer in SWT thread
@@ -399,8 +431,15 @@ public class TestsView extends ViewPart implements IPartListener{
 
                             logger.debug( "===== Testrun: " + tr + " finished" );
                             
-                            viewer.refresh( tr );}
+                            viewer.refresh( tr );
+                            
+                            //This job is done, remove from list of running jobs
+                            getRunningJobs().remove( job );
+
+                            }
                     });
+
+
                 }
 
                 public void running( IJobChangeEvent event ) {
@@ -413,12 +452,14 @@ public class TestsView extends ViewPart implements IPartListener{
                 }});
                 
             } catch ( BioclipseException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error( "Error running test: " + tr.getTest() + 
+                              ": " + e.getMessage());
+                LogUtils.debugTrace( logger, e );
             }
 
     }
 
+    @Deprecated
     private void runTestAsJobWithGuiUpdate( final ICDKMolecule mol,
                                             IDSManager ds, final TestRun tr ) {
 

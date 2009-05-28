@@ -12,6 +12,8 @@ package net.bioclipse.ds.model;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
@@ -41,6 +43,6 @@ public interface IDSTest extends ISubStructure{
      * @param molecule IMolecule, input for the test
      * @return List of ITestResults where ITestREsult may be an ErrorResult
      */
-    public List<ITestResult> runWarningTest(IMolecule molecule) ;
+    public List<ITestResult> runWarningTest(IMolecule molecule, IProgressMonitor monitor) ;
 
 }
