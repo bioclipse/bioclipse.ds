@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -60,9 +61,10 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
 
     /**
      * Read smarts file from disk into array
+     * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize() throws DSException {
+    private void initialize(IProgressMonitor monitor) throws DSException {
 
         smarts=new HashMap<String, Map<String,String>>();
 
@@ -92,6 +94,10 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             
             int linenr=1;
             while(line!=null){
+
+                //Check for cancellation
+                if (monitor.isCanceled())
+                    throw new DSException("Cancelled.");
 
                 logger.debug("Read line: " + line);
 
@@ -178,12 +184,16 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
     /**
      * Run and return any hits in the smartsmatching, excluding smarts on column 2
      */
-    public List<ITestResult> runWarningTest( IMolecule molecule ){
+    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
 
 
         if (smarts==null){
             try {
-                initialize();
+                initialize(monitor);
             } catch ( DSException e1 ) {
                 return returnError( e1.getMessage(), e1.getStackTrace().toString());
             }
@@ -203,6 +213,10 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         IAtomContainer ac = cdkmol.getAtomContainer();
 
         for (String smartName : smarts.keySet()){
+
+            //Check for cancellation
+            if (monitor.isCanceled())
+                return returnError( "Cancelled","");
 
             String inclSmart=(String) smarts.get( smartName ).keySet().toArray()[0];
             String exclSmart=(String) smarts.get( smartName ).get( inclSmart );

@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
@@ -56,9 +57,10 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
 
     /**
      * Read smarts file from disk into array
+     * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize() throws DSException {
+    private void initialize(IProgressMonitor monitor) throws DSException {
 
         smarts=new HashMap<String, String>();
         
@@ -88,6 +90,8 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             String line=r.readLine();
             int linenr=1;
             while(line!=null){
+                if (monitor.isCanceled())
+                    throw new DSException("Cancelled.");
                 
                 StringTokenizer tk=new StringTokenizer(line);
                 if (tk.countTokens()==2) {
@@ -132,15 +136,25 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
     }
 
 
-    public List<ITestResult> runWarningTest( IMolecule molecule ){
+    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+        
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+        
         //Read smarts file if not already done that
         if (smarts==null){
             try {
-                initialize();
+                initialize(monitor);
             } catch ( DSException e1 ) {
                 return returnError( e1.getMessage(), e1.getStackTrace().toString());
             }
         }
+
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+
 
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
@@ -158,6 +172,10 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         int noErr=0;
         for (String currentSmarts : smarts.keySet()){
             
+            //Check for cancellation
+            if (monitor.isCanceled())
+                return returnError( "Cancelled","");
+
             SMARTSQueryTool querytool=null;
             boolean status=false;
             try {
