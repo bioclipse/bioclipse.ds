@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.exception.CDKException;
@@ -62,9 +63,10 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
 
     /**
      * Read database file into memory
+     * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize() throws DSException {
+    private void initialize(IProgressMonitor monitor) throws DSException {
         
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
@@ -98,7 +100,12 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         
     }
 
-    public List<ITestResult> runWarningTest( IMolecule molecule ){
+    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
         
@@ -107,11 +114,12 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         //Read database file if not already done that
         if (sdfIndex==null)
             try {
-                initialize();
+                initialize(monitor);
             } catch ( DSException e1 ) {
                 return returnError(e1.getMessage(), e1.getStackTrace().toString());
             }
 
+            
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         

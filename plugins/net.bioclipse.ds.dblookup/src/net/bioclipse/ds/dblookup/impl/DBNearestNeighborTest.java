@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.exception.CDKException;
@@ -62,9 +63,10 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
 
     /**
      * Read database file into memory
+     * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize() throws DSException {
+    private void initialize(IProgressMonitor monitor) throws DSException {
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
 
@@ -107,7 +109,11 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
 
     }
 
-    public List<ITestResult> runWarningTest( IMolecule molecule ){
+    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
 
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
@@ -117,7 +123,7 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
         //Read database file if not already done that
         if (sdfIndex==null)
             try {
-                initialize();
+                initialize(monitor);
             } catch ( DSException e1 ) {
                 return returnError( e1.getMessage(), e1.getStackTrace().toString());
             }
@@ -127,15 +133,19 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             try {
                 cdkmol = cdk.create( molecule );
 
-            //Start by searching for inchiKey
-            //================================
-            BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.
-                                                  USE_CACHED_OR_CALCULATED );
-            logger.debug( "FP to search for: " + molFP);
-            //Search the index for this FP
-            //TODO: implement
+                //Check for cancellation
+                if (monitor.isCanceled())
+                    return returnError( "Cancelled","");
 
-            //TODO: come up with better serialization than the default java serialization of FP
+                //Start by searching for inchiKey
+                //================================
+                BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.
+                                                      USE_CACHED_OR_CALCULATED );
+                logger.debug( "FP to search for: " + molFP);
+                //Search the index for this FP
+                //TODO: implement
+
+                //TODO: come up with better serialization than the default java serialization of FP
 
             } catch ( BioclipseException e ) {
                 return returnError( "Unable to create CDKMolceule" , e.getMessage());
