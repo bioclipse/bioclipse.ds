@@ -28,13 +28,18 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.jobs.BioclipseJob;
+import net.bioclipse.jobs.BioclipseJobUpdateHook;
 import net.bioclipse.jobs.BioclipseUIJob;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -71,6 +76,8 @@ public class TestsView extends ViewPart implements IPartListener{
     private Action expandAllAction;
 
     private Action collapseAllAction;
+
+    private Action refreshAction;
     
     /**
      * The constructor.
@@ -154,6 +161,8 @@ public class TestsView extends ViewPart implements IPartListener{
         manager.add(new Separator());
         manager.add(includeAction);
         manager.add(excludeAction);
+        manager.add(new Separator());
+        manager.add(refreshAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
@@ -255,6 +264,15 @@ public class TestsView extends ViewPart implements IPartListener{
         expandAllAction.setToolTipText("Expand all tests to reveal hits");
         expandAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/expandall.gif" ));
 
+        refreshAction = new Action() {
+            public void run() {
+                viewer.refresh();
+            }
+        };
+        refreshAction.setText("Refresh");
+        refreshAction.setToolTipText("Force a refresh of all tests' status");
+        refreshAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/refresh2.png" ));
+
     }
     
     protected void doExcludeSelectedTests() {
@@ -322,23 +340,105 @@ public class TestsView extends ViewPart implements IPartListener{
             tr.setStatus( TestRun.RUNNING );
             viewer.refresh(tr);
 
+//            runTestAsJobs( mol, ds, tr ); 
+            runTestAsJobWithGuiUpdate( mol, ds, tr ); 
+        }
+
+        logger.debug( "===== All testruns started" );
+    }
+
+    private void runTestAsJobs( final ICDKMolecule mol, IDSManager ds, final TestRun tr ) {
+
             try {
-                ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
+                //Run and store ref to job
+                BioclipseJob<List<ITestResult>> job = 
+                    ds.runTest( tr.getTest().getId(), mol, 
+                    new BioclipseJobUpdateHook(tr.getTest().getName()));
+                
+                //TODO: store ref to job in list
 
-                    @Override
-                    public void runInUI() {
-                        List<ITestResult> matches = new ArrayList<ITestResult>(getReturnValue());
+            job.addJobChangeListener( new IJobChangeListener(){
 
-                        boolean hasErrors=false;
+                public void aboutToRun( IJobChangeEvent event ) {
+                }
 
-                        for (ITestResult result : matches){
+                public void awake( IJobChangeEvent event ) {
+                }
+
+                @SuppressWarnings("unchecked")
+                public void done( IJobChangeEvent event ) {
+
+                    BioclipseJob<List<ITestResult>> job=(BioclipseJob<List<ITestResult>>) event.getJob();
+                    final List<ITestResult> matches = job.getReturnValue();
+                    
+                    //Update viewer in SWT thread
+                    Display.getDefault().asyncExec( new Runnable(){
+                        public void run() {
+
+                            logger.debug( "лл Job done: " + tr.getTest().getName() );
+                            logger.debug( "лл Matches: " + matches);
+
+                            boolean hasErrors=false;
+
+                            for (ITestResult result : matches){
+                                
+                                if ( result instanceof ErrorResult ) {
+                                    ErrorResult eres = (ErrorResult) result;
+                                    logger.debug("Test: " + tr + " returned error: " + eres);
+                                    result.setTestRun( tr );
+                                    hasErrors=true;
+                                }
+                                    result.setTestRun( tr );
+                                    tr.addMatch(result);
+                            } 
+                            tr.setMatches( matches );
+                            if (hasErrors==true)
+                                tr.setStatus( TestRun.FINISHED_WITH_ERRORS );
+                            else
+                                tr.setStatus( TestRun.FINISHED );
+
+                            logger.debug( "===== Testrun: " + tr + " finished" );
                             
-                            if ( result instanceof ErrorResult ) {
-                                ErrorResult eres = (ErrorResult) result;
-                                //TODO: handle how errors should be presented in UI here
-                                logger.debug("Test: " + tr + " returned error: " + eres);
-                                result.setTestRun( tr );
-                                hasErrors=true;
+                            viewer.refresh( tr );}
+                    });
+                }
+
+                public void running( IJobChangeEvent event ) {
+                }
+
+                public void scheduled( IJobChangeEvent event ) {
+                }
+
+                public void sleeping( IJobChangeEvent event ) {
+                }});
+                
+            } catch ( BioclipseException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+    }
+
+    private void runTestAsJobWithGuiUpdate( final ICDKMolecule mol,
+                                            IDSManager ds, final TestRun tr ) {
+
+        try {
+            ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
+
+                @Override
+                public void runInUI() {
+                    List<ITestResult> matches = new ArrayList<ITestResult>(getReturnValue());
+
+                    boolean hasErrors=false;
+
+                    for (ITestResult result : matches){
+                        
+                        if ( result instanceof ErrorResult ) {
+                            ErrorResult eres = (ErrorResult) result;
+                            //TODO: handle how errors should be presented in UI here
+                            logger.debug("Test: " + tr + " returned error: " + eres.getName());
+                            result.setTestRun( tr );
+                            hasErrors=true;
 //                                try {
 //                                    IMarker marker = mol.getResource().createMarker( IMarker.PROBLEM );
 //                                    marker.setAttribute( IMarker.MESSAGE, eres );
@@ -346,32 +446,29 @@ public class TestsView extends ViewPart implements IPartListener{
 //                                } catch ( CoreException e ) {
 //                                    e.printStackTrace();
 //                                }
-                            }
+                        }
 //                            else{
-                                result.setTestRun( tr );
-                                tr.addMatch(result);
+                            result.setTestRun( tr );
+                            tr.addMatch(result);
 //                            }
-                        } 
-                        tr.setMatches( matches );
-                        if (hasErrors==true)
-                            tr.setStatus( TestRun.FINISHED_WITH_ERRORS );
-                        else
-                            tr.setStatus( TestRun.FINISHED );
+                    } 
+                    tr.setMatches( matches );
+                    if (hasErrors==true)
+                        tr.setStatus( TestRun.FINISHED_WITH_ERRORS );
+                    else
+                        tr.setStatus( TestRun.FINISHED );
 
-                        logger.debug( "===== Testrun: " + tr + " finished" );
+                    logger.debug( "===== Testrun: " + tr + " finished" );
 
-                        viewer.refresh( tr );
-                    }
+                    viewer.refresh( tr );
+                }
 
-                });
-            } catch ( BioclipseException e ) {
-                logger.error( "Error running test: " + tr.getTest() + 
-                              ": " + e.getMessage());
-                LogUtils.debugTrace( logger, e );
-            } 
+            });
+        } catch ( BioclipseException e ) {
+            logger.error( "Error running test: " + tr.getTest() + 
+                          ": " + e.getMessage());
+            LogUtils.debugTrace( logger, e );
         }
-
-        logger.debug( "===== All testruns started" );
     }
 
     private void showMessage(String message) {

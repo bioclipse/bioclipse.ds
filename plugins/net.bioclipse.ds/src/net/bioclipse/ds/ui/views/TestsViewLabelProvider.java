@@ -31,7 +31,7 @@ public class TestsViewLabelProvider implements ILabelProvider{
         if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
             if ( match instanceof ErrorResult ) {
-                desc=Activator.getImageDecriptor( "icons2/cancel.png" );
+                desc=Activator.getImageDecriptor( "icons2/file_del.gif" );
             }
             else if (match.getTestRun().getStatus()==TestRun.FINISHED || 
                     match.getTestRun().getStatus()==TestRun.FINISHED_WITH_ERRORS){
