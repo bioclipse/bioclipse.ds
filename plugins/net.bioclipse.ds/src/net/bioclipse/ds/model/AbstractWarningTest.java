@@ -119,9 +119,9 @@ public abstract class AbstractWarningTest implements IDSTest{
     }
 
     
-    protected List<ITestResult> returnError(String errorMessage) {
+    protected List<ITestResult> returnError(String name, String errorMessage) {
 
-        ITestResult er=new ErrorResult(errorMessage);
+        ITestResult er=new ErrorResult(name, errorMessage);
         List<ITestResult> trlist=new ArrayList<ITestResult>();
         trlist.add( er );
         return trlist;
