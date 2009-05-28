@@ -185,7 +185,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             try {
                 initialize();
             } catch ( DSException e1 ) {
-                return returnError( e1.getMessage());
+                return returnError( e1.getMessage(), e1.getStackTrace().toString());
             }
         }
 
@@ -197,7 +197,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         try {
             cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
-            return returnError( "Unable to create CDKMolceule: " + e.getMessage());
+            return returnError( "Unable to create CDKMolceule" , e.getMessage());
         }
 
         IAtomContainer ac = cdkmol.getAtomContainer();

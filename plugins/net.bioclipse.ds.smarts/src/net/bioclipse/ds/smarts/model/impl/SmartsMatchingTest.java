@@ -138,7 +138,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             try {
                 initialize();
             } catch ( DSException e1 ) {
-                return returnError( e1.getMessage());
+                return returnError( e1.getMessage(), e1.getStackTrace().toString());
             }
         }
 
@@ -150,7 +150,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         try {
             cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
-            return returnError( "Unable to create CDKMolceule: " + e.getMessage());
+            return returnError( "Unable to create CDKMolceule" , e.getMessage());
         }
 
         IAtomContainer ac = cdkmol.getAtomContainer();
