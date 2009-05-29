@@ -630,11 +630,11 @@ public class TestsView extends ViewPart implements IPartListener{
                 newTestRuns.add( newTestRun );
             }
         } catch ( BioclipseException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
         editorTestMap.put( jcp, newTestRuns );
+        activeTestRuns=newTestRuns;
         setExecuted( false );
         updateView();
     }
