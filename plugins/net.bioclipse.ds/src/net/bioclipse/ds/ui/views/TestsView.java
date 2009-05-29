@@ -81,6 +81,11 @@ public class TestsView extends ViewPart implements IPartListener{
     private Action refreshAction;
 
     private List<BioclipseJob<List<ITestResult>>> runningJobs;
+
+    /**
+     * Used to store and set selection for a new run
+     */
+    private IStructuredSelection storedSelection;
     
     /**
      * The constructor.
@@ -436,10 +441,14 @@ public class TestsView extends ViewPart implements IPartListener{
                             viewer.refresh( tr );
                             viewer.setExpandedState( tr, true );
                             
+                            //If we previously stored a selection, set it now
+                            selectIfStoredSelection(tr);
+                            
                             //This job is done, remove from list of running jobs
                             getRunningJobs().remove( job );
 
                             }
+
                     });
 
 
@@ -462,6 +471,33 @@ public class TestsView extends ViewPart implements IPartListener{
 
     }
 
+    private void selectIfStoredSelection(TestRun tr) {
+
+        if (storedSelection==null) return;
+        
+        for (Object obj : storedSelection.toList()){
+            //Select this testrun if same id as stored one
+            if ( obj instanceof TestRun ) {
+                TestRun storedtr = (TestRun) obj;
+                if (storedtr.getTest().getId().equals( tr.getTest().getId() )){
+                    viewer.setSelection( new StructuredSelection(tr) );
+                }
+            }
+            //If this testrun has no matches, do not try to select them
+            else if (tr.getMatches()==null || tr.getMatches().size()<=0)
+                return;
+            //Select the first ITestResult if it has same TestRun.Test as stored
+            else if ( obj instanceof ITestResult ) {
+                ITestResult storedtres=(ITestResult)obj;
+                if (storedtres.getTestRun().getTest().getId().equals( tr.getTest().getId() )){
+                    viewer.setSelection( new StructuredSelection(tr.getMatches().get( 0 )) );
+                    //TODO: fire explicit property to make this highlight?
+                }
+            }
+        }
+    }
+
+    
     @Deprecated
     private void runTestAsJobWithGuiUpdate( final ICDKMolecule mol,
                                             IDSManager ds, final TestRun tr ) {
@@ -606,8 +642,9 @@ public class TestsView extends ViewPart implements IPartListener{
                         logger.debug
                            ("TestsView reacting: JCP editor model has changed");
                         
+                        storedSelection=(IStructuredSelection) viewer.getSelection();
                         doClearAllTests( jcp );
-//                        doRunAllTests();
+                        doRunAllTests();
                         
                         //TODO: run tests anew here
                     }
