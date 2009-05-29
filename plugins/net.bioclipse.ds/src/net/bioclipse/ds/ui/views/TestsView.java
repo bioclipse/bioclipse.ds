@@ -416,7 +416,7 @@ public class TestsView extends ViewPart implements IPartListener{
                                 
                                 if ( result instanceof ErrorResult ) {
                                     ErrorResult eres = (ErrorResult) result;
-                                    logger.debug("Test: " + tr + " returned error: " + eres);
+                                    logger.debug("Test: " + tr + " returned error: " + eres.getName());
                                     result.setTestRun( tr );
                                     hasErrors=true;
                                 }
