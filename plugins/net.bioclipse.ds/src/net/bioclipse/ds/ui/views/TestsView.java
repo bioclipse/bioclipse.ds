@@ -408,7 +408,7 @@ public class TestsView extends ViewPart implements IPartListener{
                         public void run() {
 
                             logger.debug( "лл Job done: " + tr.getTest().getName() );
-                            logger.debug( "лл Matches: " + matches);
+                            logger.debug( "лл Matches: " + matches.size());
 
                             boolean hasErrors=false;
 
