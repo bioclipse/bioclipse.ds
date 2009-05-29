@@ -18,6 +18,7 @@ import java.util.Map;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
+import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
@@ -306,7 +307,7 @@ public class TestsView extends ViewPart implements IPartListener{
                                             .getActivePage().getActiveEditor();
         if ( editor instanceof JChemPaintEditor ) {
             JChemPaintEditor jcp = (JChemPaintEditor) editor;
-            doClearNewTests( jcp );
+            doClearAllTests( jcp );
         }else{
             showError( "NOT IMPLEMENTED FOR EDITOR: " + editor );
         }
@@ -323,7 +324,7 @@ public class TestsView extends ViewPart implements IPartListener{
         }
 
         //Get the molecule from the editor
-        //Asumption: All testruns operate on the same molecule
+        //Assumption: All testruns operate on the same molecule
         IEditorPart part=activeTestRuns.get( 0 ).getEditor();
         if (!( part instanceof JChemPaintEditor )) {
             showError("The editor: " + part + " is not " +
@@ -354,7 +355,7 @@ public class TestsView extends ViewPart implements IPartListener{
 
         //We need to clear previous tests if already run
         if (isExecuted()==true){
-            doClearNewTests( jcp );
+            doClearAllTests( jcp );
             activeTestRuns=editorTestMap.get( part );
 //            partActivated( jcp );
             viewer.refresh();
@@ -367,6 +368,7 @@ public class TestsView extends ViewPart implements IPartListener{
             logger.debug( "===== Testrun: " + tr + " started" );
             tr.setStatus( TestRun.RUNNING );
             viewer.refresh(tr);
+            viewer.setExpandedState( tr, true );
 
             runTestAsJobs( mol, ds, tr ); 
 //            runTestAsJobWithGuiUpdate( mol, ds, tr ); 
@@ -432,6 +434,7 @@ public class TestsView extends ViewPart implements IPartListener{
                             logger.debug( "===== Testrun: " + tr + " finished" );
                             
                             viewer.refresh( tr );
+                            viewer.setExpandedState( tr, true );
                             
                             //This job is done, remove from list of running jobs
                             getRunningJobs().remove( job );
@@ -532,16 +535,32 @@ public class TestsView extends ViewPart implements IPartListener{
         viewer.getControl().setFocus();
     }
 
-    private boolean isSupportedEditor( IWorkbenchPart part ) {
+    private IWorkbenchPart getSupportedEditor( IWorkbenchPart part ) {
         if ( part instanceof JChemPaintEditor ) {
-            return true;
+            System.out.println("We have a JCP editor for TestsView!");
+            return part;
         }
-        if ( part instanceof MoleculesEditor ) {
-            return true;
+        else if ( part instanceof MoleculesEditor ) {
+            //TODO: when does this happen?
+            return part;
+        }
+        else if ( part instanceof MultiPageMoleculesEditorPart ) {
+            System.out.println("We have a MPE editor for TestsView");
+            MultiPageMoleculesEditorPart editor = (MultiPageMoleculesEditorPart)part;
+            Object obj = editor.getAdapter(JChemPaintEditor.class);
+            if (obj== null){
+                System.out.println("     MPE editor for TestsView did not have JCP page to provide");
+                return null;
+            }
+            System.out.println("     MPE editor for TestsView provided JCP page!");
+            JChemPaintEditor jcp=(JChemPaintEditor)obj;
+            return jcp;
         }
 
-        //Not supported
-        return false;
+        System.out.println("No supported editor for TestsView");
+
+        //Not supported editor
+        return null;
     }
 
     private void updateView() {
@@ -556,13 +575,10 @@ public class TestsView extends ViewPart implements IPartListener{
         
         if (activeTestRuns!=null && activeTestRuns.size()>0){
             viewer.setInput( activeTestRuns.toArray() );
-            viewer.refresh();
         }else{
          //ok, we have nothing.
             viewer.setInput(TestHelper.readTestsFromEP().toArray());
-            viewer.refresh();
         }
-
         updateActionStates();
 
     }
@@ -578,30 +594,27 @@ public class TestsView extends ViewPart implements IPartListener{
             final JChemPaintEditor jcp = (JChemPaintEditor) part;
             // Register interest in changes from editor
             //    as a
+
             jcp.addPropertyChangedListener( new IPropertyChangeListener() {
                 public void propertyChange( PropertyChangeEvent event ) {
 
                     if(event.getProperty().equals( JChemPaintEditor.
                                                    STRUCUTRE_CHANGED_EVENT )) {
-                        
-                        
 
                         // editor model has changed
                         // do stuff...
-                        logger.debug(
-                           ((JChemPaintEditor)event.getSource()).getTitle()
-                           +" editor has changed");
+                        logger.debug
+                           ("TestsView reacting: JCP editor model has changed");
                         
-                        doClearNewTests( jcp );
-
-//                        logger.debug(
-//                            ((JChemPaintEditor)event.getSource()).getTitle()
-//                            + " editor has changed");
+                        doClearAllTests( jcp );
+//                        doRunAllTests();
+                        
+                        //TODO: run tests anew here
                     }
                 }
             });
 
-            doClearNewTests( jcp );
+            doClearAllTests( jcp );
 
             return;
         }
@@ -617,7 +630,7 @@ public class TestsView extends ViewPart implements IPartListener{
 
     }
 
-    private void doClearNewTests( JChemPaintEditor jcp ) {
+    private void doClearAllTests( JChemPaintEditor jcp ) {
 
         List<TestRun> newTestRuns=new ArrayList<TestRun>();
 
@@ -640,8 +653,6 @@ public class TestsView extends ViewPart implements IPartListener{
     }
 
     
-    
-    
     /* ================================
      * Below is for part lifecycle events
      *====================================  */
@@ -650,37 +661,50 @@ public class TestsView extends ViewPart implements IPartListener{
      * 
      */
     public void partActivated( IWorkbenchPart part ) {
-        if (!(isSupportedEditor(part))) return;
-//        logger.debug("Part:" + part.getTitle() + " activated");
+//      logger.debug("Part:" + part.getTitle() + " activated");
+        if (!( part instanceof IEditorPart )) return;
+        IWorkbenchPart ppart=getSupportedEditor( part );
+        if (ppart==null){
+            activeTestRuns=null;
+            updateView();
+            return;
+        }
 
-        if (editorTestMap.keySet().contains( part )){
-            activeTestRuns=editorTestMap.get( part );
+        if (editorTestMap.keySet().contains( ppart )){
+            activeTestRuns=editorTestMap.get( ppart );
         }else {
-            addNewTestRuns(part);
+            addNewTestRuns(ppart);
         }
         updateView();
     }
 
 
+
     public void partBroughtToTop( IWorkbenchPart part ) {
-        if (!(isSupportedEditor(part))) return;
 //        logger.debug("Part:" + part.getTitle() + " brought to top");
-        
-        if (editorTestMap.keySet().contains( part )){
-            activeTestRuns=editorTestMap.get( part );
+        if (!( part instanceof IEditorPart )) return;
+
+        IWorkbenchPart ppart=getSupportedEditor( part );
+        if (ppart==null) return;
+
+        if (editorTestMap.keySet().contains( ppart )){
+            activeTestRuns=editorTestMap.get( ppart );
         }else {
-            addNewTestRuns(part);
+            addNewTestRuns(ppart);
         }
         updateView();
     }
 
 
     public void partClosed( IWorkbenchPart part ) {
-        if (!(isSupportedEditor(part))) return;
-//        logger.debug("Part:" + part.getTitle() + " closed");
+//      logger.debug("Part:" + part.getTitle() + " closed");
+        if (!( part instanceof IEditorPart )) return;
+
+        IWorkbenchPart ppart=getSupportedEditor( part );
+        if (ppart==null) return;
         
-        if (editorTestMap.keySet().contains( part )){
-            editorTestMap.remove( part );
+        if (editorTestMap.keySet().contains( ppart )){
+            editorTestMap.remove( ppart );
             updateView();
         }
     }
@@ -691,12 +715,10 @@ public class TestsView extends ViewPart implements IPartListener{
      * clean in that case.
      */
     public void partDeactivated( IWorkbenchPart part ) {
-        if (!(isSupportedEditor(part))) return;
 //        logger.debug("Part:" + part.getTitle() + " deactivated");
     }
 
     public void partOpened( IWorkbenchPart part ) {
-        if (!(isSupportedEditor(part))) return;
 //        logger.debug("Part:" + part.getTitle() + " opened");
     }
 
