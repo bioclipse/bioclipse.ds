@@ -10,11 +10,18 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import net.bioclipse.cdk.domain.AtomContainerSelection;
 import net.bioclipse.cdk.domain.CDKMoleculePropertySource;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class SimpleResult implements ITestResult{
 
@@ -51,15 +58,17 @@ public class SimpleResult implements ITestResult{
      * No substructure by default. Subclasses may override.
      */
     public IAtomContainer getAtomContainer() {
-        return null;
+            return NoNotificationChemObjectBuilder.getInstance().
+                                               newAtomContainer();
     }
 
     /**
-     * No substructure color by default. Subclasses may override.
+     * Yellow substructure color by default. Subclasses may override.
      */
-    public java.awt.Color getHighlightingColor( IAtom atom ) {
-        // FIXME null is not a good looking color
-        return null;
+    public Color getHighlightingColor( IAtom atom ) {
+        Display display = new Display();
+        Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
+        return yellow;
     }
 
     
