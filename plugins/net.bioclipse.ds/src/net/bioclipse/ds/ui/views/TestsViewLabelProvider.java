@@ -17,12 +17,23 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.jface.viewers.IDecoration;
+import org.eclipse.jface.viewers.IFontProvider;
+import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ILightweightLabelDecorator;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 
-public class TestsViewLabelProvider implements ILabelProvider{
+public class TestsViewLabelProvider implements ILabelProvider, IColorProvider{
 
     public Image getImage( Object element ) {
 
@@ -131,6 +142,20 @@ public class TestsViewLabelProvider implements ILabelProvider{
     }
 
     public void removeListener( ILabelProviderListener listener ) {
+    }
+
+
+    public Color getBackground( Object element ) {
+        return null;
+    }
+
+    public Color getForeground( Object element ) {
+        if ( element instanceof IDSTest ) {
+//            IDSTest dst = (IDSTest) element;
+//            if (dst.isExcluded());
+                return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+        }
+        return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
     }
 
 }

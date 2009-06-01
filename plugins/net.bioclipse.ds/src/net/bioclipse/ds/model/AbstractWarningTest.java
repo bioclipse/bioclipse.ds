@@ -10,14 +10,15 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Color;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 import net.bioclipse.ds.model.impl.DSException;
 
@@ -129,11 +130,12 @@ public abstract class AbstractWarningTest implements IDSTest{
 
     
     public IAtomContainer getAtomContainer() {
-        return null;
+        return NoNotificationChemObjectBuilder.getInstance().
+        newAtomContainer();
     }
     
-    public Color getHighlightingColor( IAtom atom ) {
-        return null;
+    public java.awt.Color getHighlightingColor( IAtom atom ) {
+        return java.awt.Color.YELLOW;
     }
     
     public Object getAdapter( Class adapter ) {

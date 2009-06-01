@@ -10,17 +10,18 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 /**
  * Class to associate an editor with a test
@@ -122,12 +123,12 @@ public class TestRun implements ISubStructure{
     }
 
     public IAtomContainer getAtomContainer() {
-        return null;
+        return NoNotificationChemObjectBuilder.getInstance().
+        newAtomContainer();
     }
 
-    public Color getHighlightingColor( IAtom atom ) {
-        // FIXME null is not a good looking color
-        return null;
+    public java.awt.Color getHighlightingColor( IAtom atom ) {
+        return java.awt.Color.YELLOW;
     }
 
     public void addMatch( ITestResult result ) {

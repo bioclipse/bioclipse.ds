@@ -10,11 +10,10 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import java.awt.Color;
-
 import net.bioclipse.cdk.domain.ISubStructure;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
@@ -63,10 +62,8 @@ public class SubStructureMatch extends SimpleResult implements ISubStructure{
     /**
      * In this implementation, all atoms are colored yellow
      */
-    public Color getHighlightingColor( IAtom atom ) {
-
-        Color yellow = Color.YELLOW;
-        return yellow;
+    public java.awt.Color getHighlightingColor( IAtom atom ) {
+        return java.awt.Color.YELLOW;
     }
 
 

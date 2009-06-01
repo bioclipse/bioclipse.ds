@@ -65,12 +65,8 @@ public class SimpleResult implements ITestResult{
     /**
      * Yellow substructure color by default. Subclasses may override.
      */
-    public Color getHighlightingColor( IAtom atom ) {
-        Display display = new Display();
-        Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
-        return yellow;
+    public java.awt.Color getHighlightingColor( IAtom atom ) {
+        return java.awt.Color.YELLOW;
     }
-
-    
 
 }

@@ -61,7 +61,10 @@ public class TestsView extends ViewPart implements IPartListener{
 
     //Kepp track of existing mappings from editor to TestRun
     private Map<IWorkbenchPart, List<TestRun>> editorTestMap;
-    
+
+    //Kepp track of existing mappings from editor to TestRun
+    private Map<IWorkbenchPart, IPropertyChangeListener> editorListenerMap;
+
     //The active test runs. Initializes upon test run, and updates on editor switch
     private List<TestRun> activeTestRuns;
 
@@ -86,6 +89,10 @@ public class TestsView extends ViewPart implements IPartListener{
      * Used to store and set selection for a new run
      */
     private IStructuredSelection storedSelection;
+
+    private Action autoRunAction;
+    
+    private boolean autorun;
     
     /**
      * The constructor.
@@ -110,9 +117,8 @@ public class TestsView extends ViewPart implements IPartListener{
      */
     public void createPartControl(Composite parent) {
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-//        drillDownAdapter = new DrillDownAdapter(viewer);
         viewer.setContentProvider(new TestsViewContentProvider());
-        viewer.setLabelProvider(new TestsViewLabelProvider());
+        viewer.setLabelProvider(new DecoratingLabelProvider(new TestsViewLabelProvider(),new TestsViewDecorator()));
         viewer.setSorter(new ViewerSorter());
 //        viewer.addFilter( new NoErrorsFilter() );
 
@@ -126,8 +132,12 @@ public class TestsView extends ViewPart implements IPartListener{
         contributeToActionBars();
 
         editorTestMap=new HashMap<IWorkbenchPart, List<TestRun>>();
+        editorListenerMap=new HashMap<IWorkbenchPart, IPropertyChangeListener>();
         
         runningJobs=new ArrayList<BioclipseJob<List<ITestResult>>>();
+        
+        setAutorun( true );
+        updateActionStates();
 
         
         //Listen for part lifecycle events to react on editors
@@ -182,6 +192,7 @@ public class TestsView extends ViewPart implements IPartListener{
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
+        manager.add(autoRunAction);
         manager.add(runAction);
         manager.add(clearAction);
         manager.add(new Separator());
@@ -199,6 +210,12 @@ public class TestsView extends ViewPart implements IPartListener{
             runAction.setEnabled( true );
         else
             runAction.setEnabled( false );
+        
+        if (isAutorun()){
+            autoRunAction.setImageDescriptor( Activator.getImageDecriptor( "icons2/fastforward_dis2.png" ));
+        }else{
+            autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/fastforward.png" ));
+        } 
         
         boolean testSelected=false;
         for (Object obj : ((IStructuredSelection)viewer.getSelection()).toList()){
@@ -230,6 +247,23 @@ public class TestsView extends ViewPart implements IPartListener{
         		"on the active molecule(s)");
         runAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/smallRun.gif" ));
         runAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons2/smallRun_dis.gif" ));
+
+        autoRunAction = new Action() {
+            public void run() {
+                setAutorun( !autorun);
+                updateActionStates();
+                if (autorun){
+//                    setAutoRunPropListener();
+                    doRunAllTests();
+                }else{
+//                    clearAutoRunPropListener();
+                }
+            }
+        };
+        autoRunAction.setText("Toggle AutoTest");
+        autoRunAction.setToolTipText("Turns on/off automatic running of tests on structural changes");
+        autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/fastforward.png" ));
+        autoRunAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons2/fastforward_dis.png" ));
 
         clearAction = new Action() {
             public void run() {
@@ -290,6 +324,7 @@ public class TestsView extends ViewPart implements IPartListener{
 
     }
     
+
     protected void doExcludeSelectedTests() {
 
         IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
@@ -686,6 +721,7 @@ public class TestsView extends ViewPart implements IPartListener{
         editorTestMap.put( jcp, newTestRuns );
         activeTestRuns=newTestRuns;
         setExecuted( false );
+        updateActionStates();
         updateView();
     }
 
@@ -757,6 +793,16 @@ public class TestsView extends ViewPart implements IPartListener{
 
     public void partOpened( IWorkbenchPart part ) {
 //        logger.debug("Part:" + part.getTitle() + " opened");
+    }
+
+    public void setAutorun( boolean autorun ) {
+
+        this.autorun = autorun;
+    }
+
+    public boolean isAutorun() {
+
+        return autorun;
     }
 
     
