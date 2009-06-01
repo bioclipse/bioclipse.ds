@@ -12,7 +12,6 @@ package net.bioclipse.ds.model;
 
 import net.bioclipse.cdk.domain.CDKMoleculePropertySource;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -58,7 +57,8 @@ public class SimpleResult implements ITestResult{
     /**
      * No substructure color by default. Subclasses may override.
      */
-    public Color getHighlightingColor( IAtom atom ) {
+    public java.awt.Color getHighlightingColor( IAtom atom ) {
+        // FIXME null is not a good looking color
         return null;
     }
 
