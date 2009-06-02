@@ -17,7 +17,7 @@ public class TestsViewDecorator implements ILabelDecorator {
         if ( element instanceof IDSTest ) {
             if (cachedInactiveDSTest==null)
                 cachedInactiveDSTest=Activator.
-                         getImageDecriptor( "/icons2/play_grey.png" ).createImage();
+                         getImageDecriptor( "/icons2/box-q_dis.gif" ).createImage();
             
             return cachedInactiveDSTest;
         }

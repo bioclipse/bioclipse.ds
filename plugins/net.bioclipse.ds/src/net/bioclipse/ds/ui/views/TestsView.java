@@ -363,6 +363,9 @@ public class TestsView extends ViewPart implements IPartListener{
             return;
         }
 
+        //Store active selection
+        storedSelection=(IStructuredSelection) viewer.getSelection();
+
         //Get the molecule from the editor
         //Assumption: All testruns operate on the same molecule
         IEditorPart part=activeTestRuns.get( 0 ).getEditor();
@@ -381,7 +384,7 @@ public class TestsView extends ViewPart implements IPartListener{
             logger.debug("Job: " + job.getName() + " asked to cancel.");
         }
 
-        //Wait for all runnig jobs to cancel
+        //Wait for all running jobs to cancel
         for (BioclipseJob<List<ITestResult>> job : runningJobs){
             //Ask job to cancel
             logger.debug("Waiting for Job: " + job.getName() + " to finish...");
@@ -391,7 +394,6 @@ public class TestsView extends ViewPart implements IPartListener{
             }
             logger.debug("Job: " + job.getName() + " finished.");
         }
-
 
         //We need to clear previous tests if already run
         if (isExecuted()==true){
@@ -506,6 +508,7 @@ public class TestsView extends ViewPart implements IPartListener{
 
     }
 
+
     private void selectIfStoredSelection(TestRun tr) {
 
         if (storedSelection==null) return;
@@ -525,7 +528,7 @@ public class TestsView extends ViewPart implements IPartListener{
             else if ( obj instanceof ITestResult ) {
                 ITestResult storedtres=(ITestResult)obj;
                 if (storedtres.getTestRun().getTest().getId().equals( tr.getTest().getId() )){
-                    viewer.setSelection( new StructuredSelection(tr.getMatches().get( 0 )) );
+//                    viewer.setSelection( new StructuredSelection(tr.getMatches().get( 0 )) );
                     //TODO: fire explicit property to make this highlight?
                 }
             }
@@ -651,6 +654,7 @@ public class TestsView extends ViewPart implements IPartListener{
             viewer.setInput(TestHelper.readTestsFromEP().toArray());
         }
         updateActionStates();
+        viewer.expandAll();
 
     }
 
@@ -677,8 +681,8 @@ public class TestsView extends ViewPart implements IPartListener{
                         logger.debug
                            ("TestsView reacting: JCP editor model has changed");
                         
-                        storedSelection=(IStructuredSelection) viewer.getSelection();
-                        doClearAllTests( jcp );
+//                        storedSelection=(IStructuredSelection) viewer.getSelection();
+//                        doClearAllTests( jcp );
                         doRunAllTests();
                         
                         //TODO: run tests anew here
@@ -734,7 +738,7 @@ public class TestsView extends ViewPart implements IPartListener{
      * 
      */
     public void partActivated( IWorkbenchPart part ) {
-//      logger.debug("Part:" + part.getTitle() + " activated");
+      logger.debug("Part:" + part.getTitle() + " activated");
         if (!( part instanceof IEditorPart )) return;
         IWorkbenchPart ppart=getSupportedEditor( part );
         if (ppart==null){
@@ -749,6 +753,12 @@ public class TestsView extends ViewPart implements IPartListener{
             addNewTestRuns(ppart);
         }
         updateView();
+
+        if (activeTestRuns!=null){
+            for (TestRun tr : activeTestRuns){
+                selectIfStoredSelection( tr );
+            }
+        }
     }
 
 
@@ -788,7 +798,8 @@ public class TestsView extends ViewPart implements IPartListener{
      * clean in that case.
      */
     public void partDeactivated( IWorkbenchPart part ) {
-//        logger.debug("Part:" + part.getTitle() + " deactivated");
+        logger.debug("Part:" + part.getTitle() + " deactivated");
+        storedSelection=(IStructuredSelection) viewer.getSelection();
     }
 
     public void partOpened( IWorkbenchPart part ) {
