@@ -2,6 +2,7 @@ package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.TestRun;
 
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -27,7 +28,20 @@ public class TestsViewDecorator implements ILabelDecorator {
 
     public String decorateText( String text, Object element ) {
 
-        // TODO Auto-generated method stub
+        if ( element instanceof IDSTest ) {
+            IDSTest dstest = (IDSTest) element;
+            if (dstest.getTestErrorMessage()!=null 
+                    && dstest.getTestErrorMessage().length()>1){
+                return text + " [" + dstest.getTestErrorMessage() + "]";
+            }
+        }
+        else if ( element instanceof TestRun ) {
+            TestRun tr = (TestRun) element;
+            if (tr.getTest().getTestErrorMessage().length()>1){
+                return text + " [" + tr.getTest().getTestErrorMessage() + "]";
+            }
+        }
+        
         return null;
     }
 
