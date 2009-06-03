@@ -73,9 +73,13 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         
         String path="";
         try {
-            URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
-            path=url2.getFile();
-        } catch ( IOException e1 ) {
+            logger.debug("Trying to locate file: " + filepath + " from plugin: " + getPluginID());
+            URL url = Platform.getBundle(getPluginID()).getEntry(filepath);
+            logger.debug("File has URL: " + url);
+            URL fileURL = FileLocator.toFileURL(url);
+            logger.debug("File has fileURL: " + fileURL);
+            path=fileURL.getFile();
+        } catch ( Exception e1 ) {
             e1.printStackTrace();
             return;
         }
