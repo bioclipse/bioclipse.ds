@@ -56,6 +56,12 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
      */
     private void initialize(IProgressMonitor monitor) {
         
+        if (getTestErrorMessage().length()>1){
+            logger.error("Trying to initialize test: " + getName() + " while " +
+            		"error message exists");
+            return;
+        }
+        
         try {
             String filepath=getParameters().get( "file" );
             logger.debug("Filename is: "+ filepath);
@@ -103,10 +109,6 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
         
-        if (getTestErrorMessage().length()>1){
-            return returnError( "test has error message and should not be run", "" );
-        }
-
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
                 
@@ -114,6 +116,9 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         if (moleculesmodel==null)
                 initialize(monitor);
 
+        if (getTestErrorMessage().length()>1){
+            return results;
+        }
             
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
