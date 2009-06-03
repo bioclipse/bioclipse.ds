@@ -28,7 +28,6 @@ import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
-import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 import net.bioclipse.jobs.BioclipseUIJob;
@@ -37,8 +36,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.*;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -53,8 +50,6 @@ import org.eclipse.swt.SWT;
 public class TestsView extends ViewPart implements IPartListener{
 
     private static final Logger logger = Logger.getLogger(TestsView.class);
-
-    public static final String COLOR_PROP = "SMARTS_MATCHING_COLOR";
 
     private TreeViewer viewer;
     private Action runAction;
@@ -532,60 +527,6 @@ public class TestsView extends ViewPart implements IPartListener{
                     //TODO: fire explicit property to make this highlight?
                 }
             }
-        }
-    }
-
-    
-    @Deprecated
-    private void runTestAsJobWithGuiUpdate( final ICDKMolecule mol,
-                                            IDSManager ds, final TestRun tr ) {
-
-        try {
-            ds.runTest( tr.getTest().getId(), mol, new BioclipseUIJob<List<ITestResult>>(){
-
-                @Override
-                public void runInUI() {
-                    List<ITestResult> matches = new ArrayList<ITestResult>(getReturnValue());
-
-                    boolean hasErrors=false;
-
-                    for (ITestResult result : matches){
-                        
-                        if ( result instanceof ErrorResult ) {
-                            ErrorResult eres = (ErrorResult) result;
-                            //TODO: handle how errors should be presented in UI here
-                            logger.debug("Test: " + tr + " returned error: " + eres.getName());
-                            result.setTestRun( tr );
-                            hasErrors=true;
-//                                try {
-//                                    IMarker marker = mol.getResource().createMarker( IMarker.PROBLEM );
-//                                    marker.setAttribute( IMarker.MESSAGE, eres );
-//                                    marker.setAttribute( IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-//                                } catch ( CoreException e ) {
-//                                    e.printStackTrace();
-//                                }
-                        }
-//                            else{
-                            result.setTestRun( tr );
-                            tr.addMatch(result);
-//                            }
-                    } 
-                    tr.setMatches( matches );
-                    if (hasErrors==true)
-                        tr.setStatus( TestRun.FINISHED_WITH_ERRORS );
-                    else
-                        tr.setStatus( TestRun.FINISHED );
-
-                    logger.debug( "===== Testrun: " + tr + " finished" );
-
-                    viewer.refresh( tr );
-                }
-
-            });
-        } catch ( BioclipseException e ) {
-            logger.error( "Error running test: " + tr.getTest() + 
-                          ": " + e.getMessage());
-            LogUtils.debugTrace( logger, e );
         }
     }
 
