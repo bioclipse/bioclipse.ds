@@ -54,42 +54,44 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
      * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) throws DSException {
+    private void initialize(IProgressMonitor monitor) {
         
-        String filepath=getParameters().get( "file" );
-        logger.debug("Filename is: "+ filepath);
-        
-        if (filepath==null)
-            throw new DSException("No file provided for DBExactMatchTest: " + getId());
-
-        
-        String path="";
         try {
+            String filepath=getParameters().get( "file" );
+            logger.debug("Filename is: "+ filepath);
+
+            if (filepath==null)
+                throw new DSException("No file provided for DBExactMatchTest: " + getId());
+
+
+            String path="";
             URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
             path=url2.getFile();
-        } catch ( IOException e1 ) {
+
+            //File could not be read
+            if ("".equals( path )){
+                throw new DSException("File: " + filepath + " could not be read.");
+            }
+
+            logger.debug( "file path: " + path );
+
+            IMoleculeTableManager moltable = net.bioclipse.cdk.ui.sdfeditor.Activator.getDefault()
+            .getMoleculeTableManager();
+
+            //Read index and parse properties
+            SDFileIndex sdfIndex = moltable.createSDFIndex( path);
+            moleculesmodel = new SDFIndexEditorModel(sdfIndex);
+            moltable.parseProperties( moleculesmodel );
+
+            logger.debug("Loaded SDF index successfully. No mols: " + 
+                         moleculesmodel.getNumberOfMolecules());
+
+        } catch ( Exception e1 ) {
             e1.printStackTrace();
+            setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
             return;
         }
 
-        //File could not be read
-        if ("".equals( path )){
-            throw new DSException("File: " + filepath + " could not be read.");
-        }
-
-        logger.debug( "file path: " + path );
-        
-        IMoleculeTableManager moltable = net.bioclipse.cdk.ui.sdfeditor.Activator.getDefault()
-        .getMoleculeTableManager();
-
-        //Read index and parse properties
-        SDFileIndex sdfIndex = moltable.createSDFIndex( path);
-        moleculesmodel = new SDFIndexEditorModel(sdfIndex);
-        moltable.parseProperties( moleculesmodel );
-
-        logger.debug("Loaded SDF index successfully. No mols: " + 
-                                         moleculesmodel.getNumberOfMolecules());
-        
     }
 
     /**
@@ -100,19 +102,17 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
+        
+        if (getTestErrorMessage().length()>1){
+            return returnError( "test has error message and should not be run", "" );
+        }
 
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
-        
-//        if (true) return results;
-        
+                
         //Read database file if not already done that
         if (moleculesmodel==null)
-            try {
                 initialize(monitor);
-            } catch ( DSException e1 ) {
-                return returnError(e1.getMessage(), e1.getStackTrace().toString());
-            }
 
             
 
