@@ -3,7 +3,7 @@
 <plugin>
    <extension
          point="net.bioclipse.ds.test">
-      <test
+      <!--test
             id="smarts.sample"
             name="Sample simple SMARTS"
             icon="icons/test.gif"
@@ -11,8 +11,8 @@
             <resource name="file"
                   path="data/sample.txt">
             </resource>
-      </test>
-      <test
+      </test-->
+      <!--test
             id="smarts.bursi"
             name="Bursi toxicophores"
             icon="icons/test.gif"
@@ -20,7 +20,7 @@
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
             </resource>
-      </test>
+      </test-->
       <test
             id="smarts.bursi.inclexcl"
             name="Bursi inclusive/exclusive toxicophores"
