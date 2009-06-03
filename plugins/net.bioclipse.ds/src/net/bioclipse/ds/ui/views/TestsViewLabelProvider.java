@@ -53,9 +53,6 @@ public class TestsViewLabelProvider implements ILabelProvider, IColorProvider{
                     desc=Activator.getImageDecriptor( "icons2/check.png" );
                 }
             }
-//            else if(match.getTestRun().getStatus()==TestRun.NOT_STARTED){
-//                desc=Activator.getImageDecriptor( "icons2/box-q.gif" );
-//            }
         }
         else if ( element instanceof IDSTest ) {
             IDSTest test = (IDSTest)element;
@@ -106,26 +103,7 @@ public class TestsViewLabelProvider implements ILabelProvider, IColorProvider{
         }
         else if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
-            if (run.hasMatches()){
-                int hits=0;
-                int errors=0;
-                for (ITestResult hit : run.getMatches()){
-                    if (!( hit instanceof ErrorResult )) {
-                        hits++;
-                    }else{
-                        errors++;
-                    }
-                }
-                if (hits>0 && errors<=0)
-                    return run.getTest().getName() + " [" + hits+" hits]";
-                else if (hits>0 && errors>0)
-                    return run.getTest().getName() + " [" + hits+" hits, " + errors + " errors]";
-                else if (hits<=0 && errors>0)
-                    return run.getTest().getName() + " [" + errors + " errors]";
-                
-            }
-            else
-                return run.getTest().getName();
+            return run.getTest().getName();
         }
 
         return element.toString();
