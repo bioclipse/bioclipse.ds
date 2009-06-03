@@ -67,9 +67,10 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
     private void initialize(IProgressMonitor monitor) throws DSException {
 
         smarts=new HashMap<String, Map<String,String>>();
+        
 
         String filepath=getParameters().get( "file" );
-        logger.debug("Filename is: "+ filepath);
+        logger.debug("Initializing SmartsInclusiveExclusiveTest from file: " + filepath);
 
         if (filepath==null)
             throw new DSException("No data file provided for SmartsInclusiveExclusiveTest: " + getId());
@@ -92,6 +93,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             throw new DSException("File: " + filepath + " could not be read.");
         }
 
+        int noSkipped=0;
         try {
             BufferedReader r=new BufferedReader(new FileReader(path));
             String line=r.readLine();
@@ -145,7 +147,8 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                     logger.debug("(" + linenr + ") Added SMARTS name: '" + tokenname + "' [incl=" + incls + "] [excl=" + excls + "]");
                 }
                 else{
-                    logger.error( "Invalid SMARTS as first token, so skipped: " + first );
+                    logger.error( "Invalid SMARTS as first token in file: " + smartsFile + ", so skipped. Smarts=" + first );
+                    noSkipped++;
                 }
 
                 //Read next line
@@ -159,7 +162,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             throw new DSException("File: " + filepath + " could not be read.");
         }
 
-        logger.debug("Parsed: " + smarts.size() + " SMARTS in file: " + filepath);
+        logger.debug("SmartsInclusiveExclusiveTest.init parsed: " + smarts.size() + " SMARTS in file: " + filepath + " and skipped: " + noSkipped);
 
     }
 
@@ -169,12 +172,8 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             new SMARTSQueryTool(smarts);
             return true;
         } catch ( Exception e ) {
-            logger.error("  ## Smarts: " + smarts + " is invalid.");
-            //          logger.debug( e.getMessage());
             return false;
         } catch ( Error e) {
-            logger.error("  ## Smarts: " + smarts + " is invalid.");
-            //        logger.debug( e.getMessage());
             return false;
         }
     }
@@ -215,6 +214,8 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         }
 
         IAtomContainer ac = cdkmol.getAtomContainer();
+        int noHits=0;
+        int noErr=0;
 
         for (String smartName : smarts.keySet()){
 
@@ -235,45 +236,57 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             try {
                 inclQuerytool = new SMARTSQueryTool(inclSmart);
                 inclStatus = inclQuerytool.matches(ac);
+                
             } catch(Exception e){
-                logger.error(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
-                             exclSmart +" )" + " failed to query.");
-                results.add( new ErrorResult( "Smarts: " + smartName + " (" + inclSmart + " ; " +
-                             exclSmart +" )" + " failed to query." ) );
-            }
-            try{
-                if (exclSmart!=null){
-                    exclQuerytool = new SMARTSQueryTool(exclSmart);
-                    exclStatus = exclQuerytool.matches(ac);
+                logger.error(
+                             "InclSmarts '" + inclSmart
+                             + "' with name='" + smartName 
+                             + "' is not a valid CDK smarts");
+                results.add( new ErrorResult( 
+                                             "InclSmarts '" + inclSmart
+                                             + "' with name='" + smartName 
+                                             + "' is not a valid CDK smarts"
+                                             ,e.getMessage()));
+                noErr++;
+            } 
+            
+            //If we had a match previously, try to exclude if a match in excluded
+            if ((inclStatus) && (exclSmart!=null)){
+                try{
+                exclQuerytool = new SMARTSQueryTool(exclSmart);
+                exclStatus = exclQuerytool.matches(ac);
+                } catch(Exception e){
+                    logger.error(
+                                 "ExclSmarts '" + exclSmart
+                                 + "' with name='" + smartName 
+                                 + "' is not a valid CDK smarts");
+                    results.add( new ErrorResult( 
+                                                 "ExclSmarts '" + exclSmart
+                                                 + "' with name='" + smartName 
+                                                 + "' is not a valid CDK smarts"
+                                                 ,e.getMessage()));
+                    noErr++;
+                } 
 
-                    if (inclStatus && (!exclStatus)){
-                        status=true;
-                    }
-                }else{
-                    //If only inclSmarts, then this is the result
-                    status=inclStatus;
+                //If included matched but excluded did not, this is a hit to report
+                if (inclStatus && (!exclStatus)){
+                    status=true;
                 }
-
-            } catch ( CDKException e ) {
-                logger.debug(" ** Smarts: " + smartName + " (" + inclSmart + " ; " +
-                                   exclSmart +" )" + " failed to query.");
-                
-//                System.out.println(exclSmart);
-                
-                //                logger.debug(e.getMessage());
-                //                throw new WarningSystemException("Unable to query smartsmol: " + e.getMessage());
+            }else{
+                //If no exclSmarts, then this is the result
+                status=inclStatus;
             }
+
+            
+            //If we have matches, take care of them
             if (status) {
-                //At least one match
                 SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
 
                 int nmatch = inclQuerytool.countMatches();
-                logger.debug("Found " + nmatch + " in mol");
 
                 List<Integer> matchingAtoms=new ArrayList<Integer>();
                 List<List<Integer>> mappings = inclQuerytool.getMatchingAtoms();
                 for (int i = 0; i < nmatch; i++) {
-                    logger.debug("Match no: " + i);
                     List<Integer> atomIndices = (List<Integer>) mappings.get(i);
                     matchingAtoms.addAll( atomIndices );
                 }
@@ -289,10 +302,12 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                 match.setSmartsName( smartName);
 
                 results.add( match );
-
+                noHits++;
             }
 
         }
+
+        logger.debug("Queried " + smarts.keySet().size() + " smarts. # hits=" +noHits +", # errors=" + noErr);
 
         return results;    
 

@@ -65,7 +65,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         smarts=new HashMap<String, String>();
         
         String filepath=getParameters().get( "file" );
-        logger.debug("Filename is: "+ filepath);
+        logger.debug("Initializing SmartsMatchingTest from file: " + filepath);
 
         if (filepath==null)
             throw new DSException("No data file provided for SmartsMatchingTest: " + getId());
@@ -89,6 +89,8 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             throw new DSException("File: " + filepath + " could not be read.");
         }
 
+        int noSkipped=0;
+        
         try {
             BufferedReader r=new BufferedReader(new FileReader(path));
             String line=r.readLine();
@@ -101,7 +103,12 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 if (tk.countTokens()==2) {
                     String sm=tk.nextToken();
                     String nm=tk.nextToken();
-                    smarts.put(sm,nm);
+                    if (isValidSmarts( sm ))
+                        smarts.put(sm,nm);
+                    else{
+                        logger.error("SMARTS: " + sm + " in file: " + smartsFile + " is invalid so skipped.");
+                        noSkipped++;
+                    }
                 }
                 else if (tk.countTokens()>2) {
                     //Interpret this as name has spaces in it
@@ -110,13 +117,23 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                     while(tk.hasMoreTokens()){
                         nm=nm+" " + tk.nextToken();
                     }
-                    smarts.put(sm,nm);
+                    if (isValidSmarts( sm ))
+                        smarts.put(sm,nm);
+                    else{
+                        logger.error("SMARTS: " + sm + " in file: " + smartsFile + " is invalid so skipped.");
+                        noSkipped++;
+                    }
                 }
 
                 else if (tk.countTokens()==1) {
                     //Interpret this as only a SMARTS without a name
                     String sm=tk.nextToken();
-                    smarts.put(sm,sm);
+                    if (isValidSmarts( sm ))
+                        smarts.put(sm,sm);
+                    else{
+                        logger.error("SMARTS: " + sm + " in file: " + smartsFile + " is invalid so skipped.");
+                        noSkipped++;
+                    }
                 }
                 
                 //Read next line
@@ -130,8 +147,20 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             throw new DSException("File: " + filepath + " could not be read.");
         }
         
-        logger.debug("Parsed: " + smarts.size() + " SMARTS in file: " + filepath);
+        logger.debug("SmartsMatchingTest.init parsed: " + smarts.size() + " SMARTS in file: " + filepath + " and skipped: " + noSkipped);
         
+    }
+
+    //Test if a smarts is valid
+    private boolean isValidSmarts( String smarts ) {
+        try {
+            new SMARTSQueryTool(smarts);
+            return true;
+        } catch ( Exception e ) {
+            return false;
+        } catch ( Error e) {
+            return false;
+        }
     }
 
     @Override
@@ -176,6 +205,8 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
         int noErr=0;
         for (String currentSmarts : smarts.keySet()){
             
+            String smartsName = smarts.get( currentSmarts );
+
             //Check for cancellation
             if (monitor.isCanceled())
                 return returnError( "Cancelled","");
@@ -186,8 +217,15 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 querytool = new SMARTSQueryTool(currentSmarts);
                 status = querytool.matches(ac);
             } catch(Exception e){
-                logger.error("*-*-** Test: " + getName() + " failed to query smarts: " + currentSmarts);
-                results.add( new ErrorResult( "Smarts: " + currentSmarts + " failed to query", e.getMessage() ) );
+                
+                logger.error(
+                             "Smarts " + currentSmarts 
+                             + " is not a valid CDK smarts. Test=" + getName());
+                results.add( new ErrorResult( 
+                                             "Smarts '" + currentSmarts 
+                                             + "' with name='"+ smartsName 
+                                             +"' is not a valid CDK smarts"
+                                             ,e.getMessage()));
                 noErr++;
             }
             
@@ -197,7 +235,6 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
 
                 int nmatch = querytool.countMatches();
-                logger.debug("*-*-** Test: " + getName() + " found " + nmatch + " match(es) for smarts: " + currentSmarts);
 
                 List<Integer> matchingAtoms=new ArrayList<Integer>();
                 List<List<Integer>> mappings = querytool.getMatchingAtoms();
@@ -213,12 +250,10 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 }
                 match.setAtomContainer( subAC );
                 match.setSmartsString( currentSmarts );
-                match.setSmartsName( smarts.get( currentSmarts ));
+                match.setSmartsName( smartsName);
                 
                 results.add( match );
 
-            }else{
-                logger.debug("    Found no matches");
             }
             
         }
