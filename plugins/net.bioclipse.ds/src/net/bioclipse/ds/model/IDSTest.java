@@ -37,6 +37,8 @@ public interface IDSTest extends ISubStructure{
     public String getPluginID();
     public boolean isExcluded();
     public void setExcluded(boolean excluded);
+    public String getTestErrorMessage();
+    public void setTestErrorMessage( String testErrorMessage );
 
     /**
      * This is the test that is run on a molecule

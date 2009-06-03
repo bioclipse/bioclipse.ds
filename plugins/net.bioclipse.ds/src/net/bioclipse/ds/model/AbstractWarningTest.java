@@ -15,13 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.graphics.Color;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
-
-import net.bioclipse.ds.model.impl.DSException;
-
 
 public abstract class AbstractWarningTest implements IDSTest{
 
@@ -32,13 +28,17 @@ public abstract class AbstractWarningTest implements IDSTest{
     private String pluginID;
     private Map<String, String > parameters;
     private boolean excluded;
-
+    
+    /**
+     * Empty if no problems
+     */
+    private String testErrorMessage;
     
     public AbstractWarningTest(){
         parameters=new HashMap<String, String>();
         excluded=false;
+        testErrorMessage="";
     }
-
     
     public boolean isExcluded() {
         return excluded;
@@ -141,5 +141,17 @@ public abstract class AbstractWarningTest implements IDSTest{
     public Object getAdapter( Class adapter ) {
         return null;
     }
+
     
+    public String getTestErrorMessage() {
+    
+        return testErrorMessage;
+    }
+
+    
+    public void setTestErrorMessage( String testErrorMessage ) {
+    
+        this.testErrorMessage = testErrorMessage;
+    }
+
 }
