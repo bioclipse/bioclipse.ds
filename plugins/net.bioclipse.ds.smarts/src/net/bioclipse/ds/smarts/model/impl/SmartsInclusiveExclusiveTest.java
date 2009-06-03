@@ -34,6 +34,7 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractWarningTest;
 import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
@@ -64,7 +65,13 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
      * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) throws DSException {
+    private void initialize(IProgressMonitor monitor){
+
+        if (getTestErrorMessage().length()>1){
+            logger.error("Trying to initialize test: " + getName() + " while " +
+                "error message exists");
+            return;
+        }
 
         smarts=new HashMap<String, Map<String,String>>();
         
@@ -72,8 +79,11 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
         String filepath=getParameters().get( "file" );
         logger.debug("Initializing SmartsInclusiveExclusiveTest from file: " + filepath);
 
-        if (filepath==null)
-            throw new DSException("No data file provided for SmartsInclusiveExclusiveTest: " + getId());
+        if (filepath==null){
+            setTestErrorMessage( "No data file provided for " +
+            		"SmartsInclusiveExclusiveTest: " + getId() );
+            return;
+        }
 
         String path="";
         try {
@@ -90,7 +100,8 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
 
         //File could not be read
         if ("".equals( path )){
-            throw new DSException("File: " + filepath + " could not be read.");
+            setTestErrorMessage( "File: " + filepath + " could not be read.");
+            return;
         }
 
         int noSkipped=0;
@@ -100,10 +111,6 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             
             int linenr=1;
             while(line!=null){
-
-                //Check for cancellation
-                if (monitor.isCanceled())
-                    throw new DSException("Cancelled.");
 
                 logger.debug("Read line: " + line);
 
@@ -157,9 +164,11 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             }
 
         } catch ( FileNotFoundException e ) {
-            throw new DSException("File: " + filepath + " could not be found.");
+            setTestErrorMessage( "File: " + filepath + " could not be found.");
+            return;
         } catch ( IOException e ) {
-            throw new DSException("File: " + filepath + " could not be read.");
+            setTestErrorMessage( "File: " + filepath + " could not be read.");
+            return;
         }
 
         logger.debug("SmartsInclusiveExclusiveTest.init parsed: " + smarts.size() + " SMARTS in file: " + filepath + " and skipped: " + noSkipped);
@@ -194,13 +203,8 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             return returnError( "Cancelled","");
 
 
-        if (smarts==null){
-            try {
-                initialize(monitor);
-            } catch ( DSException e1 ) {
-                return returnError( e1.getMessage(), e1.getStackTrace().toString());
-            }
-        }
+        if (smarts==null)
+            initialize(monitor);
 
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
@@ -242,6 +246,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                              "InclSmarts '" + inclSmart
                              + "' with name='" + smartName 
                              + "' is not a valid CDK smarts");
+                LogUtils.debugTrace( logger, e );
                 results.add( new ErrorResult( 
                                              "InclSmarts '" + inclSmart
                                              + "' with name='" + smartName 
@@ -251,7 +256,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             } 
             
             //If we had a match previously, try to exclude if a match in excluded
-            if ((inclStatus) && (exclSmart!=null)){
+            if ((inclStatus) && (exclSmart!=null) && (exclSmart.length()>0)){
                 try{
                 exclQuerytool = new SMARTSQueryTool(exclSmart);
                 exclStatus = exclQuerytool.matches(ac);
@@ -260,6 +265,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                                  "ExclSmarts '" + exclSmart
                                  + "' with name='" + smartName 
                                  + "' is not a valid CDK smarts");
+                    LogUtils.debugTrace( logger, e );
                     results.add( new ErrorResult( 
                                                  "ExclSmarts '" + exclSmart
                                                  + "' with name='" + smartName 

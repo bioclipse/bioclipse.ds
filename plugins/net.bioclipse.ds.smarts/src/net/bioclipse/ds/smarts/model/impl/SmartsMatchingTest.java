@@ -33,6 +33,7 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractWarningTest;
 import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.ITestResult;
@@ -61,6 +62,12 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
      * @throws WarningSystemException 
      */
     private void initialize(IProgressMonitor monitor) throws DSException {
+
+        if (getTestErrorMessage().length()>1){
+            logger.error("Trying to initialize test: " + getName() + " while " +
+                "error message exists");
+            return;
+        }
 
         smarts=new HashMap<String, String>();
         
@@ -221,6 +228,7 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 logger.error(
                              "Smarts " + currentSmarts 
                              + " is not a valid CDK smarts. Test=" + getName());
+                LogUtils.debugTrace( logger, e );
                 results.add( new ErrorResult( 
                                              "Smarts '" + currentSmarts 
                                              + "' with name='"+ smartsName 
