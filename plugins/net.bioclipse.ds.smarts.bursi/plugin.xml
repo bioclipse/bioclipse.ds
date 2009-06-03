@@ -12,7 +12,7 @@
                   path="data/sample.txt">
             </resource>
       </test-->
-      <!--test
+      <test
             id="smarts.bursi"
             name="Bursi toxicophores"
             icon="icons/test.gif"
@@ -20,8 +20,8 @@
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
             </resource>
-      </test-->
-      <test
+      </test>
+      <!--test
             id="smarts.bursi.inclexcl"
             name="Bursi inclusive/exclusive toxicophores"
             icon="icons/test.gif"
@@ -29,6 +29,6 @@
             <resource name="file"
                   path="data/bursiApprovedInclExclCDKCorrected.txt">
             </resource>
-      </test>
+      </test-->
    </extension>
 </plugin>
