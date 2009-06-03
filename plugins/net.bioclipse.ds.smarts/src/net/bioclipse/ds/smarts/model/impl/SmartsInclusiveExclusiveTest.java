@@ -128,6 +128,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                         if (isValidSmarts(second)){
                             excls=second;
                         }else{
+                            logger.warn( "+++++++ Second part of incl/excl SMARTS could mean an invalid SMARTS: " + second );
                             //If not a smarts, it's a name
                             tokenname=second+" ";
                         }

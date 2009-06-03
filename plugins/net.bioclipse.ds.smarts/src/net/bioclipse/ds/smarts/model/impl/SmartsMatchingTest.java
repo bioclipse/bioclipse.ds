@@ -226,8 +226,8 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
             } catch(Exception e){
                 
                 logger.error(
-                             "Smarts " + currentSmarts 
-                             + " is not a valid CDK smarts. Test=" + getName());
+                             "Smarts name='" + smartsName +"' with SMARTS='" + currentSmarts 
+                             + "' is not a valid CDK smarts.");
                 LogUtils.debugTrace( logger, e );
                 results.add( new ErrorResult( 
                                              "Smarts '" + currentSmarts 
