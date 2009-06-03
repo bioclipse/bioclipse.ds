@@ -402,13 +402,18 @@ public class TestsView extends ViewPart implements IPartListener{
         IDSManager ds=Activator.getDefault().getJavaManager();
         for (final TestRun tr : activeTestRuns){
 
-            logger.debug( "===== Testrun: " + tr + " started" );
-            tr.setStatus( TestRun.RUNNING );
-            viewer.refresh(tr);
-            viewer.setExpandedState( tr, true );
+            if (tr.getTest().getTestErrorMessage().length()<1){
 
-            runTestAsJobs( mol, ds, tr ); 
-//            runTestAsJobWithGuiUpdate( mol, ds, tr ); 
+                logger.debug( "===== Testrun: " + tr + " started" );
+                tr.setStatus( TestRun.RUNNING );
+                viewer.refresh(tr);
+                viewer.setExpandedState( tr, true );
+
+                runTestAsJobs( mol, ds, tr ); 
+            }
+            else{
+                logger.debug("The test: " + tr.getTest() + " has an error so not run.");
+            }
         }
 
         logger.debug( "===== All testruns started" );
