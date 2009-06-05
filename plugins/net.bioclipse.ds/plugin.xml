@@ -25,13 +25,14 @@
             file="contexts.xml">
       </contexts>
    </extension>
-   <extension
+
+   <!--extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="net.bioclipse.ds.ui.PerspectiveFactory"
             id="com.genettasoft.warningsystem.ui.perspective"
             name="Warning System">
       </perspective>
-   </extension>
+   </extension-->
 
 </plugin>
