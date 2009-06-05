@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.bioclipse.ds.dblookup.impl;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,7 @@ import net.bioclipse.ds.model.AbstractWarningTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.inchi.InChI;
 
 
 /**
@@ -42,6 +42,8 @@ import net.bioclipse.ds.model.impl.DSException;
 public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(DBExactMatchTest.class);
+    
+    private static final String INCHI_PROPERTY_KEY="net.bioclipse.cdk.InChI";
 
     /**
      * This is the cached model of the entries in the SDFile with properties
@@ -52,9 +54,10 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
     /**
      * Read database file into memory
      * @param monitor 
+     * @throws Exception 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) {
+    private void initialize(IProgressMonitor monitor) throws Exception {
         
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
@@ -62,7 +65,6 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
             return;
         }
         
-        try {
             String filepath=getParameters().get( "file" );
             logger.debug("Filename is: "+ filepath);
 
@@ -88,15 +90,16 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
             SDFileIndex sdfIndex = moltable.createSDFIndex( path);
             moleculesmodel = new SDFIndexEditorModel(sdfIndex);
             moltable.parseProperties( moleculesmodel );
+            
+            //Verify we have inchi for all
+            for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
+                InChI readInchi = moleculesmodel.getPropertyFor( i, INCHI_PROPERTY_KEY );
+                if (readInchi==null)
+                    throw new DSException("Not all molecules in DB has inchi calculated");
+            }
 
-            logger.debug("Loaded SDF index successfully. No mols: " + 
+            logger.debug("Loaded SDF index with properties successfully. No mols: " + 
                          moleculesmodel.getNumberOfMolecules());
-
-        } catch ( Exception e1 ) {
-            e1.printStackTrace();
-            setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
-            return;
-        }
 
     }
 
@@ -113,13 +116,16 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         List<ITestResult> results=new ArrayList<ITestResult>();
                 
         //Read database file if not already done that
-        if (moleculesmodel==null)
+        try {
+            if (moleculesmodel==null)
                 initialize(monitor);
+        } catch ( Exception e1 ) {
+            setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
+        }
 
         if (getTestErrorMessage().length()>1){
             return results;
         }
-            
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         
@@ -133,58 +139,35 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         //Start by searching for inchiKey
         //================================
         String molInchiKey;
+        String molInchi;
         try {
             molInchiKey = cdkmol.getInChIKey( 
                                      IMolecule.Property.USE_CACHED_OR_CALCULATED  );
+            molInchi = cdkmol.getInChI(
+                                       IMolecule.Property.USE_CACHED_OR_CALCULATED  );
         } catch ( BioclipseException e ) {
             return returnError( "Could not create InchiKey", e.getMessage() );
         }
 
         logger.debug( "Inchikey to search for: " + molInchiKey);
 
-
-        List<Integer> inchikeyMatches=new ArrayList<Integer>();
         //Search the index for this InchiKey
         for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
-            String readInchi = moleculesmodel.getPropertyFor( i, "inchi.key.property.name" );
-            if (molInchiKey.equals( readInchi )){
-                //InchiKey MATCH
-                inchikeyMatches.add( i );
-            }
-        }
-        
-        //If no matches, fall through and return the empty list
-        
-        //If one match, return it
-        if (inchikeyMatches.size()==1){
-            ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( inchikeyMatches.get( 0 ) );
-            ExternalMoleculeMatch match = new ExternalMoleculeMatch(matchmol);
-            results.add( match );
-        }
+             InChI readInchi = moleculesmodel.getPropertyFor( i, INCHI_PROPERTY_KEY );
+             //Null check not required since verified in initialize()
 
-        //More than one match, try inchi on them
-        else if (inchikeyMatches.size()>1){
-            //Search by inchi (Maybe only do this part?)
-            //================================
-            String molInchi;
-            try {
-                molInchi = cdkmol.getInChI(
-                                        IMolecule.Property.USE_CACHED_OR_CALCULATED  );
-            } catch ( BioclipseException e ) {
-                return returnError( "Could not create Inchi", e.getMessage() );
-            }
-
-            logger.debug( "Inchi to search for: " + molInchi);
-            
-            for (Integer i : inchikeyMatches){
-                String readInchi = moleculesmodel.getPropertyFor( i, "inchi.property.name" );
-                if (molInchi.equals( readInchi )){
-                    //Inchi MATCH
+             if (molInchiKey.equals( readInchi.getKey() )){
+                if (molInchi.equals( readInchi.getValue() )){
                     ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
                     ExternalMoleculeMatch match = new ExternalMoleculeMatch(matchmol);
                     results.add( match );
                 }
             }
+
+             //TODO: check how much this check slows down, probably not much
+             if (monitor.isCanceled())
+                 return returnError( "Cancelled","");
+
         }
         
         return results;

@@ -10,63 +10,57 @@
  ******************************************************************************/
 package net.bioclipse.ds.dblookup.impl;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
 import net.bioclipse.cdk.ui.sdfeditor.business.SDFileIndex;
-import net.bioclipse.core.ResourcePathTransformer;
+import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractWarningTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.inchi.InChI;
 
 
 /**
- * A test that takes a 2 column file with toxicophores as input<br>
- * Col 1 = smarts (toxicophores)<br>
- * Col 2 = name of toxicophore<br>
+ * A test that looks up nearest neighbours a database (SDF) with CDK 
+ * fingerprints and Tanimoto distance.
+ * 
  * @author ola
  *
  */
 public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(DBNearestNeighborTest.class);
+    private static final String FP_PROPERTY_KEY="net.bioclipse.cdk.fingerprint";
+
+    //Instance variables, set up by initialize()
     private SDFileIndex sdfIndex;
-
-
+    private SDFIndexEditorModel moleculesmodel;
+    private float tanimoto;
+    
 
     /**
      * Read database file into memory
      * @param monitor 
+     * @throws IOException 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) throws DSException {
+    private void initialize(IProgressMonitor monitor) throws Exception{
 
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
@@ -74,32 +68,28 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             return;
         }
 
-        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
-
         String filepath=getParameters().get( "file" );
         logger.debug("File parameter is: "+ filepath);
 
-        String tanimoto=getParameters().get( "distance.tanimoto" );
-        logger.debug("NearestTest tanimoto parameter is : "+ tanimoto);
+        String tanimotoString=getParameters().get( "distance.tanimoto" );
+        logger.debug("NearestTest tanimoto parameter is : "+ tanimotoString);
 
         //Assert parameters are present
         if (filepath==null)
             throw new DSException("No file provided for DBNearestNeighbourTest: " 
                                   + getId());
-        if (tanimoto==null)
+        if (tanimotoString==null)
             throw new DSException("No tanimoto distance provided for " +
             		"DBNearestNeighbourTest: " + getId());
 
-        //Read the file
+        //Parse tanimoto string into a Float
+        tanimoto=Float.parseFloat( tanimotoString );
+
+        //Read the SDFile
         String path="";
-        try {
             URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).
                                              getEntry(filepath));
             path=url2.getFile();
-        } catch ( IOException e1 ) {
-            e1.printStackTrace();
-            return;
-        }
 
         //File could not be read
         if ("".equals( path )){
@@ -107,14 +97,26 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
         }
 
         logger.debug( "File path: " + path );
-//        sdfIndex = cdk.createSDFIndex( path);
 
-//        logger.debug("Loaded SDF index successfully NOT implemented. No mols: " + sdfIndex.size());
+        IMoleculeTableManager moltable = net.bioclipse.cdk.ui.sdfeditor.Activator.getDefault()
+        .getMoleculeTableManager();
 
-        //TODO: load property from file to index
+        //Read index and parse properties
+        SDFileIndex sdfIndex = moltable.createSDFIndex( path);
+        moleculesmodel = new SDFIndexEditorModel(sdfIndex);
+        moltable.parseProperties( moleculesmodel );
 
-        setTestErrorMessage( "Not implemented. ");
-        
+        logger.debug("Loaded SDF index with propertisuccessfully. No mols: " + 
+                     moleculesmodel.getNumberOfMolecules());
+
+        //Verify we have inchi for all
+        for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
+            BitSet fp = moleculesmodel.getPropertyFor( i, FP_PROPERTY_KEY );
+            if (fp==null)
+                throw new DSException("Not all molecules in DB have Fingerprint" +
+                		                  " calculated");
+        }
+
     }
 
     public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
@@ -127,12 +129,11 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
         List<ITestResult> results=new ArrayList<ITestResult>();
 
         //Read database file if not already done that
-        if (sdfIndex==null){
-            try {
+        try {
+            if (moleculesmodel==null)
                 initialize(monitor);
-            } catch ( DSException e1 ) {
-                setTestErrorMessage( e1.getMessage() );
-            }
+        } catch ( Exception e1 ) {
+            setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
         }
 
         if (getTestErrorMessage().length()>1){
@@ -154,13 +155,28 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.
                                                   USE_CACHED_OR_CALCULATED );
             logger.debug( "FP to search for: " + molFP);
+
             //Search the index for this FP
-            //TODO: implement
+            for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
+                BitSet dbFP = moleculesmodel.getPropertyFor( i, FP_PROPERTY_KEY);
+                //Null check not required since verified in initialize()
 
-            //TODO: come up with better serialization than the default java serialization of FP
+                float calcTanimoto = cdk.calculateTanimoto( dbFP, molFP );
+                if (calcTanimoto<tanimoto){
+                    //HIT
+                    ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
+                    ExternalMoleculeMatch match = new ExternalMoleculeMatch(matchmol);
+                    results.add( match );
+                }
 
-        } catch ( BioclipseException e ) {
-            return returnError( "Unable to create CDKMolceule" , e.getMessage());
+                //TODO: check how much this check slows down, probably not much
+                if (monitor.isCanceled())
+                    return returnError( "Cancelled","");
+
+            }
+            
+        } catch ( Exception e ) {
+            return returnError( "Test failed: " , e.getMessage());
         }
 
         return results;
