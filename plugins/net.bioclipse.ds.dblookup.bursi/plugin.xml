@@ -8,7 +8,7 @@
             id="dblookup.exact.bursi"
             name="BursiDB exact lookup"
             class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
-            icon="icons/test.gif">
+            icon="icons/db.gif">
             <resource name="file"
                   path="data/cas_withprops.sdf">
             </resource>
@@ -21,7 +21,7 @@
             id="dblookup.nearest.bursi"
             name="BursiDB nearest neighbour"
             class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
-            icon="icons/test.gif">
+            icon="icons/db.gif">
             <resource name="file"
                   path="data/cas_withprops.sdf">
             </resource>
