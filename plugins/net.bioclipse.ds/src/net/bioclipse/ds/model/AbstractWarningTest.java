@@ -19,6 +19,11 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
+/**
+ * An abstract base class for all test implementations.
+ * @author ola
+ *
+ */
 public abstract class AbstractWarningTest implements IDSTest{
 
     private String id;
@@ -122,7 +127,8 @@ public abstract class AbstractWarningTest implements IDSTest{
     
     protected List<ITestResult> returnError(String name, String errorMessage) {
 
-        ITestResult er=new ErrorResult(name, errorMessage);
+        ITestResult er=new SimpleResult(name, ITestResult.ERROR);
+        er.setDetailedMessage( errorMessage );
         List<ITestResult> trlist=new ArrayList<ITestResult>();
         trlist.add( er );
         return trlist;
