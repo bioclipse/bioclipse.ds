@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.bioclipse.cdk.domain.ISubStructure;
+import net.bioclipse.ds.Activator;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
@@ -33,31 +33,31 @@ public class TestRun implements ISubStructure{
     public static final int NOT_STARTED=0x1;
     public static final int RUNNING=0x2;
     public static final int FINISHED=0x3;
-    public static final int FINISHED_WITH_ERRORS=0x4;
+    public static final int ERROR=0x4;
+    public static final int EXCLUDED=0x5;
     
+    private static Image checkImg;
+    private static Image equalImg;
+    private static Image redCrossImg;
+    private static Image errorImg;
+    private static Image runningImg;
+    private static Image notrunImg;
+    private static Image excludedImg;
+
     private IDSTest test;
     private IEditorPart editor;
-    private List<ITestResult> matches;
+    private List<ITestResult> results;
     private int status;
-    private boolean excluded;
     
     
     public TestRun() {
         setStatus( NOT_STARTED );
-        excluded=false;
     }
     
     public TestRun(IEditorPart editor, IDSTest test) {
         this();
         this.editor=editor;
         this.test=test;
-    }
-
-    public boolean isExcluded() {
-        return excluded;
-    }
-    public void setExcluded( boolean excluded ) {
-        this.excluded = excluded;
     }
 
     public int getStatus() {
@@ -77,19 +77,19 @@ public class TestRun implements ISubStructure{
     
     
     public List<ITestResult> getMatches() {
-        return matches;
+        return results;
     }
     
     public void setMatches( List<ITestResult> matches ) {
-        this.matches = matches;
+        this.results = matches;
     }
 
     @Override
     public String toString() {
         String ret="TestRun: Editor=" + editor +", Test=" + test + ", Ststus=" 
                                                                   + getStatus();
-        if (matches!=null)
-            ret=ret +", matches="+ matches.size();
+        if (results!=null)
+            ret=ret +", matches="+ results.size();
         else
             ret=ret +", no matches";
         
@@ -97,7 +97,7 @@ public class TestRun implements ISubStructure{
     }
 
     public boolean hasMatches() {
-        if (matches!=null && matches.size()>0) return true;
+        if (results!=null && results.size()>0) return true;
         return false;
     }
 
@@ -131,10 +131,160 @@ public class TestRun implements ISubStructure{
         return java.awt.Color.YELLOW;
     }
 
-    public void addMatch( ITestResult result ) {
-        if (matches==null)
-            matches=new ArrayList<ITestResult>();
-        matches.add( result );
+    public void addResult( ITestResult result ) {
+        if (results==null)
+            results=new ArrayList<ITestResult>();
+        results.add( result );
+    }
+    
+    public Image getIcon(){
+        if (checkImg==null)
+            initIcons();
+        
+        if (status==FINISHED){
+            if (!hasMatches()){
+                return checkImg;
+            }
+            
+            //We have matches, calculate consensus
+            int consensus=getConsensusStatus();
+            if (consensus==ITestResult.POSITIVE)
+                return redCrossImg;
+            else if (consensus==ITestResult.NEGATIVE)
+                return checkImg;
+            else
+                return equalImg;
+            
+        }            
+        else if (status==ERROR){
+            return errorImg;
+        }
+        else if (status==RUNNING){
+            return runningImg;
+        }
+        else if (status==EXCLUDED){
+            return excludedImg;
+        }
+
+        return notrunImg;
+    }
+
+    /**
+     * Calculate a consensus result status for this testrun.
+     * Default impl is just a simple voting of all results.
+     * 
+     * TODO: Hook in custom calculation of consensus.
+     * 
+     * @return ITestResult.POSITIVE, ITestResult.NEGATIVE, 
+     * or ITestResult.INCLONCLUSIVE
+     */
+    private int getConsensusStatus() {
+
+        int numpos=0;
+        int numneg=0;
+        int numinc=0;
+        for (ITestResult res : results){
+            if (res.getResultStatus()==ITestResult.POSITIVE)
+                numpos++;
+            else if (res.getResultStatus()==ITestResult.NEGATIVE)
+                numneg++;
+            else if (res.getResultStatus()==ITestResult.INCONCLUSIVE)
+                numinc++;
+        }
+        
+        if (numpos>numneg)
+            return ITestResult.POSITIVE;
+        else if (numpos<numneg)
+            return ITestResult.NEGATIVE;
+        
+        return ITestResult.INCONCLUSIVE;
+    }
+    
+    public String getSuffix(){
+
+        if (status==FINISHED){
+
+            int numpos=0;
+            int numneg=0;
+            int numinc=0;
+            int numerr=0;
+            for (ITestResult res : results){
+                if (res.getResultStatus()==ITestResult.POSITIVE)
+                    numpos++;
+                else if (res.getResultStatus()==ITestResult.NEGATIVE)
+                    numneg++;
+                else if (res.getResultStatus()==ITestResult.INCONCLUSIVE)
+                    numinc++;
+                else if (res.getResultStatus()==ITestResult.ERROR)
+                    numerr++;
+            }
+
+            String pospart="";
+            String negpart="";
+            String incpart="";
+            String errpart="";
+            if (numpos>0)
+                pospart=numpos + " pos";
+            if (numneg>0)
+                negpart=numneg + " neg";
+            if (numinc>0)
+                incpart=numinc + " inconcl";
+            if (numerr>0)
+                errpart=numerr + " neg";
+
+            //Add a comma after pospart if any of the trailing has results
+            if (numpos>0){
+                if (numneg>0 || numinc>0 || numerr>0)
+                    pospart=pospart+", ";
+            }
+            //Add a comma after negpart if any of the trailing has results
+            if (numneg>0){
+                if (numinc>0 || numerr>0)
+                    negpart=negpart+", ";
+            }
+            //Add a comma after incpart if any of the trailing has results
+            if (numinc>0){
+                if (numerr>0)
+                    incpart=incpart+", ";
+            }
+            
+            if (numpos>0 || numneg>0 || numinc>0 || numerr>0)
+                return " [" + pospart + negpart + incpart + errpart +"]";
+            else return "";
+            
+        }
+
+        else if (status==RUNNING){
+            return " [running]";
+        }
+
+        else if (status==EXCLUDED){
+            return " [excluded]";
+        }
+
+        else if (status==ERROR){
+            if (getTest().getTestErrorMessage()!=null 
+                    && getTest().getTestErrorMessage().length()>0){
+                return " [" + getTest().getTestErrorMessage() +" ]";
+            }
+            else
+                return " [Unknown error]";
+        }
+
+        //Else, no suffix
+        return "";
+        
+    }
+
+    private void initIcons() {
+        
+        checkImg=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
+        redCrossImg=Activator.getImageDecriptor( "icons/x-red.gif" ).createImage();
+        equalImg=Activator.getImageDecriptor( "icons/equal.gif" ).createImage();
+        errorImg=Activator.getImageDecriptor( "icons/fatalerror.gif" ).createImage();
+        runningImg=Activator.getImageDecriptor( "icons/running.gif" ).createImage();
+        notrunImg=Activator.getImageDecriptor( "icons/box-q.gif" ).createImage();
+        excludedImg=Activator.getImageDecriptor( "/icons/deactivated.gif" ).createImage();
     }
 
 }
