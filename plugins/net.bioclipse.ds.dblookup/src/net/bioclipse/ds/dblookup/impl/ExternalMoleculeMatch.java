@@ -22,8 +22,9 @@ public class ExternalMoleculeMatch extends SimpleResult{
 
     private ICDKMolecule matchedMolecule;
     
-    public ExternalMoleculeMatch(ICDKMolecule matchedMolecule) {
-        super();
+    public ExternalMoleculeMatch(String name, ICDKMolecule matchedMolecule, 
+                                 int status) {
+        super(name,status);
         this.matchedMolecule = matchedMolecule;
     }
 

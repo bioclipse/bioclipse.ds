@@ -47,6 +47,7 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
 
     private static final Logger logger = Logger.getLogger(DBNearestNeighborTest.class);
     private static final String FP_PROPERTY_KEY="net.bioclipse.cdk.fingerprint";
+    private static final String CONSLUSION_PROPERTY_KEY="Ames test categorisation";
 
     //Instance variables, set up by initialize()
     private SDFileIndex sdfIndex;
@@ -115,6 +116,13 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
             if (fp==null)
                 throw new DSException("Not all molecules in DB have Fingerprint" +
                 		                  " calculated");
+            
+            String amesCategor = moleculesmodel.getPropertyFor(
+                                                               i, CONSLUSION_PROPERTY_KEY );
+            if (amesCategor==null)
+                throw new DSException("Not all molecules in DB has AMES " +
+                "test categorization property.");
+
         }
 
     }
@@ -165,8 +173,14 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
                 if (calcTanimoto<tanimoto){
                     //HIT
                     ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
-                    ExternalMoleculeMatch match = new ExternalMoleculeMatch(matchmol);
+                    String amesCat = moleculesmodel.getPropertyFor( i, CONSLUSION_PROPERTY_KEY);
+                    String molname="Molecule " + i;
+                    int concl=getConclusion(amesCat);
+                    ExternalMoleculeMatch match = 
+                        new ExternalMoleculeMatch(molname, matchmol, concl);
                     results.add( match );
+                
+                
                 }
 
                 //TODO: check how much this check slows down, probably not much
@@ -181,5 +195,18 @@ public class DBNearestNeighborTest extends AbstractWarningTest implements IDSTes
 
         return results;
     }
+    
+    private int getConclusion( String amesCat ) {
+
+        if (amesCat.equals( "mutagen" ))
+            return ITestResult.POSITIVE;
+        else if (amesCat.equals( "nonmutagen" ))
+            return ITestResult.NEGATIVE;
+
+        logger.error("Ames test could not parse categorization from SDFile. " +
+            "Result set to INCONCLUSIVE");
+        return ITestResult.INCONCLUSIVE;
+    }
+
 
 }

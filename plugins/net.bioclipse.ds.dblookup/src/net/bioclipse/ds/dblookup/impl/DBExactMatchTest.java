@@ -44,6 +44,7 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
     private static final Logger logger = Logger.getLogger(DBExactMatchTest.class);
     
     private static final String INCHI_PROPERTY_KEY="net.bioclipse.cdk.InChI";
+    private static final String CONSLUSION_PROPERTY_KEY="Ames test categorisation";
 
     /**
      * This is the cached model of the entries in the SDFile with properties
@@ -95,11 +96,18 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 InChI readInchi = moleculesmodel.getPropertyFor( i, INCHI_PROPERTY_KEY );
                 if (readInchi==null)
-                    throw new DSException("Not all molecules in DB has inchi calculated");
+                    throw new DSException("Not all molecules in " +
+                    		                  "DB has inchi calculated");
+
+                String amesCategor = moleculesmodel.getPropertyFor(
+                                                   i, CONSLUSION_PROPERTY_KEY );
+                if (amesCategor==null)
+                    throw new DSException("Not all molecules in DB has AMES " +
+                    		"test categorization property.");
             }
 
-            logger.debug("Loaded SDF index with properties successfully. No mols: " + 
-                         moleculesmodel.getNumberOfMolecules());
+            logger.debug("Loaded SDF index with properties successfully. " +
+            		         "No mols: " + moleculesmodel.getNumberOfMolecules());
 
     }
 
@@ -159,7 +167,11 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
              if (molInchiKey.equals( readInchi.getKey() )){
                 if (molInchi.equals( readInchi.getValue() )){
                     ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
-                    ExternalMoleculeMatch match = new ExternalMoleculeMatch(matchmol);
+                    String amesCat = moleculesmodel.getPropertyFor( i, CONSLUSION_PROPERTY_KEY);
+                    String molname="Molecule " + i;
+                    int concl=getConclusion(amesCat);
+                    ExternalMoleculeMatch match = 
+                        new ExternalMoleculeMatch(molname, matchmol, concl);
                     results.add( match );
                 }
             }
@@ -172,6 +184,18 @@ public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
         
         return results;
         
+    }
+
+    private int getConclusion( String amesCat ) {
+
+        if (amesCat.equals( "mutagen" ))
+            return ITestResult.POSITIVE;
+        else if (amesCat.equals( "nonmutagen" ))
+            return ITestResult.NEGATIVE;
+
+        logger.error("Ames test could not parse categorization from SDFile. " +
+        		"Result set to INCONCLUSIVE");
+        return ITestResult.INCONCLUSIVE;
     }
 
 
