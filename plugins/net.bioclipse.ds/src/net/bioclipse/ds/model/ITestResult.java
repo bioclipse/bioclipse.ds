@@ -10,6 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import org.eclipse.swt.graphics.Image;
+
 import net.bioclipse.cdk.domain.ISubStructure;
 
 
@@ -24,7 +26,8 @@ public interface ITestResult extends ISubStructure{
     //The possible result statuses
     public static final int POSITIVE=0x1;
     public static final int NEGATIVE=0x2;
-    public static final int INCLONCLUSIVE=0x3;
+    public static final int INCONCLUSIVE=0x3;
+    public static final int ERROR=0x4;
 
     
     /**
@@ -40,10 +43,14 @@ public interface ITestResult extends ISubStructure{
      * @return
      */
     public TestRun getTestRun();
-
     public void setTestRun( TestRun testRun );
     
     public int getResultStatus();
     public void setResultStatus(int resultStatus);
+
+    public Image getIcon();
+
+    public String getDetailedMessage();
+    public void setDetailedMessage( String detailedMessage );
 
 }
