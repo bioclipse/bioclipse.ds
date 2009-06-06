@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.model;
+package net.bioclipse.ds.business;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.impl.DSException;
 
 import org.apache.log4j.Logger;
