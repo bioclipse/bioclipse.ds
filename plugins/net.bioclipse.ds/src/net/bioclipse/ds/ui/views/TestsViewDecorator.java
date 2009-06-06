@@ -1,9 +1,7 @@
 package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.Activator;
-import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
 import org.eclipse.jface.viewers.ILabelDecorator;
@@ -28,32 +26,19 @@ public class TestsViewDecorator implements ILabelDecorator {
                     && dstest.getTestErrorMessage().length()>1){
                 if (cachedErrorInDSTest==null){
                     cachedErrorInDSTest=Activator.
-                    getImageDecriptor( "/icons2/cancel2.png" ).createImage();
+                    getImageDecriptor( "/icons/fatalerror.gif" ).createImage();
                 }
                 toReturn = cachedInactiveDSTest;
             }
 
-            //Inactive test
-            else {
-                if (cachedInactiveDSTest==null){
-                    cachedInactiveDSTest=Activator.
-                    getImageDecriptor( "/icons2/box-q_dis.gif" ).createImage();
-                }
-                toReturn = cachedInactiveDSTest;
-            }
         }
         
-        //TestRun has error -> decorate
+        //TestRun defines its own icon
         else if ( element instanceof TestRun ) {
             TestRun tr = (TestRun) element;
-            if (tr.getTest().getTestErrorMessage().length()>1){
-                if (cachedErrorInDSTest==null){
-                    cachedErrorInDSTest=Activator.
-                    getImageDecriptor( "/icons2/cancel2.png" ).createImage();
-                }
-                toReturn=cachedErrorInDSTest;
-            }
+            toReturn = tr.getIcon();
         }
+        
         return toReturn;
     }
 
@@ -65,60 +50,29 @@ public class TestsViewDecorator implements ILabelDecorator {
                     && dstest.getTestErrorMessage().length()>1){
                 return text + " [" + dstest.getTestErrorMessage() + "]";
             }
+            else return text;
         }
 
-        //Decorate with no results and no errors
+        //TestRun provides its own suffix
         else if ( element instanceof TestRun ) {
             TestRun tr = (TestRun) element;
-            if (tr.getTest().getTestErrorMessage().length()>1){
-                return text + " [" + tr.getTest().getTestErrorMessage() + "]";
-            }
-            if (tr.hasMatches()){
-                int hits=0;
-                int errors=0;
-                for (ITestResult hit : tr.getMatches()){
-                    if (!( hit instanceof ErrorResult )) {
-                        hits++;
-                    }else{
-                        errors++;
-                    }
-                }
-                if (hits>0 && errors<=0)
-                    return tr.getTest().getName() + " [" + hits+" hits]";
-                else if (hits>0 && errors>0)
-                    return tr.getTest().getName() + " [" + hits+" hits, " + errors + " errors]";
-                else if (hits<=0 && errors>0)
-                    return tr.getTest().getName() + " [" + errors + " errors]";
-
-            }
-
+            return text + tr.getSuffix();
         }
 
         return null;
     }
 
     public void addListener( ILabelProviderListener listener ) {
-
-        // TODO Auto-generated method stub
-
     }
 
     public void dispose() {
-
-        // TODO Auto-generated method stub
-
     }
 
     public boolean isLabelProperty( Object element, String property ) {
-
-        // TODO Auto-generated method stub
         return false;
     }
 
     public void removeListener( ILabelProviderListener listener ) {
-
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.bioclipse.ds.ui.views;
 
-import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 

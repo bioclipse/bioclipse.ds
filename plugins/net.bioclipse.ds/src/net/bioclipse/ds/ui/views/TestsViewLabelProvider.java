@@ -11,88 +11,46 @@
 package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.Activator;
-import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IColorProvider;
-import org.eclipse.jface.viewers.IDecoration;
-import org.eclipse.jface.viewers.IFontProvider;
-import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class TestsViewLabelProvider implements ILabelProvider, IColorProvider{
 
     public Image getImage( Object element ) {
 
-        ImageDescriptor desc=null;
-
+        //ITestResults define their own icons
         if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
-            if ( match instanceof ErrorResult ) {
-                desc=Activator.getImageDecriptor( "icons2/file_del.gif" );
-            }
-            else if (match.getTestRun().getStatus()==TestRun.FINISHED || 
-                    match.getTestRun().getStatus()==TestRun.FINISHED_WITH_ERRORS){
-                if (match.getTestRun().getMatches().size()>0){
-                    desc=Activator.getImageDecriptor( "icons2/lightning.png" );
-                }
-                else{
-                    desc=Activator.getImageDecriptor( "icons2/check.png" );
-                }
-            }
+                return match.getIcon();
         }
         else if ( element instanceof IDSTest ) {
             IDSTest test = (IDSTest)element;
             try{
-                desc=Activator.imageDescriptorFromPlugin( test.getPluginID(), test.getIcon() );
+                return Activator.imageDescriptorFromPlugin( 
+                     test.getPluginID(), test.getIcon() ).createImage();
             }catch (Exception e){
-                desc=null;
             }
         }
         else if ( element instanceof TestRun ) {
-
             TestRun run = (TestRun) element;
-            if (run.getStatus()==TestRun.FINISHED){
-                //If we have matches, test has failed
-                if (run.hasMatches()){
-                    desc=Activator.getImageDecriptor( "icons2/warning16.gif" );
-                }
-
-                //If not, all is well, no matches
-                else{
-                    desc=Activator.getImageDecriptor( "icons2/check.png" );
-                }
-            }
-            
-            else if (run.getStatus()==TestRun.FINISHED_WITH_ERRORS){
-                desc=Activator.getImageDecriptor( "icons2/delete.gif" );
-            }
-            else if (run.getStatus()==TestRun.RUNNING){
-                desc=Activator.getImageDecriptor( "icons2/refresh2.png" );
-            }
-            else{
-                desc=Activator.getImageDecriptor( "icons2/box-q.gif" );
-            }
-
+            return run.getIcon();
         }
 
-        if (desc==null)
-            return null;
-
-        return desc.createImage();
+        return null;
     }
 
     public String getText( Object element ) {
@@ -127,12 +85,27 @@ public class TestsViewLabelProvider implements ILabelProvider, IColorProvider{
         return null;
     }
 
+    /**
+     * The color of the text in the treeviewer
+     */
     public Color getForeground( Object element ) {
         if ( element instanceof IDSTest ) {
-//            IDSTest dst = (IDSTest) element;
-//            if (dst.isExcluded());
+            IDSTest dst = (IDSTest) element;
+            if (dst.isExcluded());
                 return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
         }
+        //Decorate with no results and no errors
+        else if ( element instanceof TestRun ) {
+            TestRun tr = (TestRun) element;
+            if (tr.getTest().getTestErrorMessage().length()>1){
+                return Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+            }
+            else if (tr.getStatus()==TestRun.EXCLUDED){
+                return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+                
+            }
+        }
+
         return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
     }
 
