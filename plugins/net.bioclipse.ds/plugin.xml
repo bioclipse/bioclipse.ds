@@ -14,7 +14,7 @@
       <view
             category="net.bioclipse.ds.views"
             class="net.bioclipse.ds.ui.views.TestsView"
-            icon="icons2/warning16.gif"
+            icon="icons2/poll.gif"
             id="net.bioclipse.ds.ui.views.TestsView"
             name="Tests View">
       </view>
@@ -34,5 +34,7 @@
             name="Warning System">
       </perspective>
    </extension-->
+
+   
 
 </plugin>
