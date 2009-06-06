@@ -10,23 +10,21 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import net.bioclipse.cdk.domain.AtomContainerSelection;
-import net.bioclipse.cdk.domain.CDKMoleculePropertySource;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
+/**
+ * A base class for results with a name, a parent testrun, and a status
+ * @author ola
+ *
+ */
 public class SimpleResult implements ITestResult{
 
     private TestRun testRun;
     private String name;
+    private int resultStatus;
     
     public TestRun getTestRun() {
         return testRun;
@@ -63,10 +61,29 @@ public class SimpleResult implements ITestResult{
     }
 
     /**
-     * Yellow substructure color by default. Subclasses may override.
+     * Red for positive, grren for negative, and yellow else. Sunclasses 
+     * may override and/or provide a color per atom.
      */
     public java.awt.Color getHighlightingColor( IAtom atom ) {
-        return java.awt.Color.YELLOW;
+        
+        if (resultStatus==ITestResult.POSITIVE)
+            return java.awt.Color.RED;
+        if (resultStatus==ITestResult.NEGATIVE)
+            return java.awt.Color.GREEN;
+        else
+            return java.awt.Color.YELLOW;
+    }
+
+    
+    public int getResultStatus() {
+    
+        return resultStatus;
+    }
+
+    
+    public void setResultStatus( int resultStatus ) {
+    
+        this.resultStatus = resultStatus;
     }
 
 }

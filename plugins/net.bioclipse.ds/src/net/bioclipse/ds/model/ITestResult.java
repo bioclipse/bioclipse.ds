@@ -21,6 +21,11 @@ import net.bioclipse.cdk.domain.ISubStructure;
  */
 public interface ITestResult extends ISubStructure{
 
+    //The possible result statuses
+    public static final int POSITIVE=0x1;
+    public static final int NEGATIVE=0x2;
+    public static final int INCLONCLUSIVE=0x3;
+
     
     /**
      * The name of this match to be displayed in e.g. UI
@@ -37,5 +42,8 @@ public interface ITestResult extends ISubStructure{
     public TestRun getTestRun();
 
     public void setTestRun( TestRun testRun );
+    
+    public int getResultStatus();
+    public void setResultStatus(int resultStatus);
 
 }
