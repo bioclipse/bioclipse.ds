@@ -23,14 +23,12 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
-import net.bioclipse.ds.model.ErrorResult;
+import net.bioclipse.ds.business.TestHelper;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.TestHelper;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
-import net.bioclipse.jobs.BioclipseUIJob;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
@@ -115,7 +113,13 @@ public class TestsView extends ViewPart implements IPartListener{
         viewer.setContentProvider(new TestsViewContentProvider());
         viewer.setLabelProvider(new DecoratingLabelProvider(new TestsViewLabelProvider(),new TestsViewDecorator()));
         viewer.setSorter(new ViewerSorter());
-//        viewer.addFilter( new NoErrorsFilter() );
+        
+        viewer.addSelectionChangedListener( new ISelectionChangedListener(){
+            public void selectionChanged( SelectionChangedEvent event ) {
+                updateActionStates();
+            }
+            
+        });
 
         //Init with available tests
         viewer.setInput(TestHelper.readTestsFromEP().toArray());
@@ -139,6 +143,20 @@ public class TestsView extends ViewPart implements IPartListener{
         getSite().getWorkbenchWindow().getPartService().addPartListener(this);
         
         getSite().setSelectionProvider(viewer);
+        
+        //If editor is open, react on it
+        if (getSite()==null) return;
+        if (getSite().getWorkbenchWindow()==null) return;
+        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
+
+        IEditorPart openEditor = getSite().getWorkbenchWindow()
+                             .getActivePage().getActiveEditor();
+        if (openEditor!=null){
+            partActivated( openEditor );
+            if (isAutorun()){
+//                doRunAllTests();
+            }
+        }
 
     }
 
@@ -207,9 +225,9 @@ public class TestsView extends ViewPart implements IPartListener{
             runAction.setEnabled( false );
         
         if (isAutorun()){
-            autoRunAction.setImageDescriptor( Activator.getImageDecriptor( "icons2/fastforward_dis2.png" ));
+            autoRunAction.setImageDescriptor( Activator.getImageDecriptor( "icons/fastforward_dis2.png" ));
         }else{
-            autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/fastforward.png" ));
+            autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons/fastforward.png" ));
         } 
         
         boolean testSelected=false;
@@ -240,8 +258,8 @@ public class TestsView extends ViewPart implements IPartListener{
         runAction.setText("Run all Tests");
         runAction.setToolTipText("Runs the Decision Support Tests " +
         		"on the active molecule(s)");
-        runAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/smallRun.gif" ));
-        runAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons2/smallRun_dis.gif" ));
+        runAction.setImageDescriptor(Activator.getImageDecriptor( "icons/smallRun.gif" ));
+        runAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons/smallRun_dis.gif" ));
 
         autoRunAction = new Action() {
             public void run() {
@@ -257,8 +275,8 @@ public class TestsView extends ViewPart implements IPartListener{
         };
         autoRunAction.setText("Toggle AutoTest");
         autoRunAction.setToolTipText("Turns on/off automatic running of tests on structural changes");
-        autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/fastforward.png" ));
-        autoRunAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons2/fastforward_dis.png" ));
+        autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons/fastforward.png" ));
+        autoRunAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons/fastforward_dis2.png" ));
 
         clearAction = new Action() {
             public void run() {
@@ -267,7 +285,7 @@ public class TestsView extends ViewPart implements IPartListener{
         };
         clearAction.setText("Clear all Tests");
         clearAction.setToolTipText("Clear all active tests");
-        clearAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/broom.png" ));
+        clearAction.setImageDescriptor(Activator.getImageDecriptor( "icons/broom.png" ));
 
         excludeAction = new Action() {
             public void run() {
@@ -276,18 +294,18 @@ public class TestsView extends ViewPart implements IPartListener{
         };
         excludeAction.setText("Exclude test");
         excludeAction.setToolTipText("Exclude selected test(s)");
-        excludeAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/item_delete.gif" ));
-        excludeAction.setDisabledImageDescriptor(Activator.getImageDecriptor( "icons2/item_delete_dis.gif" ));
+        excludeAction.setImageDescriptor(Activator.getImageDecriptor( "icons/item_delete.gif" ));
+        excludeAction.setDisabledImageDescriptor(Activator.getImageDecriptor( "icons/item_delete_dis.gif" ));
 
         includeAction = new Action() {
             public void run() {
-                doExcludeSelectedTests();
+                doIncludeSelectedTests();
             }
         };
         includeAction.setText("Include test");
         includeAction.setToolTipText("Include selected test(s)");
-        includeAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/item_add.gif" ));
-        includeAction.setDisabledImageDescriptor(Activator.getImageDecriptor( "icons2/item_add_dis.gif" ));
+        includeAction.setImageDescriptor(Activator.getImageDecriptor( "icons/item_add.gif" ));
+        includeAction.setDisabledImageDescriptor(Activator.getImageDecriptor( "icons/item_add_dis.gif" ));
 
         
         collapseAllAction = new Action() {
@@ -297,7 +315,7 @@ public class TestsView extends ViewPart implements IPartListener{
         };
         collapseAllAction.setText("Collapse all");
         collapseAllAction.setToolTipText("Collapse all tests");
-        collapseAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/collapseall.gif" ));
+        collapseAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons/collapseall.gif" ));
 
         expandAllAction = new Action() {
             public void run() {
@@ -306,7 +324,7 @@ public class TestsView extends ViewPart implements IPartListener{
         };
         expandAllAction.setText("Expand all");
         expandAllAction.setToolTipText("Expand all tests to reveal hits");
-        expandAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/expandall.gif" ));
+        expandAllAction.setImageDescriptor(Activator.getImageDecriptor( "icons/expandall.gif" ));
 
         refreshAction = new Action() {
             public void run() {
@@ -315,10 +333,28 @@ public class TestsView extends ViewPart implements IPartListener{
         };
         refreshAction.setText("Refresh");
         refreshAction.setToolTipText("Force a refresh of all tests' status");
-        refreshAction.setImageDescriptor(Activator.getImageDecriptor( "icons2/refresh2.png" ));
+        refreshAction.setImageDescriptor(Activator.getImageDecriptor( "icons/refresh2.png" ));
 
     }
     
+
+    protected void doIncludeSelectedTests() {
+
+        IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+        for (Object obj : sel.toList()){
+            if ( obj instanceof IDSTest ) {
+                IDSTest dstest = (IDSTest) obj;
+                dstest.setExcluded( false );
+                viewer.refresh(dstest);
+            }
+            else if ( obj instanceof TestRun ) {
+                TestRun testrun = (TestRun) obj;
+                testrun.setStatus( TestRun.NOT_STARTED);
+                viewer.refresh(testrun);
+            }
+        }
+        
+    }
 
     protected void doExcludeSelectedTests() {
 
@@ -327,10 +363,14 @@ public class TestsView extends ViewPart implements IPartListener{
             if ( obj instanceof IDSTest ) {
                 IDSTest dstest = (IDSTest) obj;
                 dstest.setExcluded( true );
+                viewer.refresh(dstest);
             }
             else if ( obj instanceof TestRun ) {
                 TestRun testrun = (TestRun) obj;
-                testrun.setExcluded( true );
+                testrun.setStatus( TestRun.EXCLUDED);
+                if (testrun.getMatches()!=null)
+                    testrun.getMatches().clear();
+                viewer.refresh(testrun);
             }
         }
         
@@ -404,12 +444,17 @@ public class TestsView extends ViewPart implements IPartListener{
 
             if (tr.getTest().getTestErrorMessage().length()<1){
 
-                logger.debug( "===== Testrun: " + tr + " started" );
-                tr.setStatus( TestRun.RUNNING );
-                viewer.refresh(tr);
-                viewer.setExpandedState( tr, true );
+                if (tr.getStatus()==TestRun.EXCLUDED){
+                    logger.debug( "===== Test: " + tr + " skipped since excluded.");
+                }
+                else{
+                    logger.debug( "===== Testrun: " + tr + " started" );
+                    tr.setStatus( TestRun.RUNNING );
+                    viewer.refresh(tr);
+                    viewer.setExpandedState( tr, true );
 
-                runTestAsJobs( mol, ds, tr ); 
+                    runTestAsJobs( mol, ds, tr ); 
+                }
             }
             else{
                 logger.debug("The test: " + tr.getTest() + " has an error so not run.");
@@ -454,24 +499,12 @@ public class TestsView extends ViewPart implements IPartListener{
                             logger.debug( "лл Job done: " + tr.getTest().getName() );
                             logger.debug( "лл Matches: " + matches.size());
 
-                            boolean hasErrors=false;
-
                             for (ITestResult result : matches){
-                                
-                                if ( result instanceof ErrorResult ) {
-                                    ErrorResult eres = (ErrorResult) result;
-                                    logger.debug("Test: " + tr + " returned error: " + eres.getName());
                                     result.setTestRun( tr );
-                                    hasErrors=true;
-                                }
-                                    result.setTestRun( tr );
-                                    tr.addMatch(result);
+                                    tr.addResult(result);
                             } 
                             tr.setMatches( matches );
-                            if (hasErrors==true)
-                                tr.setStatus( TestRun.FINISHED_WITH_ERRORS );
-                            else
-                                tr.setStatus( TestRun.FINISHED );
+                            tr.setStatus( TestRun.FINISHED );
 
                             logger.debug( "===== Testrun: " + tr + " finished" );
                             
@@ -662,6 +695,11 @@ public class TestsView extends ViewPart implements IPartListener{
             for (String testid : Activator.getDefault().getJavaManager().getTests()){
                 IDSTest test = ds.getTest( testid );
                 TestRun newTestRun=new TestRun(jcp,test);
+                if (test.getTestErrorMessage()!=null 
+                        && test.getTestErrorMessage().length()>0){
+                    newTestRun.setStatus( TestRun.ERROR );
+                }
+                    
                 newTestRuns.add( newTestRun );
             }
         } catch ( BioclipseException e ) {
