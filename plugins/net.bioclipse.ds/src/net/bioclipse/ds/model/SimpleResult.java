@@ -10,6 +10,9 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import net.bioclipse.ds.Activator;
+
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -22,10 +25,22 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
  */
 public class SimpleResult implements ITestResult{
 
+    private static Image pos_icon;
+    private static Image neg_icon;
+    private static Image incon_icon;
+    
     private TestRun testRun;
     private String name;
     private int resultStatus;
+    private String detailedMessage;
     
+    
+    public SimpleResult(String name, int resultStatus) {
+        super();
+        this.name = name;
+        this.resultStatus = resultStatus;
+    }
+
     public TestRun getTestRun() {
         return testRun;
     }
@@ -73,17 +88,46 @@ public class SimpleResult implements ITestResult{
         else
             return java.awt.Color.YELLOW;
     }
+    
+    public Image getIcon(){
+        if (pos_icon==null || neg_icon==null || incon_icon==null)
+            initIcons();
+        
+        if (resultStatus==ITestResult.POSITIVE)
+            return pos_icon;
+        if (resultStatus==ITestResult.NEGATIVE)
+            return neg_icon;
+        else
+            return incon_icon;
+    }
 
     
+    private void initIcons() {
+
+        pos_icon=Activator.getImageDecriptor( "icons/x-red.gif" ).createImage();
+        neg_icon=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
+        incon_icon=Activator.getImageDecriptor( "icons/equal.gif" ).createImage();
+    }
+
     public int getResultStatus() {
-    
         return resultStatus;
     }
 
     
     public void setResultStatus( int resultStatus ) {
-    
         this.resultStatus = resultStatus;
+    }
+
+    
+    public String getDetailedMessage() {
+    
+        return detailedMessage;
+    }
+
+    
+    public void setDetailedMessage( String detailedMessage ) {
+    
+        this.detailedMessage = detailedMessage;
     }
 
 }
