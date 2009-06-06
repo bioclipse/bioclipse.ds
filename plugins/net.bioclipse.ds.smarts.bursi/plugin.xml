@@ -6,7 +6,7 @@
       <!--test
             id="smarts.sample"
             name="Sample simple SMARTS"
-            icon="icons/test.gif"
+            icon="icons/form.gif"
             class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
             <resource name="file"
                   path="data/sample.txt">
@@ -15,7 +15,7 @@
       <test
             id="smarts.bursi"
             name="Bursi toxicophores"
-            icon="icons/test.gif"
+            icon="icons/form.gif"
             class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
@@ -24,7 +24,7 @@
       <!--test
             id="smarts.bursi.inclexcl"
             name="Bursi inclusive/exclusive toxicophores"
-            icon="icons/test.gif"
+            icon="icons/form.gif"
             class="net.bioclipse.ds.smarts.model.impl.SmartsInclusiveExclusiveTest">
             <resource name="file"
                   path="data/bursiApprovedInclExclCDKCorrected.txt">
