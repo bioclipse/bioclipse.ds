@@ -35,9 +35,9 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractWarningTest;
-import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.SimpleResult;
 import net.bioclipse.ds.model.impl.DSException;
 
 
@@ -229,19 +229,20 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                              "Smarts name='" + smartsName +"' with SMARTS='" + currentSmarts 
                              + "' is not a valid CDK smarts.");
                 LogUtils.debugTrace( logger, e );
-                results.add( new ErrorResult( 
-                                             "Smarts '" + currentSmarts 
-                                             + "' with name='"+ smartsName 
-                                             +"' is not a valid CDK smarts"
-                                             ,e.getMessage()));
+
+                //Create an error result and add it
+                SimpleResult res = new SimpleResult( 
+                                 "Smarts '" + currentSmarts 
+                                 + "' with name='"+ smartsName 
+                                 +"' is not a valid CDK smarts"
+                                 , ITestResult.ERROR);
+                res.setDetailedMessage( e.getMessage());
+                results.add( res );
                 noErr++;
             }
             
             if (status) {
                 noHits++;
-                //At least one match
-                SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
-
                 int nmatch = querytool.countMatches();
 
                 List<Integer> matchingAtoms=new ArrayList<Integer>();
@@ -256,9 +257,12 @@ public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
                 for (int aindex : matchingAtoms){
                     subAC.addAtom( ac.getAtom( aindex ) );
                 }
+
+                //Toxicophores are by definition positive
+                SmartsMatchingTestMatch match=new SmartsMatchingTestMatch(
+                                              smartsName, ITestResult.POSITIVE);
                 match.setAtomContainer( subAC );
                 match.setSmartsString( currentSmarts );
-                match.setSmartsName( smartsName);
                 
                 results.add( match );
 

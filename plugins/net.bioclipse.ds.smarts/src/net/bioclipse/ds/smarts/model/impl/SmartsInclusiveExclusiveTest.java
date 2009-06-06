@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
@@ -36,10 +35,9 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractWarningTest;
-import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.impl.DSException;
+import net.bioclipse.ds.model.SimpleResult;
 
 
 /**
@@ -248,11 +246,16 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                              + "' with name='" + smartName 
                              + "' is not a valid CDK smarts");
                 LogUtils.debugTrace( logger, e );
-                results.add( new ErrorResult( 
-                                             "InclSmarts '" + inclSmart
-                                             + "' with name='" + smartName 
-                                             + "' is not a valid CDK smarts"
-                                             ,e.getMessage()));
+                
+                //Create an error result and add it
+                SimpleResult res = new SimpleResult( 
+                                   "InclSmarts '" + inclSmart
+                                   + "' with name='" + smartName 
+                                   + "' is not a valid CDK smarts"
+                                   , ITestResult.ERROR);
+                res.setDetailedMessage( e.getMessage());
+                results.add( res );
+
                 noErr++;
             } 
             
@@ -267,11 +270,16 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                                  + "' with name='" + smartName 
                                  + "' is not a valid CDK smarts");
                     LogUtils.debugTrace( logger, e );
-                    results.add( new ErrorResult( 
-                                                 "ExclSmarts '" + exclSmart
-                                                 + "' with name='" + smartName 
-                                                 + "' is not a valid CDK smarts"
-                                                 ,e.getMessage()));
+                    
+                    //Create an error result and add it
+                    SimpleResult res = new SimpleResult( 
+                                       "ExclSmarts '" + exclSmart
+                                       + "' with name='" + smartName 
+                                       + "' is not a valid CDK smarts"
+                                       , ITestResult.ERROR);
+                    res.setDetailedMessage( e.getMessage());
+                    results.add( res );
+
                     noErr++;
                 } 
 
@@ -287,7 +295,6 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
             
             //If we have matches, take care of them
             if (status) {
-                SmartsMatchingTestMatch match=new SmartsMatchingTestMatch();
 
                 int nmatch = inclQuerytool.countMatches();
 
@@ -303,10 +310,14 @@ public class SmartsInclusiveExclusiveTest extends AbstractWarningTest implements
                 for (int aindex : matchingAtoms){
                     subAC.addAtom( ac.getAtom( aindex ) );
                 }
+                
+                
+                //Toxicophores are by definition positive
+                SmartsMatchingTestMatch match=new SmartsMatchingTestMatch(
+                                              smartName, ITestResult.POSITIVE);
                 match.setAtomContainer( subAC );
-
                 match.setSmartsString( inclSmart + " ; " + exclSmart );
-                match.setSmartsName( smartName);
+                
 
                 results.add( match );
                 noHits++;

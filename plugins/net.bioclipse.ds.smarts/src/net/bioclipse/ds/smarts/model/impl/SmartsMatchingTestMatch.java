@@ -12,10 +12,18 @@ package net.bioclipse.ds.smarts.model.impl;
 
 import net.bioclipse.ds.model.SubStructureMatch;
 
+/**
+ * A result that also holds a SMARTS string
+ * @author ola
+ *
+ */
 public class SmartsMatchingTestMatch extends SubStructureMatch{
 
+    public SmartsMatchingTestMatch(String name, int resultStatus) {
+        super( name, resultStatus );
+    }
+
     private String smartsString;
-    private String smartsName;
     
     public String getSmartsString() {
     
@@ -26,34 +34,5 @@ public class SmartsMatchingTestMatch extends SubStructureMatch{
         this.smartsString = smarts;
         
     }
-
-    public String getName() {
-        if (smartsName==null) return "NO SMARTS SET";
-        return smartsName;
-    }
-
-    public String getSmartsName() {
-    
-        return smartsName;
-    }
-
-    public void setSmartsName( String smartsName ) {
-    
-        this.smartsName = smartsName;
-    }
-
-//    @Override
-//    public String toString() {
-//
-//        String ret="SmartsMatchingTestMatch: Name=" + getName() + ", Smarts=" + getSmartsString() + 
-//        ", Matching atoms: ";
-//        
-//        for (int i : getMatchingAtoms()){
-//            ret=ret+ i + ",";
-//        }
-//
-//        return ret;
-//    }
-
 
 }
