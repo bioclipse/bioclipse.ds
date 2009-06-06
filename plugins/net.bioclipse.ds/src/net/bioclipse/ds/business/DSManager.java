@@ -11,22 +11,14 @@
 package net.bioclipse.ds.business;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.model.ErrorResult;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.TestHelper;
-import net.bioclipse.ds.model.impl.DSException;
-import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -92,26 +84,7 @@ public class DSManager implements IBioclipseManager {
                              throws BioclipseException{
 
         IDSTest test = getTest( testID );
-//        try{
-            returner.completeReturn( test.runWarningTest( mol, monitor));
-//        }catch (DSException e){
-//            List<ITestResult> ret=new ArrayList<ITestResult>();
-//            ret.add( new ErrorResult() );
-//            returner.completeReturn( ret );
-//        }
+        returner.completeReturn( test.runWarningTest( mol, monitor));
     }
-    
-//    public Map<String, List<ITestResult>> runAllTests( ICDKMolecule mol, 
-//                                         IProgressMonitor monitor ) 
-//                                         throws BioclipseException, DSException{
-//
-//        Map<String, List<ITestResult>> resmap=new HashMap<String, List<ITestResult>>();
-//        for (String testID : getTests()){
-//            List<ITestResult> res = runTest( testID, mol, monitor );
-//            resmap.put( testID, res);
-//        }
-//        return resmap;
-//    }
-//
 
 }
