@@ -13,10 +13,10 @@
       </category>
       <view
             category="net.bioclipse.ds.views"
-            class="net.bioclipse.ds.ui.views.TestsView"
-            icon="icons2/poll.gif"
-            id="net.bioclipse.ds.ui.views.TestsView"
-            name="Tests View">
+            class="net.bioclipse.ds.ui.views.DSView"
+            icon="icons/poll.gif"
+            id="net.bioclipse.ds.ui.views.DSView"
+            name="Decision Support">
       </view>
    </extension>
    <extension
