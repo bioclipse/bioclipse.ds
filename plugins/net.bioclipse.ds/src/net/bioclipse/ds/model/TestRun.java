@@ -86,8 +86,8 @@ public class TestRun implements ISubStructure{
 
     @Override
     public String toString() {
-        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Ststus=" 
-                                                                  + getStatus();
+        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Status=" 
+                + getStatus() + ", Test errormsg=" + getTest().getTestErrorMessage();
         if (results!=null)
             ret=ret +", matches="+ results.size();
         else
@@ -178,7 +178,7 @@ public class TestRun implements ISubStructure{
      * @return ITestResult.POSITIVE, ITestResult.NEGATIVE, 
      * or ITestResult.INCLONCLUSIVE
      */
-    private int getConsensusStatus() {
+    public int getConsensusStatus() {
 
         int numpos=0;
         int numneg=0;
