@@ -22,12 +22,14 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
     protected static final String NAME = "Name";
     protected static final String TEST = "Test";
     protected static final String ATOMS = "Atoms";
+    protected static final String STATUS = "Status";
 
     private Object SimplePropertiesTable[][] =
     {
             { NAME, new TextPropertyDescriptor(NAME,"Name")},
             { TEST, new TextPropertyDescriptor(TEST,"Test")},
-            { ATOMS, new TextPropertyDescriptor(ATOMS,"Matching atoms")}
+            { ATOMS, new TextPropertyDescriptor(ATOMS,"Matching atoms")},
+            { STATUS, new TextPropertyDescriptor(STATUS,"Status")},
     };
 
     public SubStructureMatchPropertySource(SubStructureMatch item) {
@@ -74,6 +76,15 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
             atoms=atoms.substring( 0, atoms.length()-2 );
         }
         addToValueMap(ATOMS,atoms);
+
+        if (item.getResultStatus()==ITestResult.POSITIVE)
+            addToValueMap(STATUS,"POSITIVE");
+        else if (item.getResultStatus()==ITestResult.NEGATIVE)
+            addToValueMap(STATUS,"NEGATIVE");
+        else if (item.getResultStatus()==ITestResult.INCONCLUSIVE)
+            addToValueMap(STATUS,"INCONCLUSIVE");
+        else if (item.getResultStatus()==ITestResult.ERROR)
+            addToValueMap(STATUS,"ERROR");
 
     }    
     
