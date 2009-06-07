@@ -24,7 +24,7 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
  * @author ola
  *
  */
-public abstract class AbstractWarningTest implements IDSTest{
+public abstract class AbstractDSTest implements IDSTest{
 
     private String id;
     private String name;
@@ -39,7 +39,7 @@ public abstract class AbstractWarningTest implements IDSTest{
      */
     private String testErrorMessage;
     
-    public AbstractWarningTest(){
+    public AbstractDSTest(){
         parameters=new HashMap<String, String>();
         excluded=false;
         testErrorMessage="";

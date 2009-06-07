@@ -16,11 +16,13 @@ public class SimpleResultPropertySource extends BasicPropertySource
 
     protected static final String NAME = "Name";
     protected static final String TEST = "Test";
+    protected static final String STATUS = "Status";
 
     private Object SimplePropertiesTable[][] =
     {
             { NAME, new TextPropertyDescriptor(NAME,"Name")},
             { TEST, new TextPropertyDescriptor(TEST,"Test")},
+            { STATUS, new TextPropertyDescriptor(STATUS,"Status")},
     };
 
     public SimpleResultPropertySource(SimpleResult item) {
@@ -44,6 +46,14 @@ public class SimpleResultPropertySource extends BasicPropertySource
 
         addToValueMap(NAME,item.getName());
         addToValueMap(TEST,item.getTestRun().getTest().getName());
+        if (item.getResultStatus()==ITestResult.POSITIVE)
+            addToValueMap(STATUS,"POSITIVE");
+        else if (item.getResultStatus()==ITestResult.NEGATIVE)
+            addToValueMap(STATUS,"NEGATIVE");
+        else if (item.getResultStatus()==ITestResult.INCONCLUSIVE)
+            addToValueMap(STATUS,"INCONCLUSIVE");
+        else if (item.getResultStatus()==ITestResult.ERROR)
+            addToValueMap(STATUS,"ERROR");
 
     }    
     
