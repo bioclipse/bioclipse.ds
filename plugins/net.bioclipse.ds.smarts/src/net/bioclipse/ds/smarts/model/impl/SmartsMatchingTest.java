@@ -34,7 +34,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
-import net.bioclipse.ds.model.AbstractWarningTest;
+import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.SimpleResult;
@@ -48,7 +48,7 @@ import net.bioclipse.ds.model.impl.DSException;
  * @author ola
  *
  */
-public class SmartsMatchingTest extends AbstractWarningTest implements IDSTest{
+public class SmartsMatchingTest extends AbstractDSTest implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(SmartsMatchingTest.class);
 
