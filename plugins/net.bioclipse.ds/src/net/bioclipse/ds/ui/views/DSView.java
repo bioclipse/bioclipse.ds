@@ -31,8 +31,16 @@ import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
 import org.apache.log4j.Logger;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -45,10 +53,17 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 
-public class TestsView extends ViewPart implements IPartListener{
+public class DSView extends ViewPart implements IPartListener{
 
-    private static final Logger logger = Logger.getLogger(TestsView.class);
+    private static final Logger logger = Logger.getLogger(DSView.class);
 
+    private static Image questImg;
+    private static Image warnImg;
+    private static Image crossImg;
+    private static Image checkImg;
+    private static Image wheelImg;
+
+    
     private TreeViewer viewer;
     private Action runAction;
 
@@ -86,11 +101,18 @@ public class TestsView extends ViewPart implements IPartListener{
     private Action autoRunAction;
     
     private boolean autorun;
+
+    //The currently shown image in consensusView 
+    private Image consensusImage;
+
+    private Text consensusText;
+
+    private Canvas consensusCanvas;
     
     /**
      * The constructor.
      */
-    public TestsView() {
+    public DSView() {
     }
 
     public List<BioclipseJob<List<ITestResult>>> getRunningJobs() {
@@ -109,11 +131,15 @@ public class TestsView extends ViewPart implements IPartListener{
      * to create the viewer and initialize it.
      */
     public void createPartControl(Composite parent) {
-        viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-        viewer.setContentProvider(new TestsViewContentProvider());
-        viewer.setLabelProvider(new DecoratingLabelProvider(new TestsViewLabelProvider(),new TestsViewDecorator()));
-        viewer.setSorter(new ViewerSorter());
         
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 1;
+        parent.setLayout(gridLayout);
+
+        viewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        viewer.setContentProvider(new DSViewContentProvider());
+        viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
+        viewer.setSorter(new ViewerSorter());
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
             public void selectionChanged( SelectionChangedEvent event ) {
                 updateActionStates();
@@ -121,6 +147,10 @@ public class TestsView extends ViewPart implements IPartListener{
             
         });
 
+        GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
+        viewer.getTree().setLayoutData(gridData);
+        
+        
         //Init with available tests
         viewer.setInput(TestHelper.readTestsFromEP().toArray());
 
@@ -130,9 +160,54 @@ public class TestsView extends ViewPart implements IPartListener{
         hookContextMenu();
         contributeToActionBars();
 
+        //Create the ConsensusSection at the bottom of View
+        Composite consensusComposite=new Composite(parent,SWT.BORDER);
+        GridData gridData2 = new GridData(GridData.FILL, GridData.END, true, false);
+        gridData2.heightHint=50;
+        consensusComposite.setLayoutData(gridData2);
+        GridLayout gridLayout2 = new GridLayout(2, false);
+        gridLayout2.marginLeft=0;
+        gridLayout2.marginWidth=0;
+        gridLayout2.marginBottom=10;
+        gridLayout2.marginTop=0;
+        gridLayout2.marginRight=0;
+        gridLayout2.marginHeight=0;
+        consensusComposite.setLayout(gridLayout2);
+
+        //Create components of consensusComposite
+        consensusText=new Text(consensusComposite,SWT.BORDER);
+        GridData gridData3 = new GridData(GridData.FILL, GridData.BEGINNING, true, true);
+        gridData3.heightHint=40;
+        consensusText.setLayoutData(gridData3);
+        
+        //Initialize and cache consensus images
+        questImg= Activator.getImageDecriptor( "icons48/question.png" ).createImage();
+        warnImg= Activator.getImageDecriptor( "icons48/warn.png" ).createImage();
+        crossImg= Activator.getImageDecriptor( "icons48/cross.png" ).createImage();
+        checkImg= Activator.getImageDecriptor( "icons48/check.png" ).createImage();
+        wheelImg= Activator.getImageDecriptor( "icons48/wheel.png" ).createImage();
+
+        //Start off with a question-image
+        consensusImage=questImg;
+        consensusCanvas = new Canvas(consensusComposite,SWT.NO_REDRAW_RESIZE);
+        consensusCanvas.addPaintListener(new PaintListener() {
+            public void paintControl(PaintEvent e) {
+             e.gc.drawImage(consensusImage,0,1);
+            }
+        });
+        
+        GridData gridData4 = new GridData(GridData.END, GridData.BEGINNING, false, false);
+        gridData4.widthHint=50;
+        gridData4.heightHint=50;
+        gridData4.minimumHeight=50;
+        gridData4.minimumWidth=50;
+        consensusCanvas.setLayoutData(gridData4);
+
+        updateConsensusView();
+        
+        //Initialize instance variables
         editorTestMap=new HashMap<IWorkbenchPart, List<TestRun>>();
         editorListenerMap=new HashMap<IWorkbenchPart, IPropertyChangeListener>();
-        
         runningJobs=new ArrayList<BioclipseJob<List<ITestResult>>>();
         
         setAutorun( true );
@@ -157,8 +232,93 @@ public class TestsView extends ViewPart implements IPartListener{
 //                doRunAllTests();
             }
         }
-
+        
     }
+
+    private void updateConsensusView() {
+
+        if (activeTestRuns==null){
+            consensusText.setText( "Not run"); 
+            consensusImage=questImg;
+            consensusCanvas.update();
+            consensusCanvas.redraw();
+            return;
+        }
+        
+        boolean running=false;
+        boolean notStarted=false;
+
+        //If we have any tests running or not started, do not do consensus
+        for (TestRun tr : activeTestRuns){
+            if (tr.getStatus()==TestRun.RUNNING)
+                running=true;
+            else if (tr.getStatus()==TestRun.NOT_STARTED)
+                notStarted=true;
+        }
+
+        if(notStarted){
+            consensusText.setText( "Tests not started"); 
+            consensusImage=questImg;
+        }
+        else if (running){
+            consensusText.setText( "Tests running..."); 
+            consensusImage=wheelImg;
+        }
+        else{
+            int res=getConsensusFromTestRuns();
+            if (res==ITestResult.POSITIVE){
+                consensusText.setText( "Consensus: POSITIVE"); 
+                consensusImage=crossImg;
+            }
+            else if (res==ITestResult.NEGATIVE){
+                consensusText.setText( "Consensus: NEGATIVE"); 
+                consensusImage=checkImg;
+            }
+            else if (res==ITestResult.INCONCLUSIVE){
+                consensusText.setText( "Consensus: INCONCLUSIVE"); 
+                consensusImage=warnImg;
+            }
+        }
+        
+        consensusCanvas.update();
+        consensusCanvas.redraw();
+        
+    }
+
+    
+    /**
+     * A simple consensus voting.
+     * TODO: Implement custom solutions for this.
+     * @return
+     */
+    private int getConsensusFromTestRuns() {
+
+        int numpos=0;
+        int numneg=0;
+        int numinc=0;
+
+        for (TestRun tr : activeTestRuns){
+            if (tr.getStatus()==TestRun.FINISHED){
+                if (tr.getConsensusStatus()==ITestResult.POSITIVE)
+                    numpos++;
+                else if (tr.getConsensusStatus()==ITestResult.NEGATIVE)
+                    numneg++;
+                else if (tr.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+                    numinc++;
+            }
+        }
+
+        //A simple voting
+        if (numpos>numneg)
+            return ITestResult.POSITIVE;
+        else if (numpos<numneg)
+            return ITestResult.NEGATIVE;
+
+        //Else...
+        return ITestResult.INCONCLUSIVE;
+        
+    }
+
 
     /**
      * Clean up part listener
@@ -175,7 +335,7 @@ public class TestsView extends ViewPart implements IPartListener{
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
                 updateActionStates();
-                TestsView.this.fillContextMenu(manager);
+                DSView.this.fillContextMenu(manager);
             }
 
         });
@@ -448,6 +608,7 @@ public class TestsView extends ViewPart implements IPartListener{
                     logger.debug( "===== Test: " + tr + " skipped since excluded.");
                 }
                 else{
+                    
                     logger.debug( "===== Testrun: " + tr + " started" );
                     tr.setStatus( TestRun.RUNNING );
                     viewer.refresh(tr);
@@ -504,12 +665,15 @@ public class TestsView extends ViewPart implements IPartListener{
                                     tr.addResult(result);
                             } 
                             tr.setMatches( matches );
-                            tr.setStatus( TestRun.FINISHED );
-
-                            logger.debug( "===== Testrun: " + tr + " finished" );
+                            logger.debug( "===== " + tr + " finished" );
+                            if (tr.getTest().getTestErrorMessage()!="")
+                                tr.setStatus( TestRun.ERROR );
+                            else
+                                tr.setStatus( TestRun.FINISHED );
                             
                             viewer.refresh( tr );
                             viewer.setExpandedState( tr, true );
+                            updateConsensusView();
                             
                             //If we previously stored a selection, set it now
                             selectIfStoredSelection(tr);
@@ -537,6 +701,10 @@ public class TestsView extends ViewPart implements IPartListener{
                 logger.error( "Error running test: " + tr.getTest() + 
                               ": " + e.getMessage());
                 LogUtils.debugTrace( logger, e );
+                
+                viewer.refresh( tr );
+                updateConsensusView();
+
             }
 
     }
@@ -634,8 +802,11 @@ public class TestsView extends ViewPart implements IPartListener{
         }
         updateActionStates();
         viewer.expandAll();
-
+        
+        //Also update consensus part
+        updateConsensusView();
     }
+
 
     /**
      * We have a new editor. Create a new TestRun for the molecules it contains 

@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Display;
  * @author ola
  *
  */
-public class TestsViewLabelProvider implements ILabelProvider, IColorProvider{
+public class DSViewLabelProvider implements ILabelProvider, IColorProvider{
 
     public Image getImage( Object element ) {
 

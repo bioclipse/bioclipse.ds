@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 
-public class TestsViewContentProvider implements ITreeContentProvider{
+public class DSViewContentProvider implements ITreeContentProvider{
 
     public Object[] getChildren( Object parentElement ) {
         if ( parentElement instanceof TestRun ) {

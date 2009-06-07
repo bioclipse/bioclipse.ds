@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
 
-public class TestsViewDecorator implements ILabelDecorator {
+public class DSViewDecorator implements ILabelDecorator {
 
     private Image cachedInactiveDSTest;
     private Image cachedErrorInDSTest;
