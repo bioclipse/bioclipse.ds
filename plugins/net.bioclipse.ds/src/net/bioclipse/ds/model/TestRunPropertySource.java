@@ -16,12 +16,14 @@ public class TestRunPropertySource extends BasicPropertySource
 
     protected static final String NAME = "Name";
     protected static final String HITS = "Hits";
+    protected static final String STATUS = "Status";
     protected static final String CONSENSUS = "Consensus";
 
     private Object SimplePropertiesTable[][] =
     {
             { NAME, new TextPropertyDescriptor(NAME,"Name")},
             { HITS, new TextPropertyDescriptor(HITS,"Hits")},
+            { STATUS, new TextPropertyDescriptor(STATUS,"Status")},
             { CONSENSUS, new TextPropertyDescriptor(CONSENSUS,CONSENSUS)},
     };
 
@@ -49,6 +51,19 @@ public class TestRunPropertySource extends BasicPropertySource
             addToValueMap(HITS,""+item.getMatches().size());
         else
             addToValueMap(HITS,"0");
+        
+        if (item.getStatus()==TestRun.NOT_STARTED)
+            addToValueMap(STATUS,"NOT STARTED");
+        else if (item.getStatus()==TestRun.RUNNING)
+            addToValueMap(STATUS,"RUNNING");
+        else if (item.getStatus()==TestRun.FINISHED)
+            addToValueMap(STATUS,"FINISHED");
+        else if (item.getStatus()==TestRun.ERROR)
+            addToValueMap(STATUS,"ERROR");
+        else if (item.getStatus()==TestRun.EXCLUDED)
+            addToValueMap(STATUS,"EXCLUDED");
+        else
+            addToValueMap(STATUS,"N/A");
 
         if (item.getConsensusStatus()==ITestResult.POSITIVE)
             addToValueMap(CONSENSUS,"POSITIVE");
@@ -58,6 +73,8 @@ public class TestRunPropertySource extends BasicPropertySource
             addToValueMap(CONSENSUS,"INCONCLUSIVE");
         else if (item.getConsensusStatus()==ITestResult.ERROR)
             addToValueMap(CONSENSUS,"ERROR");
+        else
+            addToValueMap(CONSENSUS,"N/A");
 
     }    
     

@@ -28,8 +28,8 @@ public abstract class AbstractDSTest implements IDSTest{
 
     private String id;
     private String name;
+    private String description;
     private String icon;
-    private IDSTest test;
     private String pluginID;
     private Map<String, String > parameters;
     private boolean excluded;
@@ -94,16 +94,6 @@ public abstract class AbstractDSTest implements IDSTest{
         this.icon = icon;
     }
     
-    public IDSTest getTest() {
-    
-        return test;
-    }
-    
-    public void setTest( IDSTest test ) {
-    
-        this.test = test;
-    }
-
     
     public String getPluginID() {
     
@@ -158,6 +148,18 @@ public abstract class AbstractDSTest implements IDSTest{
     public void setTestErrorMessage( String testErrorMessage ) {
     
         this.testErrorMessage = testErrorMessage;
+    }
+
+    
+    public String getDescription() {
+    
+        return description;
+    }
+
+    
+    public void setDescription( String description ) {
+    
+        this.description = description;
     }
 
 }

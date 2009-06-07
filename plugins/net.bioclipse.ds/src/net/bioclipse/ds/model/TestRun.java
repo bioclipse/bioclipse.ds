@@ -176,13 +176,17 @@ public class TestRun implements ISubStructure{
      * TODO: Hook in custom calculation of consensus.
      * 
      * @return ITestResult.POSITIVE, ITestResult.NEGATIVE, 
-     * or ITestResult.INCLONCLUSIVE
+     * ITestResult.INCONCLUSIVE, or ITestResult.ERROR
      */
     public int getConsensusStatus() {
+
+        if (results==null)
+            return ITestResult.ERROR;
 
         int numpos=0;
         int numneg=0;
         int numinc=0;
+        
         for (ITestResult res : results){
             if (res.getResultStatus()==ITestResult.POSITIVE)
                 numpos++;
