@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -108,6 +109,8 @@ public class DSView extends ViewPart implements IPartListener{
     private Text consensusText;
 
     private Canvas consensusCanvas;
+
+    private Action helpAction;
     
     /**
      * The constructor.
@@ -374,6 +377,8 @@ public class DSView extends ViewPart implements IPartListener{
         manager.add(new Separator());
         manager.add(expandAllAction);
         manager.add(collapseAllAction);
+        manager.add(new Separator());
+        manager.add(helpAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
     
@@ -494,6 +499,18 @@ public class DSView extends ViewPart implements IPartListener{
         refreshAction.setText("Refresh");
         refreshAction.setToolTipText("Force a refresh of all tests' status");
         refreshAction.setImageDescriptor(Activator.getImageDecriptor( "icons/refresh2.png" ));
+
+        helpAction = new Action() {
+            public void run() {
+                IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+                                                            .getHelpSystem();
+                helpSystem.displayHelpResource("/" + Activator.PLUGIN_ID +
+                                               "/html/maintopic.html");
+            }
+        };
+        helpAction.setText("Help");
+        helpAction.setToolTipText("Open help for teh Decision Support");
+        helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
 
     }
     

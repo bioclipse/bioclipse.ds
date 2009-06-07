@@ -1,7 +1,8 @@
 <contexts>
-	<context id="net.bioclipse.ds.ui.views.TestsView" title="Tests View">
+	<context id="net.bioclipse.ds.ui.views.DSView" title="Decision Support">
 		<description>
-		This view allows for running tests while editing chemical structures.
+		This view allows for running decision support 
+		tests while editing chemical structures.
 		</description>
 	</context>
 </contexts>
