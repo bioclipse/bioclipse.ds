@@ -27,7 +27,7 @@ import net.bioclipse.cdk.ui.sdfeditor.business.SDFileIndex;
 import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.model.AbstractWarningTest;
+import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.impl.DSException;
@@ -39,7 +39,7 @@ import net.bioclipse.inchi.InChI;
  * @author ola
  *
  */
-public class DBExactMatchTest extends AbstractWarningTest implements IDSTest{
+public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(DBExactMatchTest.class);
     
