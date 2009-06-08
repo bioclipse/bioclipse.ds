@@ -30,6 +30,7 @@ import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
 import net.bioclipse.core.ResourcePathTransformer;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
@@ -147,7 +148,8 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
     /**
      * Run the actual warning test
      */
-    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+    public List<ITestResult> runWarningTest( IMolecule molecule, 
+                                             IProgressMonitor monitor ){
 
         //Check for cancellation
         if (monitor.isCanceled())
@@ -161,7 +163,10 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             if (moleculesmodel==null)
                 initialize(monitor);
         } catch ( Exception e1 ) {
-            logger.error( "Failed to initialize DBExactMatchTest: " + e1.getMessage() );
+            logger.error( "Failed to initialize DBExactMatchTest: " 
+                          + e1.getMessage() );
+            LogUtils.handleException( e1, 
+                                 logger, net.bioclipse.ds.Activator.PLUGIN_ID );
             setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
         }
 
