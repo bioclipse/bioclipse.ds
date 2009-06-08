@@ -61,7 +61,7 @@ public class SmartsMatchingTest extends AbstractDSTest implements IDSTest{
      * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) throws DSException {
+    public void initialize(IProgressMonitor monitor) throws DSException {
 
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
@@ -87,8 +87,7 @@ public class SmartsMatchingTest extends AbstractDSTest implements IDSTest{
             logger.debug("File has fileURL: " + fileURL);
             path=fileURL.getFile();
         } catch ( Exception e1 ) {
-            e1.printStackTrace();
-            return;
+            throw new DSException("Could not locate or read file: " + filepath);
         }
 
         //File could not be read
@@ -182,23 +181,29 @@ public class SmartsMatchingTest extends AbstractDSTest implements IDSTest{
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
         
-        //Read smarts file if not already done that
+        //Store results here
+        List<ITestResult> results=new ArrayList<ITestResult>();
+
+        //Initialize if not already done
         if (smarts==null){
             try {
                 initialize(monitor);
             } catch ( DSException e1 ) {
-                return returnError( e1.getMessage(), e1.getStackTrace().toString());
+                logger.error( "Failed to initialize DBNNTest: " + e1.getMessage() );
+                setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
             }
+        }
+
+        //Return empty if error message
+        if (getTestErrorMessage().length()>1){
+            return results;
         }
 
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
 
-
-        //Store results here
-        List<ITestResult> results=new ArrayList<ITestResult>();
-        
+        //Create mol from input mol, if needed
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol=null;
         try {

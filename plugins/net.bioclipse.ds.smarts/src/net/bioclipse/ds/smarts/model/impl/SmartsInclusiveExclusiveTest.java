@@ -38,6 +38,7 @@ import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.SimpleResult;
+import net.bioclipse.ds.model.impl.DSException;
 
 
 /**
@@ -63,7 +64,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractDSTest implements IDST
      * @param monitor 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor){
+    public void initialize(IProgressMonitor monitor) throws DSException {
 
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
@@ -84,17 +85,17 @@ public class SmartsInclusiveExclusiveTest extends AbstractDSTest implements IDST
         }
 
         String path="";
-        try {
             logger.debug("Trying to locate file: " + filepath + " from plugin: " + getPluginID());
             URL url = Platform.getBundle(getPluginID()).getEntry(filepath);
             logger.debug("File has URL: " + url);
-            URL fileURL = FileLocator.toFileURL(url);
+            URL fileURL=null;
+            try {
+                fileURL = FileLocator.toFileURL(url);
+            } catch ( IOException e1 ) {
+                throw new DSException("Smarts file : " + url +" could not be located.");
+            }
             logger.debug("File has fileURL: " + fileURL);
             path=fileURL.getFile();
-        } catch ( Exception e1 ) {
-            e1.printStackTrace();
-            return;
-        }
 
         //File could not be read
         if ("".equals( path )){
@@ -163,11 +164,9 @@ public class SmartsInclusiveExclusiveTest extends AbstractDSTest implements IDST
             }
 
         } catch ( FileNotFoundException e ) {
-            setTestErrorMessage( "File: " + filepath + " could not be found.");
-            return;
+            throw new DSException("File: " + filepath + " could not be found.");
         } catch ( IOException e ) {
-            setTestErrorMessage( "File: " + filepath + " could not be read.");
-            return;
+            throw new DSException("File: " + filepath + " could not be found.");
         }
 
         logger.debug("SmartsInclusiveExclusiveTest.init parsed: " + smarts.size() + " SMARTS in file: " + filepath + " and skipped: " + noSkipped);
@@ -201,12 +200,24 @@ public class SmartsInclusiveExclusiveTest extends AbstractDSTest implements IDST
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
 
-
-        if (smarts==null)
-            initialize(monitor);
-
         //Store results here
         List<ITestResult> results=new ArrayList<ITestResult>();
+
+        //Initialize if not already done
+        if (smarts==null){
+            try {
+                initialize(monitor);
+            } catch ( DSException e1 ) {
+                logger.error( "Failed to initialize DBNNTest: " + e1.getMessage() );
+                setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
+            }
+        }
+
+        //Return empty if error message
+        if (getTestErrorMessage().length()>1){
+            return results;
+        }
+
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol;
