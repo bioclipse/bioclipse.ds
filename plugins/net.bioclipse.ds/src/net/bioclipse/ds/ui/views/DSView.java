@@ -58,6 +58,8 @@ public class DSView extends ViewPart implements IPartListener{
 
     private static final Logger logger = Logger.getLogger(DSView.class);
 
+    public static final String VIEW_ID="net.bioclipse.ds.ui.views.DSView";
+    
     private static Image questImg;
     private static Image warnImg;
     private static Image crossImg;

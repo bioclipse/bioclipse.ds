@@ -26,14 +26,15 @@
       </contexts>
    </extension>
 
-   <!--extension
+   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="net.bioclipse.ds.ui.PerspectiveFactory"
-            id="com.genettasoft.warningsystem.ui.perspective"
-            name="Warning System">
+            id="net.bioclipse.ds.ui.perspective"
+            icon="icons/poll.gif"
+            name="Decision Support">
       </perspective>
-   </extension-->
+   </extension>
 
 	<extension
     	point="org.eclipse.help.toc">
