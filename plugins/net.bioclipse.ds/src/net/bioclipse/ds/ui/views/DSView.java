@@ -27,6 +27,7 @@ import net.bioclipse.ds.business.TestHelper;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
@@ -43,8 +44,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -237,6 +242,29 @@ public class DSView extends ViewPart implements IPartListener{
 //                doRunAllTests();
             }
         }
+        
+        Job job=new Job("Initializing decision support tests"){
+            @Override
+            protected IStatus run( IProgressMonitor monitor ) {
+
+                IDSManager ds = Activator.getDefault().getJavaManager();
+                try {
+                    for (String testID : ds.getTests()){
+                        IDSTest test = ds.getTest( testID );
+                        test.initialize( monitor );
+                    }
+                } catch ( BioclipseException e1 ) {
+                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+                        "All tests could not be initalized: " + e1.getMessage());
+                } catch ( DSException e ) {
+                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+                    "All tests could not be initalized: " + e.getMessage());
+                }
+                
+                return Status.OK_STATUS;
+            }
+            
+        };
         
     }
 

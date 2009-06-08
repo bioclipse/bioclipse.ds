@@ -42,6 +42,20 @@
         	file="toc.xml"
          	primary="true"/>
 	</extension>
+ <extension
+       point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+    <category
+          id="net.bioclipse.ds.cheatsheets"
+          name="Decision Support">
+    </category>
+    <cheatsheet
+          category="net.bioclipse.ds.cheatsheets"
+          composite="false"
+          contentFile="cheatsheets/gettingstarted.xml"
+          id="net.bioclipse.ds.gettingStarted"
+          name="Getting Started with Decision Support">
+    </cheatsheet>
+ </extension>
 
    
 

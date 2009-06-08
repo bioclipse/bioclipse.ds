@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Getting started with Decision Support">
+   <intro
+         href="/net.bioclipse.ds/html/maintopic.html">
+      <description>
+         <b>Decision Support</b>
+This tutorial describes the basic steps for using the Decision Support feature of Bioclipse.
+      </description>
+   </intro>
+
+   <item
+         title="Step 1: Open the Decision Support Perspective">
+      <description>
+         The <b>Decision Support Perspective</b> is a setup of the workbench which is suitable for the Decision Support feature.
+<br/><br/>
+In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b> and in the dialog select the <b>Decision Support option</b>.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.perspectives.showPerspective(org.eclipse.ui.perspectives.showPerspective.perspectiveId=net.bioclipse.ds.ui.perspective)"/>
+   </item>
+   <item
+         title="Step 2: Open a chemical structure">
+      <description>
+         In the Bioclipse Navigator, double-click a chemical structure to open it in the chemical editor.
+      </description>
+   </item>
+</cheatsheet>

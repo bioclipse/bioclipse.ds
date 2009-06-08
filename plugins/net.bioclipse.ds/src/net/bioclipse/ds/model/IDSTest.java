@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.model.impl.DSException;
 
 /**
  * A top interface for all tests
@@ -44,5 +45,6 @@ public interface IDSTest extends ISubStructure{
      * @return List of ITestResults where ITestREsult may be an ErrorResult
      */
     public List<ITestResult> runWarningTest(IMolecule molecule, IProgressMonitor monitor) ;
+    public void initialize(IProgressMonitor monitor) throws DSException;
 
 }
