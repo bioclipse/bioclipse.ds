@@ -249,8 +249,11 @@ public class DSView extends ViewPart implements IPartListener{
 
                 IDSManager ds = Activator.getDefault().getJavaManager();
                 try {
+                    monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
+                    monitor.worked( 1 );
                     for (String testID : ds.getTests()){
                         IDSTest test = ds.getTest( testID );
+                        monitor.subTask( "Initializing test: " + testID );
                         test.initialize( monitor );
                     }
                 } catch ( BioclipseException e1 ) {
@@ -261,10 +264,13 @@ public class DSView extends ViewPart implements IPartListener{
                     "All tests could not be initalized: " + e.getMessage());
                 }
                 
+                monitor.done();
                 return Status.OK_STATUS;
             }
             
         };
+        job.setUser( false );
+        job.schedule();
         
     }
 
