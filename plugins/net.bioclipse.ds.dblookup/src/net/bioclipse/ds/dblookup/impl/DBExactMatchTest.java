@@ -33,6 +33,9 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.inchi.InChI;
+import net.bioclipse.jobs.BioclipseJob;
+import net.bioclipse.jobs.BioclipseJobUpdateHook;
+import net.bioclipse.jobs.BioclipseUIJob;
 
 
 /**
@@ -101,7 +104,18 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             List<String> extraProps=new ArrayList<String>();
             extraProps.add( CONSLUSION_PROPERTY_KEY );
 
-            moltable.parseProperties( moleculesmodel, extraProps );
+            BioclipseJob<Void> job = moltable.
+                                       parseProperties( moleculesmodel, 
+                                       extraProps, 
+                                       new BioclipseJobUpdateHook<Void>(
+                                                "Parsing SDFile"));
+
+            //Wait for job to finish
+            try {
+                job.join();
+            } catch ( InterruptedException e ) {
+                throw new DSException("Initialization of DBExactMatch cancelled");
+            }
             
             //Verify we have inchi for all
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
