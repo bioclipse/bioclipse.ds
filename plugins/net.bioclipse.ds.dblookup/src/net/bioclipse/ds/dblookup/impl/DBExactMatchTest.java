@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -26,6 +27,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
 import net.bioclipse.cdk.ui.sdfeditor.business.SDFileIndex;
 import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
+import net.bioclipse.core.ResourcePathTransformer;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractDSTest;
@@ -121,6 +123,8 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 InChI readInchi = moleculesmodel.getPropertyFor( i, INCHI_PROPERTY_KEY );
                 
+//                logger.debug("Mol " + i + " has inchi: " + readInchi);
+                
                 if (readInchi==null)
                     throw new DSException("Molecule " + i + " in " +
                     		                  "DB has no inchi property");
@@ -128,6 +132,8 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
                 String amesCategor = moleculesmodel.getPropertyFor(
                                                    i, CONSLUSION_PROPERTY_KEY );
                 
+//                logger.debug("Mol " + i + " has ames: " + amesCategor);
+
                 if (amesCategor==null)
                     throw new DSException("Molecule " + i + " in DB has no AMES " +
                     		"test categorization property.");

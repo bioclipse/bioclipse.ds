@@ -34,6 +34,8 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.inchi.InChI;
+import net.bioclipse.jobs.BioclipseJob;
+import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
 
 /**
@@ -113,10 +115,19 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
         List<String> extraProps=new ArrayList<String>();
         extraProps.add( CONSLUSION_PROPERTY_KEY );
 
-        moltable.parseProperties( moleculesmodel, extraProps );
-        
-        
-        
+        BioclipseJob<Void> job = moltable.
+                                   parseProperties( moleculesmodel, 
+                                   extraProps, 
+                                   new BioclipseJobUpdateHook<Void>(
+                                            "Parsing SDFile"));
+
+        //Wait for job to finish
+        try {
+            job.join();
+        } catch ( InterruptedException e ) {
+            throw new DSException("Initialization of DBNN cancelled");
+        }
+
         logger.debug("Loaded SDF index with propertisuccessfully. No mols: " + 
                      moleculesmodel.getNumberOfMolecules());
 
