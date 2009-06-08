@@ -121,8 +121,6 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 InChI readInchi = moleculesmodel.getPropertyFor( i, INCHI_PROPERTY_KEY );
                 
-                logger.debug("Mol " + i + " has inchi: " + readInchi);
-                
                 if (readInchi==null)
                     throw new DSException("Molecule " + i + " in " +
                     		                  "DB has no inchi property");
@@ -130,8 +128,6 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
                 String amesCategor = moleculesmodel.getPropertyFor(
                                                    i, CONSLUSION_PROPERTY_KEY );
                 
-                logger.debug("Mol " + i + " has inchi: " + amesCategor);
-
                 if (amesCategor==null)
                     throw new DSException("Molecule " + i + " in DB has no AMES " +
                     		"test categorization property.");
