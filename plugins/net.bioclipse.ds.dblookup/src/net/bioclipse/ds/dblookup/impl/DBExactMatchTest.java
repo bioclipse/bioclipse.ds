@@ -96,19 +96,30 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             //Read index and parse properties
             SDFileIndex sdfIndex = moltable.createSDFIndex( path);
             moleculesmodel = new SDFIndexEditorModel(sdfIndex);
-            moltable.parseProperties( moleculesmodel );
+
+            //We need to define that we want to read extra properties as well
+            List<String> extraProps=new ArrayList<String>();
+            extraProps.add( CONSLUSION_PROPERTY_KEY );
+
+            moltable.parseProperties( moleculesmodel, extraProps );
             
             //Verify we have inchi for all
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 InChI readInchi = moleculesmodel.getPropertyFor( i, INCHI_PROPERTY_KEY );
+                
+                logger.debug("Mol " + i + " has inchi: " + readInchi);
+                
                 if (readInchi==null)
-                    throw new DSException("Not all molecules in " +
-                    		                  "DB has inchi calculated");
+                    throw new DSException("Molecule " + i + " in " +
+                    		                  "DB has no inchi property");
 
                 String amesCategor = moleculesmodel.getPropertyFor(
                                                    i, CONSLUSION_PROPERTY_KEY );
+                
+                logger.debug("Mol " + i + " has inchi: " + amesCategor);
+
                 if (amesCategor==null)
-                    throw new DSException("Not all molecules in DB has AMES " +
+                    throw new DSException("Molecule " + i + " in DB has no AMES " +
                     		"test categorization property.");
             }
 

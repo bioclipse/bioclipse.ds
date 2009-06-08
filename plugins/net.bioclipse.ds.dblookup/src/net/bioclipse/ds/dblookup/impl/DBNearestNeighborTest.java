@@ -108,8 +108,15 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
         //Read index and parse properties
         SDFileIndex sdfIndex = moltable.createSDFIndex( path);
         moleculesmodel = new SDFIndexEditorModel(sdfIndex);
-        moltable.parseProperties( moleculesmodel );
 
+        //We need to define that we want to read extra properties as well
+        List<String> extraProps=new ArrayList<String>();
+        extraProps.add( CONSLUSION_PROPERTY_KEY );
+
+        moltable.parseProperties( moleculesmodel, extraProps );
+        
+        
+        
         logger.debug("Loaded SDF index with propertisuccessfully. No mols: " + 
                      moleculesmodel.getNumberOfMolecules());
 
