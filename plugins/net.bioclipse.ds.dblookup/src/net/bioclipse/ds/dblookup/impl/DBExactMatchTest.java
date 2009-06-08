@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.dblookup.impl;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
      * @throws Exception 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) throws Exception {
+    public void initialize(IProgressMonitor monitor) throws DSException {
         
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
@@ -74,8 +75,13 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
 
 
             String path="";
-            URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
-            path=url2.getFile();
+            URL url2;
+            try {
+                url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
+                path=url2.getFile();
+            } catch ( IOException e ) {
+                throw new DSException(e.getMessage());
+            }
 
             //File could not be read
             if ("".equals( path )){
@@ -128,6 +134,7 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             if (moleculesmodel==null)
                 initialize(monitor);
         } catch ( Exception e1 ) {
+            logger.error( "Failed to initialize DBExactMatchTest: " + e1.getMessage() );
             setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
         }
 

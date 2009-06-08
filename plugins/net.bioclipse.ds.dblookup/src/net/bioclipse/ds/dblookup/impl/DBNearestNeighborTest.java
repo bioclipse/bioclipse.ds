@@ -50,7 +50,6 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
     private static final String CONSLUSION_PROPERTY_KEY="Ames test categorisation";
 
     //Instance variables, set up by initialize()
-    private SDFileIndex sdfIndex;
     private SDFIndexEditorModel moleculesmodel;
     private float tanimoto;
     
@@ -61,7 +60,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
      * @throws IOException 
      * @throws WarningSystemException 
      */
-    private void initialize(IProgressMonitor monitor) throws Exception{
+    public void initialize(IProgressMonitor monitor) throws DSException {
 
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
@@ -88,9 +87,13 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 
         //Read the SDFile
         String path="";
-            URL url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).
-                                             getEntry(filepath));
+        URL url2;
+        try {
+            url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
             path=url2.getFile();
+        } catch ( IOException e ) {
+            throw new DSException(e.getMessage());
+        }
 
         //File could not be read
         if ("".equals( path )){
@@ -118,7 +121,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
                 		                  " calculated");
             
             String amesCategor = moleculesmodel.getPropertyFor(
-                                                               i, CONSLUSION_PROPERTY_KEY );
+                                                   i, CONSLUSION_PROPERTY_KEY );
             if (amesCategor==null)
                 throw new DSException("Not all molecules in DB has AMES " +
                 "test categorization property.");
@@ -141,6 +144,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             if (moleculesmodel==null)
                 initialize(monitor);
         } catch ( Exception e1 ) {
+            logger.error( "Failed to initialize DBNNTest: " + e1.getMessage() );
             setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
         }
 
