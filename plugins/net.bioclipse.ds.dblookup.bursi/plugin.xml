@@ -10,26 +10,23 @@
             class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
             icon="icons/db.gif">
             <resource name="file"
-                  path="data/cas_4337_props.sdf">
+                  path="data/cas_4337_fp_inch.sdf">
             </resource>
       </test>
-   </extension>
 
-   <extension
-         point="net.bioclipse.ds.test">
-      <test
+      <!--test
             id="dblookup.nearest.bursi"
             name="BursiDB nearest neighbour"
             class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
             icon="icons/db.gif">
             <resource name="file"
-                  path="data/cas_4337_props.sdf">
+                  path="data/cas_4337_fp_inch.sdf">
             </resource>
             <parameter
                   name="distance.tanimoto"
                   value="0.7">
             </parameter>
-      </test>
+      </test-->
    </extension>
 
 </plugin>
