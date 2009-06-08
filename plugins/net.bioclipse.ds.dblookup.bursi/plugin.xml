@@ -10,7 +10,7 @@
             class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
             icon="icons/db.gif">
             <resource name="file"
-                  path="data/cas_withprops.sdf">
+                  path="data/cas_4337_props.sdf">
             </resource>
       </test>
    </extension>
@@ -23,7 +23,7 @@
             class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
             icon="icons/db.gif">
             <resource name="file"
-                  path="data/cas_withprops.sdf">
+                  path="data/cas_4337_props.sdf">
             </resource>
             <parameter
                   name="distance.tanimoto"
