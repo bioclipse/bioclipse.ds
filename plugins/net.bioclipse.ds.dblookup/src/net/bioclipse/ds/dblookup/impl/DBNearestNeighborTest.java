@@ -14,7 +14,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
@@ -150,14 +156,14 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 
     }
 
-    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+    public List<? extends ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
 
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
 
         //Store results here
-        List<ITestResult> results=new ArrayList<ITestResult>();
+        ArrayList<ExternalMoleculeMatch> results=new ArrayList<ExternalMoleculeMatch>();
 
         //Read database file if not already done that
         try {
@@ -199,10 +205,10 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 //                logger.debug("  size: DBFP=" + dbFP.size() + ", molFP=" + molFP.size());
                 
                 if (dbFP.size()!=molFP.size()){
-                    logger.warn( "Index " + i + " in DB has FP size=" 
-                                 + dbFP.size() + 
-                                 " but molecule searched for has FP size=" 
-                                 + molFP.size());
+//                    logger.warn( "Index " + i + " in DB has FP size=" 
+//                                 + dbFP.size() + 
+//                                 " but molecule searched for has FP size=" 
+//                                 + molFP.size());
                 }else{
 
                     float calcTanimoto = cdk.calculateTanimoto( dbFP, molFP );
@@ -211,15 +217,15 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
                         ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
                         String amesCat = moleculesmodel.getPropertyFor( i, CONSLUSION_PROPERTY_KEY);
                         String cdktitle=(String) matchmol.getAtomContainer().getProperty( CDKConstants.TITLE );
-                        String molname="cdktMolecule " + i;
+                        String molname="Index " + i;
                         if (cdktitle!=null)
                             molname=cdktitle;
+                        molname=molname+ " [tanimoto=" + Math.round(calcTanimoto*100.0) / 100.0 +"]";
                         int concl=getConclusion(amesCat);
                         ExternalMoleculeMatch match = 
-                            new ExternalMoleculeMatch(molname, matchmol, concl);
-                        results.add( match );
-
-
+                            new ExternalMoleculeMatch(molname, matchmol, 
+                                                      calcTanimoto,  concl);
+                        results.add( match);
                     }
                 }
                 //TODO: check how much this check slows down, probably not much
@@ -233,6 +239,14 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             return returnError( "Test failed: " , e.getMessage());
         }
 
+        //Sort results by tanimoto
+        Collections.sort( results, new Comparator<ExternalMoleculeMatch>(){
+            public int compare( ExternalMoleculeMatch o1,
+                                ExternalMoleculeMatch o2 ) {
+                return Float.compare( o2.getSimilarity() , o1.getSimilarity());
+            }
+        });
+        
         return results;
     }
     

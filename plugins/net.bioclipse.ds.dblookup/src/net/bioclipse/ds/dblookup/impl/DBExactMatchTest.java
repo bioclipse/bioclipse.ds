@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.openscience.cdk.CDKConstants;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
@@ -193,7 +194,8 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             molInchi = cdkmol.getInChI(
                                        IMolecule.Property.USE_CALCULATED  );
         } catch ( BioclipseException e ) {
-            return returnError( "Could not create InchiKey", e.getMessage() );
+//            LogUtils.debugTrace( logger, e );
+            return returnError( "Error generating Inchi", e.getMessage() );
         }
 
         logger.debug( "Inchikey to search for: " + molInchiKey);
@@ -207,7 +209,10 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
                 if (molInchi.equals( readInchi.getValue() )){
                     ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
                     String amesCat = moleculesmodel.getPropertyFor( i, CONSLUSION_PROPERTY_KEY);
-                    String molname="Molecule " + i;
+                    String cdktitle=(String) matchmol.getAtomContainer().getProperty( CDKConstants.TITLE );
+                    String molname="Index " + i;
+                    if (cdktitle!=null)
+                        molname=cdktitle;
                     int concl=getConclusion(amesCat);
                     ExternalMoleculeMatch match = 
                         new ExternalMoleculeMatch(molname, matchmol, concl);

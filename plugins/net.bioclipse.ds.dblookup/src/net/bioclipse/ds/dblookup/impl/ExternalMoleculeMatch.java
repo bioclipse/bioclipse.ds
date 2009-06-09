@@ -22,8 +22,16 @@ import net.bioclipse.ds.model.SimpleResult;
 public class ExternalMoleculeMatch extends SimpleResult{
 
     private ICDKMolecule matchedMolecule;
+    private float similarity;
     
     public ExternalMoleculeMatch(String name, ICDKMolecule matchedMolecule, 
+                                 float similarity, int status) {
+        super(name,status);
+        this.matchedMolecule = matchedMolecule;
+        this.similarity=similarity;
+    }
+
+    public ExternalMoleculeMatch(String name, ICDKMolecule matchedMolecule,
                                  int status) {
         super(name,status);
         this.matchedMolecule = matchedMolecule;
@@ -41,6 +49,11 @@ public class ExternalMoleculeMatch extends SimpleResult{
         }
     
         return super.getAdapter( adapter );
+    }
+
+    
+    public float getSimilarity() {
+        return similarity;
     }
     
 }
