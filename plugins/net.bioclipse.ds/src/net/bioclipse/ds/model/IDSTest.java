@@ -44,7 +44,7 @@ public interface IDSTest extends ISubStructure{
      * @param molecule IMolecule, input for the test
      * @return List of ITestResults where ITestREsult may be an ErrorResult
      */
-    public List<ITestResult> runWarningTest(IMolecule molecule, IProgressMonitor monitor) ;
+    public List<? extends ITestResult> runWarningTest(IMolecule molecule, IProgressMonitor monitor) ;
     public void initialize(IProgressMonitor monitor) throws DSException;
 
 }
