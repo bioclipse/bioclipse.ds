@@ -270,7 +270,7 @@ public class DSView extends ViewPart implements IPartListener{
             
         };
         job.setUser( false );
-        job.schedule();
+//        job.schedule();
         
     }
 
@@ -347,14 +347,21 @@ public class DSView extends ViewPart implements IPartListener{
             }
         }
 
-        //A simple voting
-        if (numpos>numneg)
-            return ITestResult.POSITIVE;
-        else if (numpos<numneg)
+        //If no positive results:
+        if (numpos==0)
             return ITestResult.NEGATIVE;
 
-        //Else...
-        return ITestResult.INCONCLUSIVE;
+        //If at least one but equal:
+        else if (numpos==numneg)
+            return ITestResult.INCONCLUSIVE;
+
+        //If at least one but more pos than neg:
+        else if (numpos>numneg)
+            return ITestResult.POSITIVE;
+
+        //In all other cases:
+        else
+            return ITestResult.NEGATIVE;
         
     }
 

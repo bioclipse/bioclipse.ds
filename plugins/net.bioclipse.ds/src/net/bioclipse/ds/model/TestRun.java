@@ -171,7 +171,13 @@ public class TestRun implements ISubStructure{
 
     /**
      * Calculate a consensus result status for this testrun.
-     * Default impl is just a simple voting of all results.
+     * Default impl is just a simple voting of all results.<br>
+     * <ul>
+     * <li>if numpos == 0 : return NEGATIVE
+     * <li>else if numpos == numneg : return INCONCLUSIVE
+     * <li>else if numpos > numneg : return POSITIVE
+     * <li>else return NEGATIVE
+     * </ul>
      * 
      * TODO: Hook in custom calculation of consensus.
      * 
@@ -195,13 +201,23 @@ public class TestRun implements ISubStructure{
             else if (res.getResultStatus()==ITestResult.INCONCLUSIVE)
                 numinc++;
         }
-        
-        if (numpos>numneg)
-            return ITestResult.POSITIVE;
-        else if (numpos<numneg)
+
+        //If no positive results:
+        if (numpos==0)
             return ITestResult.NEGATIVE;
-        
-        return ITestResult.INCONCLUSIVE;
+
+        //If at least one but equal:
+        else if (numpos==numneg)
+            return ITestResult.INCONCLUSIVE;
+
+        //If at least one but more pos than neg:
+        else if (numpos>numneg)
+            return ITestResult.POSITIVE;
+
+        //In all other cases:
+        else
+            return ITestResult.NEGATIVE;
+
     }
     
     public String getSuffix(){
