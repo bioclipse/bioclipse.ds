@@ -12,6 +12,7 @@ package net.bioclipse.ds.dblookup.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -195,6 +196,8 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             logger.debug( "FP to search for: " + molFP);
             logger.debug( "Molecule to search for: " + molFP);
 
+            DecimalFormat twoDForm = new DecimalFormat("#.##");
+            
             //Search the index for this FP
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 BitSet dbFP = moleculesmodel.getPropertyFor( i, FP_PROPERTY_KEY);
@@ -220,7 +223,8 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
                         String molname="Index " + i;
                         if (cdktitle!=null)
                             molname=cdktitle;
-                        molname=molname+ " [tanimoto=" + Math.round(calcTanimoto*100.0) / 100.0 +"]";
+
+                        molname=molname+ " [tanimoto=" + twoDForm.format( calcTanimoto ) +"]";
                         int concl=getConclusion(amesCat);
                         ExternalMoleculeMatch match = 
                             new ExternalMoleculeMatch(molname, matchmol, 
