@@ -189,9 +189,9 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
         String molInchi;
         try {
             molInchiKey = cdkmol.getInChIKey( 
-                                     IMolecule.Property.USE_CACHED_OR_CALCULATED  );
+                                     IMolecule.Property.USE_CALCULATED  );
             molInchi = cdkmol.getInChI(
-                                       IMolecule.Property.USE_CACHED_OR_CALCULATED  );
+                                       IMolecule.Property.USE_CALCULATED  );
         } catch ( BioclipseException e ) {
             return returnError( "Could not create InchiKey", e.getMessage() );
         }

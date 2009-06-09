@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.openscience.cdk.CDKConstants;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
@@ -29,6 +30,7 @@ import net.bioclipse.cdk.ui.sdfeditor.business.SDFileIndex;
 import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
@@ -183,28 +185,43 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             //Start by searching for inchiKey
             //================================
             BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.
-                                                  USE_CACHED_OR_CALCULATED );
+                                                  USE_CALCULATED );
             logger.debug( "FP to search for: " + molFP);
+            logger.debug( "Molecule to search for: " + molFP);
 
             //Search the index for this FP
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 BitSet dbFP = moleculesmodel.getPropertyFor( i, FP_PROPERTY_KEY);
                 //Null check not required since verified in initialize()
 
-                float calcTanimoto = cdk.calculateTanimoto( dbFP, molFP );
-                if (calcTanimoto<tanimoto){
-                    //HIT
-                    ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
-                    String amesCat = moleculesmodel.getPropertyFor( i, CONSLUSION_PROPERTY_KEY);
-                    String molname="Molecule " + i;
-                    int concl=getConclusion(amesCat);
-                    ExternalMoleculeMatch match = 
-                        new ExternalMoleculeMatch(molname, matchmol, concl);
-                    results.add( match );
+//                logger.debug( "Searching mol " + i + " with FP: " + dbFP );
+//                logger.debug("  legth: DBFP=" + dbFP.length() + ", molFP=" + molFP.length());
+//                logger.debug("  size: DBFP=" + dbFP.size() + ", molFP=" + molFP.size());
                 
-                
-                }
+                if (dbFP.size()!=molFP.size()){
+                    logger.warn( "Index " + i + " in DB has FP size=" 
+                                 + dbFP.size() + 
+                                 " but molecule searched for has FP size=" 
+                                 + molFP.size());
+                }else{
 
+                    float calcTanimoto = cdk.calculateTanimoto( dbFP, molFP );
+                    if (calcTanimoto>tanimoto){
+                        //HIT
+                        ICDKMolecule matchmol = moleculesmodel.getMoleculeAt( i );
+                        String amesCat = moleculesmodel.getPropertyFor( i, CONSLUSION_PROPERTY_KEY);
+                        String cdktitle=(String) matchmol.getAtomContainer().getProperty( CDKConstants.TITLE );
+                        String molname="cdktMolecule " + i;
+                        if (cdktitle!=null)
+                            molname=cdktitle;
+                        int concl=getConclusion(amesCat);
+                        ExternalMoleculeMatch match = 
+                            new ExternalMoleculeMatch(molname, matchmol, concl);
+                        results.add( match );
+
+
+                    }
+                }
                 //TODO: check how much this check slows down, probably not much
                 if (monitor.isCanceled())
                     return returnError( "Cancelled","");
@@ -212,6 +229,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             }
             
         } catch ( Exception e ) {
+            LogUtils.debugTrace( logger, e );
             return returnError( "Test failed: " , e.getMessage());
         }
 
