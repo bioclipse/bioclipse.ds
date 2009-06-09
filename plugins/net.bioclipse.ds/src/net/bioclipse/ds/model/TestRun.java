@@ -152,6 +152,8 @@ public class TestRun implements ISubStructure{
                 return redCrossImg;
             else if (consensus==ITestResult.NEGATIVE)
                 return checkImg;
+            else if (consensus==ITestResult.ERROR)
+                return errorImg;
             else
                 return equalImg;
             
@@ -192,6 +194,7 @@ public class TestRun implements ISubStructure{
         int numpos=0;
         int numneg=0;
         int numinc=0;
+        int numerr=0;
         
         for (ITestResult res : results){
             if (res.getResultStatus()==ITestResult.POSITIVE)
@@ -200,10 +203,16 @@ public class TestRun implements ISubStructure{
                 numneg++;
             else if (res.getResultStatus()==ITestResult.INCONCLUSIVE)
                 numinc++;
+            else if (res.getResultStatus()==ITestResult.ERROR)
+                numerr++;
         }
 
+        //If at least one but more pos than neg:
+        if (numerr>numneg && numerr>numpos)
+            return ITestResult.ERROR;
+
         //If no positive results:
-        if (numpos==0)
+        else if (numpos==0)
             return ITestResult.NEGATIVE;
 
         //If at least one but equal:
@@ -250,7 +259,7 @@ public class TestRun implements ISubStructure{
             if (numinc>0)
                 incpart=numinc + " inconcl";
             if (numerr>0)
-                errpart=numerr + " neg";
+                errpart=numerr + " err";
 
             //Add a comma after pospart if any of the trailing has results
             if (numpos>0){

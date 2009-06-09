@@ -28,6 +28,7 @@ public class SimpleResult implements ITestResult{
     private static Image pos_icon;
     private static Image neg_icon;
     private static Image incon_icon;
+    private static Image error_icon;
     
     private TestRun testRun;
     private String name;
@@ -97,6 +98,8 @@ public class SimpleResult implements ITestResult{
             return pos_icon;
         if (resultStatus==ITestResult.NEGATIVE)
             return neg_icon;
+        if (resultStatus==ITestResult.ERROR)
+            return error_icon;
         else
             return incon_icon;
     }
@@ -107,6 +110,7 @@ public class SimpleResult implements ITestResult{
         pos_icon=Activator.getImageDecriptor( "icons/x-red.gif" ).createImage();
         neg_icon=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
         incon_icon=Activator.getImageDecriptor( "icons/warning16.gif" ).createImage();
+        error_icon=Activator.getImageDecriptor( "icons/fatalerror.gif" ).createImage();
     }
 
     public int getResultStatus() {
