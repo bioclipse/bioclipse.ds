@@ -11,6 +11,7 @@
 package net.bioclipse.ds.dblookup.impl;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.SimpleResult;
 
 /**
@@ -32,5 +33,14 @@ public class ExternalMoleculeMatch extends SimpleResult{
         return matchedMolecule;
     }
     
+    @Override
+    public Object getAdapter( Class adapter ) {
+        
+        if (adapter==IMolecule.class){
+            return matchedMolecule;
+        }
+    
+        return super.getAdapter( adapter );
+    }
     
 }
