@@ -149,7 +149,7 @@ public class DSView extends ViewPart implements IPartListener{
         viewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         viewer.setContentProvider(new DSViewContentProvider());
         viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
-        viewer.setSorter(new ViewerSorter());
+//        viewer.setSorter(new ViewerSorter());
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
             public void selectionChanged( SelectionChangedEvent event ) {
                 updateActionStates();
