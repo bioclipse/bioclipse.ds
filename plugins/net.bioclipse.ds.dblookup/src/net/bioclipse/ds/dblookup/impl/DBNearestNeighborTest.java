@@ -118,7 +118,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 
         //Read index and parse properties
         IFile file = net.bioclipse.core.Activator.getVirtualProject()
-        .getFile( "dbLookup.sdf" );
+        .getFile( "dbLookupNN.sdf" );
         if(!file.exists()) {
         try {
         InputStream is = url2.openStream();
@@ -146,6 +146,12 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
         } catch ( InterruptedException e ) {
             throw new DSException("Initialization of DBNN cancelled");
         }
+        
+        if (moleculesmodel.getNumberOfMolecules()<=0){
+            throw new DSException("No molecules could be read in database");
+        }
+
+        
         //We need to define that we want to read extra properties as well
         List<String> extraProps=new ArrayList<String>();
         extraProps.add( CONSLUSION_PROPERTY_KEY );
