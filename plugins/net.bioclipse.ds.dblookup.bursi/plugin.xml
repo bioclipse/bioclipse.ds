@@ -5,10 +5,11 @@
    <extension
          point="net.bioclipse.ds.test">
       <test
-            id="dblookup.exact.bursi"
-            name="BursiDB exact lookup"
             class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
-            icon="icons/db.gif">
+            icon="icons/db.gif"
+            id="dblookup.exact.bursi"
+            informative="true"
+            name="BursiDB exact lookup">
             <resource name="file"
                   path="data/cas_4337_fp_inch.sdf">
             </resource>
