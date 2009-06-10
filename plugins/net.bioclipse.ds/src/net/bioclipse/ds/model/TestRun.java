@@ -86,16 +86,30 @@ public class TestRun implements ISubStructure{
         this.results = matches;
     }
 
+    /**
+     * This gets serialized in the moltable cells 
+     */
     @Override
     public String toString() {
-        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Status=" 
-                + getStatus() + ", Test errormsg=" + getTest().getTestErrorMessage();
-        if (results!=null)
-            ret=ret +", matches="+ results.size();
-        else
-            ret=ret +", no matches";
         
-        return ret;
+        //No results = negative
+        if (results==null || results.size()<=0){
+            return "NEGATIVE";
+        }
+
+        //Serialize consensus
+        TestRun tr = results.get( 0 ).getTestRun();
+        return tr.getConsensusString() + " [" + results.size() + " hits]";
+
+        
+//        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Status=" 
+//                + getStatus() + ", Test errormsg=" + getTest().getTestErrorMessage();
+//        if (results!=null)
+//            ret=ret +", matches="+ results.size();
+//        else
+//            ret=ret +", no matches";
+//        
+//        return ret;
     }
 
     public boolean hasMatches() {
