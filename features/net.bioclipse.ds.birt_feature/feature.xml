@@ -41,7 +41,7 @@
          version="0.0.0"/>
 
    <requires>
-      <import feature="net.bioclipse.ds_feature" version="2.0.0.RC1"/>
+      <import feature="net.bioclipse.ds_feature" version="2.0.0.RC2"/>
    </requires>
 
    <plugin
