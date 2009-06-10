@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
@@ -17,40 +17,35 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.log4j.Logger;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.openscience.cdk.CDKConstants;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
-import net.bioclipse.cdk.ui.sdfeditor.business.SDFileIndex;
 import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
-import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
-import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.impl.DSException;
-import net.bioclipse.inchi.InChI;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
+import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
+import org.openscience.cdk.CDKConstants;
+
 
 /**
- * A test that looks up nearest neighbours a database (SDF) with CDK 
+ * A test that looks up nearest neighbours a database (SDF) with CDK
  * fingerprints and Tanimoto distance.
- * 
+ *
  * @author ola
  *
  */
@@ -63,13 +58,13 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
     //Instance variables, set up by initialize()
     private SDFIndexEditorModel moleculesmodel;
     private float tanimoto;
-    
+
 
     /**
      * Read database file into memory
-     * @param monitor 
-     * @throws IOException 
-     * @throws WarningSystemException 
+     * @param monitor
+     * @throws IOException
+     * @throws WarningSystemException
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
@@ -87,7 +82,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 
         //Assert parameters are present
         if (filepath==null)
-            throw new DSException("No file provided for DBNearestNeighbourTest: " 
+            throw new DSException("No file provided for DBNearestNeighbourTest: "
                                   + getId());
         if (tanimotoString==null)
             throw new DSException("No tanimoto distance provided for " +
@@ -117,16 +112,28 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
         .getMoleculeTableManager();
 
         //Read index and parse properties
-        SDFileIndex sdfIndex = moltable.createSDFIndex( path);
-        moleculesmodel = new SDFIndexEditorModel(sdfIndex);
+        IFile file = net.bioclipse.core.Activator.getVirtualProject()
+        .getFile( "dbLookup.sdf" );
+        try {
+            file.create( getClass().getResourceAsStream( path )
+                         , true, null );
+        } catch ( CoreException e1 ) {
+            // TODO Auto-generated catch block
+            LogUtils.debugTrace( logger, e1 );
+        }
+        
+        BioclipseJob<SDFIndexEditorModel> job1 = 
+            moltable.createSDFIndex( file, new BioclipseJobUpdateHook<SDFIndexEditorModel>("job") {
+                
+            } );
 
         //We need to define that we want to read extra properties as well
         List<String> extraProps=new ArrayList<String>();
         extraProps.add( CONSLUSION_PROPERTY_KEY );
 
         BioclipseJob<Void> job = moltable.
-                                   parseProperties( moleculesmodel, 
-                                   extraProps, 
+                                   parseProperties( moleculesmodel,
+                                   extraProps,
                                    new BioclipseJobUpdateHook<Void>(
                                             "Parsing SDFile"));
 
@@ -137,7 +144,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             throw new DSException("Initialization of DBNN cancelled");
         }
 
-        logger.debug("Loaded SDF index with propertisuccessfully. No mols: " + 
+        logger.debug("Loaded SDF index with propertisuccessfully. No mols: " +
                      moleculesmodel.getNumberOfMolecules());
 
         //Verify we have inchi for all
@@ -146,7 +153,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             if (fp==null)
                 throw new DSException("Not all molecules in DB have Fingerprint" +
                 		                  " calculated");
-            
+
             String amesCategor = moleculesmodel.getPropertyFor(
                                                    i, CONSLUSION_PROPERTY_KEY );
             if (amesCategor==null)
@@ -197,7 +204,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
             logger.debug( "Molecule to search for: " + molFP);
 
             DecimalFormat twoDForm = new DecimalFormat("#.##");
-            
+
             //Search the index for this FP
             for (int i=0; i<moleculesmodel.getNumberOfMolecules(); i++){
                 BitSet dbFP = moleculesmodel.getPropertyFor( i, FP_PROPERTY_KEY);
@@ -206,11 +213,11 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 //                logger.debug( "Searching mol " + i + " with FP: " + dbFP );
 //                logger.debug("  legth: DBFP=" + dbFP.length() + ", molFP=" + molFP.length());
 //                logger.debug("  size: DBFP=" + dbFP.size() + ", molFP=" + molFP.size());
-                
+
                 if (dbFP.size()!=molFP.size()){
-//                    logger.warn( "Index " + i + " in DB has FP size=" 
-//                                 + dbFP.size() + 
-//                                 " but molecule searched for has FP size=" 
+//                    logger.warn( "Index " + i + " in DB has FP size="
+//                                 + dbFP.size() +
+//                                 " but molecule searched for has FP size="
 //                                 + molFP.size());
                 }else{
 
@@ -226,8 +233,8 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
 
                         molname=molname+ " [tanimoto=" + twoDForm.format( calcTanimoto ) +"]";
                         int concl=getConclusion(amesCat);
-                        ExternalMoleculeMatch match = 
-                            new ExternalMoleculeMatch(molname, matchmol, 
+                        ExternalMoleculeMatch match =
+                            new ExternalMoleculeMatch(molname, matchmol,
                                                       calcTanimoto,  concl);
                         results.add( match);
                     }
@@ -237,7 +244,7 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
                     return returnError( "Cancelled","");
 
             }
-            
+
         } catch ( Exception e ) {
             LogUtils.debugTrace( logger, e );
             return returnError( "Test failed: " , e.getMessage());
@@ -250,10 +257,10 @@ public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
                 return Float.compare( o2.getSimilarity() , o1.getSimilarity());
             }
         });
-        
+
         return results;
     }
-    
+
     private int getConclusion( String amesCat ) {
 
         if (amesCat.equals( "mutagen" ))

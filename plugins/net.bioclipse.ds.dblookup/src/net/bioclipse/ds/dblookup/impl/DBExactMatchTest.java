@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -101,8 +102,21 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             .getMoleculeTableManager();
 
             //Read index and parse properties
-            SDFileIndex sdfIndex = moltable.createSDFIndex( path);
-            moleculesmodel = new SDFIndexEditorModel(sdfIndex);
+            IFile file = net.bioclipse.core.Activator.getVirtualProject()
+            .getFile( "/Virtual/dbLookup.sdf" );
+            try {
+                file.create( getClass().getResourceAsStream( path )
+                             , true, null );
+            } catch ( CoreException e1 ) {
+                // TODO Auto-generated catch block
+                LogUtils.debugTrace( logger, e1 );
+            }
+            
+            BioclipseJob<SDFIndexEditorModel> job1 = 
+                moltable.createSDFIndex( file, new BioclipseJobUpdateHook<SDFIndexEditorModel>("job") {
+                    
+                } );
+            
 
             //We need to define that we want to read extra properties as well
             List<String> extraProps=new ArrayList<String>();
