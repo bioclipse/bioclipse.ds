@@ -887,28 +887,37 @@ public class DSView extends ViewPart implements IPartListener{
         if ( part instanceof JChemPaintEditor ) {
             final JChemPaintEditor jcp = (JChemPaintEditor) part;
             // Register interest in changes from editor
-            //    as a
 
-            jcp.addPropertyChangedListener( new IPropertyChangeListener() {
-                public void propertyChange( PropertyChangeEvent event ) {
+            //First, try to look up in map
+            IPropertyChangeListener jcplistener = editorListenerMap.get( jcp);
 
-                    if(event.getProperty().equals( JChemPaintEditor.
-                                                   STRUCUTRE_CHANGED_EVENT )) {
+            //If not found in map, create a new
+            if (jcplistener==null){
 
-                        // editor model has changed
-                        // do stuff...
-                        logger.debug
-                           ("TestsView reacting: JCP editor model has changed");
-                        
-//                        storedSelection=(IStructuredSelection) viewer.getSelection();
-//                        doClearAllTests( jcp );
-                        doRunAllTests();
-                        
-                        //TODO: run tests anew here
+                jcplistener = new IPropertyChangeListener() {
+                    public void propertyChange( PropertyChangeEvent event ) {
+
+                        if(event.getProperty().equals( JChemPaintEditor.
+                                                       STRUCUTRE_CHANGED_EVENT )) {
+
+                            // editor model has changed
+                            // do stuff...
+                            logger.debug
+                            ("TestsView reacting: JCP editor model has changed");
+
+                            //                        storedSelection=(IStructuredSelection) viewer.getSelection();
+                            //                        doClearAllTests( jcp );
+                            doRunAllTests();
+
+                            //TODO: run tests anew here
+                        }
                     }
-                }
-            });
+                };
 
+                jcp.addPropertyChangedListener(jcplistener);
+                editorListenerMap.put( jcp, jcplistener );
+            }
+            
             doClearAllTests( jcp );
 
             return;
@@ -1012,7 +1021,8 @@ public class DSView extends ViewPart implements IPartListener{
 
         IWorkbenchPart ppart=getSupportedEditor( part );
         if (ppart==null) return;
-        
+
+        editorListenerMap.remove( part );
         if (editorTestMap.keySet().contains( ppart )){
             editorTestMap.remove( ppart );
             updateView();
