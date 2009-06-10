@@ -67,18 +67,7 @@ public class TestRunPropertySource extends BasicPropertySource
         else
             addToValueMap(STATUS,"N/A");
 
-        if (item.getConsensusStatus()==ITestResult.POSITIVE)
-            addToValueMap(CONSENSUS,"POSITIVE");
-        else if (item.getConsensusStatus()==ITestResult.NEGATIVE)
-            addToValueMap(CONSENSUS,"NEGATIVE");
-        else if (item.getConsensusStatus()==ITestResult.INCONCLUSIVE)
-            addToValueMap(CONSENSUS,"INCONCLUSIVE");
-        else if (item.getConsensusStatus()==ITestResult.INFORMATIVE)
-            addToValueMap(CONSENSUS,"INFORMATIVE");
-        else if (item.getConsensusStatus()==ITestResult.ERROR)
-            addToValueMap(CONSENSUS,"ERROR");
-        else
-            addToValueMap(CONSENSUS,"N/A");
+            addToValueMap(CONSENSUS,item.getConsensusString());
     }    
     
     

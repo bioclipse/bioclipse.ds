@@ -231,6 +231,24 @@ public class TestRun implements ISubStructure{
 
     }
     
+    public String getConsensusString(){
+        int cons=getConsensusStatus();
+        
+        if (cons==ITestResult.POSITIVE)
+            return "POSITIVE";
+        else if (cons==ITestResult.NEGATIVE)
+            return"NEGATIVE";
+        else if (cons==ITestResult.INCONCLUSIVE)
+            return"INCONCLUSIVE";
+        else if (cons==ITestResult.INFORMATIVE)
+            return"INFORMATIVE";
+        else if (cons==ITestResult.ERROR)
+            return"ERROR";
+        else
+            return"N/A";
+        
+    }
+    
     public String getSuffix(){
 
         if (status==FINISHED){
