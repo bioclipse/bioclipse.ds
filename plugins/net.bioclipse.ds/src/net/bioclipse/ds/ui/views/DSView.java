@@ -24,10 +24,10 @@ import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.business.TestHelper;
+import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
-import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 

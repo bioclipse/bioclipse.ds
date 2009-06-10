@@ -17,8 +17,8 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.model.impl.DSException;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;

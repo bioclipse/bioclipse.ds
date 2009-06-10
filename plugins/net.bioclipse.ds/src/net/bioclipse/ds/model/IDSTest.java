@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.model.impl.DSException;
 
 /**
  * A top interface for all tests

@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.model.impl;
+package net.bioclipse.ds.model;
 
 
 public class DSException extends Exception {
