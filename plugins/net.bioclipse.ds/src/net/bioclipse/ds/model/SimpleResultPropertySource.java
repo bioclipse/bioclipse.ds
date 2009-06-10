@@ -52,6 +52,8 @@ public class SimpleResultPropertySource extends BasicPropertySource
             addToValueMap(STATUS,"NEGATIVE");
         else if (item.getResultStatus()==ITestResult.INCONCLUSIVE)
             addToValueMap(STATUS,"INCONCLUSIVE");
+        else if (item.getResultStatus()==ITestResult.INFORMATIVE)
+            addToValueMap(STATUS,"INFORMATIVE");
         else if (item.getResultStatus()==ITestResult.ERROR)
             addToValueMap(STATUS,"ERROR");
 

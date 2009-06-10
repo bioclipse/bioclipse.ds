@@ -33,6 +33,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private String pluginID;
     private Map<String, String > parameters;
     private boolean excluded;
+    private boolean informative;
     
     /**
      * Empty if no problems
@@ -160,6 +161,18 @@ public abstract class AbstractDSTest implements IDSTest{
     public void setDescription( String description ) {
     
         this.description = description;
+    }
+
+    
+    public boolean isInformative() {
+    
+        return informative;
+    }
+
+    
+    public void setInformative( boolean informative ) {
+    
+        this.informative = informative;
     }
 
 }

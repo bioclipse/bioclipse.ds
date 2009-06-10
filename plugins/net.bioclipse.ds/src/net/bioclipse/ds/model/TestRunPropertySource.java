@@ -60,6 +60,8 @@ public class TestRunPropertySource extends BasicPropertySource
             addToValueMap(STATUS,"FINISHED");
         else if (item.getStatus()==TestRun.ERROR)
             addToValueMap(STATUS,"ERROR");
+        else if (item.getStatus()==ITestResult.INFORMATIVE)
+            addToValueMap(STATUS,"INFORMATIVE");
         else if (item.getStatus()==TestRun.EXCLUDED)
             addToValueMap(STATUS,"EXCLUDED");
         else
@@ -71,11 +73,12 @@ public class TestRunPropertySource extends BasicPropertySource
             addToValueMap(CONSENSUS,"NEGATIVE");
         else if (item.getConsensusStatus()==ITestResult.INCONCLUSIVE)
             addToValueMap(CONSENSUS,"INCONCLUSIVE");
+        else if (item.getConsensusStatus()==ITestResult.INFORMATIVE)
+            addToValueMap(CONSENSUS,"INFORMATIVE");
         else if (item.getConsensusStatus()==ITestResult.ERROR)
             addToValueMap(CONSENSUS,"ERROR");
         else
             addToValueMap(CONSENSUS,"N/A");
-
     }    
     
     

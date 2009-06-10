@@ -43,6 +43,8 @@ public class TestRun implements ISubStructure{
     private static Image runningImg;
     private static Image notrunImg;
     private static Image excludedImg;
+    private static Image informationImg;
+
 
     private IDSTest test;
     private IEditorPart editor;
@@ -142,9 +144,6 @@ public class TestRun implements ISubStructure{
             initIcons();
         
         if (status==FINISHED){
-            if (!hasMatches()){
-                return checkImg;
-            }
             
             //We have matches, calculate consensus
             int consensus=getConsensusStatus();
@@ -154,6 +153,8 @@ public class TestRun implements ISubStructure{
                 return checkImg;
             else if (consensus==ITestResult.ERROR)
                 return errorImg;
+            else if (consensus==ITestResult.INFORMATIVE)
+                return informationImg;
             else
                 return equalImg;
             
@@ -174,12 +175,6 @@ public class TestRun implements ISubStructure{
     /**
      * Calculate a consensus result status for this testrun.
      * Default impl is just a simple voting of all results.<br>
-     * <ul>
-     * <li>if numpos == 0 : return NEGATIVE
-     * <li>else if numpos == numneg : return INCONCLUSIVE
-     * <li>else if numpos > numneg : return POSITIVE
-     * <li>else return NEGATIVE
-     * </ul>
      * 
      * TODO: Hook in custom calculation of consensus.
      * 
@@ -195,6 +190,7 @@ public class TestRun implements ISubStructure{
         int numneg=0;
         int numinc=0;
         int numerr=0;
+        int numinf=0;
         
         for (ITestResult res : results){
             if (res.getResultStatus()==ITestResult.POSITIVE)
@@ -205,11 +201,17 @@ public class TestRun implements ISubStructure{
                 numinc++;
             else if (res.getResultStatus()==ITestResult.ERROR)
                 numerr++;
+            else if (res.getResultStatus()==ITestResult.INFORMATIVE)
+                numinf++;
         }
 
         //If at least one but more pos than neg:
         if (numerr>numneg && numerr>numpos)
             return ITestResult.ERROR;
+
+        //If we have informative, should only be one
+        else if (numinf>0)
+            return ITestResult.INFORMATIVE;
 
         //If no positive results:
         else if (numpos==0)
@@ -314,6 +316,8 @@ public class TestRun implements ISubStructure{
         runningImg=Activator.getImageDecriptor( "icons/running.gif" ).createImage();
         notrunImg=Activator.getImageDecriptor( "icons/box-q.gif" ).createImage();
         excludedImg=Activator.getImageDecriptor( "/icons/deactivated.gif" ).createImage();
+        informationImg=Activator.getImageDecriptor( "icons/information.gif" ).createImage();
+
     }
 
 }

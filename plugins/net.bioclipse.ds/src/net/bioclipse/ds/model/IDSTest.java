@@ -38,6 +38,8 @@ public interface IDSTest extends ISubStructure{
     public void setExcluded(boolean excluded);
     public String getTestErrorMessage();
     public void setTestErrorMessage( String testErrorMessage );
+    public void setInformative( boolean informative );
+    public boolean isInformative();
 
     /**
      * This is the test that is run on a molecule

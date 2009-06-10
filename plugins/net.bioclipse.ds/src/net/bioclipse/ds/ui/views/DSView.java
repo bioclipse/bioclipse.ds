@@ -337,13 +337,19 @@ public class DSView extends ViewPart implements IPartListener{
         int numinc=0;
 
         for (TestRun tr : activeTestRuns){
-            if (tr.getStatus()==TestRun.FINISHED){
-                if (tr.getConsensusStatus()==ITestResult.POSITIVE)
-                    numpos++;
-                else if (tr.getConsensusStatus()==ITestResult.NEGATIVE)
-                    numneg++;
-                else if (tr.getConsensusStatus()==ITestResult.INCONCLUSIVE)
-                    numinc++;
+            //Only count non-informative and included testruns
+            if ((!(tr.getTest().isInformative())) 
+                    &&  (!(tr.getTest().isExcluded()))){
+                
+                if (tr.getStatus()==TestRun.FINISHED){
+                    if (tr.getConsensusStatus()==ITestResult.POSITIVE)
+                        numpos++;
+                    else if (tr.getConsensusStatus()==ITestResult.NEGATIVE)
+                        numneg++;
+                    else if (tr.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+                        numinc++;
+                }
+
             }
         }
 

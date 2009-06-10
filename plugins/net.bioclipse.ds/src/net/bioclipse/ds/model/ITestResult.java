@@ -27,7 +27,8 @@ public interface ITestResult extends ISubStructure{
     public static final int POSITIVE=0x1;
     public static final int NEGATIVE=0x2;
     public static final int INCONCLUSIVE=0x3;
-    public static final int ERROR=0x4;
+    public static final int INFORMATIVE=0x4;
+    public static final int ERROR=0x5;
 
     
     /**
