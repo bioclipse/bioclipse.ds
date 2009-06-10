@@ -13,6 +13,7 @@ package net.bioclipse.ds.dblookup.impl;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,63 +106,35 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             IMoleculeTableManager moltable = net.bioclipse.cdk.ui.sdfeditor.Activator.getDefault()
             .getMoleculeTableManager();
 
-            //TODO: read FILE using inputstream
+            //Read index and parse properties
+            IFile file = net.bioclipse.core.Activator.getVirtualProject()
+            .getFile( "dbLookup.sdf" );
+            if(!file.exists()) {
+            try {
+                InputStream is = url2.openStream();
+                    file.create( is
+                                 , true, null );
+                } catch ( CoreException e1 ) {
+                    // TODO Auto-generated catch block
+                    LogUtils.debugTrace( logger, e1 );
+                } catch ( IOException e ) {
+                    // TODO Auto-generated catch block
+                    LogUtils.debugTrace( logger, e );
+                }
+            }
+            BioclipseJob<SDFIndexEditorModel> job1 = 
+                moltable.createSDFIndex( file, new BioclipseJobUpdateHook<SDFIndexEditorModel>("job") {
+                    @Override
+                    public void completeReturn( SDFIndexEditorModel object ) {
+                    moleculesmodel = object;
+                    }
+                } );
             
-//            try {
-//                FileInputStream fis=new FileInputStream(path);
-//
-//                //Read index and parse properties
-//                BioclipseJob<SDFIndexEditorModel> job = 
-//                                 moltable.createSDFIndex( fis, 
-//                                 new BioclipseJobUpdateHook<SDFIndexEditorModel>
-//                                 ("job"));
-//                
-//                job.join();
-//                moleculesmodel=job.getReturnValue();
-//                
-//            } catch ( FileNotFoundException e1 ) {
-//                throw new DSException("File: " + path + " could not be read: " + 
-//                                      e1.getMessage());
-//            } catch ( InterruptedException e ) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-
-            moleculesmodel = moltable.createSDFIndex( path );
-
-//            //Read index and parse properties
-//            IFile file = net.bioclipse.core.Activator.getVirtualProject()
-//            .getFile( "dbLookupexact.sdf" );
-//            try {
-//                file.create( getClass().getResourceAsStream( path )
-//                             , true, null );
-//            } catch ( CoreException e1 ) {
-//                // TODO Auto-generated catch block
-//                LogUtils.debugTrace( logger, e1 );
-//            }
-//            
-//            BioclipseJob<SDFIndexEditorModel> job1 = 
-//                moltable.createSDFIndex( file, new BioclipseJobUpdateHook<SDFIndexEditorModel>("job") {
-//                    
-//                } );
-//
-//            try {
-//                job1.join();
-//            } catch ( InterruptedException e1 ) {
-//              throw new DSException("Error creating index: " + 
-//              e1.getMessage());
-//            }
-//            moleculesmodel=job1.getReturnValue();
-//            
-//            logger.debug("Model file has " + moleculesmodel.getNumberOfMolecules() + 
-//            " number of molecules."); 
-//
-//            if (moleculesmodel.getNumberOfMolecules()<=0){
-//                throw new DSException("Read 0 molecules from database.");
-//            }
-
-
-
+            try {
+                job1.join();
+            } catch ( InterruptedException e ) {
+                throw new DSException("Initialization of DBExactMatch cancelled");
+            }
             //We need to define that we want to read extra properties as well
             List<String> extraProps=new ArrayList<String>();
             extraProps.add( CONSLUSION_PROPERTY_KEY );
