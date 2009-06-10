@@ -70,6 +70,15 @@ public class TestHelper {
                             test.setId(pid);
                             String picon=element.getAttribute("icon");
                             test.setIcon(picon);
+                            String pinformative=element.getAttribute("informative");
+                            if (pinformative!=null){
+                                if (pinformative.equalsIgnoreCase( "true" ))
+                                    test.setInformative(true);
+                                else
+                                    test.setInformative(false);
+                            }
+                            else
+                                test.setInformative(false);
                             
                             String pluginID=element.getNamespaceIdentifier();
                             test.setPluginID( pluginID );
