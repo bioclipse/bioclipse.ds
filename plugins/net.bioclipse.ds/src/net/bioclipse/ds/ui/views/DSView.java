@@ -576,6 +576,7 @@ public class DSView extends ViewPart implements IPartListener{
             else if ( obj instanceof TestRun ) {
                 TestRun testrun = (TestRun) obj;
                 testrun.setStatus( TestRun.NOT_STARTED);
+                testrun.getTest().setExcluded( false );
                 viewer.refresh(testrun);
             }
         }
@@ -594,6 +595,7 @@ public class DSView extends ViewPart implements IPartListener{
             else if ( obj instanceof TestRun ) {
                 TestRun testrun = (TestRun) obj;
                 testrun.setStatus( TestRun.EXCLUDED);
+                testrun.getTest().setExcluded( true );
                 if (testrun.getMatches()!=null)
                     testrun.getMatches().clear();
                 viewer.refresh(testrun);
@@ -670,7 +672,8 @@ public class DSView extends ViewPart implements IPartListener{
 
             if (tr.getTest().getTestErrorMessage().length()<1){
 
-                if (tr.getStatus()==TestRun.EXCLUDED){
+                if (tr.getStatus()==TestRun.EXCLUDED || tr.getTest().isExcluded()){
+                    viewer.refresh(tr);
                     logger.debug( "===== Test: " + tr + " skipped since excluded.");
                 }
                 else{
@@ -936,7 +939,10 @@ public class DSView extends ViewPart implements IPartListener{
                         && test.getTestErrorMessage().length()>0){
                     newTestRun.setStatus( TestRun.ERROR );
                 }
-                    
+                else if (test.isExcluded()){
+                    newTestRun.setStatus( TestRun.EXCLUDED );
+                }
+
                 newTestRuns.add( newTestRun );
             }
         } catch ( BioclipseException e ) {
