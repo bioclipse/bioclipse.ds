@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+
+    <extension
+        point="org.eclipse.ui.commands">
+        <category
+              id="net.bioclipse.ds.commands"
+              name="Decision Support">
+        </category>
+
+		<command
+		        categoryId="net.bioclipse.ds.commands"
+		        defaultHandler="net.bioclipse.ds.birt.handlers.ReportHandler"
+		        id="net.bioclipse.ds.ui.report"
+		        name="Report">
+		</command>
+ </extension>
+
+<extension
+  		point="org.eclipse.ui.menus">
+
+	<menuContribution
+           locationURI="popup:net.bioclipse.ds.ui.views.DSView?after=additions">
+        <command
+              commandId="net.bioclipse.ds.ui.report">
+          <!--visibleWhen>
+           <with
+                 variable="activeContexts">
+              <iterate
+                    operator="or">
+                 <equals
+                       value="net.bioclipse.ui.contexts.JChemPaint">
+                 </equals>
+              </iterate>
+           </with>
+         </visibleWhen-->
+        </command>
+	</menuContribution>
+  </extension>
+<extension
+      point="org.eclipse.ui.editors">
+   <editor
+         class="net.bioclipse.ds.birt.handlers.WrappedBrowserEditor"
+         default="false"
+         id="net.bioclipse.ds.birt.editor"
+         name="Report">
+   </editor>
+</extension>
+   
+ <extension
+      point="org.eclipse.birt.report.viewer.appcontext">
+      <appcontext
+            class="net.ioclipse.ds.birt.MyAppContext">
+      </appcontext>
+ </extension>
+
+
+</plugin>
