@@ -10,6 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.dblookup.impl;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,9 +24,11 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
 import net.bioclipse.cdk.ui.sdfeditor.business.SDFileIndex;
@@ -101,22 +105,62 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
             IMoleculeTableManager moltable = net.bioclipse.cdk.ui.sdfeditor.Activator.getDefault()
             .getMoleculeTableManager();
 
-            //Read index and parse properties
-            IFile file = net.bioclipse.core.Activator.getVirtualProject()
-            .getFile( "/Virtual/dbLookup.sdf" );
-            try {
-                file.create( getClass().getResourceAsStream( path )
-                             , true, null );
-            } catch ( CoreException e1 ) {
-                // TODO Auto-generated catch block
-                LogUtils.debugTrace( logger, e1 );
-            }
+            //TODO: read FILE using inputstream
             
-            BioclipseJob<SDFIndexEditorModel> job1 = 
-                moltable.createSDFIndex( file, new BioclipseJobUpdateHook<SDFIndexEditorModel>("job") {
-                    
-                } );
-            
+//            try {
+//                FileInputStream fis=new FileInputStream(path);
+//
+//                //Read index and parse properties
+//                BioclipseJob<SDFIndexEditorModel> job = 
+//                                 moltable.createSDFIndex( fis, 
+//                                 new BioclipseJobUpdateHook<SDFIndexEditorModel>
+//                                 ("job"));
+//                
+//                job.join();
+//                moleculesmodel=job.getReturnValue();
+//                
+//            } catch ( FileNotFoundException e1 ) {
+//                throw new DSException("File: " + path + " could not be read: " + 
+//                                      e1.getMessage());
+//            } catch ( InterruptedException e ) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+
+            moleculesmodel = moltable.createSDFIndex( path );
+
+//            //Read index and parse properties
+//            IFile file = net.bioclipse.core.Activator.getVirtualProject()
+//            .getFile( "dbLookupexact.sdf" );
+//            try {
+//                file.create( getClass().getResourceAsStream( path )
+//                             , true, null );
+//            } catch ( CoreException e1 ) {
+//                // TODO Auto-generated catch block
+//                LogUtils.debugTrace( logger, e1 );
+//            }
+//            
+//            BioclipseJob<SDFIndexEditorModel> job1 = 
+//                moltable.createSDFIndex( file, new BioclipseJobUpdateHook<SDFIndexEditorModel>("job") {
+//                    
+//                } );
+//
+//            try {
+//                job1.join();
+//            } catch ( InterruptedException e1 ) {
+//              throw new DSException("Error creating index: " + 
+//              e1.getMessage());
+//            }
+//            moleculesmodel=job1.getReturnValue();
+//            
+//            logger.debug("Model file has " + moleculesmodel.getNumberOfMolecules() + 
+//            " number of molecules."); 
+//
+//            if (moleculesmodel.getNumberOfMolecules()<=0){
+//                throw new DSException("Read 0 molecules from database.");
+//            }
+
+
 
             //We need to define that we want to read extra properties as well
             List<String> extraProps=new ArrayList<String>();
@@ -191,11 +235,16 @@ public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
 
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         
-        ICDKMolecule cdkmol=null;
+        ICDKMolecule cdkmol = null;
+        ICDKMolecule cdkmol_in = null;
         try {
-            cdkmol = cdk.create( molecule );
+            cdkmol_in = cdk.create( molecule );
+            cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
+//            cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
             return returnError( "Could not create CDKMolecule", e.getMessage() );
+        } catch ( CloneNotSupportedException e ) {
+            return returnError( "Could not clone CDKMolecule", e.getMessage() );
         }
 
         //Start by searching for inchiKey
