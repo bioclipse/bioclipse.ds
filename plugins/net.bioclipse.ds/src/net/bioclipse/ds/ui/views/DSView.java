@@ -701,7 +701,7 @@ public class DSView extends ViewPart implements IPartListener{
                 //Start up a job with the test
                 BioclipseJob<List<ITestResult>> job = 
                     ds.runTest( tr.getTest().getId(), mol, 
-                    new BioclipseJobUpdateHook(tr.getTest().getName()));
+                    new BioclipseJobUpdateHook<List<ITestResult>>(tr.getTest().getName()));
                 
                 //Store ref to job in list
                 runningJobs.add(job);
