@@ -36,20 +36,8 @@
          id="net.bioclipse.ds.dblookup.bursi"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="net.bioclipse.ds.smarts"
-         download-size="0"
-         install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.smarts.bursi"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
    <plugin
          id="net.bioclipse.ds.signsig"
@@ -62,6 +50,21 @@
          id="net.bioclipse.ds.signsig.bursi"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.smarts"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.smarts.bursi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
