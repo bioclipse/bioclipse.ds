@@ -21,9 +21,9 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
+import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.SimpleResult;
-import net.bioclipse.ds.model.impl.DSException;
 
 
 public class RuleOfFiveTest extends AbstractDSTest{
