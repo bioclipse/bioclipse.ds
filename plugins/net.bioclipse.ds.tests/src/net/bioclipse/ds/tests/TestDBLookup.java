@@ -22,8 +22,8 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
+import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.impl.DSException;
 import net.bioclipse.jobs.BioclipseUIJob;
 
 import org.junit.Test;
