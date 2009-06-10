@@ -30,6 +30,7 @@ import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
@@ -207,11 +208,18 @@ public class SmartsMatchingTest extends AbstractDSTest implements IDSTest{
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol=null;
         try {
-            cdkmol = cdk.create( molecule );
+            ICDKMolecule cdkmol_in = cdk.create( molecule );
+            cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
+//            cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
-            return returnError( "Unable to create CDKMolceule" , e.getMessage());
+            return returnError( "Could not create CDKMolecule", e.getMessage() );
+        } catch ( CloneNotSupportedException e ) {
+            return returnError( "Could not clone CDKMolecule", e.getMessage() );
         }
 
+        
+        
+        
         IAtomContainer ac = cdkmol.getAtomContainer();
         int noHits=0;
         int noErr=0;
