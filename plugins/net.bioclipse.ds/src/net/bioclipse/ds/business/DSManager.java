@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -80,7 +81,7 @@ public class DSManager implements IBioclipseManager {
  
     
     public void runTest( String testID, IMolecule mol, 
-                             IReturner returner, IProgressMonitor monitor) 
+                             IReturner<List<? extends ITestResult>> returner, IProgressMonitor monitor) 
                              throws BioclipseException{
 
         IDSTest test = getTest( testID );

@@ -11,14 +11,9 @@
 package net.bioclipse.ds.business;
 
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
-
-import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -54,7 +49,7 @@ public interface IDSManager extends IBioclipseManager {
                                          BioclipseUIJob<List<ITestResult>> job)
                                          throws BioclipseException;
     public BioclipseJob<List<ITestResult>> runTest( String testID, IMolecule mol, 
-                                                    BioclipseJobUpdateHook h)
+                                    BioclipseJobUpdateHook<List<ITestResult>> h)
                                          throws BioclipseException;
 
     
