@@ -91,6 +91,16 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="reportmodel" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java"/>
+               </appinfo>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
