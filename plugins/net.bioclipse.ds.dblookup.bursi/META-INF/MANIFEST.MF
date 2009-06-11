@@ -7,9 +7,10 @@ Bundle-Activator: net.bioclipse.ds.dblookup.bursi.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.bioclipse.ds;bundle-version="0.1.1",
- net.bioclipse.ds.dblookup;bundle-version="0.1.1",
+ net.bioclipse.ds,
+ net.bioclipse.ds.dblookup,
  net.bioclipse.cdk.ui.sdfeditor;bundle-version="2.0.0",
- net.bioclipse.cdk.business;bundle-version="2.0.0"
+ net.bioclipse.cdk.business;bundle-version="2.0.0",
+ net.bioclipse.core;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy

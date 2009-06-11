@@ -9,6 +9,7 @@
             icon="icons/db.gif"
             id="dblookup.exact.bursi"
             informative="true"
+            reportmodel="net.bioclipse.ds.dblookup.impl.DBExactmodel"
             name="BursiDB exact lookup">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
@@ -19,6 +20,7 @@
             id="dblookup.nearest.bursi"
             name="BursiDB nearest neighbour"
             class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
+            reportmodel="net.bioclipse.ds.dblookup.impl.DBNNmodel"
             icon="icons/db.gif">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
