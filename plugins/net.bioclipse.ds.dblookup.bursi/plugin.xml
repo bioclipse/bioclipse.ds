@@ -11,7 +11,7 @@
             informative="true"
             name="BursiDB exact lookup">
             <resource name="file"
-                  path="data/cas_4337_fp_inch.sdf">
+                  path="data/cas_4337_noH_props.sdf">
             </resource>
       </test>
 
@@ -21,7 +21,7 @@
             class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
             icon="icons/db.gif">
             <resource name="file"
-                  path="data/cas_4337_fp_inch.sdf">
+                  path="data/cas_4337_noH_props.sdf">
             </resource>
             <parameter
                   name="distance.tanimoto"
