@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bioclipse.ds.model.report.AbstractTestReportModel;
+
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
@@ -34,6 +36,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private Map<String, String > parameters;
     private boolean excluded;
     private boolean informative;
+    private AbstractTestReportModel reportmodel;
     
     /**
      * Empty if no problems
@@ -173,6 +176,18 @@ public abstract class AbstractDSTest implements IDSTest{
     public void setInformative( boolean informative ) {
     
         this.informative = informative;
+    }
+
+    
+    public AbstractTestReportModel getReportmodel() {
+    
+        return reportmodel;
+    }
+
+    
+    public void setReportmodel( AbstractTestReportModel reportmodel ) {
+    
+        this.reportmodel = reportmodel;
     }
 
 }

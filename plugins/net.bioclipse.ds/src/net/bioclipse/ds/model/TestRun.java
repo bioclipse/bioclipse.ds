@@ -13,6 +13,7 @@ package net.bioclipse.ds.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
 
@@ -50,6 +51,7 @@ public class TestRun implements ISubStructure{
     private IEditorPart editor;
     private List<ITestResult> results;
     private int status;
+    private ICDKMolecule molecule;
     
     
     public TestRun() {
@@ -350,6 +352,18 @@ public class TestRun implements ISubStructure{
         excludedImg=Activator.getImageDecriptor( "/icons/deactivated.gif" ).createImage();
         informationImg=Activator.getImageDecriptor( "icons/information.gif" ).createImage();
 
+    }
+
+    
+    public ICDKMolecule getMolecule() {
+    
+        return molecule;
+    }
+
+    
+    public void setMolecule( ICDKMolecule molecule ) {
+    
+        this.molecule = molecule;
     }
 
 }

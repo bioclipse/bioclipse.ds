@@ -13,12 +13,8 @@ package net.bioclipse.ds.business;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
@@ -27,7 +23,6 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ui.IEditorPart;
 
 
 public class TestHelper {
@@ -58,12 +53,13 @@ public class TestHelper {
 
                     String pname=element.getAttribute("name");
 
+                    IDSTest test=null;
                     Object obj;
                     try {
                         obj = element.createExecutableExtension("class");
                         if (obj instanceof IDSTest){
 
-                            IDSTest test=(IDSTest)obj;
+                            test=(IDSTest)obj;
 
                             test.setName(pname);
                             String pid=element.getAttribute("id");
@@ -98,13 +94,34 @@ public class TestHelper {
                             }
                             retlist.add( test );
 
-                            logger.debug("Added Decision support Test from EP: " + element.
-                                         getAttribute("name") + " to " + pname);
+                            logger.debug("Added Decision support Test from EP: "
+                                         + element.getAttribute("name") + 
+                                         " to " + pname);
                         }else{
-                            logger.error("WarningTest class " + pname + " must implement IWarningTest ");
+                            logger.error("WarningTest class " + pname 
+                                         + " must implement IWarningTest ");
                         }
                     } catch ( CoreException e ) {
-                        logger.error("Error creating class for :" + pname +": " + e.getLocalizedMessage() );
+                        logger.error("Error creating class for :" + pname + 
+                                     ": " + e.getLocalizedMessage() );
+                    }
+
+                    //Add a reportmodel for the Test if it declares one 
+                    //in the manifest
+
+                    if (test!=null){
+                        try {
+                            Object rmodel = element
+                                .createExecutableExtension("reportmodel");
+                            if ( rmodel instanceof AbstractTestReportModel ) {
+                                AbstractTestReportModel abmodel = (AbstractTestReportModel) rmodel;
+                                test.setReportmodel( abmodel );
+                            }
+                        } catch ( CoreException e ) {
+                            logger.debug("The test: " + test.getName() + " did not " +
+                            "provide a reportmodel.");
+//                            e.printStackTrace();
+                        }
                     }
 
                 }

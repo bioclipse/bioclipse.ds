@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
 /**
  * A top interface for all tests
@@ -39,6 +40,8 @@ public interface IDSTest extends ISubStructure{
     public void setTestErrorMessage( String testErrorMessage );
     public void setInformative( boolean informative );
     public boolean isInformative();
+    public AbstractTestReportModel getReportmodel();
+    public void setReportmodel( AbstractTestReportModel reportmodel );
 
     /**
      * This is the test that is run on a molecule

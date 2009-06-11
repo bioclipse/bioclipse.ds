@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
@@ -28,6 +29,11 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.report.AbstractTestReportModel;
+import net.bioclipse.ds.model.report.DSRow;
+import net.bioclipse.ds.model.report.DSSingleReportModel;
+import net.bioclipse.ds.model.report.ReportHelper;
+import net.bioclipse.ds.ui.IDSViewNoCloseEditor;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
@@ -57,6 +63,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+import org.openscience.cdk.CDKConstants;
 
 public class DSView extends ViewPart implements IPartListener{
 
@@ -117,11 +124,17 @@ public class DSView extends ViewPart implements IPartListener{
     private Canvas consensusCanvas;
 
     private Action helpAction;
+
+    private static DSView instance;
     
     /**
      * The constructor.
      */
     public DSView() {
+    }
+    
+    public static DSView getInstance(){
+        return instance;
     }
 
     public List<BioclipseJob<List<ITestResult>>> getRunningJobs() {
@@ -140,6 +153,8 @@ public class DSView extends ViewPart implements IPartListener{
      * to create the viewer and initialize it.
      */
     public void createPartControl(Composite parent) {
+        
+        DSView.instance=this;
         
         GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 1;
@@ -219,7 +234,8 @@ public class DSView extends ViewPart implements IPartListener{
         editorListenerMap=new HashMap<IWorkbenchPart, IPropertyChangeListener>();
         runningJobs=new ArrayList<BioclipseJob<List<ITestResult>>>();
         
-        setAutorun( true );
+        //Turn off autorun by default
+        setAutorun( false );
         updateActionStates();
 
         
@@ -335,6 +351,9 @@ public class DSView extends ViewPart implements IPartListener{
         int numneg=0;
         int numinc=0;
 
+        if (activeTestRuns==null)
+            return ITestResult.INCONCLUSIVE;
+            
         for (TestRun tr : activeTestRuns){
             //Only count non-informative and included testruns
             if ((!(tr.getTest().isInformative())) 
@@ -648,7 +667,6 @@ public class DSView extends ViewPart implements IPartListener{
 
         //Wait for all running jobs to cancel
         for (BioclipseJob<List<ITestResult>> job : runningJobs){
-            //Ask job to cancel
             logger.debug("Waiting for Job: " + job.getName() + " to finish...");
             try {
                 job.join();
@@ -679,6 +697,7 @@ public class DSView extends ViewPart implements IPartListener{
                     
                     logger.debug( "===== Testrun: " + tr + " started" );
                     tr.setStatus( TestRun.RUNNING );
+                    tr.setMolecule( mol );
                     viewer.refresh(tr);
                     viewer.setExpandedState( tr, true );
 
@@ -905,10 +924,11 @@ public class DSView extends ViewPart implements IPartListener{
                             ("TestsView reacting: JCP editor model has changed");
 
                             //                        storedSelection=(IStructuredSelection) viewer.getSelection();
-                            //                        doClearAllTests( jcp );
-                            doRunAllTests();
 
-                            //TODO: run tests anew here
+                            doClearAllTests( jcp );
+                            if (isAutorun())
+                                doRunAllTests();
+
                         }
                     }
                 };
@@ -963,6 +983,71 @@ public class DSView extends ViewPart implements IPartListener{
         updateActionStates();
         updateView();
     }
+    
+    public DSSingleReportModel waitAndReturnReportModel(){
+        
+        //Wait for all jobs to finish
+        for (BioclipseJob<List<ITestResult>> job : runningJobs){
+            logger.debug("Waiting for Job: " + job.getName() + " to finish...");
+            try {
+                job.join();
+            } catch ( InterruptedException e ) {
+            }
+            logger.debug("Job: " + job.getName() + " finished.");
+        }
+        
+        if (activeTestRuns==null || activeTestRuns.size()<=0){
+            logger.error( "No active testruns to make a chart from." );
+            return null;
+        }
+
+        //Set up and return ReportModel
+        DSSingleReportModel reportmodel=new DSSingleReportModel();
+
+        //Get mol from first testrun
+        TestRun first = activeTestRuns.get( 0 );
+        ICDKMolecule mol = first.getMolecule();
+
+        //Get name
+        String name = (String) mol.getAtomContainer().getProperty( CDKConstants.TITLE );
+        if (name==null)
+            name="N/A";
+        reportmodel.setCompoundName( name );
+        
+        ICDKManager cdk = net.bioclipse.cdk.business.Activator
+                                              .getDefault().getJavaCDKManager();
+        try {
+            //Generate SMILES
+            String smi=cdk.calculateSMILES( mol );
+            reportmodel.setSMILES( smi );
+
+            //Generate Mass
+            double mw=cdk.calculateMass( mol );
+            reportmodel.setMw( mw );
+
+            //Generate structure image
+            byte[] structureImage = ReportHelper.createImage(mol, null);
+            reportmodel.setQueryStructure( structureImage );
+        } catch ( BioclipseException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+       
+        //Add all testmodels to ReportModel
+        for (TestRun tr : activeTestRuns){
+            AbstractTestReportModel testreportmodel=tr.getTest().getReportmodel();
+            if (testreportmodel!=null){
+                testreportmodel.setName( tr.getTest().getId() );
+                if (testreportmodel!=null){
+                    testreportmodel.setTestrun( tr );
+                    reportmodel.addTestModel( testreportmodel );
+                }
+            }
+        }
+        
+        return reportmodel;
+        
+    }
 
     
     /* ================================
@@ -975,6 +1060,12 @@ public class DSView extends ViewPart implements IPartListener{
     public void partActivated( IWorkbenchPart part ) {
       logger.debug("Part:" + part.getTitle() + " activated");
         if (!( part instanceof IEditorPart )) return;
+        
+        if ( part instanceof IDSViewNoCloseEditor ) {
+            //Do not react on this; no clear, no new tests
+            return;
+        }
+        
         IWorkbenchPart ppart=getSupportedEditor( part );
         if (ppart==null){
             activeTestRuns=null;
@@ -1002,6 +1093,11 @@ public class DSView extends ViewPart implements IPartListener{
 //        logger.debug("Part:" + part.getTitle() + " brought to top");
         if (!( part instanceof IEditorPart )) return;
 
+        if ( part instanceof IDSViewNoCloseEditor ) {
+            //Do not react on this; no clear, no new tests
+            return;
+        }
+
         IWorkbenchPart ppart=getSupportedEditor( part );
         if (ppart==null) return;
 
@@ -1018,6 +1114,7 @@ public class DSView extends ViewPart implements IPartListener{
 //      logger.debug("Part:" + part.getTitle() + " closed");
         if (!( part instanceof IEditorPart )) return;
 
+        
         IWorkbenchPart ppart=getSupportedEditor( part );
         if (ppart==null) return;
 
