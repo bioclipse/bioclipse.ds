@@ -6,7 +6,7 @@
          point="net.bioclipse.ds.test">
       <test
             class="net.bioclipse.ds.lipinski.impl.RuleOfFiveTest"
-            icon="icons/rof.gif"
+            icon="icons/drug_cap.png"
             id="lipinski"
             informative="true"
             name="Lipinski&apos;s Rule of Five">
