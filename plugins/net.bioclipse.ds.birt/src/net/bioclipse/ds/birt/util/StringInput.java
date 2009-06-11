@@ -8,7 +8,7 @@
  *
  * Contact: http://www.bioclipse.net/
  ******************************************************************************/
-package net.bioclipse.ds.birt.handlers;
+package net.bioclipse.ds.birt.util;
 
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -18,13 +18,13 @@ import org.eclipse.ui.IStorageEditorInput;
 /**
  * String input to allow opening editors without an IFile backend.
  * 
- * @author egonw
+ * @author egonw, olass
  */
 public class StringInput implements IStorageEditorInput {
 
     private IStorage storage;
     
-    StringInput(IStorage storage) {
+    public StringInput(IStorage storage) {
         this.storage = storage;
     }
     

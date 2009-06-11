@@ -8,7 +8,7 @@
  *
  * Contact: http://www.bioclipse.net/
  ******************************************************************************/
-package net.bioclipse.ds.birt.handlers;
+package net.bioclipse.ds.birt.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -20,13 +20,13 @@ import org.eclipse.core.runtime.IPath;
 /**
  * IStorage for to allow opening editors without an IFile backend.
  * 
- * @author egonw
+ * @author egonw, olas
  */
 public class StringStorage implements IStorage {
 
     private String string;
 
-    StringStorage(String input) {
+    public StringStorage(String input) {
         this.string = input;
     }
 

@@ -1,4 +1,4 @@
-package net.bioclipse.ds.birt.handlers;
+package net.bioclipse.ds.birt.util;
 
 import java.io.InputStream;
 import java.io.Reader;

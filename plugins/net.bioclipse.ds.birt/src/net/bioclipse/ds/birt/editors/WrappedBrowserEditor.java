@@ -1,4 +1,4 @@
-package net.bioclipse.ds.birt.handlers;
+package net.bioclipse.ds.birt.editors;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.bioclipse.ds.birt.Activator;
+import net.bioclipse.ds.ui.IDSViewNoCloseEditor;
 
 import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.EngineConstants;
@@ -17,6 +18,7 @@ import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
+import org.eclipse.birt.report.viewer.ViewerPlugin;
 import org.eclipse.birt.report.viewer.utilities.WebViewer;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,13 +31,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.osgi.framework.Bundle;
 
 
-public class WrappedBrowserEditor extends EditorPart{
+public class WrappedBrowserEditor extends EditorPart implements IDSViewNoCloseEditor{
 
     private Browser browser;
 
@@ -213,6 +214,38 @@ public class WrappedBrowserEditor extends EditorPart{
         
         
     }
+    
+    
+    public void openNewViewer() throws IOException{
+        
+        
+        Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(
+                                                           Activator.PLUGIN_ID); 
+        URL url = FileLocator.find(bundle, 
+                                new Path("/reports/ds-single.rptdesign"), null);
+        String rpt = FileLocator.toFileURL(url).getPath();
+
+
+//        System.out.println("Jar path: " + jarpath);
+        System.out.println("Design path: " + rpt);
+
+        
+        //Do new viewer
+        ViewerPlugin.getDefault( ).getPluginPreferences( ).setValue("APPCONTEXT_EXTENSION_KEY", "MyAppContext");
+
+        HashMap myparms = new HashMap();
+        myparms.put("SERVLET_NAME_KEY", "frameset");
+//        myparms.put("SERVLET_NAME_KEY", "run");
+        myparms.put("FORMAT_KEY", "html");
+        //myparms.put("RESOURCE_FOLDER_KEY", "c:/myresources");
+        //myparms.put("ALLOW_PAGE", false);
+        //myparms.put("MAX_ROWS_KEY", "500");
+        WebViewer.display(rpt, browser, myparms);
+
+        
+        
+    }
+    
     
     /*
      * UNUSED BELOW

@@ -24,7 +24,8 @@
 	<menuContribution
            locationURI="popup:net.bioclipse.ds.ui.views.DSView?after=additions">
         <command
-              commandId="net.bioclipse.ds.ui.report">
+              commandId="net.bioclipse.ds.ui.report"
+              icon="icons/pie.png">
           <!--visibleWhen>
            <with
                  variable="activeContexts">
@@ -42,9 +43,10 @@
 <extension
       point="org.eclipse.ui.editors">
    <editor
-         class="net.bioclipse.ds.birt.handlers.WrappedBrowserEditor"
+         class="net.bioclipse.ds.birt.editors.WrappedBrowserEditor"
          default="false"
          id="net.bioclipse.ds.birt.editor"
+         icon="icons/pie.png"
          name="Report">
    </editor>
 </extension>
@@ -52,7 +54,7 @@
  <extension
       point="org.eclipse.birt.report.viewer.appcontext">
       <appcontext
-            class="net.ioclipse.ds.birt.MyAppContext">
+            class="net.bioclipse.ds.birt.MyAppContext">
       </appcontext>
  </extension>
 

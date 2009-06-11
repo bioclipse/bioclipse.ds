@@ -1,10 +1,14 @@
 package net.bioclipse.ds.birt.handlers;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
 import net.bioclipse.ds.birt.Activator;
+import net.bioclipse.ds.birt.editors.WrappedBrowserEditor;
+import net.bioclipse.ds.birt.util.StringInput;
+import net.bioclipse.ds.birt.util.StringStorage;
 
 import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.EngineConfig;
@@ -62,7 +66,12 @@ public class ReportHandler extends AbstractHandler{
                 WrappedBrowserEditor editor = (WrappedBrowserEditor) part;
 //                editor.openFile( "/Users/ola/Workspaces/workspaceBIRT/ola/eQsar.rptdesign" );
 //                editor.openZone( "" );
-                editor.useScriptedDS();
+//                editor.useScriptedDS();
+                try {
+                    editor.openNewViewer();
+                } catch ( IOException e ) {
+                    e.printStackTrace();
+                }
             }
             
 
