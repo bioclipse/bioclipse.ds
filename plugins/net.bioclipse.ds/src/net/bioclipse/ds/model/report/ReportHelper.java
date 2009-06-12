@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +18,18 @@ import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
+import net.bioclipse.cdk.jchempaint.generators.SubStructureGenerator;
+import net.bioclipse.cdk.jchempaint.wizards.NewMoleculeWizard;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.SubStructureMatch;
 
 import org.openscience.cdk.Molecule;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.renderer.Renderer;
 import org.openscience.cdk.renderer.font.AWTFontManager;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator;
@@ -69,10 +76,40 @@ public class ReportHelper {
         } catch (Exception e) { }
         mol = sdg.getMolecule();
         
-        
         // generators make the image elements
         List<IGenerator> generators = new ArrayList<IGenerator>();
+
+        //Add the standard generators
         generators.add(new BasicBondGenerator());
+
+        SubStructureMatch newMatch=null;
+        
+        //If we have a match:
+        //We need to generate a new ISubstructureMatch from pre-clone and SDG
+        if ( match instanceof SubStructureMatch ) {
+            SubStructureMatch submatch = (SubStructureMatch) match;
+
+            newMatch=new SubStructureMatch(submatch.getName(),
+                                                    submatch.getResultStatus());
+            newMatch.setTestRun( ((SubStructureMatch) match).getTestRun() );
+            IAtomContainer newac = NoNotificationChemObjectBuilder.getInstance().newAtomContainer();
+            for (IAtom atom : match.getAtomContainer().atoms()){
+                int atomno=cdkmol.getAtomContainer().getAtomNumber( atom );
+                IAtom newAtom=mol.getAtom( atomno );
+//                match.getAtomContainer().
+                newac.addAtom( newAtom );
+            }
+            
+            newMatch.setAtomContainer( newac );
+        }
+        
+        if (newMatch!=null){
+            SubStructureGenerator generator=new SubStructureGenerator();
+            generator.add( newMatch );
+            int a=0;
+            generators.add(generator);
+        }
+        
         generators.add(new BasicAtomGenerator());
         
         // the renderer needs to have a toolkit-specific font manager 
@@ -80,6 +117,7 @@ public class ReportHelper {
         
         // the call to 'setup' only needs to be done on the first paint
         renderer.setup(mol, drawArea);
+        renderer.getRenderer2DModel().setHighlightDistance( 18 );
         
         renderer.setZoomToFit( WIDTH/2, HEIGHT/2, WIDTH, HEIGHT );
         

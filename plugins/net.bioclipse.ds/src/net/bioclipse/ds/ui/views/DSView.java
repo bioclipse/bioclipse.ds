@@ -722,10 +722,6 @@ public class DSView extends ViewPart implements IPartListener{
                     ds.runTest( tr.getTest().getId(), mol, 
                     new BioclipseJobUpdateHook<List<ITestResult>>(tr.getTest().getName()));
                 
-                //Store ref to job in list
-                runningJobs.add(job);
-                
-
             job.addJobChangeListener( new IJobChangeListener(){
 
                 public void aboutToRun( IJobChangeEvent event ) {
@@ -783,7 +779,13 @@ public class DSView extends ViewPart implements IPartListener{
 
                 public void sleeping( IJobChangeEvent event ) {
                 }});
-                
+
+            //Store ref to job in list
+            runningJobs.add(job);
+
+
+
+            
             } catch ( BioclipseException e ) {
                 logger.error( "Error running test: " + tr.getTest() + 
                               ": " + e.getMessage());
