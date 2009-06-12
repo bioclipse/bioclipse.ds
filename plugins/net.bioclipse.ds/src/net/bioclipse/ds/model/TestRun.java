@@ -205,8 +205,10 @@ public class TestRun implements ISubStructure, IColorProvider{
     public int getConsensusStatus() {
 
         List<Integer> ints=new ArrayList<Integer>();
-        for (ITestResult res : results){
-            ints.add( res.getClassification() );
+        if (results!=null){
+            for (ITestResult res : results){
+                ints.add( res.getClassification() );
+            }
         }
 
         return ConsensusCalculator.calculate( ints );
