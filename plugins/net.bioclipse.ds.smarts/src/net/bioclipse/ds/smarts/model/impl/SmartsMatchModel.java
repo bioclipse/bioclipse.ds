@@ -37,8 +37,8 @@ public class SmartsMatchModel extends AbstractTestReportModel{
 
                 Map<String, String> params=new HashMap<String, String>();
                 params.put("name",  match.getName());
-                params.put("classification",  ReportHelper.convertStatusToString(
-                                                      match.getResultStatus()));
+                params.put("classification",  ReportHelper.statusToString(
+                                                      match.getClassification()));
                 params.put("smarts",  extmolmatch.getSmartsString());
 
                 //Ok, we need to take the query molecule and highlight the 
