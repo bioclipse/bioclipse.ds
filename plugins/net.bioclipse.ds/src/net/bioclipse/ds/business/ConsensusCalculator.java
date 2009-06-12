@@ -6,7 +6,6 @@ import net.bioclipse.ds.model.ITestResult;
 
 
 public class ConsensusCalculator {
-
     
     public static int calculate(List<Integer> classifications){
         
@@ -57,5 +56,7 @@ public class ConsensusCalculator {
             return ITestResult.NEGATIVE;
         
     }
+    
+    
     
 }
