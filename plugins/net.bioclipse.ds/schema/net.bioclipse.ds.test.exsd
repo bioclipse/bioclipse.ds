@@ -97,7 +97,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn="net.bioclipse.ds.model.report.AbstractTestReportModel:"/>
                </appinfo>
             </annotation>
          </attribute>
