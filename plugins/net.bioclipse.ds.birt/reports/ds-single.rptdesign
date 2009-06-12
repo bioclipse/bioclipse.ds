@@ -348,6 +348,40 @@
     </styles>
     <page-setup>
         <simple-master-page name="Simple MasterPage" id="2">
+            <page-header>
+                <grid id="233">
+                    <property name="width">100%</property>
+                    <column id="234">
+                        <property name="width">4.041666666666667in</property>
+                    </column>
+                    <column id="235"/>
+                    <row id="236">
+                        <cell id="237">
+                            <property name="textAlign">left</property>
+                            <property name="verticalAlign">bottom</property>
+                            <label id="241">
+                                <property name="backgroundColor">white</property>
+                                <property name="fontSize">20px</property>
+                                <property name="fontWeight">bold</property>
+                                <text-property name="text">Genetic Toxicology Predictions</text-property>
+                            </label>
+                        </cell>
+                        <cell id="238">
+                            <property name="textAlign">center</property>
+                            <image id="239">
+                                <property name="height">50px</property>
+                                <property name="width">100px</property>
+                                <property name="source">file</property>
+                                <expression name="uri">"bioclipse-logo-100x50.png"</expression>
+                            </image>
+                            <label id="240">
+                                <property name="color">#000085</property>
+                                <text-property name="text">Bioclipse Decision Support</text-property>
+                            </label>
+                        </cell>
+                    </row>
+                </grid>
+            </page-header>
             <page-footer>
                 <text id="3">
                     <property name="contentType">html</property>
@@ -357,12 +391,9 @@
         </simple-master-page>
     </page-setup>
     <body>
-        <label id="39">
-            <property name="backgroundColor">#AEB5FF</property>
-            <property name="fontSize">24px</property>
-            <text-property name="text">Genetic Toxicology Predictions</text-property>
+        <label id="164">
+            <property name="fontSize">x-large</property>
         </label>
-        <label id="164"/>
         <label id="163">
             <property name="fontWeight">bold</property>
             <text-property name="text">Query compound</text-property>
@@ -474,7 +505,7 @@
         </grid>
         <label id="165"/>
         <label id="40">
-            <property name="backgroundColor">#BA9EFF</property>
+            <property name="backgroundColor">#CCDBFF</property>
             <text-property name="text">Ames Test Exact Match</text-property>
         </label>
         <table id="9">
@@ -573,7 +604,7 @@
             </footer>
         </table>
         <label id="92">
-            <property name="backgroundColor">#F4FF98</property>
+            <property name="backgroundColor">#CCDBFF</property>
             <text-property name="text">Ames Test Nearest Neighbors</text-property>
         </label>
         <table id="73">
@@ -686,7 +717,7 @@
             </footer>
         </table>
         <label id="166">
-            <property name="backgroundColor">#D8FFF6</property>
+            <property name="backgroundColor">#CCDBFF</property>
             <text-property name="text">Toxicophore matches (substructural alerts)</text-property>
         </label>
         <table id="167">
@@ -798,7 +829,7 @@
             </footer>
         </table>
         <label id="195">
-            <property name="backgroundColor">#FF9621</property>
+            <property name="backgroundColor">#CCDBFF</property>
             <text-property name="text">QSAR Substructure Significance prediction</text-property>
         </label>
         <table id="196">
