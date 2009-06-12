@@ -16,6 +16,7 @@ import java.util.List;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.business.ConsensusCalculator;
 
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.swt.SWT;
@@ -203,51 +204,12 @@ public class TestRun implements ISubStructure, IColorProvider{
      */
     public int getConsensusStatus() {
 
-        if (results==null)
-            return ITestResult.ERROR;
-
-        int numpos=0;
-        int numneg=0;
-        int numinc=0;
-        int numerr=0;
-        int numinf=0;
-        
+        List<Integer> ints=new ArrayList<Integer>();
         for (ITestResult res : results){
-            if (res.getClassification()==ITestResult.POSITIVE)
-                numpos++;
-            else if (res.getClassification()==ITestResult.NEGATIVE)
-                numneg++;
-            else if (res.getClassification()==ITestResult.INCONCLUSIVE)
-                numinc++;
-            else if (res.getClassification()==ITestResult.ERROR)
-                numerr++;
-            else if (res.getClassification()==ITestResult.INFORMATIVE)
-                numinf++;
+            ints.add( res.getClassification() );
         }
 
-        //If at least one but more pos than neg:
-        if (numerr>numneg && numerr>numpos)
-            return ITestResult.ERROR;
-
-        //If we have informative, should only be one
-        else if (numinf>0)
-            return ITestResult.INFORMATIVE;
-
-        //If no positive results:
-        else if (numpos==0)
-            return ITestResult.NEGATIVE;
-
-        //If at least one but equal:
-        else if (numpos==numneg)
-            return ITestResult.INCONCLUSIVE;
-
-        //If at least one but more pos than neg:
-        else if (numpos>numneg)
-            return ITestResult.POSITIVE;
-
-        //In all other cases:
-        else
-            return ITestResult.NEGATIVE;
+        return ConsensusCalculator.calculate( ints );
 
     }
     
