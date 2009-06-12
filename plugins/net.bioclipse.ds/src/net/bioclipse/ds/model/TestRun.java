@@ -17,7 +17,11 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
 
+import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
@@ -29,7 +33,7 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
  * @author ola
  *
  */
-public class TestRun implements ISubStructure{
+public class TestRun implements ISubStructure, IColorProvider{
 
     public static final int NOT_STARTED=0x1;
     public static final int RUNNING=0x2;
@@ -50,12 +54,12 @@ public class TestRun implements ISubStructure{
     private IDSTest test;
     private IEditorPart editor;
     private List<ITestResult> results;
-    private int status;
+    private int classification;
     private ICDKMolecule molecule;
     
     
     public TestRun() {
-        setStatus( NOT_STARTED );
+        setClassification( NOT_STARTED );
     }
     
     public TestRun(IEditorPart editor, IDSTest test) {
@@ -64,11 +68,11 @@ public class TestRun implements ISubStructure{
         this.test=test;
     }
 
-    public int getStatus() {
-        return status;
+    public int getClassification() {
+        return classification;
     }
-    public void setStatus( int status ) {
-        this.status = status;
+    public void setClassification( int classification ) {
+        this.classification = classification;
     }
 
     public IDSTest getTest() {
@@ -159,7 +163,7 @@ public class TestRun implements ISubStructure{
         if (checkImg==null)
             initIcons();
         
-        if (status==FINISHED){
+        if (classification==FINISHED){
             
             //We have matches, calculate consensus
             int consensus=getConsensusStatus();
@@ -175,13 +179,13 @@ public class TestRun implements ISubStructure{
                 return equalImg;
             
         }            
-        else if (status==ERROR){
+        else if (classification==ERROR){
             return errorImg;
         }
-        else if (status==RUNNING){
+        else if (classification==RUNNING){
             return runningImg;
         }
-        else if (status==EXCLUDED){
+        else if (classification==EXCLUDED){
             return excludedImg;
         }
 
@@ -209,15 +213,15 @@ public class TestRun implements ISubStructure{
         int numinf=0;
         
         for (ITestResult res : results){
-            if (res.getResultStatus()==ITestResult.POSITIVE)
+            if (res.getClassification()==ITestResult.POSITIVE)
                 numpos++;
-            else if (res.getResultStatus()==ITestResult.NEGATIVE)
+            else if (res.getClassification()==ITestResult.NEGATIVE)
                 numneg++;
-            else if (res.getResultStatus()==ITestResult.INCONCLUSIVE)
+            else if (res.getClassification()==ITestResult.INCONCLUSIVE)
                 numinc++;
-            else if (res.getResultStatus()==ITestResult.ERROR)
+            else if (res.getClassification()==ITestResult.ERROR)
                 numerr++;
-            else if (res.getResultStatus()==ITestResult.INFORMATIVE)
+            else if (res.getClassification()==ITestResult.INFORMATIVE)
                 numinf++;
         }
 
@@ -267,20 +271,20 @@ public class TestRun implements ISubStructure{
     
     public String getSuffix(){
 
-        if (status==FINISHED){
+        if (classification==FINISHED){
 
             int numpos=0;
             int numneg=0;
             int numinc=0;
             int numerr=0;
             for (ITestResult res : results){
-                if (res.getResultStatus()==ITestResult.POSITIVE)
+                if (res.getClassification()==ITestResult.POSITIVE)
                     numpos++;
-                else if (res.getResultStatus()==ITestResult.NEGATIVE)
+                else if (res.getClassification()==ITestResult.NEGATIVE)
                     numneg++;
-                else if (res.getResultStatus()==ITestResult.INCONCLUSIVE)
+                else if (res.getClassification()==ITestResult.INCONCLUSIVE)
                     numinc++;
-                else if (res.getResultStatus()==ITestResult.ERROR)
+                else if (res.getClassification()==ITestResult.ERROR)
                     numerr++;
             }
 
@@ -319,15 +323,15 @@ public class TestRun implements ISubStructure{
             
         }
 
-        else if (status==RUNNING){
+        else if (classification==RUNNING){
             return " [running]";
         }
 
-        else if (status==EXCLUDED){
+        else if (classification==EXCLUDED){
             return " [excluded]";
         }
 
-        else if (status==ERROR){
+        else if (classification==ERROR){
             if (getTest().getTestErrorMessage()!=null 
                     && getTest().getTestErrorMessage().length()>0){
                 return " [" + getTest().getTestErrorMessage() +" ]";
@@ -364,6 +368,22 @@ public class TestRun implements ISubStructure{
     public void setMolecule( ICDKMolecule molecule ) {
     
         this.molecule = molecule;
+    }
+
+
+    public Color getBackground( Object element ) {
+
+        if (getConsensusStatus()==ITestResult.POSITIVE)
+            return new Color(Display.getCurrent(), 255, 0, 0);
+
+        if (getConsensusStatus()==ITestResult.NEGATIVE)
+            return new Color(Display.getCurrent(), 0, 255, 0);
+
+        return new Color(Display.getCurrent(), 0, 255, 255);
+    }
+
+    public Color getForeground( Object element ) {
+        return null;
     }
 
 }
