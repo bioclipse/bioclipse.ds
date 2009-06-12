@@ -16,6 +16,7 @@
             id="smarts.bursi"
             name="Bursi toxicophores"
             icon="icons/form.gif"
+            reportmodel="net.bioclipse.ds.smarts.model.impl.SmartsMatchModel"
             class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
