@@ -90,7 +90,7 @@ public class ReportHelper {
             SubStructureMatch submatch = (SubStructureMatch) match;
 
             newMatch=new SubStructureMatch(submatch.getName(),
-                                                    submatch.getResultStatus());
+                                                    submatch.getClassification());
             newMatch.setTestRun( ((SubStructureMatch) match).getTestRun() );
             IAtomContainer newac = NoNotificationChemObjectBuilder.getInstance().newAtomContainer();
             for (IAtom atom : match.getAtomContainer().atoms()){
@@ -146,7 +146,7 @@ public class ReportHelper {
 
     }
 
-    public static String convertStatusToString(int status){
+    public static String statusToString(int status){
         
         if (status==ITestResult.POSITIVE)
             return "POSITIVE";
@@ -162,5 +162,24 @@ public class ReportHelper {
             return"N/A";
         
     }
-    
+
+    public static int stringToStatus(String value){
+        
+//        if (status==ITestResult.POSITIVE)
+//            return "POSITIVE";
+//        else if (status==ITestResult.NEGATIVE)
+//            return"NEGATIVE";
+//        else if (status==ITestResult.INCONCLUSIVE)
+//            return"INCONCLUSIVE";
+//        else if (status==ITestResult.INFORMATIVE)
+//            return"INFORMATIVE";
+//        else if (status==ITestResult.ERROR)
+//            return"ERROR";
+//        else
+//            return"N/A";
+
+        //FIXME: IMPLEMENT THIS
+            return ITestResult.ERROR;
+        
+    }
 }
