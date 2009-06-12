@@ -31,8 +31,8 @@ public class DBExactmodel extends AbstractTestReportModel{
 
                 Map<String, String> params=new HashMap<String, String>();
                 params.put("name",  match.getName());
-                params.put("classification",  ReportHelper.convertStatusToString(
-                                                      match.getResultStatus()));
+                params.put("classification",  ReportHelper.statusToString(
+                                                      match.getClassification()));
 
                 IMolecule bcmol=(IMolecule) match.getAdapter( IMolecule.class );
                 byte[] structureImage = null;
