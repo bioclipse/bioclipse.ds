@@ -7,8 +7,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +21,6 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 
 import org.openscience.cdk.Molecule;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.renderer.Renderer;
@@ -37,14 +34,27 @@ import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 public class ReportHelper {
 
     public static byte[] createImage( net.bioclipse.core.domain.IMolecule bcmol,
-                                      ISubStructure match ) throws BioclipseException {
+                                      ISubStructure match ) 
+                                      throws BioclipseException {
 
+        //Default values
+        int WIDTH = 150;
+        int HEIGHT = 150;
+
+        return createImage(bcmol, match, WIDTH, HEIGHT);
+        
+    }
+    
+    public static byte[] createImage( net.bioclipse.core.domain.IMolecule bcmol,
+                                     ISubStructure match, int WIDTH, int HEIGHT)
+                                                     throws BioclipseException {
+
+        if (bcmol==null)
+            return null;
+        
         ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol= cdk.create( bcmol );
 
-        int WIDTH = 120;
-        int HEIGHT = 120;
-        
         // the draw area and the image should be the same size
         Rectangle drawArea = new Rectangle(WIDTH, HEIGHT);
         Image image = new BufferedImage(
@@ -71,7 +81,7 @@ public class ReportHelper {
         // the call to 'setup' only needs to be done on the first paint
         renderer.setup(mol, drawArea);
         
-        renderer.setZoomToFit( 50, 60, WIDTH, HEIGHT );
+        renderer.setZoomToFit( WIDTH/2, HEIGHT/2, WIDTH, HEIGHT );
         
         // paint the background
         Graphics2D g2 = (Graphics2D)image.getGraphics();
