@@ -106,7 +106,6 @@ public class ReportHelper {
         if (newMatch!=null){
             SubStructureGenerator generator=new SubStructureGenerator();
             generator.add( newMatch );
-            int a=0;
             generators.add(generator);
         }
         
@@ -119,7 +118,7 @@ public class ReportHelper {
         renderer.setup(mol, drawArea);
         renderer.getRenderer2DModel().setHighlightDistance( 18 );
         
-        renderer.setZoomToFit( WIDTH/2, HEIGHT/2, WIDTH, HEIGHT );
+        renderer.setZoomToFit( WIDTH-50, HEIGHT-50, WIDTH, HEIGHT );
         
         // paint the background
         Graphics2D g2 = (Graphics2D)image.getGraphics();

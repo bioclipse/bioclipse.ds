@@ -1028,7 +1028,7 @@ public class DSView extends ViewPart implements IPartListener{
             reportmodel.setMw( mw );
 
             //Generate structure image
-            byte[] structureImage = ReportHelper.createImage(mol, null, 200,200);
+            byte[] structureImage = ReportHelper.createImage(mol, null, 300,300);
             reportmodel.setQueryStructure( structureImage );
         } catch ( BioclipseException e ) {
             // TODO Auto-generated catch block
