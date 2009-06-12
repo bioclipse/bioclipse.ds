@@ -52,17 +52,17 @@ public class TestRunPropertySource extends BasicPropertySource
         else
             addToValueMap(HITS,"0");
         
-        if (item.getStatus()==TestRun.NOT_STARTED)
+        if (item.getClassification()==TestRun.NOT_STARTED)
             addToValueMap(STATUS,"NOT STARTED");
-        else if (item.getStatus()==TestRun.RUNNING)
+        else if (item.getClassification()==TestRun.RUNNING)
             addToValueMap(STATUS,"RUNNING");
-        else if (item.getStatus()==TestRun.FINISHED)
+        else if (item.getClassification()==TestRun.FINISHED)
             addToValueMap(STATUS,"FINISHED");
-        else if (item.getStatus()==TestRun.ERROR)
+        else if (item.getClassification()==TestRun.ERROR)
             addToValueMap(STATUS,"ERROR");
-        else if (item.getStatus()==ITestResult.INFORMATIVE)
+        else if (item.getClassification()==ITestResult.INFORMATIVE)
             addToValueMap(STATUS,"INFORMATIVE");
-        else if (item.getStatus()==TestRun.EXCLUDED)
+        else if (item.getClassification()==TestRun.EXCLUDED)
             addToValueMap(STATUS,"EXCLUDED");
         else
             addToValueMap(STATUS,"N/A");

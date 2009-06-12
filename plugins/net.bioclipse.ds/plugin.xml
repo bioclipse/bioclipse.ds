@@ -57,4 +57,41 @@
     </cheatsheet>
  </extension>
 
+
+ <extension
+       point="net.bioclipse.cdk.propertyCalculator">
+    <Calculator
+          class="net.bioclipse.ds.business.DSConsensusCalculator"
+          id="net.bioclipse.ds.consensus">
+    </Calculator>
+ </extension>
+ 
+ 
+  	<extension
+  		point="org.eclipse.ui.menus">
+   <menuContribution
+        locationURI="popup:net.bioclipse.cdk.ui.sdfeditor.menu?after=additions">
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Compute Consensus et al"
+            icon="icons/poll.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="net.bioclipse.ds.signsig.bursi,net.bioclipse.ds.smarts.bursi,net.bioclipse.ds.consensus">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+   </menuContribution>
+ </extension>
+   
+
 </plugin>

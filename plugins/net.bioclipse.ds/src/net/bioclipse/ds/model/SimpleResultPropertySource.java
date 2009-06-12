@@ -16,13 +16,13 @@ public class SimpleResultPropertySource extends BasicPropertySource
 
     protected static final String NAME = "Name";
     protected static final String TEST = "Test";
-    protected static final String STATUS = "Status";
+    protected static final String CLASSIFICATION = "Classification";
 
     private Object SimplePropertiesTable[][] =
     {
             { NAME, new TextPropertyDescriptor(NAME,"Name")},
             { TEST, new TextPropertyDescriptor(TEST,"Test")},
-            { STATUS, new TextPropertyDescriptor(STATUS,"Status")},
+            { CLASSIFICATION, new TextPropertyDescriptor(CLASSIFICATION,CLASSIFICATION)},
     };
 
     public SimpleResultPropertySource(SimpleResult item) {
@@ -46,16 +46,16 @@ public class SimpleResultPropertySource extends BasicPropertySource
 
         addToValueMap(NAME,item.getName());
         addToValueMap(TEST,item.getTestRun().getTest().getName());
-        if (item.getResultStatus()==ITestResult.POSITIVE)
-            addToValueMap(STATUS,"POSITIVE");
-        else if (item.getResultStatus()==ITestResult.NEGATIVE)
-            addToValueMap(STATUS,"NEGATIVE");
-        else if (item.getResultStatus()==ITestResult.INCONCLUSIVE)
-            addToValueMap(STATUS,"INCONCLUSIVE");
-        else if (item.getResultStatus()==ITestResult.INFORMATIVE)
-            addToValueMap(STATUS,"INFORMATIVE");
-        else if (item.getResultStatus()==ITestResult.ERROR)
-            addToValueMap(STATUS,"ERROR");
+        if (item.getClassification()==ITestResult.POSITIVE)
+            addToValueMap(CLASSIFICATION,"POSITIVE");
+        else if (item.getClassification()==ITestResult.NEGATIVE)
+            addToValueMap(CLASSIFICATION,"NEGATIVE");
+        else if (item.getClassification()==ITestResult.INCONCLUSIVE)
+            addToValueMap(CLASSIFICATION,"INCONCLUSIVE");
+        else if (item.getClassification()==ITestResult.INFORMATIVE)
+            addToValueMap(CLASSIFICATION,"INFORMATIVE");
+        else if (item.getClassification()==ITestResult.ERROR)
+            addToValueMap(CLASSIFICATION,"ERROR");
 
     }    
     

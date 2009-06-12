@@ -22,14 +22,14 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
     protected static final String NAME = "Name";
     protected static final String TEST = "Test";
     protected static final String ATOMS = "Atoms";
-    protected static final String STATUS = "Status";
+    protected static final String CLASSIFICATION = "Classification";
 
     private Object SimplePropertiesTable[][] =
     {
             { NAME, new TextPropertyDescriptor(NAME,"Name")},
             { TEST, new TextPropertyDescriptor(TEST,"Test")},
             { ATOMS, new TextPropertyDescriptor(ATOMS,"Matching atoms")},
-            { STATUS, new TextPropertyDescriptor(STATUS,"Status")},
+            { CLASSIFICATION, new TextPropertyDescriptor(CLASSIFICATION,CLASSIFICATION)},
     };
 
     public SubStructureMatchPropertySource(SubStructureMatch item) {
@@ -77,14 +77,14 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
         }
         addToValueMap(ATOMS,atoms);
 
-        if (item.getResultStatus()==ITestResult.POSITIVE)
-            addToValueMap(STATUS,"POSITIVE");
-        else if (item.getResultStatus()==ITestResult.NEGATIVE)
-            addToValueMap(STATUS,"NEGATIVE");
-        else if (item.getResultStatus()==ITestResult.INCONCLUSIVE)
-            addToValueMap(STATUS,"INCONCLUSIVE");
-        else if (item.getResultStatus()==ITestResult.ERROR)
-            addToValueMap(STATUS,"ERROR");
+        if (item.getClassification()==ITestResult.POSITIVE)
+            addToValueMap(CLASSIFICATION,"POSITIVE");
+        else if (item.getClassification()==ITestResult.NEGATIVE)
+            addToValueMap(CLASSIFICATION,"NEGATIVE");
+        else if (item.getClassification()==ITestResult.INCONCLUSIVE)
+            addToValueMap(CLASSIFICATION,"INCONCLUSIVE");
+        else if (item.getClassification()==ITestResult.ERROR)
+            addToValueMap(CLASSIFICATION,"ERROR");
 
     }    
     

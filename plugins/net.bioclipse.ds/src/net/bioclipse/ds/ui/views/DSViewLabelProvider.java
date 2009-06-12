@@ -100,7 +100,7 @@ public class DSViewLabelProvider implements ILabelProvider, IColorProvider{
             if (tr.getTest().getTestErrorMessage().length()>1){
                 return Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
             }
-            else if (tr.getStatus()==TestRun.EXCLUDED){
+            else if (tr.getClassification()==TestRun.EXCLUDED){
                 return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
                 
             }

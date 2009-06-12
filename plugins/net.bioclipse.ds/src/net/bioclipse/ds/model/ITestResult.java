@@ -46,8 +46,8 @@ public interface ITestResult extends ISubStructure{
     public TestRun getTestRun();
     public void setTestRun( TestRun testRun );
     
-    public int getResultStatus();
-    public void setResultStatus(int resultStatus);
+    public int getClassification();
+    public void setClassification(int resultStatus);
 
     public Image getIcon();
 

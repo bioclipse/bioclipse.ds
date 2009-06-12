@@ -33,14 +33,14 @@ public class SimpleResult implements ITestResult{
     
     private TestRun testRun;
     private String name;
-    private int resultStatus;
+    private int classification;
     private String detailedMessage;
     
     
-    public SimpleResult(String name, int resultStatus) {
+    public SimpleResult(String name, int classification) {
         super();
         this.name = name;
-        this.resultStatus = resultStatus;
+        this.classification = classification;
     }
 
     public TestRun getTestRun() {
@@ -83,9 +83,9 @@ public class SimpleResult implements ITestResult{
      */
     public java.awt.Color getHighlightingColor( IAtom atom ) {
         
-        if (resultStatus==ITestResult.POSITIVE)
+        if (classification==ITestResult.POSITIVE)
             return java.awt.Color.RED;
-        if (resultStatus==ITestResult.NEGATIVE)
+        if (classification==ITestResult.NEGATIVE)
             return java.awt.Color.GREEN;
         else
             return java.awt.Color.YELLOW;
@@ -95,13 +95,13 @@ public class SimpleResult implements ITestResult{
         if (pos_icon==null || neg_icon==null || incon_icon==null)
             initIcons();
         
-        if (resultStatus==ITestResult.POSITIVE)
+        if (classification==ITestResult.POSITIVE)
             return pos_icon;
-        if (resultStatus==ITestResult.NEGATIVE)
+        if (classification==ITestResult.NEGATIVE)
             return neg_icon;
-        if (resultStatus==ITestResult.ERROR)
+        if (classification==ITestResult.ERROR)
             return error_icon;
-        if (resultStatus==ITestResult.INFORMATIVE)
+        if (classification==ITestResult.INFORMATIVE)
             return inform_icon;
         else
             return incon_icon;
@@ -117,13 +117,13 @@ public class SimpleResult implements ITestResult{
         inform_icon=Activator.getImageDecriptor( "icons/bulb.png" ).createImage();
     }
 
-    public int getResultStatus() {
-        return resultStatus;
+    public int getClassification() {
+        return classification;
     }
 
     
-    public void setResultStatus( int resultStatus ) {
-        this.resultStatus = resultStatus;
+    public void setClassification( int resultStatus ) {
+        this.classification = resultStatus;
     }
 
     
