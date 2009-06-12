@@ -17,6 +17,9 @@ public class DBNearestMatchHandler extends ScriptedDataSetEventAdapter{
 	@Override
 	public boolean fetch(IDataSetInstance dataSet, IUpdatableDataSetRow row) {
 
+	     if (testmodel==null)
+	          return false;
+
 		try {
 
 			if (testmodel.existsRow(record)){

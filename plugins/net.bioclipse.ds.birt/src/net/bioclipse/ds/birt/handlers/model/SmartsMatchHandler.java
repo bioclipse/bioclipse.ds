@@ -8,7 +8,7 @@ import org.eclipse.birt.report.engine.api.script.IUpdatableDataSetRow;
 import org.eclipse.birt.report.engine.api.script.eventadapter.ScriptedDataSetEventAdapter;
 import org.eclipse.birt.report.engine.api.script.instance.IDataSetInstance;
 
-public class DBExactMatchHandler extends ScriptedDataSetEventAdapter{
+public class SmartsMatchHandler extends ScriptedDataSetEventAdapter{
 
 	public int record;
 	AbstractTestReportModel testmodel;
@@ -17,15 +17,16 @@ public class DBExactMatchHandler extends ScriptedDataSetEventAdapter{
 	@Override
 	public boolean fetch(IDataSetInstance dataSet, IUpdatableDataSetRow row) {
 
-	    if (testmodel==null)
-	        return false;
+	     if (testmodel==null)
+	          return false;
 
 		try {
 
 			if (testmodel.existsRow(record)){
 				DSRow thisrow = testmodel.getRows().get(record);
 				row.setColumnValue("structure", thisrow.getStructureData());
-				row.setColumnValue("name", thisrow.getParameter("name"));
+        row.setColumnValue("name", thisrow.getParameter("name"));
+        row.setColumnValue("smarts", thisrow.getParameter("smarts"));
         row.setColumnValue("classification", 
                                         thisrow.getParameter("classification"));
 				record++;
@@ -43,7 +44,7 @@ public class DBExactMatchHandler extends ScriptedDataSetEventAdapter{
 	public void open(IDataSetInstance dataSet) {
 
 	    testmodel=DSView.getInstance().waitAndReturnReportModel()
-	                                  .getTestModel( "dblookup.exact.bursi" );
+	                                  .getTestModel( "smarts.bursi" );
 
 	    if (testmodel==null){
           System.out.println("REPORT MODEL IS NULL");
