@@ -1028,8 +1028,13 @@ public class DSView extends ViewPart implements IPartListener{
             reportmodel.setMw( mw );
 
             //Generate structure image
-            byte[] structureImage = ReportHelper.createImage(mol, null, 300,300);
+            byte[] structureImage = ReportHelper.createImage(
+                                                          mol, null, 200,200,0.5);
             reportmodel.setQueryStructure( structureImage );
+            reportmodel.setConsensusText( ReportHelper.statusToString( 
+                                                 getConsensusFromTestRuns() ) );
+            reportmodel.setConsensusImage( ReportHelper.statusToImageData( 
+                                                 getConsensusFromTestRuns() ) );
         } catch ( BioclipseException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -1037,7 +1042,8 @@ public class DSView extends ViewPart implements IPartListener{
        
         //Add all testmodels to ReportModel
         for (TestRun tr : activeTestRuns){
-            AbstractTestReportModel testreportmodel=tr.getTest().getReportmodel();
+            AbstractTestReportModel testreportmodel = 
+                                                  tr.getTest().getReportmodel();
             if (testreportmodel!=null){
                 testreportmodel.setName( tr.getTest().getId() );
                 if (testreportmodel!=null){

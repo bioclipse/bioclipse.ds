@@ -5,9 +5,11 @@ import java.util.List;
 
 public class DSSingleReportModel {
 
-	private byte[] queryStructure;
+    private byte[] queryStructure;
+    private byte[] consensusImage;
 	private List<AbstractTestReportModel> testsmodels;
   private String compoundName;
+  private String consensusText;
   private double mw;
   private String SMILES;
 	
@@ -65,6 +67,20 @@ public class DSSingleReportModel {
     public void setSMILES( String smiles ) {
     
         SMILES = smiles;
+    }
+    public String getConsensusText() {
+        return consensusText;
+    }
+    public byte[] getConsensusImage() {
+        return consensusImage;
+    }
+    
+    public void setConsensusImage( byte[] consensusImage ) {
+        this.consensusImage = consensusImage;
+    }
+    
+    public void setConsensusText( String consensusText ) {
+        this.consensusText = consensusText;
     }
 
 	
