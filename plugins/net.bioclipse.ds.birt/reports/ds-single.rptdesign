@@ -179,14 +179,22 @@
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.MainStructureHandler</property>
             <list-property name="resultSetHints">
                 <structure>
-                    <property name="position">0</property>
+                    <property name="position">1</property>
                     <property name="name">structure</property>
                     <property name="dataType">blob</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">consensus</property>
+                    <property name="dataType">string</property>
                 </structure>
             </list-property>
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">structure</property>
+                </structure>
+                <structure>
+                    <property name="columnName">consensus</property>
                 </structure>
             </list-property>
             <structure name="cachedMetaData">
@@ -195,6 +203,11 @@
                         <property name="position">1</property>
                         <property name="name">structure</property>
                         <property name="dataType">blob</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">consensus</property>
+                        <property name="dataType">string</property>
                     </structure>
                 </list-property>
             </structure>
@@ -315,6 +328,69 @@
             </structure>
             <property name="dataSource">Data Source</property>
         </script-data-set>
+        <script-data-set name="MinStructureDataset" id="261">
+            <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.MinStructureHandler</property>
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">consensus</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">consimg</property>
+                    <property name="dataType">blob</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">consensus</property>
+                </structure>
+                <structure>
+                    <property name="columnName">consimg</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">consensus</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">consimg</property>
+                        <property name="dataType">blob</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+        </script-data-set>
+        <script-data-set name="ConsImgDS" id="265">
+            <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.ConsImgHandler</property>
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">0</property>
+                    <property name="name">consimg</property>
+                    <property name="dataType">blob</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">consimg</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">consimg</property>
+                        <property name="dataType">blob</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+        </script-data-set>
     </data-sets>
     <styles>
         <style name="crosstab" id="4">
@@ -361,7 +437,7 @@
                             <property name="verticalAlign">bottom</property>
                             <label id="241">
                                 <property name="backgroundColor">white</property>
-                                <property name="fontSize">20px</property>
+                                <property name="fontSize">26px</property>
                                 <property name="fontWeight">bold</property>
                                 <text-property name="text">Genetic Toxicology Predictions</text-property>
                             </label>
@@ -369,15 +445,26 @@
                         <cell id="238">
                             <property name="textAlign">center</property>
                             <image id="239">
-                                <property name="height">50px</property>
-                                <property name="width">100px</property>
+                                <property name="height">45px</property>
+                                <property name="width">82px</property>
                                 <property name="source">file</property>
-                                <expression name="uri">"bioclipse-logo-100x50.png"</expression>
+                                <expression name="uri">"Bioclipse-logo-300.png"</expression>
                             </image>
                             <label id="240">
                                 <property name="color">#000085</property>
                                 <text-property name="text">Bioclipse Decision Support</text-property>
                             </label>
+                        </cell>
+                    </row>
+                    <row id="267">
+                        <cell id="268">
+                            <property name="backgroundColor">#807A7D</property>
+                            <property name="textAlign">left</property>
+                            <property name="verticalAlign">bottom</property>
+                        </cell>
+                        <cell id="269">
+                            <property name="backgroundColor">#807A7D</property>
+                            <property name="textAlign">center</property>
                         </cell>
                     </row>
                 </grid>
@@ -395,111 +482,180 @@
             <property name="fontSize">x-large</property>
         </label>
         <label id="163">
-            <property name="fontWeight">bold</property>
+            <property name="fontWeight">normal</property>
+            <property name="fontStyle">italic</property>
             <text-property name="text">Query compound</text-property>
         </label>
-        <grid id="124">
-            <property name="width">100%</property>
-            <column id="125"/>
-            <column id="126"/>
-            <column id="127"/>
-            <row id="128">
-                <cell id="129">
-                    <label id="147">
-                        <text-property name="text">SMILES</text-property>
+        <image id="123">
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <property name="dataSet">MainStructureDataset</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">structure</property>
+                    <expression name="expression">dataSetRow["structure"]</expression>
+                    <property name="dataType">blob</property>
+                </structure>
+                <structure>
+                    <property name="name">consensus</property>
+                    <expression name="expression">dataSetRow["consensus"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <property name="source">expr</property>
+            <expression name="valueExpr">row["structure"]</expression>
+        </image>
+        <grid id="242">
+            <property name="height">1.4444444444444444in</property>
+            <property name="width">6in</property>
+            <column id="243">
+                <property name="width">4.486111111111111in</property>
+            </column>
+            <column id="244">
+                <property name="width">1.3888888888888888in</property>
+            </column>
+            <row id="245">
+                <cell id="246"/>
+                <cell id="247">
+                    <property name="verticalAlign">bottom</property>
+                    <label id="259">
+                        <property name="textAlign">center</property>
+                        <text-property name="text">Consensus</text-property>
                     </label>
                 </cell>
-                <cell id="130">
-                    <data id="142">
-                        <property name="dataSet">DSQueryDataset</property>
-                        <list-property name="boundDataColumns">
-                            <structure>
-                                <property name="name">SMILES</property>
-                                <property name="displayName">SMILES</property>
-                                <expression name="expression">dataSetRow["SMILES"]</expression>
-                                <property name="dataType">string</property>
-                            </structure>
-                        </list-property>
-                        <property name="resultSetColumn">SMILES</property>
-                    </data>
-                </cell>
-                <cell id="131"/>
             </row>
-            <row id="132">
-                <cell id="133">
-                    <label id="148">
-                        <text-property name="text">Compound Name</text-property>
-                    </label>
+            <row id="254">
+                <cell id="255">
+                    <grid id="124">
+                        <property name="height">1.0138888888888888in</property>
+                        <property name="width">4.513888888888889in</property>
+                        <column id="125">
+                            <property name="width">2.0416666666666665in</property>
+                            <property name="verticalAlign">top</property>
+                        </column>
+                        <column id="126">
+                            <property name="width">2.4722222222222223in</property>
+                        </column>
+                        <row id="128">
+                            <cell id="129">
+                                <label id="147">
+                                    <text-property name="text">SMILES</text-property>
+                                </label>
+                            </cell>
+                            <cell id="130">
+                                <data id="142">
+                                    <property name="fontSize">xx-small</property>
+                                    <property name="dataSet">DSQueryDataset</property>
+                                    <list-property name="boundDataColumns">
+                                        <structure>
+                                            <property name="name">SMILES</property>
+                                            <property name="displayName">SMILES</property>
+                                            <expression name="expression">dataSetRow["SMILES"]</expression>
+                                            <property name="dataType">string</property>
+                                        </structure>
+                                    </list-property>
+                                    <property name="resultSetColumn">SMILES</property>
+                                </data>
+                            </cell>
+                        </row>
+                        <row id="132">
+                            <cell id="133">
+                                <label id="148">
+                                    <text-property name="text">Compound Name</text-property>
+                                </label>
+                            </cell>
+                            <cell id="134">
+                                <data id="140">
+                                    <property name="dataSet">DSQueryDataset</property>
+                                    <list-property name="boundDataColumns">
+                                        <structure>
+                                            <property name="name">compoundName</property>
+                                            <property name="displayName">compoundName</property>
+                                            <expression name="expression">dataSetRow["compoundName"]</expression>
+                                            <property name="dataType">string</property>
+                                        </structure>
+                                    </list-property>
+                                    <property name="resultSetColumn">compoundName</property>
+                                </data>
+                            </cell>
+                        </row>
+                        <row id="136">
+                            <cell id="137">
+                                <label id="149">
+                                    <text-property name="text">Molecular Weight</text-property>
+                                </label>
+                            </cell>
+                            <cell id="138">
+                                <data id="141">
+                                    <property name="dataSet">DSQueryDataset</property>
+                                    <list-property name="boundDataColumns">
+                                        <structure>
+                                            <property name="name">mw</property>
+                                            <property name="displayName">mw</property>
+                                            <expression name="expression">dataSetRow["mw"]</expression>
+                                            <property name="dataType">string</property>
+                                        </structure>
+                                    </list-property>
+                                    <property name="resultSetColumn">mw</property>
+                                </data>
+                            </cell>
+                        </row>
+                    </grid>
                 </cell>
-                <cell id="134">
-                    <data id="140">
-                        <property name="dataSet">DSQueryDataset</property>
+                <cell id="256">
+                    <property name="borderBottomColor">#000000</property>
+                    <property name="borderBottomStyle">solid</property>
+                    <property name="borderBottomWidth">medium</property>
+                    <property name="borderLeftColor">#000000</property>
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">medium</property>
+                    <property name="borderRightColor">#000000</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">medium</property>
+                    <property name="borderTopColor">#000000</property>
+                    <property name="borderTopStyle">solid</property>
+                    <property name="borderTopWidth">medium</property>
+                    <property name="textAlign">center</property>
+                    <property name="verticalAlign">middle</property>
+                    <image id="266">
+                        <property name="dataSet">ConsImgDS</property>
                         <list-property name="boundDataColumns">
                             <structure>
-                                <property name="name">compoundName</property>
-                                <property name="displayName">compoundName</property>
-                                <expression name="expression">dataSetRow["compoundName"]</expression>
-                                <property name="dataType">string</property>
-                            </structure>
-                        </list-property>
-                        <property name="resultSetColumn">compoundName</property>
-                    </data>
-                </cell>
-                <cell id="135"/>
-            </row>
-            <row id="136">
-                <cell id="137">
-                    <label id="149">
-                        <text-property name="text">Molecular Weight</text-property>
-                    </label>
-                </cell>
-                <cell id="138">
-                    <data id="141">
-                        <property name="dataSet">DSQueryDataset</property>
-                        <list-property name="boundDataColumns">
-                            <structure>
-                                <property name="name">mw</property>
-                                <property name="displayName">mw</property>
-                                <expression name="expression">dataSetRow["mw"]</expression>
-                                <property name="dataType">string</property>
-                            </structure>
-                        </list-property>
-                        <property name="resultSetColumn">mw</property>
-                    </data>
-                </cell>
-                <cell id="139"/>
-            </row>
-        </grid>
-        <grid id="143">
-            <property name="width">100%</property>
-            <column id="144"/>
-            <row id="145">
-                <cell id="146">
-                    <property name="textAlign">left</property>
-                    <image id="123">
-                        <property name="borderBottomColor">#C0C0C0</property>
-                        <property name="borderBottomStyle">solid</property>
-                        <property name="borderBottomWidth">thin</property>
-                        <property name="borderLeftColor">#C0C0C0</property>
-                        <property name="borderLeftStyle">solid</property>
-                        <property name="borderLeftWidth">thin</property>
-                        <property name="borderRightColor">#C0C0C0</property>
-                        <property name="borderRightStyle">solid</property>
-                        <property name="borderRightWidth">thin</property>
-                        <property name="borderTopColor">#C0C0C0</property>
-                        <property name="borderTopStyle">solid</property>
-                        <property name="borderTopWidth">thin</property>
-                        <property name="dataSet">MainStructureDataset</property>
-                        <list-property name="boundDataColumns">
-                            <structure>
-                                <property name="name">structure</property>
-                                <expression name="expression">dataSetRow["structure"]</expression>
+                                <property name="name">consimg</property>
+                                <expression name="expression">dataSetRow["consimg"]</expression>
                                 <property name="dataType">blob</property>
                             </structure>
                         </list-property>
                         <property name="source">expr</property>
-                        <expression name="valueExpr">row["structure"]</expression>
+                        <expression name="valueExpr">row["consimg"]</expression>
                     </image>
+                    <data id="264">
+                        <property name="dataSet">MinStructureDataset</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">consensus</property>
+                                <property name="displayName">consensus</property>
+                                <expression name="expression">dataSetRow["consensus"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">consimg</property>
+                                <expression name="expression">dataSetRow["consimg"]</expression>
+                                <property name="dataType">blob</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">consensus</property>
+                    </data>
                 </cell>
             </row>
         </grid>
@@ -548,6 +704,7 @@
                         <property name="textAlign">center</property>
                         <property name="verticalAlign">middle</property>
                         <label id="21">
+                            <property name="textAlign">left</property>
                             <text-property name="text">Name</text-property>
                         </label>
                     </cell>
@@ -555,6 +712,7 @@
                         <property name="textAlign">center</property>
                         <property name="verticalAlign">middle</property>
                         <label id="155">
+                            <property name="textAlign">left</property>
                             <text-property name="text">Classification</text-property>
                         </label>
                     </cell>
@@ -574,6 +732,7 @@
                         <property name="textAlign">center</property>
                         <property name="verticalAlign">middle</property>
                         <data id="22">
+                            <property name="textAlign">left</property>
                             <property name="resultSetColumn">name</property>
                         </data>
                     </cell>
@@ -581,6 +740,7 @@
                         <property name="textAlign">center</property>
                         <property name="verticalAlign">middle</property>
                         <data id="156">
+                            <property name="textAlign">left</property>
                             <property name="resultSetColumn">classification</property>
                         </data>
                     </cell>
@@ -751,9 +911,6 @@
             <column id="191">
                 <property name="verticalAlign">middle</property>
             </column>
-            <column id="192">
-                <property name="verticalAlign">middle</property>
-            </column>
             <column id="193">
                 <property name="verticalAlign">middle</property>
             </column>
@@ -766,12 +923,6 @@
                         <property name="textAlign">center</property>
                         <label id="171">
                             <text-property name="text">Name</text-property>
-                        </label>
-                    </cell>
-                    <cell id="172">
-                        <property name="textAlign">center</property>
-                        <label id="173">
-                            <text-property name="text">SMARTS</text-property>
                         </label>
                     </cell>
                     <cell id="174">
@@ -797,12 +948,6 @@
                             <property name="resultSetColumn">name</property>
                         </data>
                     </cell>
-                    <cell id="181">
-                        <property name="textAlign">center</property>
-                        <data id="182">
-                            <property name="resultSetColumn">smarts</property>
-                        </data>
-                    </cell>
                     <cell id="183">
                         <property name="textAlign">center</property>
                         <data id="184">
@@ -817,9 +962,6 @@
                         <property name="textAlign">center</property>
                     </cell>
                     <cell id="187">
-                        <property name="textAlign">center</property>
-                    </cell>
-                    <cell id="188">
                         <property name="textAlign">center</property>
                     </cell>
                     <cell id="189">

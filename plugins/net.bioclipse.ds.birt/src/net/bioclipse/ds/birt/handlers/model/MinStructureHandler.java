@@ -8,7 +8,7 @@ import org.eclipse.birt.report.engine.api.script.ScriptException;
 import org.eclipse.birt.report.engine.api.script.eventadapter.ScriptedDataSetEventAdapter;
 import org.eclipse.birt.report.engine.api.script.instance.IDataSetInstance;
 
-public class MainStructureHandler extends ScriptedDataSetEventAdapter{
+public class MinStructureHandler extends ScriptedDataSetEventAdapter{
 
 	DSSingleReportModel testmodel;
 	boolean isParsed;
@@ -19,8 +19,10 @@ public class MainStructureHandler extends ScriptedDataSetEventAdapter{
 	    if (!isParsed){
 	        
 	        try {
-              row.setColumnValue("structure", testmodel.getQueryStructure());
+//              row.setColumnValue("structure", testmodel.getConsensusImage());
+//              row.setColumnValue("structure", testmodel.getQueryStructure());
               row.setColumnValue("consensus", testmodel.getConsensusText());
+              row.setColumnValue("consimg", testmodel.getConsensusImage());
 	        } catch ( ScriptException e ) {
 	            e.printStackTrace();
 	        }
