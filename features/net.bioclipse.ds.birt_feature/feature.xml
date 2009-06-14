@@ -41,7 +41,7 @@
          version="0.0.0"/>
 
    <requires>
-      <import feature="net.bioclipse.ds_feature" version="2.0.0.RC2"/>
+      <import feature="net.bioclipse.ds_feature" version="2.0.0.RC2" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -458,7 +458,6 @@
          id="net.bioclipse.ds.birt"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
