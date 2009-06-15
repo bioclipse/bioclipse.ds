@@ -397,6 +397,19 @@ public class DSView extends ViewPart implements IPartListener{
     public void dispose() {
         super.dispose();
         getSite().getWorkbenchWindow().getPartService().removePartListener(this);
+        
+        //unregister all listeners
+        
+        for (IWorkbenchPart part : editorListenerMap.keySet()){
+            IPropertyChangeListener li = editorListenerMap.get( part );
+            if ( part instanceof JChemPaintEditor ) {
+                JChemPaintEditor jcp = (JChemPaintEditor) part;
+                jcp.removePropertyChangedListener( li);
+            }
+        }
+        editorListenerMap.clear();
+        editorListenerMap=null;
+        
     }
 
     private void hookContextMenu() {
