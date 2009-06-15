@@ -40,7 +40,7 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
     }
 
     public String getPropertyName() {
-        return "ds.consensus";
+        return "Consensus";
     }
 
     public TestRun parse( String value ) {
@@ -73,6 +73,7 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
                 if ( calculator instanceof BaseDSPropertyCalculator ) {
                     BaseDSPropertyCalculator bda = (BaseDSPropertyCalculator) calculator;
                     calculators.add( bda );
+                    logger.debug("Added calculator for: " + bda.getPropertyName());
                     
                 }
                 

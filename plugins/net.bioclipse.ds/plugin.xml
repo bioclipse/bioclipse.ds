@@ -62,7 +62,7 @@
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
           class="net.bioclipse.ds.business.DSConsensusCalculator"
-          id="net.bioclipse.ds.consensus">
+          id="Consensus">
     </Calculator>
  </extension>
  
@@ -71,14 +71,31 @@
   		point="org.eclipse.ui.menus">
    <menuContribution
         locationURI="popup:net.bioclipse.cdk.ui.sdfeditor.menu?after=additions">
+        
+        <menu
+              label="Decision Support"
+              id="net.bioclipse.ds.context">
+              <separator
+                    name="single">
+              </separator>
+              <separator
+                    name="consensus">
+              </separator>
+        </menu>
+
+   </menuContribution>
+
+   <menuContribution
+        locationURI="popup:net.bioclipse.ds.context?after=consensus">
+        
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Compute Consensus et al"
+           label="Consensus Clasification"
             icon="icons/poll.gif"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="net.bioclipse.ds.signsig.bursi,net.bioclipse.ds.smarts.bursi,net.bioclipse.ds.consensus">
+              value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Signature Significance,Consensus">
         </parameter>
         <visibleWhen
               checkEnabled="false">

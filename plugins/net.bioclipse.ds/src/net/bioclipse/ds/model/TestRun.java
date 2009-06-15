@@ -338,12 +338,12 @@ public class TestRun implements ISubStructure, IColorProvider{
     public Color getBackground( Object element ) {
 
         if (getConsensusStatus()==ITestResult.POSITIVE)
-            return new Color(Display.getCurrent(), 255, 0, 0);
+            return new Color(Display.getCurrent(), 247, 35, 3);
 
         if (getConsensusStatus()==ITestResult.NEGATIVE)
-            return new Color(Display.getCurrent(), 0, 255, 0);
+            return new Color(Display.getCurrent(), 0, 176, 0);
 
-        return new Color(Display.getCurrent(), 0, 255, 255);
+        return new Color(Display.getCurrent(), 247, 227, 0);
     }
 
     public Color getForeground( Object element ) {
