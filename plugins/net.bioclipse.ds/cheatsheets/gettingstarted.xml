@@ -23,7 +23,25 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
    <item
          title="Step 2: Open a chemical structure">
       <description>
-         In the Bioclipse Navigator, double-click a chemical structure to open it in the chemical editor.
+         In the Bioclipse Navigator, double-click a chemical structure to open it in the chemical editor. It is also possible to edit molecules.
+      </description>
+   </item>
+   <item
+         title="Step 3: Run the Tests">
+      <description>
+         The Tests can be run by right clicking in the Decision Support tab or by clicking the "Run all tests" button. 
+      </description>
+   </item>
+   <item
+         title="Step 4: Examine the Test results.">
+      <description>
+         Each individual test can be examined by expanding it and selecting the results. If the test displays substructures, as for the Signature Significance, then the atoms that belongs to the substructure will be displayed in the chemical editor. Entire molecules will be displayed in the 2D viewer. 
+      </description>
+   </item>
+   <item
+         title="Step 5: Generate a report">
+      <description>
+         By right clicking in the Decision Support tab it is possible to generate a Report.
       </description>
    </item>
 </cheatsheet>
