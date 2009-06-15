@@ -225,7 +225,7 @@ public class SmartsInclusiveExclusiveTest extends AbstractDSTest implements IDST
         ICDKMolecule cdkmol=null;
         ICDKMolecule cdkmol_in = null;
         try {
-            cdkmol_in = cdk.create( molecule );
+            cdkmol_in = cdk.asCDKMolecule( molecule );
             cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
 //            cdkmol = cdk.create( molecule );
         } catch ( BioclipseException e ) {
