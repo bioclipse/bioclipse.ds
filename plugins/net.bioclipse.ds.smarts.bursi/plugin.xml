@@ -14,7 +14,7 @@
       </test-->
       <test
             id="smarts.bursi"
-            name="Bursi toxicophores"
+            name="Bursi Toxicophores"
             icon="icons/form.gif"
             reportmodel="net.bioclipse.ds.smarts.model.impl.SmartsMatchModel"
             class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
@@ -39,22 +39,22 @@
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
           class="net.bioclipse.ds.smarts.bursi.SmartsMatchCalculator"
-          id="net.bioclipse.ds.smarts.bursi">
+          id="Bursi Toxicophores">
     </Calculator>
  </extension>
  
  	<extension
   		point="org.eclipse.ui.menus">
    <menuContribution
-        locationURI="popup:net.bioclipse.cdk.ui.sdfeditor.menu?after=additions">
+        locationURI="popup:net.bioclipse.ds.context?after=single">
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Compute Bursi Toxicophores Matches"
+           label="Bursi Toxicophores Matches"
             icon="icons/form.gif"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="net.bioclipse.ds.smarts.bursi">
+              value="Bursi Toxicophores">
         </parameter>
         <visibleWhen
               checkEnabled="false">

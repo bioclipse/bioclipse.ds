@@ -7,7 +7,7 @@ public class SmartsMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getPropertyName() {
-        return "net.bioclipse.ds.smarts.bursi";
+        return "Bursi Toxicophores";
     }
 
     @Override
