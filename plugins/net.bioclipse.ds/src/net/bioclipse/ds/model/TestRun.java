@@ -55,12 +55,12 @@ public class TestRun implements ISubStructure, IColorProvider{
     private IDSTest test;
     private IEditorPart editor;
     private List<ITestResult> results;
-    private int classification;
+    private int status;
     private ICDKMolecule molecule;
     
     
     public TestRun() {
-        setClassification( NOT_STARTED );
+        setStatus( NOT_STARTED );
     }
     
     public TestRun(IEditorPart editor, IDSTest test) {
@@ -69,11 +69,11 @@ public class TestRun implements ISubStructure, IColorProvider{
         this.test=test;
     }
 
-    public int getClassification() {
-        return classification;
+    public int getStatus() {
+        return status;
     }
-    public void setClassification( int classification ) {
-        this.classification = classification;
+    public void setStatus( int status ) {
+        this.status = status;
     }
 
     public IDSTest getTest() {
@@ -106,7 +106,10 @@ public class TestRun implements ISubStructure, IColorProvider{
 
         //Serialize consensus
         TestRun tr = results.get( 0 ).getTestRun();
-        return tr.getConsensusString() + " [" + results.size() + " hits]";
+        if (results.get( 0 ).getName().equals( "consensus"))
+            return tr.getConsensusString();
+        else
+            return tr.getConsensusString() + " [" + results.size() + " hits]";
 
         
 //        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Status=" 
@@ -164,7 +167,7 @@ public class TestRun implements ISubStructure, IColorProvider{
         if (checkImg==null)
             initIcons();
         
-        if (classification==FINISHED){
+        if (status==FINISHED){
             
             //We have matches, calculate consensus
             int consensus=getConsensusStatus();
@@ -180,13 +183,13 @@ public class TestRun implements ISubStructure, IColorProvider{
                 return equalImg;
             
         }            
-        else if (classification==ERROR){
+        else if (status==ERROR){
             return errorImg;
         }
-        else if (classification==RUNNING){
+        else if (status==RUNNING){
             return runningImg;
         }
-        else if (classification==EXCLUDED){
+        else if (status==EXCLUDED){
             return excludedImg;
         }
 
@@ -235,7 +238,7 @@ public class TestRun implements ISubStructure, IColorProvider{
     
     public String getSuffix(){
 
-        if (classification==FINISHED){
+        if (status==FINISHED){
 
             int numpos=0;
             int numneg=0;
@@ -287,15 +290,15 @@ public class TestRun implements ISubStructure, IColorProvider{
             
         }
 
-        else if (classification==RUNNING){
+        else if (status==RUNNING){
             return " [running]";
         }
 
-        else if (classification==EXCLUDED){
+        else if (status==EXCLUDED){
             return " [excluded]";
         }
 
-        else if (classification==ERROR){
+        else if (status==ERROR){
             if (getTest().getTestErrorMessage()!=null 
                     && getTest().getTestErrorMessage().length()>0){
                 return " [" + getTest().getTestErrorMessage() +" ]";
@@ -340,8 +343,20 @@ public class TestRun implements ISubStructure, IColorProvider{
         if (getConsensusStatus()==ITestResult.POSITIVE)
             return new Color(Display.getCurrent(), 247, 35, 3);
 
-        if (getConsensusStatus()==ITestResult.NEGATIVE)
+        else if (getConsensusStatus()==ITestResult.NEGATIVE){
+            //FIXME: ugly demo hack for blue color in db exact with no matches
+            if (getTest()!=null){
+                if (getTest().getId().equals( "dblookup.exact.bursi" )){
+                    if (results==null || results.size()==0)
+                        return new Color(Display.getCurrent(), 0, 0, 246);
+                }
+            }
+           
             return new Color(Display.getCurrent(), 0, 176, 0);
+        }
+
+        else if (getConsensusStatus()==ITestResult.INCONCLUSIVE)
+            return new Color(Display.getCurrent(), 0, 0, 176);
 
         return new Color(Display.getCurrent(), 247, 227, 0);
     }

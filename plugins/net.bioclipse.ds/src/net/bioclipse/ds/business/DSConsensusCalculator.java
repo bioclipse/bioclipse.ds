@@ -15,6 +15,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IPropertyCalculator;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.SimpleResult;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.ReportHelper;
 
@@ -30,11 +31,24 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
         List<Integer> classifications=new ArrayList<Integer>();
         for(IPropertyCalculator<TestRun> calculator:getCalculators()) {
             TestRun tr = calculator.calculate( molecule );
-            classifications.add( new Integer(tr.getConsensusStatus()));
+            
+            if (!(tr.getTest().isInformative())){
+                if (tr.getTest().getTestErrorMessage().length()<1){
+                    classifications.add( new Integer(tr.getConsensusStatus()));
+                    logger.debug(" $$ Test: " + tr.getTest() + " got " +
+                    		"          classification: " + tr.getConsensusStatus());
+                }
+            }
         }
         
         TestRun consrun=new TestRun();
-        consrun.setClassification( ConsensusCalculator.calculate( classifications ) );
+        //Add a single result to consrun
+        SimpleResult consres = new SimpleResult("consensus", 
+                         ConsensusCalculator.calculate( classifications ) );
+        consres.setTestRun( consrun );
+        consrun.addResult( consres);
+        logger.debug(" $$ Consensus classification: " + 
+                              ConsensusCalculator.calculate( classifications ));
         
         return consrun;
     }
@@ -45,7 +59,8 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
 
     public TestRun parse( String value ) {
         TestRun consrun=new TestRun();
-        consrun.setClassification( ReportHelper.stringToStatus( value ) );
+        consrun.addResult( new SimpleResult("consensus", 
+                                        ReportHelper.stringToStatus( value )) );
         return consrun;
     }
 

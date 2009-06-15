@@ -304,9 +304,9 @@ public class DSView extends ViewPart implements IPartListener{
 
         //If we have any tests running or not started, do not do consensus
         for (TestRun tr : activeTestRuns){
-            if (tr.getClassification()==TestRun.RUNNING)
+            if (tr.getStatus()==TestRun.RUNNING)
                 running=true;
-            else if (tr.getClassification()==TestRun.NOT_STARTED)
+            else if (tr.getStatus()==TestRun.NOT_STARTED)
                 notStarted=true;
         }
 
@@ -359,7 +359,7 @@ public class DSView extends ViewPart implements IPartListener{
             if ((!(tr.getTest().isInformative())) 
                     &&  (!(tr.getTest().isExcluded()))){
                 
-                if (tr.getClassification()==TestRun.FINISHED){
+                if (tr.getStatus()==TestRun.FINISHED){
                     if (tr.getConsensusStatus()==ITestResult.POSITIVE)
                         numpos++;
                     else if (tr.getConsensusStatus()==ITestResult.NEGATIVE)
@@ -606,7 +606,7 @@ public class DSView extends ViewPart implements IPartListener{
             }
             else if ( obj instanceof TestRun ) {
                 TestRun testrun = (TestRun) obj;
-                testrun.setClassification( TestRun.NOT_STARTED);
+                testrun.setStatus( TestRun.NOT_STARTED);
                 testrun.getTest().setExcluded( false );
                 viewer.refresh(testrun);
             }
@@ -625,7 +625,7 @@ public class DSView extends ViewPart implements IPartListener{
             }
             else if ( obj instanceof TestRun ) {
                 TestRun testrun = (TestRun) obj;
-                testrun.setClassification( TestRun.EXCLUDED);
+                testrun.setStatus( TestRun.EXCLUDED);
                 testrun.getTest().setExcluded( true );
                 if (testrun.getMatches()!=null)
                     testrun.getMatches().clear();
@@ -702,14 +702,14 @@ public class DSView extends ViewPart implements IPartListener{
 
             if (tr.getTest().getTestErrorMessage().length()<1){
 
-                if (tr.getClassification()==TestRun.EXCLUDED || tr.getTest().isExcluded()){
+                if (tr.getStatus()==TestRun.EXCLUDED || tr.getTest().isExcluded()){
                     viewer.refresh(tr);
                     logger.debug( "===== Test: " + tr + " skipped since excluded.");
                 }
                 else{
                     
                     logger.debug( "===== Testrun: " + tr + " started" );
-                    tr.setClassification( TestRun.RUNNING );
+                    tr.setStatus( TestRun.RUNNING );
                     tr.setMolecule( mol );
                     viewer.refresh(tr);
                     viewer.setExpandedState( tr, true );
@@ -763,9 +763,9 @@ public class DSView extends ViewPart implements IPartListener{
                             tr.setMatches( matches );
                             logger.debug( "===== " + tr + " finished" );
                             if (tr.getTest().getTestErrorMessage()!="")
-                                tr.setClassification( TestRun.ERROR );
+                                tr.setStatus( TestRun.ERROR );
                             else
-                                tr.setClassification( TestRun.FINISHED );
+                                tr.setStatus( TestRun.FINISHED );
                             
                             viewer.refresh( tr );
                             viewer.setExpandedState( tr, true );
@@ -980,10 +980,10 @@ public class DSView extends ViewPart implements IPartListener{
                 TestRun newTestRun=new TestRun(jcp,test);
                 if (test.getTestErrorMessage()!=null 
                         && test.getTestErrorMessage().length()>0){
-                    newTestRun.setClassification( TestRun.ERROR );
+                    newTestRun.setStatus( TestRun.ERROR );
                 }
                 else if (test.isExcluded()){
-                    newTestRun.setClassification( TestRun.EXCLUDED );
+                    newTestRun.setStatus( TestRun.EXCLUDED );
                 }
 
                 newTestRuns.add( newTestRun );

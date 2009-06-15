@@ -27,6 +27,13 @@ public abstract class BaseDSPropertyCalculator implements IPropertyCalculator<Te
         try {
             List<ITestResult> results = ds.runTest( getTestID(), molecule );
             TestRun tr= new TestRun();
+            tr.setTest( ds.getTest( getTestID() ) );
+            
+            if (tr.getTest().getTestErrorMessage()!="")
+                tr.setStatus( TestRun.ERROR );
+            else
+                tr.setStatus( TestRun.FINISHED );
+            
             for (ITestResult result : results){
                 tr.addResult( result );
                 result.setTestRun( tr );
