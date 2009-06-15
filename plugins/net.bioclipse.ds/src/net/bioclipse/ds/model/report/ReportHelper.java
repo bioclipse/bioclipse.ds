@@ -74,7 +74,7 @@ public class ReportHelper {
         
         ICDKManager cdk = net.bioclipse.cdk.business.Activator
                                               .getDefault().getJavaCDKManager();
-        ICDKMolecule cdkmol= cdk.create( bcmol );
+        ICDKMolecule cdkmol= cdk.asCDKMolecule( bcmol );
 
         // the draw area and the image should be the same size
         Rectangle drawArea = new Rectangle(WIDTH, HEIGHT);
