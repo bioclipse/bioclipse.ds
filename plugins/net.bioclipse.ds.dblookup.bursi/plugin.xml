@@ -38,26 +38,26 @@
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
           class="net.bioclipse.ds.dblookup.bursi.DBExactMatchCalculator"
-          id="net.bioclipse.ds.dblookup.bursi.dbexact">
+          id="Bursi Exact Match">
     </Calculator>
     <Calculator
           class="net.bioclipse.ds.dblookup.bursi.DBNearestMatchCalculator"
-          id="net.bioclipse.ds.dblookup.bursi.dbnearest">
+          id="Bursi Nearest Neighbours">
     </Calculator>
  </extension>
  
  	<extension
   		point="org.eclipse.ui.menus">
    <menuContribution
-        locationURI="popup:net.bioclipse.cdk.ui.sdfeditor.menu?after=additions">
+        locationURI="popup:net.bioclipse.ds.context?after=single">
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Compute Bursi Exact Matches"
+           label="Bursi Exact Matches"
             icon="icons/db.gif"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="net.bioclipse.ds.dblookup.bursi.dbexact">
+              value="Bursi Exact Match">
         </parameter>
         <visibleWhen
               checkEnabled="false">
@@ -69,18 +69,15 @@
            </with>
         </visibleWhen>
      </command>
-   </menuContribution>
-   
-      <menuContribution
-        locationURI="popup:net.bioclipse.cdk.ui.sdfeditor.menu?after=additions">
+
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Compute Bursi Nearest Neighbors"
+           label="Bursi Nearest Neighbors"
             icon="icons/db.gif"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="net.bioclipse.ds.dblookup.bursi.dbnearest">
+              value="Bursi Nearest Neighbours">
         </parameter>
         <visibleWhen
               checkEnabled="false">

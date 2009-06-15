@@ -7,7 +7,7 @@ public class DBExactMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getPropertyName() {
-        return "net.bioclipse.ds.dblookup.bursi.dbexact";
+        return "Bursi Exact Match";
     }
 
     @Override

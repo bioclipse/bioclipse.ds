@@ -7,7 +7,7 @@ public class DBNearestMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getPropertyName() {
-        return "net.bioclipse.ds.dblookup.bursi.dbnearest";
+        return "Bursi Nearest Neighbours";
     }
 
     @Override
