@@ -3,5 +3,7 @@
 
 <toc label="Decision Support">
 	<topic label="About Decision Support"  href="html/maintopic.html"> 
+		<topic label="Tests"  href="html/tests.html"> 
+		</topic>
 	</topic>
 </toc>

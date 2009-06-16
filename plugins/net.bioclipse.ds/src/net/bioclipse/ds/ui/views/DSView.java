@@ -1170,6 +1170,11 @@ public class DSView extends ViewPart implements IPartListener{
         return autorun;
     }
 
+    public void fireExternalRun() {
+
+        doRunAllTests();
+        
+    }
     
 
 }

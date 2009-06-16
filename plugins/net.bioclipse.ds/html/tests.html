@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Decision Support Tests</title>
+  <link rel="stylesheet" href="../../PRODUCT_PLUGIN/narrow_book.css" type="text/css">
+</head>
+
+<body>
+<h1>Decision Support Tests</h1>
+
+<h2>Overview</h2>
+The feature provides near-real-time tests that can predict properties for 
+a chemical structure and hence decision support.
+
+<h2>Exact match</h2>
+This test retrieves the compounds in the Bursi DB that have a matching
+InChi key. It also displays the Ames Mutagenicity test result for those
+compounds.
+
+<h2>Bursi Nearest Neighbor</h2>
+The Bursi DB is searched for compounds, near neighbors, that match the
+query molecule. The comparison is made based on cdk fingerprints and
+Tanimoto similarity. Any compound with a similarity greater than or
+equal to 0.7 is retrieved and the corresponding Ames Mutagenicity test
+result is displayed. This plugin makes a classification based on the
+number of near neighbors. If the number of neighbors is greater than
+zero and the majority of Ames Meutagenicity test results is positive
+then the classification is positive, otherwise it is negative.
+
+<h2>Bursi Toxicophores</h2>
+A set of toxicophores defined by SMARTS is used to make positive
+classifications. If none of them exist in a query molecule the
+classification is negative otherwise it is positive.
+
+<h2>Signature Significance</h2>
+A QSAR model makes classifications. The model is trained on the Bursi DB
+and the descriptor being used is the signature descriptor. If there are
+existing signatures in a query molecule, the classification is either
+positive or negative, otherwise it is inconclusive. The most significant
+signature is displayed in the query molecule.
+
+<h2>Consensus Classification</h2>
+The latter three Tests are used together in a consensus fashion where
+the majority is used as a classification. If it is a draw the
+classification is inconclusive.
+
+</body>
+</html>
