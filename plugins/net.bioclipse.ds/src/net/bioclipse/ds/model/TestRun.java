@@ -101,6 +101,10 @@ public class TestRun implements ISubStructure, IColorProvider{
         
         //No results = negative
         if (results==null || results.size()<=0){
+            if (getTest().getId().equals( "dblookup.exact.bursi" )){
+                if (results==null || results.size()==0)
+                    return "INCONCLUSIVE";
+            }
             return "NEGATIVE";
         }
 
@@ -111,15 +115,6 @@ public class TestRun implements ISubStructure, IColorProvider{
         else
             return tr.getConsensusString() + " [" + results.size() + " hits]";
 
-        
-//        String ret="TestRun: Editor=" + editor +", Test=" + test + ", Status=" 
-//                + getStatus() + ", Test errormsg=" + getTest().getTestErrorMessage();
-//        if (results!=null)
-//            ret=ret +", matches="+ results.size();
-//        else
-//            ret=ret +", no matches";
-//        
-//        return ret;
     }
 
     public boolean hasMatches() {
@@ -211,6 +206,13 @@ public class TestRun implements ISubStructure, IColorProvider{
         if (results!=null){
             for (ITestResult res : results){
                 ints.add( res.getClassification() );
+            }
+        }
+
+        if (getTest()!=null){
+            if (getTest().getId().equals( "dblookup.exact.bursi" )){
+                if (results==null || results.size()==0)
+                    return ITestResult.INCONCLUSIVE;
             }
         }
 
@@ -344,14 +346,6 @@ public class TestRun implements ISubStructure, IColorProvider{
             return new Color(Display.getCurrent(), 247, 35, 3);
 
         else if (getConsensusStatus()==ITestResult.NEGATIVE){
-            //FIXME: ugly demo hack for blue color in db exact with no matches
-            if (getTest()!=null){
-                if (getTest().getId().equals( "dblookup.exact.bursi" )){
-                    if (results==null || results.size()==0)
-                        return new Color(Display.getCurrent(), 0, 0, 246);
-                }
-            }
-           
             return new Color(Display.getCurrent(), 0, 176, 0);
         }
 
