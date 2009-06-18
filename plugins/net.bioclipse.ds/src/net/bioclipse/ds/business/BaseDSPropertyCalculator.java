@@ -55,16 +55,7 @@ public abstract class BaseDSPropertyCalculator implements IPropertyCalculator<Te
 
     public String toString( Object value ) {
 
-        @SuppressWarnings("unchecked")
-        List<ITestResult> results = (List<ITestResult>)value;
-
-        //No results = negative
-        if (results.size()<=0){
-            return "NEGATIVE";
-        }
-
-        //Serialize consensus
-        TestRun tr = results.get( 0 ).getTestRun();
+        TestRun tr = (TestRun)value;
         return tr.getConsensusString();
     }
 
