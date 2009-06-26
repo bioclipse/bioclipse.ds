@@ -729,7 +729,6 @@ public class DSView extends ViewPart implements IPartListener{
 
             try {
 
-                
                 //Start up a job with the test
                 BioclipseJob<List<ITestResult>> job = 
                     ds.runTest( tr.getTest().getId(), mol, 
@@ -799,10 +798,12 @@ public class DSView extends ViewPart implements IPartListener{
 
 
             
-            } catch ( BioclipseException e ) {
+            } catch ( Exception e ) {
                 logger.error( "Error running test: " + tr.getTest() + 
                               ": " + e.getMessage());
                 LogUtils.debugTrace( logger, e );
+                
+                tr.setStatus( TestRun.ERROR );
                 
                 viewer.refresh( tr );
                 updateConsensusView();
