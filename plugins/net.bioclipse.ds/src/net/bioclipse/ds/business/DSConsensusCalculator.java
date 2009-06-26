@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Platform;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IPropertyCalculator;
+import net.bioclipse.core.domain.IMolecule.Property;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.SimpleResult;
@@ -30,7 +31,8 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
 
         List<Integer> classifications=new ArrayList<Integer>();
         for(IPropertyCalculator<TestRun> calculator:getCalculators()) {
-            TestRun tr = calculator.calculate( molecule );
+            String id = calculator.getPropertyName();
+            TestRun tr = (TestRun) molecule.getProperty( id, Property.USE_CACHED );
             
             if (!(tr.getTest().isInformative())){
                 if (tr.getTest().getTestErrorMessage().length()<1){
@@ -65,7 +67,8 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
     }
 
     public String toString( Object value ) {
-        return (String)value;
+        TestRun tr = (TestRun)value;
+        return tr.getConsensusString();
     }
 
     protected Collection<IPropertyCalculator<TestRun>> getCalculators() {
