@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Lipinski Rule-of-5
 Bundle-SymbolicName: net.bioclipse.ds.lipinski;singleton:=true
-Bundle-Version: 2.0.0.RC2
+Bundle-Version: 2.0.0.RC3
 Bundle-Activator: net.bioclipse.ds.lipinski.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
