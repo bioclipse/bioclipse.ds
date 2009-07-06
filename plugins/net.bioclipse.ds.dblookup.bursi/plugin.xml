@@ -5,7 +5,7 @@
    <extension
          point="net.bioclipse.ds.test">
       <test
-            class="net.bioclipse.ds.dblookup.impl.DBExactMatchTest"
+            class="net.bioclipse.ds.dblookup.impl.SDFExactMatchFP"
             icon="icons/db.gif"
             id="dblookup.exact.bursi"
             informative="true"
@@ -19,7 +19,7 @@
       <test
             id="dblookup.nearest.bursi"
             name="BursiDB nearest neighbour"
-            class="net.bioclipse.ds.dblookup.impl.DBNearestNeighborTest"
+            class="net.bioclipse.ds.dblookup.impl.SDFNearestNeighborCDKFP"
             reportmodel="net.bioclipse.ds.dblookup.impl.DBNNmodel"
             icon="icons/db.gif">
             <resource name="file"
