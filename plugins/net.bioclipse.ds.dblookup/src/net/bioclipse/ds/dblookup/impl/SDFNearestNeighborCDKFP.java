@@ -53,9 +53,9 @@ import net.bioclipse.jobs.BioclipseJobUpdateHook;
  * @author ola
  *
  */
-public class DBNearestNeighborTest extends AbstractDSTest implements IDSTest{
+public class SDFNearestNeighborCDKFP extends AbstractDSTest implements IDSTest{
 
-    private static final Logger logger = Logger.getLogger(DBNearestNeighborTest.class);
+    private static final Logger logger = Logger.getLogger(SDFNearestNeighborCDKFP.class);
     private static final String FP_PROPERTY_KEY="net.bioclipse.cdk.fingerprint";
     private static final String CONSLUSION_PROPERTY_KEY="Ames test categorisation";
 

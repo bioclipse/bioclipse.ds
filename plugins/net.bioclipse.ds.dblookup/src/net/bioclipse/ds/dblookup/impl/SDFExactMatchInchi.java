@@ -48,9 +48,9 @@ import net.bioclipse.jobs.BioclipseJobUpdateHook;
  * @author ola
  *
  */
-public class DBExactMatchTest extends AbstractDSTest implements IDSTest{
+public class SDFExactMatchInchi extends AbstractDSTest implements IDSTest{
 
-    private static final Logger logger = Logger.getLogger(DBExactMatchTest.class);
+    private static final Logger logger = Logger.getLogger(SDFExactMatchInchi.class);
     
     private static final String INCHI_PROPERTY_KEY="net.bioclipse.cdk.InChI";
     private static final String CONSLUSION_PROPERTY_KEY="Ames test categorisation";
