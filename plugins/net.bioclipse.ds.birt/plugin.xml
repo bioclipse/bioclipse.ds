@@ -59,4 +59,9 @@
  </extension>
 
 
+   <extension point="org.eclipse.ui.startup">
+     <startup class="net.bioclipse.ds.birt.Startup"/>
+   </extension>
+
+
 </plugin>
