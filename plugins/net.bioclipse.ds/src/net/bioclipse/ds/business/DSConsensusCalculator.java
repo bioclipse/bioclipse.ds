@@ -13,9 +13,11 @@ import org.eclipse.core.runtime.Platform;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IPropertyCalculator;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule.Property;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.SimpleResult;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.ReportHelper;
@@ -45,7 +47,7 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
         
         TestRun consrun=new TestRun();
         //Add a single result to consrun
-        SimpleResult consres = new SimpleResult("consensus", 
+        SimpleResult consres = new SimpleResult(getPropertyName(), 
                          ConsensusCalculator.calculate( classifications ) );
         consres.setTestRun( consrun );
         consrun.addResult( consres);
@@ -61,9 +63,23 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
 
     public TestRun parse( String value ) {
         TestRun consrun=new TestRun();
-        consrun.addResult( new SimpleResult("consensus", 
-                                        ReportHelper.stringToStatus( value )) );
-        return consrun;
+        IDSTest test;
+        try {
+            test = Activator.getDefault().getJavaManager().getTest( getPropertyName() );
+            consrun.setTest( test );
+            
+            SimpleResult res=new SimpleResult(getPropertyName(), 
+                                              ReportHelper.stringToStatus( value ));
+            res.setTestRun( consrun );
+            consrun.addResult( res );
+
+            return consrun;
+
+        } catch ( BioclipseException e ) {
+            LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
+        }
+        
+        return null;
     }
 
     public String toString( Object value ) {

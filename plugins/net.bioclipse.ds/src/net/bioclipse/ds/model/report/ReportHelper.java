@@ -179,22 +179,18 @@ public class ReportHelper {
     }
 
     public static int stringToStatus(String value){
-        
-//        if (status==ITestResult.POSITIVE)
-//            return "POSITIVE";
-//        else if (status==ITestResult.NEGATIVE)
-//            return"NEGATIVE";
-//        else if (status==ITestResult.INCONCLUSIVE)
-//            return"INCONCLUSIVE";
-//        else if (status==ITestResult.INFORMATIVE)
-//            return"INFORMATIVE";
-//        else if (status==ITestResult.ERROR)
-//            return"ERROR";
-//        else
-//            return"N/A";
 
-        //FIXME: IMPLEMENT THIS
-            return ITestResult.ERROR;
+        if (value.equalsIgnoreCase( "positive" ))
+            return ITestResult.POSITIVE;
+        else if (value.equalsIgnoreCase( "negative" ))
+            return ITestResult.NEGATIVE;
+        else if (value.equalsIgnoreCase( "INCONCLUSIVE" ))
+            return ITestResult.INCONCLUSIVE;
+        else if (value.equalsIgnoreCase( "INFORMATIVE" ))
+            return ITestResult.INFORMATIVE;
+
+        //Default: error
+        return ITestResult.ERROR;
         
     }
 

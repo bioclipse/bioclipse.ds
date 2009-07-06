@@ -69,8 +69,8 @@
  
   	<extension
   		point="org.eclipse.ui.menus">
-   <menuContribution
-        locationURI="popup:net.bioclipse.cdk.ui.sdfeditor.menu?after=additions">
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.popup.any?after=additions">
         
         <menu
               label="Decision Support"
@@ -81,6 +81,13 @@
               <separator
                     name="consensus">
               </separator>
+        <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+              
         </menu>
 
    </menuContribution>
@@ -98,17 +105,94 @@
               value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Signature Significance,Consensus">
         </parameter>
         <visibleWhen
-              checkEnabled="false">
-           <with
-                 variable="activeEditor">
-              <instanceof
-                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
-              </instanceof>
-           </with>
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
         </visibleWhen>
      </command>
    </menuContribution>
  </extension>
    
+
+
+ <extension
+       point="org.eclipse.core.expressions.definitions">
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.file">
+       <iterate
+             ifEmpty="false"
+             operator="and">
+          <adapt
+                type="org.eclipse.core.resources.IResource">
+             <or>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf0d">
+                </test>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf2d">
+                </test>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf3d">
+                </test>
+             </or>
+          </adapt>
+       </iterate>
+    </definition>
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.editor">
+       <with
+             variable="activeEditor">
+          <instanceof
+                value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+          </instanceof>
+       </with>
+    </definition>
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+       <or>
+          <iterate
+                ifEmpty="false"
+                operator="and">
+             <adapt
+                   type="org.eclipse.core.resources.IResource">
+                <or>
+	                <test
+    	                  property="org.eclipse.core.resources.contentTypeId"
+    	                  value="net.bioclipse.contenttypes.sdf0d">
+	                </test>
+                   <test
+                         property="org.eclipse.core.resources.contentTypeId"
+                         value="net.bioclipse.contenttypes.sdf2d">
+                   </test>
+                   <test
+                         property="org.eclipse.core.resources.contentTypeId"
+                         value="net.bioclipse.contenttypes.sdf3d">
+                   </test>
+                </or>
+             </adapt>
+          </iterate>
+          <with
+                variable="activeEditor">
+             <instanceof
+                   value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+             </instanceof>
+          </with>
+       </or>
+    </definition>
+ </extension>
+
+   <extension
+         point="net.bioclipse.ds.test">
+      <test
+            class="net.bioclipse.ds.business.ConsensusTest"
+            icon="icons/db.gif"
+            id="Consensus"
+            name="Decision Suppport Consensus">
+      </test>
+ </extension>
 
 </plugin>

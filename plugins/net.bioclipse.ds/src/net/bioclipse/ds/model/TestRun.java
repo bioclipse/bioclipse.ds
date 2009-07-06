@@ -110,7 +110,7 @@ public class TestRun implements ISubStructure, IColorProvider{
 
         //Serialize consensus
         TestRun tr = results.get( 0 ).getTestRun();
-        if (results.get( 0 ).getName().equals( "consensus"))
+        if (results.get( 0 ).getName().equalsIgnoreCase( "consensus"))
             return tr.getConsensusString();
         else
             return tr.getConsensusString() + " [" + results.size() + " hits]";
