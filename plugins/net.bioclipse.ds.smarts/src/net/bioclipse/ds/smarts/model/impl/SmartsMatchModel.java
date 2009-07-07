@@ -29,6 +29,8 @@ public class SmartsMatchModel extends AbstractTestReportModel{
 
         //for a testrunm transform to a DSRow with a structure image and paams
         List<DSRow> newrows=new ArrayList<DSRow>();
+        if (run.getMatches()==null) return newrows;
+
         for (int i=0; i<run.getMatches().size(); i++){
             
             ITestResult match = run.getMatches().get( i );
