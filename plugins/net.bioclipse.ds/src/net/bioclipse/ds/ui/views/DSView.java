@@ -24,13 +24,11 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
-import net.bioclipse.ds.business.TestHelper;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
-import net.bioclipse.ds.model.report.DSRow;
 import net.bioclipse.ds.model.report.DSSingleReportModel;
 import net.bioclipse.ds.model.report.ReportHelper;
 import net.bioclipse.ds.ui.IDSViewNoCloseEditor;
@@ -47,6 +45,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -176,7 +175,7 @@ public class DSView extends ViewPart implements IPartListener{
         
         
         //Init with available tests
-        viewer.setInput(TestHelper.readTestsFromEP().toArray());
+        initializeEmptyViewerState( viewer );
 
         // Create the help context id for the viewer's control
         PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "com.genettasoft.warningsystem.ui.viewer");
@@ -643,7 +642,7 @@ public class DSView extends ViewPart implements IPartListener{
             JChemPaintEditor jcp = (JChemPaintEditor) editor;
             doClearAllTests( jcp );
         }else{
-            showError( "NOT IMPLEMENTED FOR EDITOR: " + editor );
+            logger.warn( "NOT IMPLEMENTED FOR EDITOR: " + editor );
         }
         
     }
@@ -871,14 +870,29 @@ public class DSView extends ViewPart implements IPartListener{
         else if ( part instanceof MultiPageMoleculesEditorPart ) {
             System.out.println("We have a MPE editor for TestsView");
             MultiPageMoleculesEditorPart editor = (MultiPageMoleculesEditorPart)part;
-            Object obj = editor.getAdapter(JChemPaintEditor.class);
-            if (obj== null){
-                System.out.println("     MPE editor for TestsView did not have JCP page to provide");
-                return null;
+            
+            IContextService contextService = (IContextService) PlatformUI.getWorkbench().
+                                                      getService(IContextService.class);
+            
+            for (Object cs : contextService.getActiveContextIds()){
+                if (MultiPageMoleculesEditorPart.JCP_CONTEXT.equals( cs )){
+                    //JCP is active
+                    Object obj = editor.getAdapter(JChemPaintEditor.class);
+                    if (obj!= null){
+                        JChemPaintEditor jcp=(JChemPaintEditor)obj;
+                        return jcp;
+                    }
+                }
             }
-            System.out.println("     MPE editor for TestsView provided JCP page!");
-            JChemPaintEditor jcp=(JChemPaintEditor)obj;
-            return jcp;
+            
+//            Object obj = editor.getAdapter(JChemPaintEditor.class);
+//            if (obj== null){
+//                System.out.println("     MPE editor for TestsView did not have JCP page to provide");
+//                return null;
+//            }
+//            System.out.println("     MPE editor for TestsView provided JCP page!");
+//            JChemPaintEditor jcp=(JChemPaintEditor)obj;
+//            return jcp;
         }
 
         System.out.println("No supported editor for TestsView");
@@ -901,7 +915,7 @@ public class DSView extends ViewPart implements IPartListener{
             viewer.setInput( activeTestRuns.toArray() );
         }else{
          //ok, we have nothing.
-            viewer.setInput(TestHelper.readTestsFromEP().toArray());
+            initializeEmptyViewerState(viewer);
         }
         updateActionStates();
         viewer.expandAll();
@@ -910,6 +924,24 @@ public class DSView extends ViewPart implements IPartListener{
         updateConsensusView();
     }
 
+
+    private void initializeEmptyViewerState( TreeViewer viewer2 ) {
+
+//        IDSManager ds = Activator.getDefault().getJavaManager();
+//      try {
+//          List<String> tests = ds.getTests();
+//          tests.remove( "Consensus" );
+////          viewer.setInput(TestHelper.readTestsFromEP().toArray());
+//          viewer.setInput(tests.toArray());
+//      } catch ( BioclipseException e ) {
+//          LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
+//          viewer.setInput(new String[]{"Error initializing tests"});
+//      }
+
+      viewer.setInput(new String[]{"No active chemical structure"});
+
+        
+    }
 
     /**
      * We have a new editor. Create a new TestRun for the molecules it contains 
@@ -986,8 +1018,9 @@ public class DSView extends ViewPart implements IPartListener{
                 else if (test.isExcluded()){
                     newTestRun.setStatus( TestRun.EXCLUDED );
                 }
-
-                newTestRuns.add( newTestRun );
+                //Do not add the consensus testrun
+                if (!(testid.equalsIgnoreCase( "Consensus" )))
+                    newTestRuns.add( newTestRun ); 
             }
         } catch ( BioclipseException e ) {
             e.printStackTrace();
@@ -1023,6 +1056,11 @@ public class DSView extends ViewPart implements IPartListener{
         //Get mol from first testrun
         TestRun first = activeTestRuns.get( 0 );
         ICDKMolecule mol = first.getMolecule();
+
+        if (mol==null){
+            logger.error( "No molecule to make a chart from." );
+            return null;
+        }
 
         //Get name
         String name = (String) mol.getAtomContainer().getProperty( CDKConstants.TITLE );
@@ -1153,7 +1191,7 @@ public class DSView extends ViewPart implements IPartListener{
      * clean in that case.
      */
     public void partDeactivated( IWorkbenchPart part ) {
-        logger.debug("Part:" + part.getTitle() + " deactivated");
+//        logger.debug("Part:" + part.getTitle() + " deactivated");
         storedSelection=(IStructuredSelection) viewer.getSelection();
     }
 
@@ -1176,6 +1214,6 @@ public class DSView extends ViewPart implements IPartListener{
         doRunAllTests();
         
     }
-    
+
 
 }
