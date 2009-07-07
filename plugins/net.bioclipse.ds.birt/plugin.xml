@@ -18,6 +18,17 @@
 		</command>
  </extension>
 
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="net.bioclipse.ds.birt.SingleReportTester"
+      type="java.lang.Object"
+      namespace="net.bioclipse.ds.birt"
+      properties="isDSViewRun"
+      class="net.bioclipse.ds.birt.SingleReportTester">
+    </propertyTester>
+ </extension>
+
+
 <extension
   		point="org.eclipse.ui.menus">
 

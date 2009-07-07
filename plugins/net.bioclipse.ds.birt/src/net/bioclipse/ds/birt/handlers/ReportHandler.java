@@ -9,6 +9,8 @@ import net.bioclipse.ds.birt.Activator;
 import net.bioclipse.ds.birt.editors.WrappedBrowserEditor;
 import net.bioclipse.ds.birt.util.StringInput;
 import net.bioclipse.ds.birt.util.StringStorage;
+import net.bioclipse.ds.model.report.DSSingleReportModel;
+import net.bioclipse.ds.ui.views.DSView;
 
 import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.EngineConfig;
@@ -30,8 +32,10 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IStorage;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -48,16 +52,20 @@ public class ReportHandler extends AbstractHandler{
 
     public Object execute( ExecutionEvent event ) throws ExecutionException {
 
+        
 
         System.out.println("REPOOOOOOORT!");
-//        openScriptedReportInBrowser();
-//        openWebViewer();
-        
 
         IWorkbenchPage page = PlatformUI.getWorkbench()
         .getActiveWorkbenchWindow()
         .getActivePage();
-
+        
+        DSSingleReportModel testmodel = DSView.getInstance().waitAndReturnReportModel();
+        if (testmodel==null){
+            showError( "Please run some tests before creating a report.");
+            return null;
+        }
+        
         IEditorInput input = createEditorInput();
         
         try {
@@ -84,13 +92,13 @@ public class ReportHandler extends AbstractHandler{
     }
     
     private IEditorInput createEditorInput() {
-        IStorage storage = new StringStorage("WEEE");
+        IStorage storage = new StringStorage("REPORT");
         IEditorInput input = new StringInput(storage);
         return input;
     }
 
 
-
+    @Deprecated
     public static void openScriptedReportInBrowser( ) {
         try {
 
@@ -148,7 +156,7 @@ public class ReportHandler extends AbstractHandler{
 
     }
 
-
+    @Deprecated
     public static void openWebViewer() {
 
 
@@ -171,6 +179,13 @@ public class ReportHandler extends AbstractHandler{
         System.setProperty( "RUN_UNDER_ECLIPSE", "true" );
         WebViewer.display(reportFile, WebViewer.HTML, "frameset");
 
+    }
+
+    private void showError(String message) {
+        MessageDialog.openError( 
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                "Decision support",
+                message);
     }
 
 }

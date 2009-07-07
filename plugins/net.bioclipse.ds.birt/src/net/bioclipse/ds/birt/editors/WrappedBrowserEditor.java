@@ -200,7 +200,7 @@ public class WrappedBrowserEditor extends EditorPart implements IDSViewNoCloseEd
             options.setOutputFormat("html");
 
             task.setRenderOption(options);
-            task.setParameterValue( "model", "WEE" );
+//            task.setParameterValue( "model", "WEE" );
             task.run();
             task.close();
 
