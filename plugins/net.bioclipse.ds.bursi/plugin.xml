@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+      <test
+            class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
+            icon="icons/db.gif"
+            id="dblookup.exact.bursi"
+            informative="true"
+            clone="true"
+            reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel"
+            name="BursiDB exact lookup">
+            <resource name="file"
+                  path="data/cas_4337_noH_props.sdf">
+            </resource>
+            <parameter name="responseProperty" value="Ames test categorisation" />
+            <parameter name="positiveValue" value="mutagen" />
+            <parameter name="negativeValue" value="nonmutagen" />
+      </test>
+
+      <test
+            id="dblookup.nearest.bursi"
+            name="BursiDB nearest neighbour"
+            class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
+            reportmodel="net.bioclipse.ds.impl.report.NNReportModel"
+            clone="true"
+            icon="icons/db.gif">
+            <resource name="file"
+                  path="data/cas_4337_noH_props.sdf">
+            </resource>
+            <parameter name="distance.tanimoto" value="0.7" />
+            <parameter name="responseProperty" value="Ames test categorisation" />
+            <parameter name="positiveValue" value="mutagen" />
+            <parameter name="negativeValue" value="nonmutagen" />
+      </test>
+      
+      <!--test
+            id="smarts.sample"
+            name="Sample simple SMARTS"
+            icon="icons/form.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
+            <resource name="file"
+                  path="data/sample.txt">
+            </resource>
+      </test-->
+      <test
+            id="smarts.bursi"
+            name="Bursi Toxicophores"
+            icon="icons/form.gif"
+            reportmodel="net.bioclipse.ds.impl.report.SmartsMatchReportModel"
+            class="net.bioclipse.ds.impl.SmartsMatcher">
+            <resource name="file"
+                  path="data/bursiApprovedCDKCorrected.txt">
+            </resource>
+      </test>
+      <!--test
+            id="smarts.bursi.inclexcl"
+            name="Bursi inclusive/exclusive toxicophores"
+            icon="icons/form.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsInclusiveExclusiveTest">
+            <resource name="file"
+                  path="data/bursiApprovedInclExclCDKCorrected.txt">
+            </resource>
+      </test-->
+      
+   </extension>
+
+
+
+       <extension
+       point="net.bioclipse.cdk.propertyCalculator">
+    <Calculator
+          class="net.bioclipse.ds.bursi.calc.ExactMatchCalculator"
+          id="Bursi Exact Match">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.bursi.calc.NearestMatchCalculator"
+          id="Bursi Nearest Neighbours">
+    </Calculator>
+    
+     <Calculator
+          class="net.bioclipse.ds.bursi.calc.SmartsMatchCalculator"
+          id="Bursi Toxicophores">
+    </Calculator>
+    
+ </extension>
+ 
+ 	<extension
+  		point="org.eclipse.ui.menus">
+   <menuContribution
+        locationURI="popup:net.bioclipse.ds.context?after=single">
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Bursi Exact Matches"
+            icon="icons/db.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Bursi Exact Match">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Bursi Nearest Neighbors"
+            icon="icons/db.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Bursi Nearest Neighbours">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+     
+     <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Bursi Toxicophores Matches"
+            icon="icons/form.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Bursi Toxicophores">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+     
+   </menuContribution>
+ </extension>
+   
+   
+</plugin>
