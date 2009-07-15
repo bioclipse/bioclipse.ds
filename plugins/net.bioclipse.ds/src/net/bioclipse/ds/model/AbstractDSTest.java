@@ -15,8 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bioclipse.cdk.business.Activator;
+import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.CDKMolecule;
+import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.impl.BaseSDFMatcher;
+import net.bioclipse.ds.impl.result.ExternalMoleculeMatch;
+import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
+import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
@@ -28,6 +39,8 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
  */
 public abstract class AbstractDSTest implements IDSTest{
 
+    private static final Logger logger = Logger.getLogger(AbstractDSTest.class);
+
     private String id;
     private String name;
     private String description;
@@ -36,6 +49,8 @@ public abstract class AbstractDSTest implements IDSTest{
     private Map<String, String > parameters;
     private boolean excluded;
     private boolean informative;
+    private boolean clone;
+    private boolean initialized;
     private AbstractTestReportModel reportmodel;
     
     /**
@@ -190,4 +205,87 @@ public abstract class AbstractDSTest implements IDSTest{
         this.reportmodel = reportmodel;
     }
 
+    
+    public boolean isClone() {
+    
+        return clone;
+    }
+
+    
+    public void setClone( boolean clone ) {
+    
+        this.clone = clone;
+    }
+
+    public boolean isInitialized() {
+        
+        return initialized;
+    }
+
+    
+    public void setInitialized( boolean initialized ) {
+    
+        this.initialized = initialized;
+    }
+
+    
+
+    /**
+     * Set up input molecule, clone if extension says so, and call doRunTest().
+     */
+    public List<? extends ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+
+        //Read database file if not already done that
+        try {
+            if (!isInitialized())
+                initialize(monitor);
+        } catch ( Exception e1 ) {
+            logger.error( "Failed to initialize test: " + getId() + " due to: " 
+                          + e1.getMessage() );
+            setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
+        }
+
+        if (getTestErrorMessage().length()>1){
+            return new ArrayList<ExternalMoleculeMatch>();
+        }
+
+        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
+
+        ICDKMolecule cdkmol=null;
+        ICDKMolecule cdkmol_in = null;
+        try {
+            cdkmol_in = cdk.asCDKMolecule( molecule );
+            
+            //Only clone if extension tells us to
+            if(isClone()){
+                cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
+            }
+            else{
+                cdkmol=cdkmol_in;
+            }
+        } catch ( BioclipseException e ) {
+            return returnError( "Could not create CDKMolecule", e.getMessage() );
+        } catch ( CloneNotSupportedException e ) {
+            return returnError( "Could not clone CDKMolecule", e.getMessage() );
+        }
+
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+
+        return doRunTest( cdkmol, monitor );
+
+    }
+
+
+    protected abstract List<? extends ITestResult> doRunTest( 
+                                                  ICDKMolecule cdkmol, 
+                                                  IProgressMonitor monitor);
+
+    
+    
 }

@@ -26,12 +26,17 @@ Require-Bundle: org.eclipse.ui,
  org.openscience.cdk.nonotify;bundle-version="1.2.2",
  org.eclipse.ui.cheatsheets;bundle-version="3.3.101",
  org.openscience.cdk.render;bundle-version="1.2.2",
- org.openscience.cdk.sdg;bundle-version="1.2.2"
+ org.openscience.cdk.sdg;bundle-version="1.2.2",
+ net.bioclipse.inchi;bundle-version="2.0.0",
+ org.openscience.cdk.smarts;bundle-version="1.2.2"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j;version="1.2.15"
 Export-Package: net.bioclipse.ds,
  net.bioclipse.ds.business,
+ net.bioclipse.ds.impl,
+ net.bioclipse.ds.impl.report,
+ net.bioclipse.ds.impl.result,
  net.bioclipse.ds.model,
  net.bioclipse.ds.model.report,
  net.bioclipse.ds.ui,

@@ -3,6 +3,7 @@
 <plugin>
 
    <extension-point id="net.bioclipse.ds.test" name="Decision Support Test" schema="schema/net.bioclipse.ds.test.exsd"/>
+   <extension-point id="net.bioclipse.decisionsupport" name="Decision Support" schema="schema/net.bioclipse.decisionsupport.exsd"/>
 
 
    <extension
@@ -186,10 +187,11 @@
  </extension>
 
    <extension
-         point="net.bioclipse.ds.test">
+         point="net.bioclipse.decisionsupport">
       <test
             class="net.bioclipse.ds.business.ConsensusTest"
             icon="icons/db.gif"
+            clone="true"
             id="Consensus"
             name="Decision Suppport Consensus">
       </test>

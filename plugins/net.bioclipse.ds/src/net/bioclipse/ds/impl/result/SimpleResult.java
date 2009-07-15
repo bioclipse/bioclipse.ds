@@ -8,9 +8,11 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.model;
+package net.bioclipse.ds.impl.result;
 
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.TestRun;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;

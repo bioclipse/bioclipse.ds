@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.model;
+package net.bioclipse.ds.impl.result;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 

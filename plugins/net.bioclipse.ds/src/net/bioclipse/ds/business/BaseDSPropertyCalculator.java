@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2009 Ola Spjuth.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Ola Spjuth - initial API and implementation
+ ******************************************************************************/
 package net.bioclipse.ds.business;
 
 import java.util.List;
@@ -7,9 +17,9 @@ import net.bioclipse.cdk.ui.sdfeditor.business.IPropertyCalculator;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.SimpleResult;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.ReportHelper;
 

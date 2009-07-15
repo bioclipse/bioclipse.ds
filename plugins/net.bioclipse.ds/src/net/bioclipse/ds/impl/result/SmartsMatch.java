@@ -8,13 +8,30 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ui;
+package net.bioclipse.ds.impl.result;
+
 
 /**
- * An interface that editors that should NOT close DSView should implement
+ * A result that also holds a SMARTS string
  * @author ola
  *
  */
-public interface IDSViewNoCloseEditor{
+public class SmartsMatch extends SubStructureMatch{
+
+    public SmartsMatch(String name, int resultStatus) {
+        super( name, resultStatus );
+    }
+
+    private String smartsString;
+    
+    public String getSmartsString() {
+    
+        return smartsString;
+    }
+    public void setSmartsString( String smarts ) {
+    
+        this.smartsString = smarts;
+        
+    }
 
 }

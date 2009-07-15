@@ -42,6 +42,8 @@ public interface IDSTest extends ISubStructure{
     public boolean isInformative();
     public AbstractTestReportModel getReportmodel();
     public void setReportmodel( AbstractTestReportModel reportmodel );
+    void setClone( boolean clone );
+    boolean isClone();
 
     /**
      * This is the test that is run on a molecule

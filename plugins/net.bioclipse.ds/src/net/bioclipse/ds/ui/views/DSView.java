@@ -50,6 +50,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -178,7 +179,7 @@ public class DSView extends ViewPart implements IPartListener{
         initializeEmptyViewerState( viewer );
 
         // Create the help context id for the viewer's control
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "com.genettasoft.warningsystem.ui.viewer");
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), VIEW_ID);
         makeActions();
         hookContextMenu();
         contributeToActionBars();
@@ -238,6 +239,53 @@ public class DSView extends ViewPart implements IPartListener{
         updateActionStates();
 
         
+        
+      IDSManager ds = Activator.getDefault().getJavaManager();
+      try {
+          for (String testID : ds.getTests()){
+              IDSTest test = ds.getTest( testID );
+//          monitor.subTask( "Initializing test: " + testID );
+              test.initialize( new NullProgressMonitor() );
+          }
+      } catch ( BioclipseException e2 ) {
+          // TODO Auto-generated catch block
+          e2.printStackTrace();
+      } catch ( DSException e2 ) {
+          // TODO Auto-generated catch block
+          e2.printStackTrace();
+      }
+
+//        Job job=new Job("Initializing decision support tests"){
+//            @Override
+//            protected IStatus run( IProgressMonitor monitor ) {
+//
+//                IDSManager ds = Activator.getDefault().getJavaManager();
+//                try {
+//                    monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
+//                    monitor.worked( 1 );
+//                    for (String testID : ds.getTests()){
+//                        IDSTest test = ds.getTest( testID );
+//                        monitor.subTask( "Initializing test: " + testID );
+//                        test.initialize( monitor );
+//                    }
+//                } catch ( BioclipseException e1 ) {
+//                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+//                                      "All tests could not be initalized: " + e1.getMessage());
+//                } catch ( DSException e ) {
+//                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+//                                      "All tests could not be initalized: " + e.getMessage());
+//                }
+//
+//                monitor.done();
+//                return Status.OK_STATUS;
+//            }
+//
+//        };
+//        job.setUser( false );
+//        job.schedule();
+
+        
+        
         //Listen for part lifecycle events to react on editors
         getSite().getWorkbenchWindow().getPartService().addPartListener(this);
         
@@ -256,35 +304,6 @@ public class DSView extends ViewPart implements IPartListener{
 //                doRunAllTests();
             }
         }
-        
-        Job job=new Job("Initializing decision support tests"){
-            @Override
-            protected IStatus run( IProgressMonitor monitor ) {
-
-                IDSManager ds = Activator.getDefault().getJavaManager();
-                try {
-                    monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
-                    monitor.worked( 1 );
-                    for (String testID : ds.getTests()){
-                        IDSTest test = ds.getTest( testID );
-                        monitor.subTask( "Initializing test: " + testID );
-                        test.initialize( monitor );
-                    }
-                } catch ( BioclipseException e1 ) {
-                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-                        "All tests could not be initalized: " + e1.getMessage());
-                } catch ( DSException e ) {
-                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-                    "All tests could not be initalized: " + e.getMessage());
-                }
-                
-                monitor.done();
-                return Status.OK_STATUS;
-            }
-            
-        };
-        job.setUser( false );
-//        job.schedule();
         
     }
 

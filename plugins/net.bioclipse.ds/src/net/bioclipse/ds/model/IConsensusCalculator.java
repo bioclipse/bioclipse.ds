@@ -8,13 +8,18 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ui;
+package net.bioclipse.ds.model;
+
+import java.util.List;
+
 
 /**
- * An interface that editors that should NOT close DSView should implement
+ * 
  * @author ola
  *
  */
-public interface IDSViewNoCloseEditor{
+public interface IConsensusCalculator {
 
+    public ITestResult getConsensus(List<ITestResult> results);
+    
 }

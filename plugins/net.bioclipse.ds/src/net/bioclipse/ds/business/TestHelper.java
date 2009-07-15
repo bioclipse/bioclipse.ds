@@ -13,6 +13,8 @@ package net.bioclipse.ds.business;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
@@ -40,7 +42,7 @@ public class TestHelper {
         // started, for example when running tests
 
         IExtensionPoint serviceObjectExtensionPoint = registry
-        .getExtensionPoint("net.bioclipse.ds.test");
+        .getExtensionPoint("net.bioclipse.decisionsupport");
 
         IExtension[] serviceObjectExtensions
         = serviceObjectExtensionPoint.getExtensions();
@@ -75,7 +77,17 @@ public class TestHelper {
                             }
                             else
                                 test.setInformative(false);
-                            
+
+                            String pclone=element.getAttribute("clone");
+                            if (pclone!=null){
+                                if (pclone.equalsIgnoreCase( "true" ))
+                                    test.setClone( true);
+                                else
+                                    test.setClone( false);
+                            }
+                            else
+                                test.setClone( false);
+
                             String pluginID=element.getNamespaceIdentifier();
                             test.setPluginID( pluginID );
                             
@@ -98,12 +110,13 @@ public class TestHelper {
                                          + element.getAttribute("name") + 
                                          " to " + pname);
                         }else{
-                            logger.error("WarningTest class " + pname 
-                                         + " must implement IWarningTest ");
+                            logger.error("Test class " + pname 
+                                         + " must implement IDSTest ");
                         }
                     } catch ( CoreException e ) {
-                        logger.error("Error creating class for :" + pname + 
+                        logger.error("Error creating class for: " + pname + 
                                      ": " + e.getLocalizedMessage() );
+                        LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
                     }
 
                     //Add a reportmodel for the Test if it declares one 
