@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2009 Ola Spjuth.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Ola Spjuth - initial API and implementation
+ ******************************************************************************/
 package net.bioclipse.ds.lipinski.impl;
 
 import java.util.ArrayList;
@@ -8,22 +18,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.qsar.DescriptorValue;
-import org.openscience.cdk.qsar.IDescriptor;
 import org.openscience.cdk.qsar.descriptors.molecular.RuleOfFiveDescriptor;
-import org.openscience.cdk.qsar.result.IDescriptorResult;
 import org.openscience.cdk.qsar.result.IntegerResult;
 
-import net.bioclipse.cdk.business.Activator;
-import net.bioclipse.cdk.business.ICDKManager;
-import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.SimpleResult;
 
 
 public class RuleOfFiveTest extends AbstractDSTest{
@@ -34,34 +36,14 @@ public class RuleOfFiveTest extends AbstractDSTest{
     public void initialize( IProgressMonitor monitor ) throws DSException {
     }
 
-    public List<? extends ITestResult> runWarningTest( IMolecule molecule,
-                                                       IProgressMonitor monitor ) {
 
-        
-        //Check for cancellation
-        if (monitor.isCanceled())
-            return returnError( "Cancelled","");
-        
+    @Override
+    protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
+                                                     IProgressMonitor monitor ) {
+
         //Store results here
-        List<ITestResult> results=new ArrayList<ITestResult>();
-                
-        if (getTestErrorMessage().length()>1){
-            return results;
-        }
-
-        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
-        
-        ICDKMolecule cdkmol = null;
-        ICDKMolecule cdkmol_in = null;
-        try {
-            cdkmol_in = cdk.asCDKMolecule( molecule );
-            cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
-//            cdkmol = cdk.create( molecule );
-        } catch ( BioclipseException e ) {
-            return returnError( "Could not create CDKMolecule", e.getMessage() );
-        } catch ( CloneNotSupportedException e ) {
-            return returnError( "Could not clone CDKMolecule", e.getMessage() );
-        }
+        ArrayList<SimpleResult> results=new 
+                                             ArrayList<SimpleResult>();
 
         IAtomContainer ac=cdkmol.getAtomContainer();
         RuleOfFiveDescriptor descriptor = new RuleOfFiveDescriptor();
