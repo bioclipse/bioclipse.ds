@@ -29,54 +29,8 @@ import org.junit.Test;
 
 public class TestBursiSmarts {
 
-    @Test
-    public void testListTests() throws BioclipseException{
 
-        IDSManager ds = Activator.getDefault().getJavaManager();
 
-        System.out.println("=============================");
-        System.out.println("Available tests:");
-        for (String test : ds.getTests()){
-            System.out.println("   -" + test);
-        }
-        System.out.println("=============================");
-        assertEquals( "Number of tests", 6, ds.getTests().size() );
-
-    }
-
-    @Test
-    public void testGetTests() throws BioclipseException{
-
-        IDSManager ds = Activator.getDefault().getJavaManager();
-        
-        //Get an existing test
-        IDSTest t = ds.getTest("smarts.sample");
-        assertNotNull( t );
-        
-        assertNotNull( t.getId());
-        assertNotNull( t.getName());
-
-        //Get a non-existing test
-        try{
-            t = ds.getTest("NONEXISTING");
-            fail("Found a test that should not be found");
-        }catch (BioclipseException e){}
-        catch (UndeclaredThrowableException e){}
-
-        //Get a non-existing test
-        try{
-            t = ds.getTest(null);
-            fail("Found a test that should not be found");
-        }catch (BioclipseException e){}
-        catch (UndeclaredThrowableException e){}
-
-    }
-    @Test
-    public void testeadSmartsFiles() throws BioclipseException, DSException{
-
-        //TODO: read and count smarts from files
-        
-    }
     
     @Test
     public void runSmartsSampleTest() throws BioclipseException, DSException{

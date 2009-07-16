@@ -11,7 +11,7 @@
          </endpoint>
          
       <test
-            id="dblookup.exact.bursi"
+            id="bursi.sdflookup.exact"
             name="BursiDB exact lookup"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
@@ -28,7 +28,7 @@
       </test>
 
       <test
-            id="dblookup.nearest.bursi"
+            id="bursi.sdflookup.nearest"
             name="BursiDB nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
@@ -54,7 +54,7 @@
             </resource>
       </test-->
       <test
-            id="smarts.bursi"
+            id="bursi.smarts"
             name="Bursi Toxicophores"
             endpoint="net.bioclipse.ds.mutagenicity"
             icon="icons/form.gif"
@@ -75,7 +75,7 @@
       </test-->
 
       <test
-            id="Mutagenicity Consensus"
+            id="bursi.consensus"
             name="Mutagenicity Consensus"
             visible="false"
             endpoint="net.bioclipse.ds.mutagenicity"

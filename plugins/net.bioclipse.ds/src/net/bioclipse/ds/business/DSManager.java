@@ -40,6 +40,17 @@ public class DSManager implements IBioclipseManager {
     public String getManagerName() {
         return "ds";
     }
+    
+    private void initialize() throws BioclipseException{
+
+        if (dsBusinessModel==null){
+            dsBusinessModel=new DSBusinessModel();
+            dsBusinessModel.initialize();
+        }
+        if (dsBusinessModel==null)
+            throw new BioclipseException("Error initializing DS model.");
+
+    }
 
     /**
      * Get a list of all available tests
@@ -48,10 +59,7 @@ public class DSManager implements IBioclipseManager {
      */
     public List<String> getTests() throws BioclipseException{
 
-        if (dsBusinessModel==null)
-            dsBusinessModel.initialize();
-        if (dsBusinessModel==null)
-            throw new BioclipseException("Error initializing DS model.");
+        initialize();
         
         List<String> testIDS=new ArrayList<String>();
         for (IDSTest test : dsBusinessModel.getTests()){
@@ -68,10 +76,7 @@ public class DSManager implements IBioclipseManager {
             throw new BioclipseException(
                           "Test: " + testID + " must not be null." );
         
-        if (dsBusinessModel==null)
-            dsBusinessModel.initialize();
-        if (dsBusinessModel==null)
-            throw new BioclipseException("Error initializing DS model.");
+        initialize();
 
         for (IDSTest test : dsBusinessModel.getTests()){
             if (testID.equals( test.getId() ))
@@ -90,10 +95,7 @@ public class DSManager implements IBioclipseManager {
      */
     public List<String> getEndpoints() throws BioclipseException{
 
-        if (dsBusinessModel==null)
-            dsBusinessModel.initialize();
-        if (dsBusinessModel==null)
-            throw new BioclipseException("Error initializing DS model.");
+        initialize();
         
         List<String> epIDs=new ArrayList<String>();
         for (Endpoint ep : dsBusinessModel.getEndpoints()){
@@ -109,10 +111,7 @@ public class DSManager implements IBioclipseManager {
             throw new BioclipseException(
                           "Endpoint: " + endpointID + " must not be null." );
         
-        if (dsBusinessModel==null)
-            dsBusinessModel.initialize();
-        if (dsBusinessModel==null)
-            throw new BioclipseException("Error initializing DS model.");
+        initialize();
 
         for (Endpoint ep : dsBusinessModel.getEndpoints()){
             if (endpointID.equals( ep.getId() ))
@@ -126,7 +125,8 @@ public class DSManager implements IBioclipseManager {
 
     
     public void runTest( String testID, IMolecule mol, 
-                             IReturner<List<? extends ITestResult>> returner, IProgressMonitor monitor) 
+                             IReturner<List<? extends ITestResult>> returner, 
+                             IProgressMonitor monitor) 
                              throws BioclipseException{
 
         IDSTest test = getTest( testID );
@@ -136,14 +136,17 @@ public class DSManager implements IBioclipseManager {
     }
 
     public void runEndpoint( String endpointID, IMolecule mol, 
-                         IReturner<Map<String, List<? extends ITestResult>>> returner, IProgressMonitor monitor) 
-                         throws BioclipseException{
+                   IReturner<Map<String, List<? extends ITestResult>>> returner, 
+                   IProgressMonitor monitor) 
+                   throws BioclipseException{
 
         Map<String, List<? extends ITestResult>> ret = 
                              new HashMap<String, List<? extends ITestResult>>();
 
+        //Loop over all tests in this endpoint and run them
         for (IDSTest test : getEndpoint( endpointID ).getTests()){
-            List<? extends ITestResult> testres = test.runWarningTest( mol, monitor);
+            List<? extends ITestResult> testres = test.runWarningTest( mol, 
+                                                                       monitor);
             ret.put( test.getId(), testres );
         }
 
