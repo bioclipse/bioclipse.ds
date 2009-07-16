@@ -78,7 +78,7 @@
             id="Mutagenicity Consensus"
             name="Mutagenicity Consensus"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.business.ConsensusTest"
+            class="net.bioclipse.ds.impl.BogusTest"
             icon="icons/db.gif">
       </test>
       
@@ -177,7 +177,7 @@
     <extension
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
-          class="net.bioclipse.ds.business.DSConsensusCalculator"
+          class="net.bioclipse.ds.impl.calc.DSConsensusCalculator"
           id="Consensus">
     </Calculator>
  </extension>
