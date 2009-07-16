@@ -1033,8 +1033,8 @@ public class DSView extends ViewPart implements IPartListener{
                 else if (test.isExcluded()){
                     newTestRun.setStatus( TestRun.EXCLUDED );
                 }
-                //Do not add the consensus testrun
-                if (!(testid.equalsIgnoreCase( "Consensus" )))
+                //Only add visible tests
+                if (test.isVisible())
                     newTestRuns.add( newTestRun ); 
             }
         } catch ( BioclipseException e ) {

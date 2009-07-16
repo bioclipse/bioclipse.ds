@@ -88,6 +88,16 @@ public class TestHelper {
                             else
                                 test.setClone( false);
 
+                            String pvisible=element.getAttribute("visible");
+                            if (pvisible!=null){
+                                if (pvisible.equalsIgnoreCase( "false" ))
+                                    test.setVisible( false );
+                                else
+                                    test.setVisible( true );
+                            }
+                            else
+                                test.setVisible( true );
+
                             String pluginID=element.getNamespaceIdentifier();
                             test.setPluginID( pluginID );
                             

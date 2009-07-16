@@ -50,6 +50,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private boolean informative;
     private boolean clone;
     private boolean initialized;
+    private boolean visible;
     private AbstractTestReportModel reportmodel;
     
     /**
@@ -284,6 +285,16 @@ public abstract class AbstractDSTest implements IDSTest{
     protected abstract List<? extends ITestResult> doRunTest( 
                                                   ICDKMolecule cdkmol, 
                                                   IProgressMonitor monitor);
+
+    public void setVisible( boolean visible ) {
+
+        this.visible = visible;
+    }
+
+    public boolean isVisible() {
+
+        return visible;
+    }
 
     
     

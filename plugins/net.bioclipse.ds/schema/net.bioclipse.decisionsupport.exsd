@@ -139,6 +139,13 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="visible" type="boolean">
+            <annotation>
+               <documentation>
+                  Denotes if this test should show up in DSView. Default is &apos;true&apos;.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
