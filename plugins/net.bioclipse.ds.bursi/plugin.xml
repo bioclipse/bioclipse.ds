@@ -4,14 +4,21 @@
 
    <extension
          point="net.bioclipse.decisionsupport">
+         
+         <endpoint
+               id="net.bioclipse.ds.mutagenicity"
+               name="Mutagenicity">
+         </endpoint>
+         
       <test
+            id="dblookup.exact.bursi"
+            name="BursiDB exact lookup"
+            endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
             icon="icons/db.gif"
-            id="dblookup.exact.bursi"
             informative="true"
             clone="true"
-            reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel"
-            name="BursiDB exact lookup">
+            reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
             </resource>
@@ -23,6 +30,7 @@
       <test
             id="dblookup.nearest.bursi"
             name="BursiDB nearest neighbour"
+            endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
             reportmodel="net.bioclipse.ds.impl.report.NNReportModel"
             clone="true"
@@ -48,6 +56,7 @@
       <test
             id="smarts.bursi"
             name="Bursi Toxicophores"
+            endpoint="net.bioclipse.ds.mutagenicity"
             icon="icons/form.gif"
             reportmodel="net.bioclipse.ds.impl.report.SmartsMatchReportModel"
             class="net.bioclipse.ds.impl.SmartsMatcher">
@@ -64,8 +73,17 @@
                   path="data/bursiApprovedInclExclCDKCorrected.txt">
             </resource>
       </test-->
+
+      <test
+            id="Mutagenicity Consensus"
+            name="Mutagenicity Consensus"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            class="net.bioclipse.ds.business.ConsensusTest"
+            icon="icons/db.gif">
+      </test>
       
    </extension>
+
 
 
 
@@ -153,6 +171,137 @@
      
    </menuContribution>
  </extension>
+   
+   
+   
+    <extension
+       point="net.bioclipse.cdk.propertyCalculator">
+    <Calculator
+          class="net.bioclipse.ds.business.DSConsensusCalculator"
+          id="Consensus">
+    </Calculator>
+ </extension>
+ 
+ 
+  	<extension
+  		point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        
+        <menu
+              label="Decision Support"
+              id="net.bioclipse.ds.context">
+              <separator
+                    name="single">
+              </separator>
+              <separator
+                    name="consensus">
+              </separator>
+        <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+              
+        </menu>
+
+   </menuContribution>
+
+   <menuContribution
+        locationURI="popup:net.bioclipse.ds.context?after=consensus">
+        
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Mutagenicity Consensus Clasification"
+            icon="icons/poll.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Signature Significance,Consensus">
+        </parameter>
+        <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+     </command>
+   </menuContribution>
+ </extension>
+   
+
+
+ <!--extension
+       point="org.eclipse.core.expressions.definitions">
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.file">
+       <iterate
+             ifEmpty="false"
+             operator="and">
+          <adapt
+                type="org.eclipse.core.resources.IResource">
+             <or>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf0d">
+                </test>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf2d">
+                </test>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf3d">
+                </test>
+             </or>
+          </adapt>
+       </iterate>
+    </definition>
+
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.editor">
+       <with
+             variable="activeEditor">
+          <instanceof
+                value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+          </instanceof>
+       </with>
+    </definition>
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+       <or>
+          <iterate
+                ifEmpty="false"
+                operator="and">
+             <adapt
+                   type="org.eclipse.core.resources.IResource">
+                <or>
+	                <test
+    	                  property="org.eclipse.core.resources.contentTypeId"
+    	                  value="net.bioclipse.contenttypes.sdf0d">
+	                </test>
+                   <test
+                         property="org.eclipse.core.resources.contentTypeId"
+                         value="net.bioclipse.contenttypes.sdf2d">
+                   </test>
+                   <test
+                         property="org.eclipse.core.resources.contentTypeId"
+                         value="net.bioclipse.contenttypes.sdf3d">
+                   </test>
+                </or>
+             </adapt>
+          </iterate>
+          <with
+                variable="activeEditor">
+             <instanceof
+                   value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+             </instanceof>
+          </with>
+       </or>
+    </definition>
+ </extension-->
+   
    
    
 </plugin>
