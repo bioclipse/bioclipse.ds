@@ -15,6 +15,7 @@ import java.util.List;
 
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
@@ -27,17 +28,36 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
 
-public class TestHelper {
+public class DSBusinessModel {
 
-    private static final Logger logger = Logger.getLogger(TestHelper.class);
+    private static final Logger logger = Logger.getLogger(DSBusinessModel.class);
 
-    public static List<IDSTest> readTestsFromEP(){
+    volatile List<IDSTest> tests;
+    volatile List<Endpoint> endpoints;
 
-        List<IDSTest> retlist = new ArrayList<IDSTest>();
+    public List<IDSTest> getTests() {
+        return tests;
+    }
+    
+    public List<Endpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    public void initialize() {
+        readEndpointsFromEP();
+        readTestsFromEP();
+    }
+
+
+    public void readEndpointsFromEP(){
+
+        endpoints = new ArrayList<Endpoint>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-        if ( registry == null ) return retlist;
+        if ( registry == null ) 
+            throw new UnsupportedOperationException("Extension registry is null. " +
+            "Cannot read tests from EP.");
         // it likely means that the Eclipse workbench has not
         // started, for example when running tests
 
@@ -51,6 +71,44 @@ public class TestHelper {
             for( IConfigurationElement element
                     : extension.getConfigurationElements() ) {
 
+                //Read all endpoints
+                if (element.getName().equals("endpoint")){
+
+                    String pid=element.getAttribute("id");
+                    String pname=element.getAttribute("name");
+                    String pdesc=element.getAttribute("description");
+
+                    Endpoint ep=new Endpoint(pid, pname, pdesc);
+                    endpoints.add( ep );
+                }
+            }
+        }
+    }
+
+    public void readTestsFromEP(){
+
+        tests = new ArrayList<IDSTest>();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+        if ( registry == null ) 
+            throw new UnsupportedOperationException("Extension registry is null. " +
+            "Cannot read tests from EP.");
+        // it likely means that the Eclipse workbench has not
+        // started, for example when running tests
+
+        IExtensionPoint serviceObjectExtensionPoint = registry
+        .getExtensionPoint("net.bioclipse.decisionsupport");
+
+        IExtension[] serviceObjectExtensions
+        = serviceObjectExtensionPoint.getExtensions();
+
+        for(IExtension extension : serviceObjectExtensions) {
+            for( IConfigurationElement element
+                    : extension.getConfigurationElements() ) {
+
+                //Read all tests from EP
+                //======================
                 if (element.getName().equals("test")){
 
                     String pname=element.getAttribute("name");
@@ -68,6 +126,14 @@ public class TestHelper {
                             test.setId(pid);
                             String picon=element.getAttribute("icon");
                             test.setIcon(picon);
+
+                            String pep=element.getAttribute("endpoint");
+                            //Look up endpoint by id and add to test
+                            for (Endpoint ep : endpoints){
+                                if (ep.getId().equals( pep ))
+                                    test.setEndpoint( ep );
+                            }
+
                             String pinformative=element.getAttribute("informative");
                             if (pinformative!=null){
                                 if (pinformative.equalsIgnoreCase( "true" ))
@@ -100,7 +166,7 @@ public class TestHelper {
 
                             String pluginID=element.getNamespaceIdentifier();
                             test.setPluginID( pluginID );
-                            
+
                             for( IConfigurationElement subelement
                                     : element.getChildren() ) {
                                 if ("resource".equals( subelement.getName() )){
@@ -114,7 +180,7 @@ public class TestHelper {
                                     test.addParameter(name,path);
                                 }
                             }
-                            retlist.add( test );
+                            tests.add( test );
 
                             logger.debug("Added Decision support Test from EP: "
                                          + element.getAttribute("name") + 
@@ -135,7 +201,7 @@ public class TestHelper {
                     if (test!=null){
                         try {
                             Object rmodel = element
-                                .createExecutableExtension("reportmodel");
+                            .createExecutableExtension("reportmodel");
                             if ( rmodel instanceof AbstractTestReportModel ) {
                                 AbstractTestReportModel abmodel = (AbstractTestReportModel) rmodel;
                                 test.setReportmodel( abmodel );
@@ -143,15 +209,17 @@ public class TestHelper {
                         } catch ( CoreException e ) {
                             logger.debug("The test: " + test.getName() + " did not " +
                             "provide a reportmodel.");
-//                            e.printStackTrace();
+                            //                            e.printStackTrace();
                         }
                     }
 
                 }
+
+
             }
         }
 
-        return retlist;
     }
+
 
 }

@@ -52,6 +52,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private boolean initialized;
     private boolean visible;
     private AbstractTestReportModel reportmodel;
+    private Endpoint endpoint;
     
     /**
      * Empty if no problems
@@ -294,6 +295,16 @@ public abstract class AbstractDSTest implements IDSTest{
     public boolean isVisible() {
 
         return visible;
+    }
+
+    public void setEndpoint( Endpoint endpoint ) {
+
+        this.endpoint = endpoint;
+    }
+
+    public Endpoint getEndpoint() {
+
+        return endpoint;
     }
 
     

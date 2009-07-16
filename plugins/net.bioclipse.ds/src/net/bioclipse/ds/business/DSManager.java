@@ -11,13 +11,16 @@
 package net.bioclipse.ds.business;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.jobs.IReturner;
@@ -32,25 +35,26 @@ public class DSManager implements IBioclipseManager {
 
     private static final Logger logger =Logger.getLogger( DSManager.class );
 
-    private volatile List<IDSTest> tests; 
+    private DSBusinessModel dsBusinessModel; 
     
-    /**
-     * Defines the Bioclipse namespace for DS.
-     * Appears in the scripting language as the namespace/prefix
-     */
     public String getManagerName() {
         return "ds";
     }
 
+    /**
+     * Get a list of all available tests
+     * @return
+     * @throws BioclipseException
+     */
     public List<String> getTests() throws BioclipseException{
 
-        if (tests==null)
-            tests = TestHelper.readTestsFromEP();
-        if (tests==null)
-            throw new BioclipseException("No existing tests available.");
+        if (dsBusinessModel==null)
+            dsBusinessModel.initialize();
+        if (dsBusinessModel==null)
+            throw new BioclipseException("Error initializing DS model.");
         
         List<String> testIDS=new ArrayList<String>();
-        for (IDSTest test : tests){
+        for (IDSTest test : dsBusinessModel.getTests()){
             testIDS.add( test.getId());
         }
 
@@ -64,21 +68,62 @@ public class DSManager implements IBioclipseManager {
             throw new BioclipseException(
                           "Test: " + testID + " must not be null." );
         
-        if (tests==null)
-            tests = TestHelper.readTestsFromEP();
-        if (tests==null)
-            throw new BioclipseException("No existing tests available.");
+        if (dsBusinessModel==null)
+            dsBusinessModel.initialize();
+        if (dsBusinessModel==null)
+            throw new BioclipseException("Error initializing DS model.");
 
-        for (IDSTest test : tests){
+        for (IDSTest test : dsBusinessModel.getTests()){
             if (testID.equals( test.getId() ))
                 return test;
         }
 
-        logger.debug("Test: " + testID + " could not be found.");
+        logger.warn("Test: " + testID + " could not be found.");
         throw new BioclipseException(
                       "Test: " + testID + " could not be found." );
     }
- 
+
+    /**
+     * Get a list of all available tests
+     * @return
+     * @throws BioclipseException
+     */
+    public List<String> getEndpoints() throws BioclipseException{
+
+        if (dsBusinessModel==null)
+            dsBusinessModel.initialize();
+        if (dsBusinessModel==null)
+            throw new BioclipseException("Error initializing DS model.");
+        
+        List<String> epIDs=new ArrayList<String>();
+        for (Endpoint ep : dsBusinessModel.getEndpoints()){
+            epIDs.add( ep.getId());
+        }
+        return epIDs;
+    }
+
+
+    public Endpoint getEndpoint( String endpointID ) throws BioclipseException {
+
+        if (endpointID==null)
+            throw new BioclipseException(
+                          "Endpoint: " + endpointID + " must not be null." );
+        
+        if (dsBusinessModel==null)
+            dsBusinessModel.initialize();
+        if (dsBusinessModel==null)
+            throw new BioclipseException("Error initializing DS model.");
+
+        for (Endpoint ep : dsBusinessModel.getEndpoints()){
+            if (endpointID.equals( ep.getId() ))
+                return ep;
+        }
+
+        logger.warn("Endpoint: " + endpointID + " could not be found.");
+        throw new BioclipseException(
+                      "Endpoint: " + endpointID + " could not be found." );
+    }
+
     
     public void runTest( String testID, IMolecule mol, 
                              IReturner<List<? extends ITestResult>> returner, IProgressMonitor monitor) 
@@ -90,4 +135,20 @@ public class DSManager implements IBioclipseManager {
         returner.completeReturn( ret );
     }
 
+    public void runEndpoint( String endpointID, IMolecule mol, 
+                         IReturner<Map<String, List<? extends ITestResult>>> returner, IProgressMonitor monitor) 
+                         throws BioclipseException{
+
+        Map<String, List<? extends ITestResult>> ret = 
+                             new HashMap<String, List<? extends ITestResult>>();
+
+        for (IDSTest test : getEndpoint( endpointID ).getTests()){
+            List<? extends ITestResult> testres = test.runWarningTest( mol, monitor);
+            ret.put( test.getId(), testres );
+        }
+
+        monitor.done();
+        returner.completeReturn( ret );
+}
+        
 }
