@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.business;
+package net.bioclipse.ds.impl;
 
 import java.util.List;
 

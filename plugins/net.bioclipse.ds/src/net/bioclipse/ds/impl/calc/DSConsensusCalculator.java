@@ -8,11 +8,10 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.business;
+package net.bioclipse.ds.impl.calc;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -27,6 +26,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule.Property;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.impl.ConsensusCalculator;
 import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestRun;

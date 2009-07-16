@@ -10,7 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.bursi.calc;
 
-import net.bioclipse.ds.business.BaseDSPropertyCalculator;
+import net.bioclipse.ds.impl.calc.BaseDSPropertyCalculator;
+
 
 
 public class ExactMatchCalculator extends BaseDSPropertyCalculator{

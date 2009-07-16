@@ -16,10 +16,9 @@ import java.util.List;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
-import net.bioclipse.ds.business.ConsensusCalculator;
+import net.bioclipse.ds.impl.ConsensusCalculator;
 
 import org.eclipse.jface.viewers.IColorProvider;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;

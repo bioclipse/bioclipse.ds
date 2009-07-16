@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.business;
+package net.bioclipse.ds.impl;
 
 import java.util.List;
 
@@ -16,16 +16,15 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 
 
-public class ConsensusTest extends AbstractDSTest implements IDSTest{
+public class BogusTest extends AbstractDSTest implements IDSTest{
 
-    private static final Logger logger = Logger.getLogger(ConsensusTest.class);
+    private static final Logger logger = Logger.getLogger(BogusTest.class);
 
     public void initialize( IProgressMonitor monitor ) throws DSException {
     }
@@ -34,7 +33,7 @@ public class ConsensusTest extends AbstractDSTest implements IDSTest{
     protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
                                                      IProgressMonitor monitor ) {
 
-        logger.error("This method: ConsensusTest.runWarningTest should not be called.");
+        logger.error("This BOGUStest: " + getId() + " should not be called.");
         return null;
     }
 

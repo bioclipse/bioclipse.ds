@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;

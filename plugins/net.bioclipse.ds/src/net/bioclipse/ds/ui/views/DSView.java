@@ -48,13 +48,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -879,7 +875,7 @@ public class DSView extends ViewPart implements IPartListener{
 
     private IWorkbenchPart getSupportedEditor( IWorkbenchPart part ) {
         if ( part instanceof JChemPaintEditor ) {
-            System.out.println("We have a JCP editor for TestsView!");
+            logger.debug("We have a JCP editor for TestsView!");
             return part;
         }
         else if ( part instanceof MoleculesEditor ) {
@@ -887,7 +883,7 @@ public class DSView extends ViewPart implements IPartListener{
             return part;
         }
         else if ( part instanceof MultiPageMoleculesEditorPart ) {
-            System.out.println("We have a MPE editor for TestsView");
+            logger.debug("We have a MPE editor for TestsView");
             MultiPageMoleculesEditorPart editor = (MultiPageMoleculesEditorPart)part;
             
             IContextService contextService = (IContextService) PlatformUI.getWorkbench().
@@ -906,15 +902,15 @@ public class DSView extends ViewPart implements IPartListener{
             
 //            Object obj = editor.getAdapter(JChemPaintEditor.class);
 //            if (obj== null){
-//                System.out.println("     MPE editor for TestsView did not have JCP page to provide");
+//                logger.debug("     MPE editor for TestsView did not have JCP page to provide");
 //                return null;
 //            }
-//            System.out.println("     MPE editor for TestsView provided JCP page!");
+//            logger.debug("     MPE editor for TestsView provided JCP page!");
 //            JChemPaintEditor jcp=(JChemPaintEditor)obj;
 //            return jcp;
         }
 
-        System.out.println("No supported editor for TestsView");
+        logger.debug("No supported editor for TestsView");
 
         //Not supported editor
         return null;

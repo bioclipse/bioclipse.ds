@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.business;
+package net.bioclipse.ds.impl.calc;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import net.bioclipse.cdk.ui.sdfeditor.business.IPropertyCalculator;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;

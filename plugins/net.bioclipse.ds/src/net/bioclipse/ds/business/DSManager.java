@@ -85,7 +85,9 @@ public class DSManager implements IBioclipseManager {
                              throws BioclipseException{
 
         IDSTest test = getTest( testID );
-        returner.completeReturn( test.runWarningTest( mol, monitor));
+        List<? extends ITestResult> ret = test.runWarningTest( mol, monitor);
+        monitor.done();
+        returner.completeReturn( ret );
     }
 
 }

@@ -21,7 +21,6 @@ import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.impl.BaseSDFMatcher;
 import net.bioclipse.ds.impl.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;

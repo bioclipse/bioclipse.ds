@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.bioclipse.ds.impl.report;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.Map;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.impl.result.SmartsMatch;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
@@ -35,8 +33,6 @@ public class SmartsMatchReportModel extends AbstractTestReportModel{
     }
     
     public List<DSRow> extractRows(TestRun run){
-
-        DecimalFormat twoDForm = new DecimalFormat("#.##");
 
         //for a testrunm transform to a DSRow with a structure image and paams
         List<DSRow> newrows=new ArrayList<DSRow>();
