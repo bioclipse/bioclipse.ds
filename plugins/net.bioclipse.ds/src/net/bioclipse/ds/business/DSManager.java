@@ -69,6 +69,11 @@ public class DSManager implements IBioclipseManager {
         return testIDS;
     }
 
+    public List<IDSTest> getFullTests() throws BioclipseException{
+        initialize();
+        return dsBusinessModel.getTests();
+    }
+
 
     public IDSTest getTest( String testID ) throws BioclipseException {
 
@@ -103,7 +108,11 @@ public class DSManager implements IBioclipseManager {
         }
         return epIDs;
     }
-
+    
+    public List<Endpoint> getFullEndpoints() throws BioclipseException{
+        initialize();
+        return dsBusinessModel.getEndpoints();
+    }
 
     public Endpoint getEndpoint( String endpointID ) throws BioclipseException {
 

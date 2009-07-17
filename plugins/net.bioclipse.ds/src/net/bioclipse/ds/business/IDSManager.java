@@ -41,14 +41,14 @@ public interface IDSManager extends IBioclipseManager {
     @PublishedMethod( 
                     methodSummary = "List available Decision Support Tests")
     public List<String> getTests() throws BioclipseException;
-
+    public List<IDSTest> getFullTests() throws BioclipseException;
     public IDSTest getTest( String testID ) throws BioclipseException;
 
     @Recorded
     @PublishedMethod( 
                     methodSummary = "List available Decision Support Endpoints")
     public List<String> getEndpoints() throws BioclipseException;
-
+    public List<Endpoint> getFullEndpoints() throws BioclipseException;
     public Endpoint getEndpoint( String endpointID ) throws BioclipseException;
     
     /**

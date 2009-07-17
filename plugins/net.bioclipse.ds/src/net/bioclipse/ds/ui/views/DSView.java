@@ -51,7 +51,6 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -165,7 +164,8 @@ public class DSView extends ViewPart implements IPartListener{
         viewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         viewer.setContentProvider(new DSViewContentProvider());
         viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
-//        viewer.setSorter(new ViewerSorter());
+        viewer.setSorter(new ViewerSorter());
+        viewer.addFilter( new HideNotVisbleFilter() );
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
             public void selectionChanged( SelectionChangedEvent event ) {
                 updateActionStates();
@@ -177,8 +177,14 @@ public class DSView extends ViewPart implements IPartListener{
         viewer.getTree().setLayoutData(gridData);
         
         
-        //Init with available tests
-        initializeEmptyViewerState( viewer );
+        //Init viewer with available endpoints
+        IDSManager ds = Activator.getDefault().getJavaManager();
+        try {
+            viewer.setInput(ds.getFullEndpoints().toArray());
+        } catch ( BioclipseException e ) {
+            LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
+            viewer.setInput(new String[]{"Error initializing tests"});
+        }
 
         // Create the help context id for the viewer's control
         PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), VIEW_ID);
@@ -950,7 +956,7 @@ public class DSView extends ViewPart implements IPartListener{
             viewer.setInput( activeTestRuns.toArray() );
         }else{
          //ok, we have nothing.
-            initializeEmptyViewerState(viewer);
+//            initializeEmptyViewerState(viewer);
         }
         updateActionStates();
         viewer.expandAll();
@@ -959,24 +965,6 @@ public class DSView extends ViewPart implements IPartListener{
         updateConsensusView();
     }
 
-
-    private void initializeEmptyViewerState( TreeViewer viewer2 ) {
-
-//        IDSManager ds = Activator.getDefault().getJavaManager();
-//      try {
-//          List<String> tests = ds.getTests();
-//          tests.remove( "Consensus" );
-////          viewer.setInput(TestHelper.readTestsFromEP().toArray());
-//          viewer.setInput(tests.toArray());
-//      } catch ( BioclipseException e ) {
-//          LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
-//          viewer.setInput(new String[]{"Error initializing tests"});
-//      }
-
-      viewer.setInput(new String[]{"No active chemical structure"});
-
-        
-    }
 
     /**
      * We have a new editor. Create a new TestRun for the molecules it contains 

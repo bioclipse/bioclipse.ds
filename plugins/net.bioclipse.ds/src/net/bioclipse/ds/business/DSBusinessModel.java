@@ -81,9 +81,12 @@ public class DSBusinessModel {
                     String pid=element.getAttribute("id");
                     String pname=element.getAttribute("name");
                     String pdesc=element.getAttribute("description");
+                    String picon=element.getAttribute("icon");
+                    String pluginID=element.getNamespaceIdentifier();
 
-                    Endpoint ep=new Endpoint(pid, pname, pdesc);
+                    Endpoint ep=new Endpoint(pid, pname, pdesc, picon, pluginID);
                     endpoints.add( ep );
+                    
                 }
             }
         }

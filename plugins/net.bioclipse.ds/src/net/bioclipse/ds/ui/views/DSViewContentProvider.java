@@ -10,6 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.ui.views;
 
+import net.bioclipse.ds.model.Endpoint;
+import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
@@ -20,6 +22,11 @@ import org.eclipse.jface.viewers.Viewer;
 public class DSViewContentProvider implements ITreeContentProvider{
 
     public Object[] getChildren( Object parentElement ) {
+        if ( parentElement instanceof Endpoint ) {
+            Endpoint ep = (Endpoint)parentElement;
+            if (ep.getTests()!=null)
+                return ep.getTests().toArray();
+        }
         if ( parentElement instanceof TestRun ) {
             TestRun run = (TestRun) parentElement;
             if (run.getMatches() != null && run.getMatches().size()>0)
@@ -29,6 +36,10 @@ public class DSViewContentProvider implements ITreeContentProvider{
     }
 
     public Object getParent( Object element ) {
+        if ( element instanceof IDSTest ) {
+            return ((IDSTest)element).getEndpoint();
+        }
+
         if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
             return match.getTestRun();
@@ -37,15 +48,19 @@ public class DSViewContentProvider implements ITreeContentProvider{
     }
 
     public boolean hasChildren( Object element ) {
+
+        if ( element instanceof Endpoint ) {
+            Endpoint ep = (Endpoint)element;
+            if (ep.getTests() != null && ep.getTests().size()>0){
+                return true;
+            }
+        }
+
         if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
             if (run.getMatches() != null && run.getMatches().size()>0){
-//                for (ITestResult hit : run.getMatches()){
-//                    if (!( hit instanceof ErrorResult )) {
-                        return true;
-                    }
-//                }
-//            }
+                return true;
+            }
         }
         return false;
     }
