@@ -133,7 +133,12 @@
             <annotation>
                <documentation>
                   Should be set to &apos;true&apos; if cloning of CDKMolecule is required before the test, e.g. for threading issues. Default is &apos;false&apos;.
+
+This atribute is deprecated and will be ignored.
                </documentation>
+               <appinfo>
+                  <meta.attribute deprecated="true"/>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="endpoint" type="string" use="required">

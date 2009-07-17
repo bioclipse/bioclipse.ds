@@ -17,7 +17,6 @@ import java.util.Map;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
-import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
@@ -48,7 +47,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private Map<String, String > parameters;
     private boolean excluded;
     private boolean informative;
-    private boolean clone;
+//    private boolean clone;
     private boolean initialized;
     private boolean visible;
     private AbstractTestReportModel reportmodel;
@@ -207,16 +206,12 @@ public abstract class AbstractDSTest implements IDSTest{
     }
 
     
-    public boolean isClone() {
-    
-        return clone;
-    }
-
-    
-    public void setClone( boolean clone ) {
-    
-        this.clone = clone;
-    }
+//    public boolean isClone() {
+//        return clone;
+//    }
+//    public void setClone( boolean clone ) {
+//        this.clone = clone;
+//    }
 
     public boolean isInitialized() {
         

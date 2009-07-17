@@ -150,15 +150,15 @@ public class DSBusinessModel {
                             else
                                 test.setInformative(false);
 
-                            String pclone=element.getAttribute("clone");
-                            if (pclone!=null){
-                                if (pclone.equalsIgnoreCase( "true" ))
-                                    test.setClone( true);
-                                else
-                                    test.setClone( false);
-                            }
-                            else
-                                test.setClone( false);
+//                            String pclone=element.getAttribute("clone");
+//                            if (pclone!=null){
+//                                if (pclone.equalsIgnoreCase( "true" ))
+//                                    test.setClone( true);
+//                                else
+//                                    test.setClone( false);
+//                            }
+//                            else
+//                                test.setClone( false);
 
                             String pvisible=element.getAttribute("visible");
                             if (pvisible!=null){

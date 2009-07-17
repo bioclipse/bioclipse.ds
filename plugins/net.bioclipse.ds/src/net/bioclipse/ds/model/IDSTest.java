@@ -42,8 +42,8 @@ public interface IDSTest extends ISubStructure{
     public boolean isInformative();
     public AbstractTestReportModel getReportmodel();
     public void setReportmodel( AbstractTestReportModel reportmodel );
-    public void setClone( boolean clone );
-    public boolean isClone();
+//    public void setClone( boolean clone );
+//    public boolean isClone();
     public void setVisible( boolean visible );
     public boolean isVisible();
     public Endpoint getEndpoint();
