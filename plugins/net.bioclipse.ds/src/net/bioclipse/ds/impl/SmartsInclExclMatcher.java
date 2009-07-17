@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
@@ -28,12 +28,7 @@ import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
-import net.bioclipse.cdk.business.Activator;
-import net.bioclipse.cdk.business.ICDKManager;
-import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.impl.result.SmartsMatch;
@@ -44,65 +39,82 @@ import net.bioclipse.ds.model.ITestResult;
 
 
 /**
- * A test that takes a 3 column file with toxicophores as input<br>
+ * An implementation that handles reading of a file of SMARTS into memory and 
+ * allows for smarts searching of this model.
+ * 
+ * The implementation takes a 3 column file with toxicophores as input<br>
  * Col 1 = smarts (toxicophores)<br>
  * Col 2 = smarts (if match, not toxic)<br>
  * Col 3 = name of toxicophore<br>
+ * 
  * @author ola
  *
  */
-public class SmartsInclusiveExclusive extends AbstractDSTest implements IDSTest{
+public class SmartsInclExclMatcher extends AbstractDSTest implements IDSTest{
 
-    private static final Logger logger = Logger.getLogger(SmartsMatching.class);
+    private static final Logger logger = Logger.getLogger(SmartsInclExclMatcher.class);
 
-    String smartsFile;
+    private static final String FILE_PROPERTY_PARAM="file";
+
     //Smarts Name -> incl smarts, exkl smarts
     Map<String, Map<String,String>> smarts;
 
-
+    /**
+     * The required parameters in the manifest of contributed test. Default 
+     * impl is empty, subclasses may override.
+     * @return
+     */
+    List<String> getRequiredParameters(){
+        return new ArrayList<String>();
+    }
 
     /**
-     * Read smarts file from disk into array
+     * Verify parameters, read/parse SDF file into model, and verify properties
      * @param monitor 
-     * @throws WarningSystemException 
+     * @throws DSException
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
+        if (monitor.isCanceled())
+            throw new DSException("Initialization of test " + 
+                                  getId() + " cancelled");
+
+        //TODO: try to remove this
         if (getTestErrorMessage().length()>1){
             logger.error("Trying to initialize test: " + getName() + " while " +
-                "error message exists");
+            "error message exists");
             return;
         }
+
+        //=================
+        //Verify parameters
+        //=================
+
+        //All SDFile implementations require the 'file' parameter (resource)
+        String filepath=getParameters().get( FILE_PROPERTY_PARAM );
+        if (filepath==null)
+            throw new DSException("Required parameter '" + FILE_PROPERTY_PARAM 
+                                  + "' was not provided by test " + getId() ); 
+
 
         smarts=new HashMap<String, Map<String,String>>();
-        
-
-        String filepath=getParameters().get( "file" );
-        logger.debug("Initializing SmartsInclusiveExclusiveTest from file: " + filepath);
-
-        if (filepath==null){
-            setTestErrorMessage( "No data file provided for " +
-            		"SmartsInclusiveExclusiveTest: " + getId() );
-            return;
-        }
 
         String path="";
-            logger.debug("Trying to locate file: " + filepath + " from plugin: " + getPluginID());
+        try {
+            logger.debug("Trying to locate file: " + filepath + " from plugin: "
+                         + getPluginID());
             URL url = Platform.getBundle(getPluginID()).getEntry(filepath);
             logger.debug("File has URL: " + url);
-            URL fileURL=null;
-            try {
-                fileURL = FileLocator.toFileURL(url);
-            } catch ( IOException e1 ) {
-                throw new DSException("Smarts file : " + url +" could not be located.");
-            }
+            URL fileURL = FileLocator.toFileURL(url);
             logger.debug("File has fileURL: " + fileURL);
             path=fileURL.getFile();
+        } catch ( Exception e1 ) {
+            throw new DSException("Could not locate or read file: " + filepath);
+        }
 
         //File could not be read
         if ("".equals( path )){
-            setTestErrorMessage( "File: " + filepath + " could not be read.");
-            return;
+            throw new DSException("File: " + filepath + " could not be read.");
         }
 
         int noSkipped=0;
@@ -129,7 +141,8 @@ public class SmartsInclusiveExclusive extends AbstractDSTest implements IDSTest{
                         if (isValidSmarts(second)){
                             excls=second;
                         }else{
-                            logger.warn( "+++++++ Second part of incl/excl SMARTS could mean an invalid SMARTS: " + second );
+                            logger.warn( "+++++++ Second part of incl/excl " +
+                            " SMARTS could mean an invalid SMARTS: " + second );
                             //If not a smarts, it's a name
                             tokenname=second+" ";
                         }
@@ -153,10 +166,13 @@ public class SmartsInclusiveExclusive extends AbstractDSTest implements IDSTest{
                         namecnt++;
                     }
                     smarts.put(tokenname,both);
-                    logger.debug("(" + linenr + ") Added SMARTS name: '" + tokenname + "' [incl=" + incls + "] [excl=" + excls + "]");
+                    logger.debug("(" + linenr + ") Added SMARTS name: '" 
+                                 + tokenname + "' [incl=" 
+                                 + incls + "] [excl=" + excls + "]");
                 }
                 else{
-                    logger.error( "Invalid SMARTS as first token in file: " + smartsFile + ", so skipped. Smarts=" + first );
+                    logger.error( "Invalid SMARTS as first token in file: " + 
+                                  path + ", so skipped. Smarts=" + first );
                     noSkipped++;
                 }
 
@@ -173,6 +189,7 @@ public class SmartsInclusiveExclusive extends AbstractDSTest implements IDSTest{
 
         logger.debug("SmartsInclusiveExclusiveTest.init parsed: " + smarts.size() + " SMARTS in file: " + filepath + " and skipped: " + noSkipped);
 
+
     }
 
     //Test if a smarts is valid
@@ -186,54 +203,20 @@ public class SmartsInclusiveExclusive extends AbstractDSTest implements IDSTest{
             return false;
         }
     }
-
-
+    
     @Override
     public String toString() {
         return getName();
     }
 
-    /**
-     * Run and return any hits in the smartsmatching, excluding smarts on column 2
-     */
-    public List<ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
 
-        //Check for cancellation
-        if (monitor.isCanceled())
-            return returnError( "Cancelled","");
+    @Override
+    protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
+                                                     IProgressMonitor monitor ) {
 
         //Store results here
-        List<ITestResult> results=new ArrayList<ITestResult>();
-
-        //Initialize if not already done
-        if (smarts==null){
-            try {
-                initialize(monitor);
-            } catch ( DSException e1 ) {
-                logger.error( "Failed to initialize DBNNTest: " + e1.getMessage() );
-                setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
-            }
-        }
-
-        //Return empty if error message
-        if (getTestErrorMessage().length()>1){
-            return results;
-        }
-
-
-        //Create mol from input mol, if needed
-        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
-        ICDKMolecule cdkmol=null;
-        ICDKMolecule cdkmol_in = null;
-        try {
-            cdkmol_in = cdk.asCDKMolecule( molecule );
-            cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
-//            cdkmol = cdk.create( molecule );
-        } catch ( BioclipseException e ) {
-            return returnError( "Could not create CDKMolecule", e.getMessage() );
-        } catch ( CloneNotSupportedException e ) {
-            return returnError( "Could not clone CDKMolecule", e.getMessage() );
-        }
+        ArrayList<SimpleResult> results=new 
+        ArrayList<SimpleResult>();
 
         IAtomContainer ac = cdkmol.getAtomContainer();
         int noHits=0;
@@ -344,10 +327,10 @@ public class SmartsInclusiveExclusive extends AbstractDSTest implements IDSTest{
 
         }
 
-        logger.debug("Queried " + smarts.keySet().size() + " smarts. # hits=" +noHits +", # errors=" + noErr);
+        logger.debug("Queried " + smarts.keySet().size() + " smarts. # hits=" 
+                     + noHits +", # errors=" + noErr);
 
-        return results;    
+        return results;   
 
     }
-
 }
