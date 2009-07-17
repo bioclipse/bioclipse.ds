@@ -7,17 +7,18 @@
          
          <endpoint
                id="net.bioclipse.ds.mutagenicity"
+               icon="icons/dna_mut.gif"
+               description="Ability to induce mutations to DNA"
                name="Mutagenicity">
          </endpoint>
          
       <test
             id="bursi.sdflookup.exact"
-            name="BursiDB exact lookup"
+            name="Bursi exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
             icon="icons/db.gif"
             informative="true"
-            clone="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
@@ -29,11 +30,10 @@
 
       <test
             id="bursi.sdflookup.nearest"
-            name="BursiDB nearest neighbour"
+            name="Bursi nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
             reportmodel="net.bioclipse.ds.impl.report.NNReportModel"
-            clone="true"
             icon="icons/db.gif">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
