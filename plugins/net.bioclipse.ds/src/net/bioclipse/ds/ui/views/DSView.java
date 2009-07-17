@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
@@ -48,9 +49,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -60,6 +65,7 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 public class DSView extends ViewPart implements IPartListener{
 
@@ -236,49 +242,50 @@ public class DSView extends ViewPart implements IPartListener{
 
         
         
-      IDSManager ds = Activator.getDefault().getJavaManager();
-      try {
-          for (String testID : ds.getTests()){
-              IDSTest test = ds.getTest( testID );
-//          monitor.subTask( "Initializing test: " + testID );
-              test.initialize( new NullProgressMonitor() );
-          }
-      } catch ( BioclipseException e2 ) {
-          // TODO Auto-generated catch block
-          e2.printStackTrace();
-      } catch ( DSException e2 ) {
-          // TODO Auto-generated catch block
-          e2.printStackTrace();
-      }
+//      IDSManager ds = Activator.getDefault().getJavaManager();
+//      try {
+//          for (String testID : ds.getTests()){
+//              IDSTest test = ds.getTest( testID );
+////          monitor.subTask( "Initializing test: " + testID );
+//              logger.debug("Initializing test: " + testID );
+//              test.initialize( new NullProgressMonitor() );
+//          }
+//      } catch ( BioclipseException e2 ) {
+//          // TODO Auto-generated catch block
+//          e2.printStackTrace();
+//      } catch ( DSException e2 ) {
+//          // TODO Auto-generated catch block
+//          e2.printStackTrace();
+//      }
 
-//        Job job=new Job("Initializing decision support tests"){
-//            @Override
-//            protected IStatus run( IProgressMonitor monitor ) {
-//
-//                IDSManager ds = Activator.getDefault().getJavaManager();
-//                try {
-//                    monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
-//                    monitor.worked( 1 );
-//                    for (String testID : ds.getTests()){
-//                        IDSTest test = ds.getTest( testID );
-//                        monitor.subTask( "Initializing test: " + testID );
-//                        test.initialize( monitor );
-//                    }
-//                } catch ( BioclipseException e1 ) {
-//                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-//                                      "All tests could not be initalized: " + e1.getMessage());
-//                } catch ( DSException e ) {
-//                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-//                                      "All tests could not be initalized: " + e.getMessage());
-//                }
-//
-//                monitor.done();
-//                return Status.OK_STATUS;
-//            }
-//
-//        };
-//        job.setUser( false );
-//        job.schedule();
+        Job job=new Job("Initializing decision support tests"){
+            @Override
+            protected IStatus run( IProgressMonitor monitor ) {
+
+                IDSManager ds = Activator.getDefault().getJavaManager();
+                try {
+                    monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
+                    monitor.worked( 1 );
+                    for (String testID : ds.getTests()){
+                        IDSTest test = ds.getTest( testID );
+                        monitor.subTask( "Initializing test: " + testID );
+                        test.initialize( monitor );
+                    }
+                } catch ( BioclipseException e1 ) {
+                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+                                      "All tests could not be initalized: " + e1.getMessage());
+                } catch ( DSException e ) {
+                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+                                      "All tests could not be initalized: " + e.getMessage());
+                }
+
+                monitor.done();
+                return Status.OK_STATUS;
+            }
+
+        };
+        job.setUser( false );
+        job.schedule();
 
         
         
@@ -722,13 +729,26 @@ public class DSView extends ViewPart implements IPartListener{
                 }
                 else{
                     
-                    logger.debug( "===== Testrun: " + tr + " started" );
-                    tr.setStatus( TestRun.RUNNING );
-                    tr.setMolecule( mol );
-                    viewer.refresh(tr);
-                    viewer.setExpandedState( tr, true );
+                    //Start by cloning the molecule. This is to avoid threading 
+                    //issues in CDK.
+                    try {
+                        IAtomContainer cloneAC=(IAtomContainer) mol
+                                                    .getAtomContainer().clone();
+                        
+                        ICDKMolecule cloneMol=new CDKMolecule(cloneAC);
+                        
+                        logger.debug( "===== Testrun: " + tr + " started" );
+                        tr.setStatus( TestRun.RUNNING );
+                        tr.setMolecule( mol );
+                        viewer.refresh(tr);
+                        viewer.setExpandedState( tr, true );
 
-                    runTestAsJobs( mol, ds, tr ); 
+                        runTestAsJobs( cloneMol, ds, tr ); 
+
+                    } catch ( CloneNotSupportedException e ) {
+                        LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
+                    }
+                    
                 }
             }
             else{
