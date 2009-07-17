@@ -49,7 +49,6 @@ public abstract class AbstractDSTest implements IDSTest{
     private Map<String, String > parameters;
     private boolean excluded;
     private boolean informative;
-//    private boolean clone;
     private boolean initialized;
     private boolean visible;
     private AbstractTestReportModel reportmodel;
@@ -212,14 +211,6 @@ public abstract class AbstractDSTest implements IDSTest{
         this.reportmodel = reportmodel;
     }
 
-    
-//    public boolean isClone() {
-//        return clone;
-//    }
-//    public void setClone( boolean clone ) {
-//        this.clone = clone;
-//    }
-
     public boolean isInitialized() {
         
         return initialized;
@@ -234,7 +225,7 @@ public abstract class AbstractDSTest implements IDSTest{
     
 
     /**
-     * Set up input molecule, clone if extension says so, and call doRunTest().
+     * Set up input molecule, and call doRunTest(). Also time execution.
      */
     public List<? extends ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
 
