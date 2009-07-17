@@ -26,6 +26,7 @@ import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.graphics.Image;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
@@ -42,7 +43,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private String id;
     private String name;
     private String description;
-    private String icon;
+    private Image icon;
     private String pluginID;
     private Map<String, String > parameters;
     private boolean excluded;
@@ -57,6 +58,8 @@ public abstract class AbstractDSTest implements IDSTest{
      * Empty if no problems
      */
     private String testErrorMessage;
+
+    private String iconpath;
     
     public AbstractDSTest(){
         parameters=new HashMap<String, String>();
@@ -103,14 +106,16 @@ public abstract class AbstractDSTest implements IDSTest{
         this.name = name;
     }
     
-    public String getIcon() {
-    
-        return icon;
+    public void setIcon( String iconpath ) {
+        this.iconpath=iconpath;
     }
-    
-    public void setIcon( String icon ) {
-    
-        this.icon = icon;
+
+    public Image getIcon() {
+        //Create the icon if not already done so
+        if (icon==null && pluginID!=null && iconpath!=null)
+            icon=Activator.imageDescriptorFromPlugin( 
+                      pluginID, iconpath ).createImage();
+        return icon;
     }
     
     

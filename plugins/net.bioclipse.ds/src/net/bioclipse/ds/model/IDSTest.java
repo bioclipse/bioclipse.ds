@@ -13,6 +13,7 @@ package net.bioclipse.ds.model;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.domain.IMolecule;
@@ -29,7 +30,7 @@ public interface IDSTest extends ISubStructure{
     public void setId( String id );    
     public String getName();    
     public void setName( String name );    
-    public String getIcon();
+    public Image getIcon();
     public void setIcon( String icon );    
     public void addParameter( String name, String path );
     public void setPluginID( String pluginID );

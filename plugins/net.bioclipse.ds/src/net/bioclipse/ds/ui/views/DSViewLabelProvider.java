@@ -11,6 +11,7 @@
 package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
@@ -32,18 +33,17 @@ public class DSViewLabelProvider implements ILabelProvider, IColorProvider{
 
     public Image getImage( Object element ) {
 
-        //ITestResults define their own icons
-        if ( element instanceof ITestResult ) {
+        if ( element instanceof Endpoint ) {
+            Endpoint ep = (Endpoint)element;
+            return ep.getIcon();
+        }
+        else if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
-                return match.getIcon();
+            return match.getIcon();
         }
         else if ( element instanceof IDSTest ) {
             IDSTest test = (IDSTest)element;
-            try{
-                return Activator.imageDescriptorFromPlugin( 
-                     test.getPluginID(), test.getIcon() ).createImage();
-            }catch (Exception e){
-            }
+            return test.getIcon();
         }
         else if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
@@ -55,7 +55,12 @@ public class DSViewLabelProvider implements ILabelProvider, IColorProvider{
 
     public String getText( Object element ) {
 
-        if ( element instanceof ITestResult ) {
+        if ( element instanceof Endpoint ) {
+            Endpoint ep = (Endpoint)element;
+            return ep.getName();
+        }
+
+        else if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
             return match.getName();
         }

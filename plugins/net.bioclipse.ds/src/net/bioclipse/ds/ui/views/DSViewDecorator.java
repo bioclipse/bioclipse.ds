@@ -21,13 +21,11 @@ import org.eclipse.swt.graphics.Image;
 
 public class DSViewDecorator implements ILabelDecorator {
 
-    private Image cachedInactiveDSTest;
     private Image cachedErrorInDSTest;
 
     public Image decorateImage( Image image, Object element ) {
-
-        Image toReturn=null;
-
+        
+        //If error in test, override image
         if ( element instanceof IDSTest ) {
             IDSTest dstest = (IDSTest) element;
 
@@ -38,18 +36,11 @@ public class DSViewDecorator implements ILabelDecorator {
                     cachedErrorInDSTest=Activator.
                     getImageDecriptor( "/icons/fatalerror.gif" ).createImage();
                 }
-                toReturn = cachedInactiveDSTest;
+                return cachedErrorInDSTest;
             }
-
         }
         
-        //TestRun defines its own icon
-        else if ( element instanceof TestRun ) {
-            TestRun tr = (TestRun) element;
-            toReturn = tr.getIcon();
-        }
-        
-        return toReturn;
+        return image;
     }
 
     public String decorateText( String text, Object element ) {
@@ -60,7 +51,6 @@ public class DSViewDecorator implements ILabelDecorator {
                     && dstest.getTestErrorMessage().length()>1){
                 return text + " [" + dstest.getTestErrorMessage() + "]";
             }
-            else return text;
         }
 
         //TestRun provides its own suffix
@@ -69,7 +59,7 @@ public class DSViewDecorator implements ILabelDecorator {
             return text + tr.getSuffix();
         }
 
-        return null;
+        return text;
     }
 
     public void addListener( ILabelProviderListener listener ) {

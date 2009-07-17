@@ -3,6 +3,10 @@ package net.bioclipse.ds.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Image;
+
+import net.bioclipse.ds.Activator;
+
 /**
  * An endpoint in Decision Support.
  * @author ola
@@ -10,14 +14,29 @@ import java.util.List;
  */
 public class Endpoint {
 
-    String id;
-    String name;
-    String description;
-    List<IDSTest> tests;
+    private String id;
+    private String name;
+    private String description;
+    private String plugin;
+    private List<IDSTest> tests;
+    private Image icon;
+    private String iconpath;
+
+    public Endpoint(String pid, String pname) {
+        id=pid;
+        name=pname;
+    }
 
     public Endpoint(String pid, String pname, String pdesc) {
         this(pid, pname);
-        description=pdesc;
+        setDescription( pdesc);
+    }
+
+    public Endpoint(String pid, String pname, String pdesc, String picon, 
+                    String plugin) {
+        this(pid, pname, pdesc);
+        setPlugin( plugin );
+        setIcon( picon );
     }
 
     
@@ -40,31 +59,42 @@ public class Endpoint {
 
     
     public void setTests( List<IDSTest> tests ) {
-    
         this.tests = tests;
     }
 
     
     public String getId() {
-    
         return id;
     }
 
     
     public String getName() {
-    
         return name;
-    }
-
-    public Endpoint(String pid, String pname) {
-        id=pid;
-        name=pname;
     }
 
     public void addTest( IDSTest test ) {
         if (tests==null) tests=new ArrayList<IDSTest>();
         tests.add( test );
         
+    }
+
+    public void setIcon( String iconpath ) {
+        this.iconpath=iconpath;
+    }
+
+    public Image getIcon() {
+        //Create the icon if not already done so
+        if (icon==null && plugin!=null && iconpath!=null)
+            icon=Activator.imageDescriptorFromPlugin( 
+                      plugin, iconpath ).createImage();
+        return icon;
+    }
+
+    public void setPlugin( String plugin ) {
+        this.plugin = plugin;
+    }
+    public String getPlugin() {
+        return plugin;
     }
     
 }
