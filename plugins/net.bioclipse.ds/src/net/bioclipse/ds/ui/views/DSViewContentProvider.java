@@ -24,7 +24,10 @@ public class DSViewContentProvider implements ITreeContentProvider{
     public Object[] getChildren( Object parentElement ) {
         if ( parentElement instanceof Endpoint ) {
             Endpoint ep = (Endpoint)parentElement;
-            if (ep.getTests()!=null)
+            if (ep.getTestruns()!=null && ep.getTestruns().size()>0){
+                return ep.getTestruns().toArray();
+            }
+            else if (ep.getTests()!=null)
                 return ep.getTests().toArray();
         }
         if ( parentElement instanceof TestRun ) {
@@ -51,7 +54,10 @@ public class DSViewContentProvider implements ITreeContentProvider{
 
         if ( element instanceof Endpoint ) {
             Endpoint ep = (Endpoint)element;
-            if (ep.getTests() != null && ep.getTests().size()>0){
+            if (ep.getTestruns()!=null && ep.getTestruns().size()>0){
+                return true;
+            }
+            else if (ep.getTests() != null && ep.getTests().size()>0){
                 return true;
             }
         }

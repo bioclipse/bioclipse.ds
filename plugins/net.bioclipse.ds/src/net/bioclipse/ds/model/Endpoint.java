@@ -19,6 +19,7 @@ public class Endpoint {
     private String description;
     private String plugin;
     private List<IDSTest> tests;
+    private List<TestRun> testruns;
     private Image icon;
     private String iconpath;
 
@@ -95,6 +96,24 @@ public class Endpoint {
     }
     public String getPlugin() {
         return plugin;
+    }
+
+    public void setTestruns( List<TestRun> testruns ) {
+
+        this.testruns = testruns;
+    }
+
+    public List<TestRun> getTestruns() {
+
+        return testruns;
+    }
+
+    public void addTestRun( TestRun newTestRun ) {
+        if (testruns==null)
+            testruns=new ArrayList<TestRun>();
+
+        testruns.add( newTestRun );
+        
     }
     
 }
