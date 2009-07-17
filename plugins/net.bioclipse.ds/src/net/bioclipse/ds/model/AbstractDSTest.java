@@ -20,6 +20,7 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.Stopwatch;
 import net.bioclipse.ds.impl.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
@@ -53,6 +54,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private boolean visible;
     private AbstractTestReportModel reportmodel;
     private Endpoint endpoint;
+    private long executionTimeMilliSeconds;
     
     /**
      * Empty if no problems
@@ -236,6 +238,10 @@ public abstract class AbstractDSTest implements IDSTest{
      */
     public List<? extends ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
 
+        //Start stopwatch
+        Stopwatch watch=new Stopwatch();
+        watch.start();
+        
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
@@ -267,9 +273,16 @@ public abstract class AbstractDSTest implements IDSTest{
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
 
-        return doRunTest( cdkmol, monitor );
+        List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
+        
+        //Store timing of test
+        watch.stop();
+        executionTimeMilliSeconds=watch.elapsedTimeMillis();
+
+        return ret;
 
     }
+
 
 
     protected abstract List<? extends ITestResult> doRunTest( 
@@ -294,6 +307,10 @@ public abstract class AbstractDSTest implements IDSTest{
     public Endpoint getEndpoint() {
 
         return endpoint;
+    }
+
+    public long getExecutionTimeMilliSeconds() {
+        return executionTimeMilliSeconds;
     }
 
     

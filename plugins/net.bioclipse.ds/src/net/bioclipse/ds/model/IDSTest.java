@@ -57,5 +57,6 @@ public interface IDSTest extends ISubStructure{
      */
     public List<? extends ITestResult> runWarningTest(IMolecule molecule, IProgressMonitor monitor) ;
     public void initialize(IProgressMonitor monitor) throws DSException;
+    long getExecutionTimeMilliSeconds();
 
 }
