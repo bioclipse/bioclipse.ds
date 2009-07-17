@@ -27,7 +27,11 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class DSBusinessModel {
 
     private static final Logger logger = Logger.getLogger(DSBusinessModel.class);
@@ -130,8 +134,10 @@ public class DSBusinessModel {
                             String pep=element.getAttribute("endpoint");
                             //Look up endpoint by id and add to test
                             for (Endpoint ep : endpoints){
-                                if (ep.getId().equals( pep ))
+                                if (ep.getId().equals( pep )){
                                     test.setEndpoint( ep );
+                                    ep.addTest(test);
+                                }
                             }
 
                             String pinformative=element.getAttribute("informative");

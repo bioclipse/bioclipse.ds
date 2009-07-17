@@ -15,12 +15,39 @@ import static org.junit.Assert.*;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 
 import org.junit.Test;
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class DSManagerPluginTest {
+
+    @Test
+    public void testListEndpoints() throws BioclipseException{
+
+        IDSManager ds = Activator.getDefault().getJavaManager();
+
+        System.out.println("=============================");
+        System.out.println("Available Endpoints:");
+        for (String epID : ds.getEndpoints()){
+            System.out.println("   -" + epID);
+            Endpoint ep = ds.getEndpoint( epID );
+            assertNotNull( ep );
+            assertNotNull( ep.getId());
+            assertNotNull( ep.getName());
+            assertNotNull( ep.getTests());
+        }
+        System.out.println("=============================");
+        
+        Endpoint ep = ds.getEndpoint( "net.bioclipse.ds.mutagenicity" );
+        assertEquals( "Number of tests", 4, ep.getTests().size() );
+        
+    }
 
     @Test
     public void testListTests() throws BioclipseException{

@@ -1,5 +1,6 @@
 package net.bioclipse.ds.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,6 +9,11 @@ import java.util.List;
  *
  */
 public class Endpoint {
+
+    String id;
+    String name;
+    String description;
+    List<IDSTest> tests;
 
     public Endpoint(String pid, String pname, String pdesc) {
         this(pid, pname);
@@ -55,9 +61,10 @@ public class Endpoint {
         name=pname;
     }
 
-    String id;
-    String name;
-    String description;
-    List<IDSTest> tests;
+    public void addTest( IDSTest test ) {
+        if (tests==null) tests=new ArrayList<IDSTest>();
+        tests.add( test );
+        
+    }
     
 }
