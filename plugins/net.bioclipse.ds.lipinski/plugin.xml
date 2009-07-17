@@ -4,13 +4,9 @@
 
    <extension
          point="net.bioclipse.decisionsupport">
-         <endpoint
-               id="net.bioclipse.ds.informative"
-               name="Informative">
-         </endpoint>
       <test
             class="net.bioclipse.ds.lipinski.impl.RuleOfFiveTest"
-            endpoint="net.bioclipse.ds.informative"
+            endpoint="net.bioclipse.ds.uncategorized"
             icon="icons/drug_cap.png"
             id="lipinski"
             informative="true"

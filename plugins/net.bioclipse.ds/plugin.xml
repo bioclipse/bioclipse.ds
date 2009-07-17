@@ -56,6 +56,15 @@
           name="Getting Started with Decision Support">
     </cheatsheet>
  </extension>
+ <extension
+       point="net.bioclipse.decisionsupport">
+         <endpoint
+               id="net.bioclipse.ds.uncategorized"
+               icon="icons/information.gif"
+               description="Tests that are not categorized"
+               name="Uncategorized">
+         </endpoint>
+ </extension>
 
 
 </plugin>
