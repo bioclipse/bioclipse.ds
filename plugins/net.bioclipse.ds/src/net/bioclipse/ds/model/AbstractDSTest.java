@@ -254,24 +254,13 @@ public abstract class AbstractDSTest implements IDSTest{
             return new ArrayList<ExternalMoleculeMatch>();
         }
 
+        //Create CDKMolecule from the IMolecule to get a clean API
         ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
-
         ICDKMolecule cdkmol=null;
-        ICDKMolecule cdkmol_in = null;
         try {
-            cdkmol_in = cdk.asCDKMolecule( molecule );
-            
-            //Only clone if extension tells us to
-            if(isClone()){
-                cdkmol=new CDKMolecule((IAtomContainer)cdkmol_in.getAtomContainer().clone());
-            }
-            else{
-                cdkmol=cdkmol_in;
-            }
+            cdkmol = cdk.asCDKMolecule( molecule );
         } catch ( BioclipseException e ) {
             return returnError( "Could not create CDKMolecule", e.getMessage() );
-        } catch ( CloneNotSupportedException e ) {
-            return returnError( "Could not clone CDKMolecule", e.getMessage() );
         }
 
         //Check for cancellation
