@@ -2,8 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-   <extension-point id="net.bioclipse.ds.test" name="Decision Support Test" schema="schema/net.bioclipse.ds.test.exsd"/>
-   <extension-point id="net.bioclipse.decisionsupport" name="Decision Support" schema="schema/net.bioclipse.decisionsupport.exsd"/>
+   <extension-point id="net.bioclipse.decisionsupport" name="Decision Support" schema="schema/decisionsupport.exsd"/>
 
 
    <extension
