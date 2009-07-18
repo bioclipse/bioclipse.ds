@@ -13,17 +13,21 @@ package net.bioclipse.ds.bursi.calc;
 import net.bioclipse.ds.impl.calc.BaseDSPropertyCalculator;
 
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class ExactMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getPropertyName() {
-        return "Bursi Exact Match";
+        return "Bursi exact matches";
     }
 
     @Override
     public String getTestID() {
-        return "dblookup.exact.bursi";
+        return "bursi.sdflookup.exact";
     }
     
 }

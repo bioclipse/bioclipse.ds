@@ -13,17 +13,21 @@ package net.bioclipse.ds.bursi.calc;
 import net.bioclipse.ds.impl.calc.BaseDSPropertyCalculator;
 
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class NearestMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getPropertyName() {
-        return "Bursi Nearest Neighbours";
+        return "Bursi nearest neighbour";
     }
 
     @Override
     public String getTestID() {
-        return "dblookup.nearest.bursi";
+        return "bursi.sdflookup.nearest";
     }
-    
+
 }

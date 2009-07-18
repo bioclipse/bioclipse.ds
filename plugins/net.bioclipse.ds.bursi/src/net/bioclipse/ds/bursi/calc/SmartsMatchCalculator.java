@@ -23,7 +23,7 @@ public class SmartsMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getTestID() {
-        return "smarts.bursi";
+        return "bursi.smarts";
     }
     
 }
