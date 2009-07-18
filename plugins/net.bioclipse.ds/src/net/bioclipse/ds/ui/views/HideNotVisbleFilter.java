@@ -1,6 +1,7 @@
 package net.bioclipse.ds.ui.views;
 
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.TestRun;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -16,7 +17,11 @@ public class HideNotVisbleFilter extends ViewerFilter {
             if (!test.isVisible())
                 return false;
         }
-        
+        else if ( element instanceof TestRun ) {
+            TestRun tr = (TestRun)element;
+            if (!tr.getTest().isVisible())
+                return false;
+        }       
         return true;
     }
 
