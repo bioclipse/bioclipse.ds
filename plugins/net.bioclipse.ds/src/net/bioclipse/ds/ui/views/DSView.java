@@ -50,6 +50,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.commands.contexts.ContextEvent;
+import org.eclipse.core.commands.contexts.ContextManagerEvent;
+import org.eclipse.core.commands.contexts.IContextManagerListener;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -67,7 +70,8 @@ import org.eclipse.swt.SWT;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-public class DSView extends ViewPart implements IPartListener{
+public class DSView extends ViewPart implements IPartListener, 
+                                                IContextManagerListener{
 
     private static final Logger logger = Logger.getLogger(DSView.class);
 
@@ -247,23 +251,12 @@ public class DSView extends ViewPart implements IPartListener{
         setAutorun( false );
         updateActionStates();
 
+        //Hook us up to react on JCP context changes
+        IContextService contextService = (IContextService)PlatformUI
+                              .getWorkbench().getService(IContextService.class);
+        contextService.addContextManagerListener( this );
         
-        
-//      IDSManager ds = Activator.getDefault().getJavaManager();
-//      try {
-//          for (String testID : ds.getTests()){
-//              IDSTest test = ds.getTest( testID );
-////          monitor.subTask( "Initializing test: " + testID );
-//              logger.debug("Initializing test: " + testID );
-//              test.initialize( new NullProgressMonitor() );
-//          }
-//      } catch ( BioclipseException e2 ) {
-//          // TODO Auto-generated catch block
-//          e2.printStackTrace();
-//      } catch ( DSException e2 ) {
-//          // TODO Auto-generated catch block
-//          e2.printStackTrace();
-//      }
+
 
         Job job=new Job("Initializing decision support tests"){
             @Override
@@ -425,6 +418,12 @@ public class DSView extends ViewPart implements IPartListener{
     public void dispose() {
         super.dispose();
         getSite().getWorkbenchWindow().getPartService().removePartListener(this);
+
+        //Remove context manager listeners
+        IContextService contextService = (IContextService)PlatformUI
+                            .getWorkbench().getService(IContextService.class);
+                            contextService.removeContextManagerListener( this );
+
         
         //unregister all listeners
         
@@ -913,19 +912,28 @@ public class DSView extends ViewPart implements IPartListener{
             logger.debug("We have a MPE editor for TestsView");
             MultiPageMoleculesEditorPart editor = (MultiPageMoleculesEditorPart)part;
             
-            IContextService contextService = (IContextService) PlatformUI.getWorkbench().
-                                                      getService(IContextService.class);
-            
-            for (Object cs : contextService.getActiveContextIds()){
-                if (MultiPageMoleculesEditorPart.JCP_CONTEXT.equals( cs )){
-                    //JCP is active
-                    Object obj = editor.getAdapter(JChemPaintEditor.class);
-                    if (obj!= null){
-                        JChemPaintEditor jcp=(JChemPaintEditor)obj;
-                        return jcp;
-                    }
+            if (editor.isJCPVisible()){
+                //JCP is active
+                Object obj = editor.getAdapter(JChemPaintEditor.class);
+                if (obj!= null){
+                    JChemPaintEditor jcp=(JChemPaintEditor)obj;
+                    return jcp;
                 }
             }
+                
+            
+//            IContextService contextService = (IContextService) PlatformUI.getWorkbench().
+//                                                      getService(IContextService.class);
+//            for (Object cs : contextService.getActiveContextIds()){
+//                if (MultiPageMoleculesEditorPart.JCP_CONTEXT.equals( cs )){
+//                    //JCP is active
+//                    Object obj = editor.getAdapter(JChemPaintEditor.class);
+//                    if (obj!= null){
+//                        JChemPaintEditor jcp=(JChemPaintEditor)obj;
+//                        return jcp;
+//                    }
+//                }
+//            }
             
 //            Object obj = editor.getAdapter(JChemPaintEditor.class);
 //            if (obj== null){
@@ -1187,6 +1195,33 @@ public class DSView extends ViewPart implements IPartListener{
 
         if (editorTestMap.keySet().contains( ppart )){
             activeTestRuns=editorTestMap.get( ppart );
+            
+            try {
+
+                //For all endpoints, clear old and add these testruns
+                IDSManager ds = Activator.getDefault().getJavaManager();
+                for (Endpoint ep : ds.getFullEndpoints()){
+
+                    //First remove any old TestRuns
+                    if (ep.getTestruns()!=null)
+                        ep.getTestruns().clear();
+
+                    //Loop over all tests in this Endpoint
+                    for (IDSTest epTest : ep.getTests()){
+                        //For the active testruns, locate those who are of this test
+                        for (TestRun tr : activeTestRuns){
+                            if (tr.getTest().getId().equals( epTest.getId() )){
+                                ep.addTestRun( tr );
+                            }
+                        }
+                        
+                    }
+                    
+                }
+            } catch ( BioclipseException e1 ) {
+                LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
+            }
+
         }else {
             addNewTestRunsAndListener(ppart);
         }
@@ -1303,5 +1338,41 @@ public class DSView extends ViewPart implements IPartListener{
         
     }
 
+    public void contextChanged( ContextEvent contextEvent ) {
+
+        System.out.println("JCP context changed");
+        if (contextEvent.getContext().getId() != 
+                                       MultiPageMoleculesEditorPart.JCP_CONTEXT)
+            return;
+
+        
+    }
+
+    public void contextManagerChanged( ContextManagerEvent contextManagerEvent ) {
+
+        IContextService contextService = (IContextService)PlatformUI
+        .getWorkbench().getService(IContextService.class);
+
+        if (contextService.getActiveContextIds().contains( 
+                                MultiPageMoleculesEditorPart.JCP_CONTEXT )){
+            
+            //MolTableEditor switched to tab JCP
+            System.out.println("JCP context activated");
+            IEditorPart editor = PlatformUI.getWorkbench()
+                  .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            if (editor!=null){
+                IWorkbenchPart suped = getSupportedEditor( editor );
+                addNewTestRunsAndListener(suped);
+                updateView();
+            }
+        }else{
+            //MolTableEditor switched to tab other than JCP
+            System.out.println("JCP context deactivated");
+            IEditorPart editor = PlatformUI.getWorkbench()
+            .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            if (editor!=null)
+                partActivated( editor );
+        }
+    }        
 
 }
