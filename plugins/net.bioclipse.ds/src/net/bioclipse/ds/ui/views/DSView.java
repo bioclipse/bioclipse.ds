@@ -185,15 +185,7 @@ public class DSView extends ViewPart implements IPartListener,
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         viewer.getTree().setLayoutData(gridData);
         
-        
-        //Init viewer with available endpoints
-        IDSManager ds = Activator.getDefault().getJavaManager();
-        try {
-            viewer.setInput(ds.getFullEndpoints().toArray());
-        } catch ( BioclipseException e ) {
-            LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
-            viewer.setInput(new String[]{"Error initializing tests"});
-        }
+        viewer.setInput(new String[]{"Initializing..."});
 
         // Create the help context id for the viewer's control
         PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), VIEW_ID);
@@ -245,8 +237,6 @@ public class DSView extends ViewPart implements IPartListener,
         gridData4.minimumWidth=50;
         consensusCanvas.setLayoutData(gridData4);
 
-        updateConsensusView();
-        
         //Initialize instance variables
         editorTestMap=new HashMap<IWorkbenchPart, List<TestRun>>();
         editorListenerMap=new HashMap<IWorkbenchPart, IPropertyChangeListener>();
@@ -255,12 +245,6 @@ public class DSView extends ViewPart implements IPartListener,
         //Turn off autorun by default
         setAutorun( false );
         updateActionStates();
-
-        //Hook us up to react on JCP context changes
-        IContextService contextService = (IContextService)PlatformUI
-                              .getWorkbench().getService(IContextService.class);
-        contextService.addContextManagerListener( this );
-        
 
 
         Job job=new Job("Initializing decision support tests"){
@@ -276,6 +260,52 @@ public class DSView extends ViewPart implements IPartListener,
                         monitor.subTask( "Initializing test: " + testID );
                         test.initialize( monitor );
                     }
+                    
+                    Display.getDefault().asyncExec( new Runnable(){
+
+                        public void run() {
+
+                            //Init viewer with available endpoints
+                            IDSManager ds = Activator.getDefault().getJavaManager();
+                            try {
+                                viewer.setInput(ds.getFullEndpoints().toArray());
+                            } catch ( BioclipseException e ) {
+                                LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
+                                viewer.setInput(new String[]{"Error initializing tests"});
+                            }
+
+                            updateConsensusView();
+                            updateActionStates();
+                            
+                            //Listen for part lifecycle events to react on editors
+                            getSite().getWorkbenchWindow().getPartService().addPartListener(DSView.getInstance());
+
+                            //Make viewer post selection to Eclipse
+                            getSite().setSelectionProvider(viewer);
+                            
+                            //Hook us up to react on JCP context changes
+                            IContextService contextService = (IContextService)PlatformUI
+                                                  .getWorkbench().getService(IContextService.class);
+                            contextService.addContextManagerListener( DSView.getInstance() );
+                            
+                            //If editor is open, react on it
+                            if (getSite()==null) return;
+                            if (getSite().getWorkbenchWindow()==null) return;
+                            if (getSite().getWorkbenchWindow().getActivePage()==null) return;
+
+                            IEditorPart openEditor = getSite().getWorkbenchWindow()
+                                                 .getActivePage().getActiveEditor();
+                            if (openEditor!=null){
+                                partActivated( openEditor );
+                                if (isAutorun()){
+//                                    doRunAllTests();
+                                }
+                            }
+                        }
+                        
+                    });
+                    
+                    
                 } catch ( BioclipseException e1 ) {
                     return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
                                       "All tests could not be initalized: " + e1.getMessage());
@@ -291,27 +321,6 @@ public class DSView extends ViewPart implements IPartListener,
         };
         job.setUser( false );
         job.schedule();
-
-        
-        
-        //Listen for part lifecycle events to react on editors
-        getSite().getWorkbenchWindow().getPartService().addPartListener(this);
-        
-        getSite().setSelectionProvider(viewer);
-        
-        //If editor is open, react on it
-        if (getSite()==null) return;
-        if (getSite().getWorkbenchWindow()==null) return;
-        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
-
-        IEditorPart openEditor = getSite().getWorkbenchWindow()
-                             .getActivePage().getActiveEditor();
-        if (openEditor!=null){
-            partActivated( openEditor );
-            if (isAutorun()){
-//                doRunAllTests();
-            }
-        }
         
     }
 
