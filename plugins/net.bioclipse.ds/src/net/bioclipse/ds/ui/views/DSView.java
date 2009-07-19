@@ -172,7 +172,7 @@ public class DSView extends ViewPart implements IPartListener,
         viewer.setContentProvider(new DSViewContentProvider());
 //        viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
         viewer.setLabelProvider(new DSViewLabelProvider());
-        viewer.setSorter(new ViewerSorter());
+//        viewer.setSorter(new ViewerSorter());
         viewer.addFilter( new HideNotVisbleFilter() );
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
             public void selectionChanged( SelectionChangedEvent event ) {
@@ -746,7 +746,7 @@ public class DSView extends ViewPart implements IPartListener,
                         
                         ICDKMolecule cloneMol=new CDKMolecule(cloneAC);
                         
-                        logger.debug( "===== Testrun: " + tr + " started" );
+                        logger.debug( "== Testrun: " + tr.getTest().getName() + " started" );
                         tr.setStatus( TestRun.RUNNING );
                         tr.setMolecule( mol );
                         viewer.refresh(tr);
@@ -1355,14 +1355,18 @@ public class DSView extends ViewPart implements IPartListener,
 
         IContextService contextService = (IContextService)PlatformUI
         .getWorkbench().getService(IContextService.class);
+        
+        if (getSite()==null) return;
+        if (getSite().getWorkbenchWindow()==null) return;
+        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
 
         if (contextService.getActiveContextIds().contains( 
                                 MultiPageMoleculesEditorPart.JCP_CONTEXT )){
             
             //MolTableEditor switched to tab JCP
             System.out.println("JCP context activated");
-            IEditorPart editor = PlatformUI.getWorkbench()
-                  .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            IEditorPart editor = getSite().getWorkbenchWindow()
+                                             .getActivePage().getActiveEditor();
             if (editor!=null){
                 IWorkbenchPart suped = getSupportedEditor( editor );
                 addNewTestRunsAndListener(suped);
@@ -1371,8 +1375,8 @@ public class DSView extends ViewPart implements IPartListener,
         }else{
             //MolTableEditor switched to tab other than JCP
             System.out.println("JCP context deactivated");
-            IEditorPart editor = PlatformUI.getWorkbench()
-            .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            IEditorPart editor = getSite().getWorkbenchWindow()
+                                             .getActivePage().getActiveEditor();
             if (editor!=null)
                 partActivated( editor );
         }

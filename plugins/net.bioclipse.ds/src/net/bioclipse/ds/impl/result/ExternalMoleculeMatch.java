@@ -59,14 +59,10 @@ public class ExternalMoleculeMatch extends SimpleResult{
     }
 
     
-    @Override
-    public String getName() {
-    
-        String name=super.getName();
+    public String getSuffix(){
         if (similarity!=0)
-            name=name+ " [tanimoto=" + twoDForm.format( similarity ) +"]";
-        return name;
-        
+            return " [tanimoto=" + twoDForm.format( similarity ) +"]";
+        else return "";
     }
     
 }

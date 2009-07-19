@@ -66,11 +66,19 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 
         else if ( element instanceof ITestResult ) {
             ITestResult match = (ITestResult) element;
-            return match.getName();
+            return match.getName() + match.getSuffix();
         }
         else if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
-            return run.getTest().getName();
+            return run.getTest().getName()+ run.getSuffix();
+        }
+        else if ( element instanceof IDSTest ) {
+            IDSTest dstest = (IDSTest) element;
+            if (dstest.getTestErrorMessage()!=null 
+                    && dstest.getTestErrorMessage().length()>1){
+                return dstest.getName() + " [" 
+                                           + dstest.getTestErrorMessage() + "]";
+            }
         }
 
         return element.toString();
@@ -100,8 +108,10 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
     public Color getForeground( Object element ) {
         if ( element instanceof IDSTest ) {
             IDSTest dst = (IDSTest) element;
-            if (dst.isExcluded());
+            if (dst.isExcluded())
                 return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+            else 
+                return Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
         }
         //Decorate with no results and no errors
         else if ( element instanceof TestRun ) {

@@ -54,4 +54,6 @@ public interface ITestResult extends ISubStructure{
     public String getDetailedMessage();
     public void setDetailedMessage( String detailedMessage );
 
+    String getSuffix();
+
 }

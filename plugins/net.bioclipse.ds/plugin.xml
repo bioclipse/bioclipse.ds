@@ -60,7 +60,7 @@
        point="net.bioclipse.decisionsupport">
          <endpoint
                id="net.bioclipse.ds.uncategorized"
-               icon="icons/information.gif"
+               icon="icons/test_container.gif"
                description="Tests that are not categorized"
                name="Uncategorized">
          </endpoint>
