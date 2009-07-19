@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc link_to="../net.bioclipse.ds/toc.xml#ContributedTests" label="Mutagenicity" >
+		<topic label="Mutagenicity"  href="html/mutagenicity.html" > 
+			<topic label="Bursi Exact Match"  href="html/exact.html" /> 
+			<topic label="Bursi Nearest Neighbour"  href="html/nearest.html" /> 
+			<topic label="Bursi Toxicophores"  href="html/toxicophores.html" />
+		</tpoic> 
+</toc>

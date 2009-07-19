@@ -2,6 +2,14 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+	<extension
+    	point="org.eclipse.help.toc">
+		<toc
+        	file="toc.xml"
+         	primary="true"/>
+	</extension>
+
+
    <extension
          point="net.bioclipse.decisionsupport">
          
@@ -17,7 +25,7 @@
             name="Bursi exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
-            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            propertycalculator="Bursi Exact Match"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
@@ -33,6 +41,8 @@
             name="Bursi nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            propertycalculator="Bursi Nearest Neighbours"
             reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
@@ -57,6 +67,8 @@
             name="Bursi Toxicophores"
             endpoint="net.bioclipse.ds.mutagenicity"
             reportmodel="net.bioclipse.ds.impl.report.SmartsMatchReportModel"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            propertycalculator="Bursi Toxicophores"
             class="net.bioclipse.ds.impl.SmartsMatcher">
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
@@ -100,6 +112,11 @@
      <Calculator
           class="net.bioclipse.ds.bursi.calc.SmartsMatchCalculator"
           id="Bursi Toxicophores">
+    </Calculator>
+
+    <Calculator
+          class="net.bioclipse.ds.bursi.calc.MutagenicityConsensusCalculator"
+          id="Mutagenicity Consensus">
     </Calculator>
     
  </extension>
@@ -172,16 +189,7 @@
  </extension>
    
    
-   
-    <extension
-       point="net.bioclipse.cdk.propertyCalculator">
-    <Calculator
-          class="net.bioclipse.ds.bursi.calc.MutagenicityConsensusCalculator"
-          id="Mutagenicity Consensus">
-    </Calculator>
- </extension>
- 
- 
+  
   	<extension
   		point="org.eclipse.ui.menus">
 		<menuContribution
