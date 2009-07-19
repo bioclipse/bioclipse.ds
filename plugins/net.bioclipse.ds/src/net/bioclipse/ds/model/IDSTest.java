@@ -59,4 +59,7 @@ public interface IDSTest extends ISubStructure{
     public void initialize(IProgressMonitor monitor) throws DSException;
     long getExecutionTimeMilliSeconds();
 
+    public IConsensusCalculator getConsensusCalculator();
+    public void setConsensusCalculator( IConsensusCalculator consensusCalculator );
+
 }

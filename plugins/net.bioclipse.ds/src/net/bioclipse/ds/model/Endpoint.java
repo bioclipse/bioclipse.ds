@@ -22,6 +22,7 @@ public class Endpoint {
     private List<TestRun> testruns;
     private Image icon;
     private String iconpath;
+    private IConsensusCalculator consensusCalculator;
 
     public Endpoint(String pid, String pname) {
         id=pid;
@@ -114,6 +115,16 @@ public class Endpoint {
 
         testruns.add( newTestRun );
         
+    }
+
+    public void setConsensusCalculator( IConsensusCalculator consensusCalculator ) {
+
+        this.consensusCalculator = consensusCalculator;
+    }
+
+    public IConsensusCalculator getConsensusCalculator() {
+
+        return consensusCalculator;
     }
     
 }
