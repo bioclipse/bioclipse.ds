@@ -16,7 +16,6 @@ import java.util.List;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
-import net.bioclipse.ds.impl.ConsensusCalculator;
 
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.swt.graphics.Color;
@@ -207,15 +206,9 @@ public class TestRun implements ISubStructure, IColorProvider{
                 ints.add( res.getClassification() );
             }
         }
-
-        if (getTest()!=null){
-            if (getTest().getId().equals( "dblookup.exact.bursi" )){
-                if (results==null || results.size()==0)
-                    return ITestResult.INCONCLUSIVE;
-            }
-        }
-
-        return ConsensusCalculator.calculate( ints );
+        
+        //Use the consensuscalculator from the test
+        return getTest().getConsensusCalculator().calculate( ints );
 
     }
     
@@ -318,7 +311,7 @@ public class TestRun implements ISubStructure, IColorProvider{
         checkImg=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
 //        redCrossImg=Activator.getImageDecriptor( "icons/x-red.gif" ).createImage();
         redCrossImg=Activator.getImageDecriptor( "icons/warn2.gif" ).createImage();
-        equalImg=Activator.getImageDecriptor( "icons/circle-minus.gif" ).createImage();
+        equalImg=Activator.getImageDecriptor( "icons/equal.gif" ).createImage();
         errorImg=Activator.getImageDecriptor( "icons/fatalerror.gif" ).createImage();
         runningImg=Activator.getImageDecriptor( "icons/running.gif" ).createImage();
         notrunImg=Activator.getImageDecriptor( "icons/test_case.gif" ).createImage();
