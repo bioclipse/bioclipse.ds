@@ -82,6 +82,7 @@ public class DSView extends ViewPart implements IPartListener,
     private static Image crossImg;
     private static Image checkImg;
     private static Image wheelImg;
+    private static Image equalImg;
 
     
     private TreeViewer viewer;
@@ -226,6 +227,7 @@ public class DSView extends ViewPart implements IPartListener,
         crossImg= Activator.getImageDecriptor( "icons48/cross.png" ).createImage();
         checkImg= Activator.getImageDecriptor( "icons48/check.png" ).createImage();
         wheelImg= Activator.getImageDecriptor( "icons48/wheel.png" ).createImage();
+        equalImg= Activator.getImageDecriptor( "icons48/equal.png" ).createImage();
 
         //Start off with a question-image
         consensusImage=questImg;
@@ -346,7 +348,7 @@ public class DSView extends ViewPart implements IPartListener,
             int res=getConsensusFromTestRuns();
             if (res==ITestResult.POSITIVE){
                 consensusText.setText( "Consensus: POSITIVE"); 
-                consensusImage=crossImg;
+                consensusImage=warnImg;
             }
             else if (res==ITestResult.NEGATIVE){
                 consensusText.setText( "Consensus: NEGATIVE"); 
@@ -354,7 +356,7 @@ public class DSView extends ViewPart implements IPartListener,
             }
             else if (res==ITestResult.INCONCLUSIVE){
                 consensusText.setText( "Consensus: INCONCLUSIVE"); 
-                consensusImage=warnImg;
+                consensusImage=equalImg;
             }
         }
         
@@ -1296,6 +1298,10 @@ public class DSView extends ViewPart implements IPartListener,
     public void partClosed( IWorkbenchPart part ) {
 //      logger.debug("Part:" + part.getTitle() + " closed");
         if (!( part instanceof IEditorPart )) return;
+
+        if (getSite()==null) return;
+        if (getSite().getWorkbenchWindow()==null) return;
+        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
 
         
         IWorkbenchPart ppart=getSupportedEditor( part );
