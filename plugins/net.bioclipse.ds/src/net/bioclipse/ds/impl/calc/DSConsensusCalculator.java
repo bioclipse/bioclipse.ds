@@ -28,22 +28,34 @@ import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.impl.result.SimpleResult;
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.ReportHelper;
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public abstract class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
 
     private static final Logger logger = 
                                   Logger.getLogger(DSConsensusCalculator.class);
 
+    public abstract String getPropertyName();
+
+    protected abstract String getTestID();
+
+    protected abstract String getEndpoint();
+
+
     
     public TestRun calculate( ICDKMolecule molecule ) {
 
         List<Integer> classifications=new ArrayList<Integer>();
-        for(IPropertyCalculator<TestRun> calculator:getCalculators()) {
+        for(IPropertyCalculator<TestRun> calculator : getCalculators()) {
             String id = calculator.getPropertyName();
             TestRun tr = (TestRun) molecule.getProperty( id, Property.USE_CACHED );
             
@@ -65,6 +77,7 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
         IConsensusCalculator consCalc=consensusTest.getConsensusCalculator();
         
         TestRun consrun=new TestRun();
+        consrun.setTest( consensusTest );
         //Add a single result to consrun
         SimpleResult consres = new SimpleResult(getPropertyName(), 
                          consCalc.calculate( classifications ) );
@@ -80,15 +93,12 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
         }
     }
 
-    public String getPropertyName() {
-        return "Consensus";
-    }
 
     public TestRun parse( String value ) {
         TestRun consrun=new TestRun();
         IDSTest test;
         try {
-            test = Activator.getDefault().getJavaManager().getTest( getPropertyName() );
+            test = Activator.getDefault().getJavaManager().getTest( getTestID() );
             consrun.setTest( test );
             
             SimpleResult res=new SimpleResult(getPropertyName(), 
@@ -109,7 +119,7 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
         TestRun tr = (TestRun)value;
         return tr.getConsensusString();
     }
-
+    
     protected Collection<IPropertyCalculator<TestRun>> getCalculators() {
         
         List<IPropertyCalculator<TestRun>> calculators=new 
@@ -123,25 +133,34 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
         for(IConfigurationElement element:elements) {
 
             try {
-                IPropertyCalculator<?> calculator = (IPropertyCalculator<?>)
-                                   element.createExecutableExtension( "class" );
 
-                //Only DS ones
-                if ( calculator instanceof BaseDSPropertyCalculator ) {
-                    BaseDSPropertyCalculator bda = (BaseDSPropertyCalculator) calculator;
-                    calculators.add( bda );
-                    logger.debug("Added calculator for: " + bda.getPropertyName());
-                    
-                }
+                String propid = element.getAttribute( "id" );
                 
+                IDSManager ds = Activator.getDefault().getJavaManager();
+                Endpoint ep = ds.getEndpoint( getEndpoint() );
+                for (IDSTest test : ep.getTests()){
+                    if (propid.equals( test.getPropertycalculator())){
+
+                        @SuppressWarnings("unchecked")
+                        IPropertyCalculator<TestRun> calculator = (IPropertyCalculator<TestRun>)
+                        element.createExecutableExtension( "class" );
+
+                        calculators.add( calculator );
+                        logger.debug("Added calculator: " + calculator 
+                                     + " to endpoint: " + getEndpoint());
+
+                    }
+                }
+
             } catch ( CoreException e ) {
+                LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
+            } catch ( BioclipseException e ) {
                 LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
             }
         }
         
         return calculators;
     }
-    
-    protected abstract String getTestID();
 
+    
 }
