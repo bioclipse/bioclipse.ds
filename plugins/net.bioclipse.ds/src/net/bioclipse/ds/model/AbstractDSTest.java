@@ -64,6 +64,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private String iconpath;
     private Image excludedIcon;
     private IConsensusCalculator consensusCalculator;
+    private String propertycalculator;
     
     /**
      * Empty if no problems
@@ -344,6 +345,16 @@ public abstract class AbstractDSTest implements IDSTest{
     public IConsensusCalculator getConsensusCalculator() {
 
         return consensusCalculator;
+    }
+
+    public void setPropertycalculator( String propertycalculator ) {
+
+        this.propertycalculator = propertycalculator;
+    }
+
+    public String getPropertycalculator() {
+
+        return propertycalculator;
     }
 
     

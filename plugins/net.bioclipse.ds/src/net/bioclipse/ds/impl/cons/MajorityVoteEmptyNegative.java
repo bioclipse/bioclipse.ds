@@ -60,7 +60,7 @@ public class MajorityVoteEmptyNegative extends AbstractConsensusCalculator{
         if (numerr>numneg && numerr>numpos)
             return ITestResult.ERROR;
 
-        else if (numinc >= numpos && numinc >= numneg)
+        else if (numinc > numpos && numinc > numneg)
             return ITestResult.INCONCLUSIVE;
 
         else if (numpos == 0 && numneg == 0)

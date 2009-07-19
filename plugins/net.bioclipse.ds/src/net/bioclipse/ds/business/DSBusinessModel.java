@@ -144,6 +144,8 @@ public class DSBusinessModel {
                             test.setId(pid);
                             String picon=element.getAttribute("icon");
                             test.setIcon(picon);
+                            String ppropcalc=element.getAttribute("propertycalculator");
+                            test.setPropertycalculator( ppropcalc);
 
                             String pep=element.getAttribute("endpoint");
                             //Look up endpoint by id and add to test

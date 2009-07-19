@@ -61,5 +61,7 @@ public interface IDSTest extends ISubStructure{
 
     public IConsensusCalculator getConsensusCalculator();
     public void setConsensusCalculator( IConsensusCalculator consensusCalculator );
+    void setPropertycalculator( String propertycalculator );
+    String getPropertycalculator();
 
 }
