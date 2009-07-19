@@ -7,7 +7,7 @@
       <test
             class="net.bioclipse.ds.lipinski.impl.RuleOfFiveTest"
             endpoint="net.bioclipse.ds.uncategorized"
-            icon="icons/drug_cap.png"
+            icon="icons/five.gif"
             id="lipinski"
             informative="true"
             name="Lipinski&apos;s Rule of Five">

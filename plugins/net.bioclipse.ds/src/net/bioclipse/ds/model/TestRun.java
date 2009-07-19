@@ -316,12 +316,14 @@ public class TestRun implements ISubStructure, IColorProvider{
     private void initIcons() {
         
         checkImg=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
-        redCrossImg=Activator.getImageDecriptor( "icons/x-red.gif" ).createImage();
-        equalImg=Activator.getImageDecriptor( "icons/equal.gif" ).createImage();
+//        redCrossImg=Activator.getImageDecriptor( "icons/x-red.gif" ).createImage();
+        redCrossImg=Activator.getImageDecriptor( "icons/warn2.gif" ).createImage();
+        equalImg=Activator.getImageDecriptor( "icons/circle-minus.gif" ).createImage();
         errorImg=Activator.getImageDecriptor( "icons/fatalerror.gif" ).createImage();
         runningImg=Activator.getImageDecriptor( "icons/running.gif" ).createImage();
-        notrunImg=Activator.getImageDecriptor( "icons/box-q.gif" ).createImage();
-        excludedImg=Activator.getImageDecriptor( "/icons/deactivated.gif" ).createImage();
+        notrunImg=Activator.getImageDecriptor( "icons/test_case.gif" ).createImage();
+        excludedImg=Activator.getImageDecriptor( "/icons/exclude.png" ).createImage();
+//        excludedImg=Activator.getImageDecriptor( "/icons/deactivated.gif" ).createImage();
         informationImg=Activator.getImageDecriptor( "icons/information.gif" ).createImage();
 
     }

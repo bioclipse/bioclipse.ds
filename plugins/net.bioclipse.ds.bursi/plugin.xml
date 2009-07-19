@@ -7,8 +7,8 @@
          
          <endpoint
                id="net.bioclipse.ds.mutagenicity"
-               icon="icons/dna_mut.gif"
                description="Ability to induce mutations to DNA"
+               icon="icons/radioactive.png"
                name="Mutagenicity">
          </endpoint>
          
@@ -17,7 +17,6 @@
             name="Bursi exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
-            icon="icons/db.gif"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
@@ -33,8 +32,7 @@
             name="Bursi nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
-            reportmodel="net.bioclipse.ds.impl.report.NNReportModel"
-            icon="icons/db.gif">
+            reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
             <resource name="file"
                   path="data/cas_4337_noH_props.sdf">
             </resource>
@@ -57,7 +55,6 @@
             id="bursi.smarts"
             name="Bursi Toxicophores"
             endpoint="net.bioclipse.ds.mutagenicity"
-            icon="icons/form.gif"
             reportmodel="net.bioclipse.ds.impl.report.SmartsMatchReportModel"
             class="net.bioclipse.ds.impl.SmartsMatcher">
             <resource name="file"

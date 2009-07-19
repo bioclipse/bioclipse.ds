@@ -41,6 +41,13 @@ public abstract class AbstractDSTest implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(AbstractDSTest.class);
 
+    /**
+     * This icon is used if icon is not specified by the test
+     */
+    private static final String DEFAULT_TEST_ICON = "icons/test_case_deac.gif";
+    private static final String EXCLUDED_ICON = "icons/exclude.png";
+    private static final String ERROR_ICON = "/icons/fatalerror.gif";
+
     private String id;
     private String name;
     private String description;
@@ -54,13 +61,16 @@ public abstract class AbstractDSTest implements IDSTest{
     private AbstractTestReportModel reportmodel;
     private Endpoint endpoint;
     private long executionTimeMilliSeconds;
+    private String iconpath;
+    private Image excludedIcon;
     
     /**
      * Empty if no problems
      */
     private String testErrorMessage;
 
-    private String iconpath;
+    private Image errorIcon;
+
     
     public AbstractDSTest(){
         parameters=new HashMap<String, String>();
@@ -113,9 +123,30 @@ public abstract class AbstractDSTest implements IDSTest{
 
     public Image getIcon() {
         //Create the icon if not already done so
-        if (icon==null && pluginID!=null && iconpath!=null)
+        if (testErrorMessage!=null && testErrorMessage.length()>1){
+            if (errorIcon==null)
+                errorIcon=Activator.imageDescriptorFromPlugin( 
+                                           net.bioclipse.ds.Activator.PLUGIN_ID, 
+                                           ERROR_ICON ).createImage();
+            return errorIcon;
+                       
+        }
+        else if (isExcluded()){
+            if (excludedIcon==null)
+                excludedIcon=Activator.imageDescriptorFromPlugin( 
+                                           net.bioclipse.ds.Activator.PLUGIN_ID, 
+                                           EXCLUDED_ICON ).createImage();
+            return excludedIcon;
+                       
+        }
+        else if (iconpath==null)
+            icon=Activator.imageDescriptorFromPlugin( 
+                                    net.bioclipse.ds.Activator.PLUGIN_ID, 
+                                    DEFAULT_TEST_ICON ).createImage();
+        else if (icon==null && pluginID!=null && iconpath!=null)
             icon=Activator.imageDescriptorFromPlugin( 
                       pluginID, iconpath ).createImage();
+        
         return icon;
     }
     
