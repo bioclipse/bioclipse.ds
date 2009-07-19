@@ -97,22 +97,15 @@ public class TestRun implements ISubStructure, IColorProvider{
     @Override
     public String toString() {
         
-        //No results = negative
-        if (results==null || results.size()<=0){
-            if (getTest().getId().equals( "dblookup.exact.bursi" )){
-                if (results==null || results.size()==0)
-                    return "INCONCLUSIVE";
-            }
-            return "NEGATIVE";
-        }
-
         //Serialize consensus
-        TestRun tr = results.get( 0 ).getTestRun();
-        if (results.get( 0 ).getName().equalsIgnoreCase( "consensus"))
-            return tr.getConsensusString();
+//        TestRun tr = results.get( 0 ).getTestRun();
+//        if (results.get( 0 ).getName().equalsIgnoreCase( "consensus"))
+//            return tr.getConsensusString();
+//        else
+        if (results!=null)
+            return getConsensusString() + " [" + results.size() + " hits]";
         else
-            return tr.getConsensusString() + " [" + results.size() + " hits]";
-
+            return getConsensusString();
     }
 
     public boolean hasMatches() {
@@ -208,6 +201,7 @@ public class TestRun implements ISubStructure, IColorProvider{
         }
         
         //Use the consensuscalculator from the test
+        
         return getTest().getConsensusCalculator().calculate( ints );
 
     }
@@ -337,14 +331,14 @@ public class TestRun implements ISubStructure, IColorProvider{
     public Color getBackground( Object element ) {
 
         if (getConsensusStatus()==ITestResult.POSITIVE)
-            return new Color(Display.getCurrent(), 247, 35, 3);
+            return new Color(Display.getCurrent(), 211, 66, 8);
 
         else if (getConsensusStatus()==ITestResult.NEGATIVE){
-            return new Color(Display.getCurrent(), 0, 176, 0);
+            return new Color(Display.getCurrent(), 100, 188, 61);
         }
 
         else if (getConsensusStatus()==ITestResult.INCONCLUSIVE)
-            return new Color(Display.getCurrent(), 0, 0, 176);
+            return new Color(Display.getCurrent(), 148, 153, 248);
 
         return new Color(Display.getCurrent(), 247, 227, 0);
     }
