@@ -17,6 +17,7 @@
             name="Bursi exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
@@ -175,8 +176,8 @@
     <extension
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
-          class="net.bioclipse.ds.impl.calc.DSConsensusCalculator"
-          id="Consensus">
+          class="net.bioclipse.ds.bursi.calc.MutagenicityConsensusCalculator"
+          id="Mutagenicity Consensus">
     </Calculator>
  </extension>
  
@@ -216,7 +217,7 @@
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Signature Significance,Consensus">
+              value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Signature Significance,Mutagenicity Consensus">
         </parameter>
         <visibleWhen
               checkEnabled="true">

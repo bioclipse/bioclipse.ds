@@ -56,8 +56,27 @@
           name="Getting Started with Decision Support">
     </cheatsheet>
  </extension>
+ 
  <extension
        point="net.bioclipse.decisionsupport">
+       <consensus
+             id="net.bioclipse.ds.consensus.majority"
+             name="Majority Voting"
+             class="net.bioclipse.ds.impl.cons.MajorityVote"
+             description="A majority voting algorithm. Inconclusive if no results">
+       </consensus>
+       <consensus
+             id="net.bioclipse.ds.consensus.majority.emptynegative"
+             name="Normal Consensus"
+             class="net.bioclipse.ds.impl.cons.MajorityVoteEmptyNegative"
+             description="A majority voting algorithm. Negative if no results">
+       </consensus>
+       <consensus
+             id="net.bioclipse.ds.consensus.conservative"
+             name="Conservative Consensus"
+             class="net.bioclipse.ds.impl.cons.ConsensusConservative"
+             description="A conservative consensus calculation. At least one negative means consensus is negative.">
+       </consensus>
          <endpoint
                id="net.bioclipse.ds.uncategorized"
                icon="icons/test_container.gif"
