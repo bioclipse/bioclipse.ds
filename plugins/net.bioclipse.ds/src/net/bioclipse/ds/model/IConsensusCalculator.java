@@ -15,11 +15,26 @@ import java.util.List;
 
 /**
  * 
+ * An interface for calculators that are able to calculate a consensus 
+ * ITestResult.int from a list of ITestResults.int
+ * 
  * @author ola
  *
  */
 public interface IConsensusCalculator {
 
-    public ITestResult getConsensus(List<ITestResult> results);
+    public int calculate( List<Integer> classifications );
+
+    String getId();
+
+    void setId( String id );
+
+    String getName();
+
+    void setName( String name );
+
+    String getDescription();
+
+    void setDescription( String description );
     
 }

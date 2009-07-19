@@ -16,6 +16,7 @@ import java.util.List;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.Endpoint;
+import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
@@ -35,6 +36,9 @@ import org.eclipse.core.runtime.Platform;
 public class DSBusinessModel {
 
     private static final Logger logger = Logger.getLogger(DSBusinessModel.class);
+
+    private static final String DEFAULT_CONSENSUS_CALCULATOR = 
+                               "net.bioclipse.ds.consensus.majority";
 
     volatile List<IDSTest> tests;
     volatile List<Endpoint> endpoints;
@@ -86,6 +90,13 @@ public class DSBusinessModel {
 
                     Endpoint ep=new Endpoint(pid, pname, pdesc, picon, pluginID);
                     endpoints.add( ep );
+                    
+                    //Add dedicated consensus calculator, or use default
+                    String pconsid = element.getAttribute("consensus");
+                    if (pconsid==null) pconsid=DEFAULT_CONSENSUS_CALCULATOR;
+                    IConsensusCalculator conscalc = createNewConsCalc(pconsid);
+                    ep.setConsensusCalculator( conscalc );
+
                     
                 }
             }
@@ -153,16 +164,6 @@ public class DSBusinessModel {
                             else
                                 test.setInformative(false);
 
-//                            String pclone=element.getAttribute("clone");
-//                            if (pclone!=null){
-//                                if (pclone.equalsIgnoreCase( "true" ))
-//                                    test.setClone( true);
-//                                else
-//                                    test.setClone( false);
-//                            }
-//                            else
-//                                test.setClone( false);
-
                             String pvisible=element.getAttribute("visible");
                             if (pvisible!=null){
                                 if (pvisible.equalsIgnoreCase( "false" ))
@@ -203,6 +204,12 @@ public class DSBusinessModel {
                                      ": " + e.getLocalizedMessage() );
                         LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
                     }
+                    
+                    //Add dedicated consensus calculator, or use default
+                    String pconsid = element.getAttribute("consensus");
+                    if (pconsid==null) pconsid=DEFAULT_CONSENSUS_CALCULATOR;
+                    IConsensusCalculator conscalc = createNewConsCalc(pconsid);
+                    test.setConsensusCalculator( conscalc );
 
                     //Add a reportmodel for the Test if it declares one 
                     //in the manifest
@@ -212,13 +219,13 @@ public class DSBusinessModel {
                             Object rmodel = element
                             .createExecutableExtension("reportmodel");
                             if ( rmodel instanceof AbstractTestReportModel ) {
-                                AbstractTestReportModel abmodel = (AbstractTestReportModel) rmodel;
+                                AbstractTestReportModel abmodel = 
+                                    (AbstractTestReportModel) rmodel;
                                 test.setReportmodel( abmodel );
                             }
                         } catch ( CoreException e ) {
-                            logger.debug("The test: " + test.getName() + " did not " +
-                            "provide a reportmodel.");
-                            //                            e.printStackTrace();
+                            logger.debug("The test: " + test.getName() 
+                                         + " did not provide a reportmodel.");
                         }
                     }
 
@@ -228,6 +235,61 @@ public class DSBusinessModel {
             }
         }
 
+    }
+
+    private IConsensusCalculator createNewConsCalc( String pconsid ) {
+
+        IConsensusCalculator conscalc=null;
+        
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+        if ( registry == null ) 
+            throw new UnsupportedOperationException("Extension registry is " +
+            		"null. Cannot read tests from EP.");
+        // it likely means that the Eclipse workbench has not
+        // started, for example when running tests
+
+        IExtensionPoint serviceObjectExtensionPoint = registry
+        .getExtensionPoint("net.bioclipse.decisionsupport");
+
+        IExtension[] serviceObjectExtensions
+        = serviceObjectExtensionPoint.getExtensions();
+
+        for(IExtension extension : serviceObjectExtensions) {
+            for( IConfigurationElement element
+                    : extension.getConfigurationElements() ) {
+
+                //Read all tests from EP
+                //======================
+                if (element.getName().equals("consensus")){
+
+                    String pid=element.getAttribute("id");
+                    
+                    if (pid.equals( pconsid )){
+                        
+                        //This is the one we should instantiate
+                        
+                        String pname=element.getAttribute("name");
+                        String pdesc=element.getAttribute("description");
+                        
+                        try {
+                            conscalc = (IConsensusCalculator) element
+                                            .createExecutableExtension("class");
+                            conscalc.setId( pid);
+                            conscalc.setName( pname );
+                            conscalc.setDescription( pdesc );
+                        } catch ( CoreException e ) {
+                            logger.error("Consensus calculator " + pid 
+                                  + " failed to initialize: " + e.getMessage());
+                            LogUtils.handleException( e, logger, 
+                                                           Activator.PLUGIN_ID);
+                        }
+
+                    }
+                }
+            }
+        }
+        return conscalc;
     }
 
 
