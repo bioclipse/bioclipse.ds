@@ -16,12 +16,16 @@ import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -29,7 +33,7 @@ import org.eclipse.swt.widgets.Display;
  * @author ola
  *
  */
-public class DSViewLabelProvider implements ILabelProvider, IColorProvider{
+public class DSViewLabelProvider extends ColumnLabelProvider{
 
     public Image getImage( Object element ) {
 
@@ -112,6 +116,36 @@ public class DSViewLabelProvider implements ILabelProvider, IColorProvider{
         }
 
         return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+    }
+
+    
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipText(java.lang.Object)
+     */
+    public String getToolTipText(Object element) {
+      return element.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipShift(java.lang.Object)
+     */
+    public Point getToolTipShift(Object object) {
+      return new Point(5,5);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipDisplayDelayTime(java.lang.Object)
+     */
+    public int getToolTipDisplayDelayTime(Object object) {
+      return 500;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipTimeDisplayed(java.lang.Object)
+     */
+    public int getToolTipTimeDisplayed(Object object) {
+      return 10000;
     }
 
 }

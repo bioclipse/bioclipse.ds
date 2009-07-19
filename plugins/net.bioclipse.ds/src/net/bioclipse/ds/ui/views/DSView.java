@@ -167,8 +167,11 @@ public class DSView extends ViewPart implements IPartListener,
         parent.setLayout(gridLayout);
 
         viewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        ColumnViewerToolTipSupport.enableFor(viewer);
+
         viewer.setContentProvider(new DSViewContentProvider());
-        viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
+//        viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
+        viewer.setLabelProvider(new DSViewLabelProvider());
         viewer.setSorter(new ViewerSorter());
         viewer.addFilter( new HideNotVisbleFilter() );
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
