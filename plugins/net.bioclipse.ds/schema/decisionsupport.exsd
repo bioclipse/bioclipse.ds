@@ -82,6 +82,16 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="consensus" type="string">
+            <annotation>
+               <documentation>
+                  The ID of a defined consensus element in the manifest, linking the test to a default consensus calculator. Default is normal majority voting.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="net.bioclipse.decisionsupport/consensus/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -110,6 +120,16 @@
                <documentation>
                   
                </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="consensus" type="string">
+            <annotation>
+               <documentation>
+                  The ID of a defined consensus element in the manifest, linking the test to a default consensus calculator. Default is normal majority voting.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="net.bioclipse.decisionsupport/consensus/@id"/>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
@@ -229,6 +249,20 @@ This atribute is deprecated and will be ignored.
                <appinfo>
                   <meta.attribute kind="java" basedOn=":net.bioclipse.ds.model.IConsensusCalculator"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
