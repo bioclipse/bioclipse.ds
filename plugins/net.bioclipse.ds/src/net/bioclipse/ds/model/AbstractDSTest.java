@@ -63,6 +63,7 @@ public abstract class AbstractDSTest implements IDSTest{
     private long executionTimeMilliSeconds;
     private String iconpath;
     private Image excludedIcon;
+    private IConsensusCalculator consensusCalculator;
     
     /**
      * Empty if no problems
@@ -333,6 +334,16 @@ public abstract class AbstractDSTest implements IDSTest{
 
     public long getExecutionTimeMilliSeconds() {
         return executionTimeMilliSeconds;
+    }
+
+    public void setConsensusCalculator( IConsensusCalculator consensusCalculator ) {
+
+        this.consensusCalculator = consensusCalculator;
+    }
+
+    public IConsensusCalculator getConsensusCalculator() {
+
+        return consensusCalculator;
     }
 
     

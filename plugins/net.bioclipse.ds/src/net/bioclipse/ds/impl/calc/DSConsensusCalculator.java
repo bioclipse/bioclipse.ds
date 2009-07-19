@@ -26,14 +26,15 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule.Property;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
-import net.bioclipse.ds.impl.ConsensusCalculator;
+import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.impl.result.SimpleResult;
+import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.ReportHelper;
 
 
-public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
+public abstract class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
 
     private static final Logger logger = 
                                   Logger.getLogger(DSConsensusCalculator.class);
@@ -55,16 +56,28 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
             }
         }
         
+        //The consensustest must provide a consensus calculator
+        IDSManager ds = Activator.getDefault().getJavaManager();
+        IDSTest consensusTest;
+        try {
+            consensusTest = ds.getTest( getTestID() );
+        
+        IConsensusCalculator consCalc=consensusTest.getConsensusCalculator();
+        
         TestRun consrun=new TestRun();
         //Add a single result to consrun
         SimpleResult consres = new SimpleResult(getPropertyName(), 
-                         ConsensusCalculator.calculate( classifications ) );
+                         consCalc.calculate( classifications ) );
         consres.setTestRun( consrun );
         consrun.addResult( consres);
         logger.debug(" $$ Consensus classification: " + 
-                              ConsensusCalculator.calculate( classifications ));
+                              consCalc.calculate( classifications ));
         
         return consrun;
+        } catch ( BioclipseException e ) {
+            LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
+            return null;
+        }
     }
 
     public String getPropertyName() {
@@ -128,5 +141,7 @@ public class DSConsensusCalculator implements IPropertyCalculator<TestRun>{
         
         return calculators;
     }
+    
+    protected abstract String getTestID();
 
 }

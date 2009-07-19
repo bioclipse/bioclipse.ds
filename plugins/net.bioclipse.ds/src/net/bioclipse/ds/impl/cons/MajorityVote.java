@@ -8,16 +8,30 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.impl;
+package net.bioclipse.ds.impl.cons;
 
 import java.util.List;
 
+import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.ITestResult;
 
 
-public class ConsensusCalculator {
+/**
+ * This implementation follows the following rules:
+ * <ol>
+ *         <li>if #err > #pos && #err > #neg >> ERROR
+ *         <li>if #incon >=pos && #incon >= #neg >> INCONCLUSIVE
+ *         <li>if #pos == #neg >> INCONCLUSIVE
+ *         <li>if #pos > #neg >> POSITIVE
+ *         <li>else >> NEGATIVE
+ * </ol>
+ * 
+ * @author ola
+ *
+ */
+public class MajorityVote extends AbstractConsensusCalculator{
     
-    public static int calculate(List<Integer> classifications){
+    public int calculate(List<Integer> classifications){
         
         if (classifications==null)
             return ITestResult.ERROR;
@@ -45,15 +59,9 @@ public class ConsensusCalculator {
         if (numerr>numneg && numerr>numpos)
             return ITestResult.ERROR;
 
-        //If we have informative, should only be one
-        else if (numinf>0)
-            return ITestResult.INFORMATIVE;
+        else if (numinc >= numpos && numinc >= numneg)
+            return ITestResult.INCONCLUSIVE;
 
-        //If no positive results:
-        else if (numpos==0)
-            return ITestResult.NEGATIVE;
-
-        //If at least one but equal:
         else if (numpos==numneg)
             return ITestResult.INCONCLUSIVE;
 
@@ -65,8 +73,6 @@ public class ConsensusCalculator {
         else
             return ITestResult.NEGATIVE;
         
-    }
-    
-    
+    }    
     
 }
