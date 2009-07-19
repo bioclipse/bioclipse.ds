@@ -41,6 +41,7 @@ public class DSManagerPluginTest {
             assertNotNull( ep.getId());
             assertNotNull( ep.getName());
             assertNotNull( ep.getTests());
+            assertNotNull( ep.getConsensusCalculator() );
         }
         System.out.println("=============================");
         
@@ -63,10 +64,11 @@ public class DSManagerPluginTest {
             assertNotNull( test.getId());
             assertNotNull( test.getName());
             assertNotNull( test.getEndpoint());
+            assertNotNull( test.getConsensusCalculator() );
         }
         System.out.println("=============================");
         
-        assertEquals( "Number of tests", 4, ds.getTests().size() );
+        assertTrue( "Number of tests", ds.getTests().size() >=4 );
         assertTrue( ds.getTests().contains( "bursi.sdflookup.exact" ) );
         assertTrue( ds.getTests().contains( "bursi.sdflookup.nearest" ) );
         assertTrue( ds.getTests().contains( "bursi.smarts" ) );
