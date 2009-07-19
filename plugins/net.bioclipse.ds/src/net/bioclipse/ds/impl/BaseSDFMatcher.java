@@ -48,6 +48,8 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
     private static final String RESPONSE_PROPERTY_PARAM="responseProperty";
     private static final String FILE_PROPERTY_PARAM="file";
 
+    private static final boolean VALIDATE_SDF_PROPERTIES_ON_LOAD = false;
+
     /**
      * The response property read from params in manifest
      */
@@ -155,7 +157,8 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
         String path="";
         URL url2;
         try {
-            url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID()).getEntry(filepath));
+            url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID())
+                                         .getEntry(filepath));
             path=url2.getFile();
         } catch ( IOException e ) {
             throw new DSException(e.getMessage());
@@ -268,32 +271,33 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
                                                         getId() + " cancelled");
         
         //========================
-        //Verify SDFile properties
+        //Verify SDFile properties (if set)
         //========================
+        if (VALIDATE_SDF_PROPERTIES_ON_LOAD){
 
-        //For all molecules...
-        for (int i=0; i<SDFmodel.getNumberOfMolecules(); i++){
+            //For all molecules...
+            for (int i=0; i<SDFmodel.getNumberOfMolecules(); i++){
 
-            //Verify response property exists
-            Object obj = SDFmodel.getPropertyFor( i, responseProperty );
-            if (obj==null)
-                throw new DSException("Molecule index " + i 
-                              + " does not have response property: " + responseProperty 
-                              + " in test " + getId());
-            
-            //Allow for subclasses to validate responses upon initialization
-            validateResponseValue(obj);
-
-            //Verify we have all other required properties != null
-            for (String prop : getRequiredProperties()){
-                Object propvalue = SDFmodel.getPropertyFor( i, prop );
-                if (propvalue==null)
+                //Verify response property exists
+                Object obj = SDFmodel.getPropertyFor( i, responseProperty );
+                if (obj==null)
                     throw new DSException("Molecule index " + i 
-                                  + " does not have required property " + prop 
-                                  + " in test " + getId());
-                
+                                          + " does not have response property: " 
+                                          + responseProperty 
+                                          + " in test " + getId());
+
+                //Allow for subclasses to validate responses upon initialization
+                validateResponseValue(obj);
+
+                //Verify we have all other required properties != null
+                for (String prop : getRequiredProperties()){
+                    Object propvalue = SDFmodel.getPropertyFor( i, prop );
+                    if (propvalue==null)
+                        throw new DSException("Molecule index " + i 
+                                              + " does not have required property " 
+                                              + prop + " in test " + getId());
+                }
             }
-            
         }
         
         setInitialized( true );
