@@ -35,5 +35,10 @@ public class DSRow {
 		return "N/A";
 	}
 
+  public Map<String, String> getParameters() {
+      return columns;
+  }
+
+
 
 }
