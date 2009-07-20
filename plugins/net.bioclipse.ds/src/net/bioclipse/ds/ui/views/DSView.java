@@ -759,7 +759,7 @@ public class DSView extends ViewPart implements IPartListener,
                         
                         logger.debug( "== Testrun: " + tr.getTest().getName() + " started" );
                         tr.setStatus( TestRun.RUNNING );
-                        tr.setMolecule( mol );
+                        tr.setMolecule( cloneMol );
                         viewer.refresh(tr);
                         viewer.setExpandedState( tr, true );
 
@@ -1383,9 +1383,15 @@ public class DSView extends ViewPart implements IPartListener,
             IEditorPart editor = getSite().getWorkbenchWindow()
                                              .getActivePage().getActiveEditor();
             if (editor!=null){
-                IWorkbenchPart suped = getSupportedEditor( editor );
-                addNewTestRunsAndListener(suped);
-                updateView();
+                if ( editor instanceof MultiPageMoleculesEditorPart ) {
+                    //Special case when SDF editor JCP is visible since same 
+                    //editor, but different molecule.
+                    IWorkbenchPart suped = getSupportedEditor( editor );
+                    addNewTestRunsAndListener(suped);
+                    updateView();
+                    
+                }
+                partActivated( editor );
             }
         }else{
             //MolTableEditor switched to tab other than JCP
