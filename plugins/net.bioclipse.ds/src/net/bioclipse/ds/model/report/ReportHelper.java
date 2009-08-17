@@ -43,7 +43,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
-import org.openscience.cdk.renderer.Renderer;
+import org.openscience.cdk.renderer.AtomContainerRenderer;
 import org.openscience.cdk.renderer.font.AWTFontManager;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator;
 import org.openscience.cdk.renderer.generators.BasicBondGenerator;
@@ -134,7 +134,7 @@ public class ReportHelper {
         generators.add(new BasicAtomGenerator());
         
         // the renderer needs to have a toolkit-specific font manager 
-        Renderer renderer = new Renderer(generators, new AWTFontManager());
+        AtomContainerRenderer renderer = new AtomContainerRenderer(generators, new AWTFontManager());
         
         // the call to 'setup' only needs to be done on the first paint
         renderer.setup(mol, drawArea);
@@ -150,7 +150,7 @@ public class ReportHelper {
         g2.fillRect(0, 0, WIDTH, HEIGHT);
         
         // the paint method also needs a toolkit-specific renderer
-        renderer.paintMolecule(mol, new AWTDrawVisitor(g2));
+        renderer.paint(mol, new AWTDrawVisitor(g2));
 
         ByteArrayOutputStream bo=new ByteArrayOutputStream();
         
