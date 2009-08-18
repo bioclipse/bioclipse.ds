@@ -67,67 +67,67 @@ public class Startup implements IStartup {
         //Start up a background job for starting BIRT
         Job loadBirtJob=new Job("Starting BIRT engine"){
 
-            protected IStatus run2(IProgressMonitor monitor) {
-                monitor.beginTask( "Starting BIRT ", 3 );
-                monitor.worked( 1 );
-
-                WebViewer.startup();
-
-                EngineConfig config = new EngineConfig();
-                IReportEngineFactory factory = (IReportEngineFactory) org.eclipse.birt.core.framework.Platform
-                .createFactoryObject( IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY );
-                IReportEngine engine = factory.createReportEngine( config );
-
-                Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(
-                                                                            Activator.PLUGIN_ID); 
-                URL url = FileLocator.find(bundle, 
-                                           new Path("/reports/ds-single.rptdesign"), null);
-                String rpt;
-                try {
-                    rpt = FileLocator.toFileURL(url).getPath();
-                    IReportRunnable design = engine.openReportDesign(rpt);
-
-                    //================================================
-                    ReportDesignHandle designHandle = design.getDesignHandle().getDesignHandle();
-                    ElementFactory elementFactory = designHandle.getElementFactory( );
-
-                    // Create task to run the report - use the task to execute and run
-                    // the report,
-                    IRunAndRenderTask task = engine.createRunAndRenderTask(design);
-
-
-                    HTMLRenderContext renderContext = new HTMLRenderContext();
-                    Map contextMap = new HashMap();
-                    contextMap.put(EngineConstants.APPCONTEXT_HTML_RENDER_CONTEXT,
-                                   renderContext);
-                    task.setAppContext(contextMap);
-
-                    IRenderOption options = new HTMLRenderOption();
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    options.setOutputStream(stream);
-                    options.setOutputFormat("html");
-
-                    task.setRenderOption(options);
-                    task.run();
-                    task.close();
-
-
-                } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( EngineException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-
-                return Status.OK_STATUS;
-            }
+//            protected IStatus run2(IProgressMonitor monitor) {
+//                monitor.beginTask( "Starting BIRT ", 3 );
+//                monitor.worked( 1 );
+//
+//                WebViewer.startup();
+//
+//                EngineConfig config = new EngineConfig();
+//                IReportEngineFactory factory = (IReportEngineFactory) org.eclipse.birt.core.framework.Platform
+//                .createFactoryObject( IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY );
+//                IReportEngine engine = factory.createReportEngine( config );
+//
+//                Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(
+//                                                                            Activator.PLUGIN_ID); 
+//                URL url = FileLocator.find(bundle, 
+//                                           new Path("/reports/ds-single.rptdesign"), null);
+//                String rpt;
+//                try {
+//                    rpt = FileLocator.toFileURL(url).getPath();
+//                    IReportRunnable design = engine.openReportDesign(rpt);
+//
+//                    //================================================
+//                    ReportDesignHandle designHandle = design.getDesignHandle().getDesignHandle();
+//                    ElementFactory elementFactory = designHandle.getElementFactory( );
+//
+//                    // Create task to run the report - use the task to execute and run
+//                    // the report,
+//                    IRunAndRenderTask task = engine.createRunAndRenderTask(design);
+//
+//
+//                    HTMLRenderContext renderContext = new HTMLRenderContext();
+//                    Map contextMap = new HashMap();
+//                    contextMap.put(EngineConstants.APPCONTEXT_HTML_RENDER_CONTEXT,
+//                                   renderContext);
+//                    task.setAppContext(contextMap);
+//
+//                    IRenderOption options = new HTMLRenderOption();
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    options.setOutputStream(stream);
+//                    options.setOutputFormat("html");
+//
+//                    task.setRenderOption(options);
+//                    task.run();
+//                    task.close();
+//
+//
+//                } catch ( IOException e ) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                } catch ( EngineException e ) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//
+//
+//                return Status.OK_STATUS;
+//            }
 
             @Override
             protected IStatus run( IProgressMonitor monitor ) {
 
-                monitor.beginTask( "Starting BIRT ", 3 );
+                monitor.beginTask( "Initializing DS reporting", 3 );
                 monitor.worked( 1 );
 
                 WebViewer.startup();
@@ -152,7 +152,7 @@ public class Startup implements IStartup {
                     Display.getDefault().syncExec( new Runnable(){
 
                         public void run() {
-                            WebViewer.display(rpt, browser, myparms);
+//                            WebViewer.display(rpt, browser, myparms);
                         }} );
 
 

@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources;bundle-version="3.4.2",
  org.eclipse.birt.report.engine;bundle-version="2.3.2",
  net.bioclipse.ds;bundle-version="2.0.0",
- net.bioclipse.core;bundle-version="2.0.0"
+ net.bioclipse.core;bundle-version="2.0.0",
+ net.bioclipse.birt;bundle-version="0.1.1"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j;version="1.2.15"
