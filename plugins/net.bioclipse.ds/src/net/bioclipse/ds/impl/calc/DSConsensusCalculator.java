@@ -59,13 +59,19 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
             String id = calculator.getPropertyName();
             TestRun tr = (TestRun) molecule.getProperty( id, Property.USE_CACHED );
             
-            if (!(tr.getTest().isInformative())){
-                if (tr.getTest().getTestErrorMessage().length()<1){
-                    classifications.add( new Integer(tr.getConsensusStatus()));
-                    logger.debug(" $$ Test: " + tr.getTest() + " got " +
-                    		"          classification: " + tr.getConsensusStatus());
+            if (tr!=null){
+                if (!(tr.getTest().isInformative())){
+                    if (tr.getTest().getTestErrorMessage().length()<1){
+                        classifications.add( new Integer(tr.getConsensusStatus()));
+                        logger.debug(" $$ Test: " + tr.getTest() + " got " +
+                            "          classification: " + tr.getConsensusStatus());
+                    }
                 }
+            }else{
+                logger.error("Could not read TestRun: " + id 
+                             + " for molecule: " + molecule);
             }
+            
         }
         
         //The consensustest must provide a consensus calculator

@@ -225,7 +225,7 @@
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Signature Significance,Mutagenicity Consensus">
+              value="Bursi Exact Match,Bursi Nearest Neighbours,Bursi Toxicophores,Bursi Signature Significance,Mutagenicity Consensus">
         </parameter>
         <visibleWhen
               checkEnabled="true">
