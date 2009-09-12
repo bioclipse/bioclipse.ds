@@ -619,5 +619,17 @@ public class BogusIFile  implements IFile{
         // TODO Auto-generated method stub
         return false;
     }
+
+    public boolean isHidden( int options ) {
+
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean isTeamPrivateMember( int options ) {
+
+        // TODO Auto-generated method stub
+        return false;
+    }
     
 }
