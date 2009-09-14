@@ -75,8 +75,13 @@ public class SDFPosNegExactMatchFP extends BaseSDFPosNegMatcher implements IDSTe
             //Search the index for this FP
             for (int i=0; i<getSDFmodel().getNumberOfMolecules(); i++){
                 BitSet dbFP = getSDFmodel().getPropertyFor( i, CDK_FP_PROPERTY_KEY);
-                //Null check not required since verified in initialize()
+                
 
+                if (dbFP==null){
+                    return returnError( "Error reading fingerprint in database","");
+                }
+
+                //We ignore this case for now 
                 if (dbFP.size()!=molFP.size()){
 //                    logger.warn( "Index " + i + " in DB has FP size=" 
 //                                 + dbFP.size() + 
