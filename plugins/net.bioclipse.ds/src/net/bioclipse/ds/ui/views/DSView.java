@@ -454,7 +454,7 @@ public class DSView extends ViewPart implements IPartListener,
     }
 
     private void hookContextMenu() {
-        MenuManager menuMgr = new MenuManager("#PopupMenu");
+        MenuManager menuMgr = new MenuManager("#PopupMenu", "net.bioclipse.ds.context");
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
