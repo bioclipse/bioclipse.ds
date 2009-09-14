@@ -185,7 +185,7 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
         //Start by copying file to Virtual since we require IFile
         //Use a random name since might be duplicated uses of this class
         Random generator=new Random(System.currentTimeMillis());
-        String virtualfile= "sdfile" + generator.nextInt(9000) + 1000 +".sdf";
+        String virtualfile= "sdfile" + (generator.nextInt(9000) + 1000) +".sdf";
         IFile file = net.bioclipse.core.Activator.getVirtualProject()
                                               .getFile( virtualfile );
         if(!file.exists()) {
