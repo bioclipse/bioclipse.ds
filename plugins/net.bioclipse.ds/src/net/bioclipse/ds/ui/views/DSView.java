@@ -844,7 +844,10 @@ public class DSView extends ViewPart implements IPartListener,
                 }
 
                 public void sleeping( IJobChangeEvent event ) {
-                }});
+                }}
+            );
+            
+            job.schedule();
 
             //Store ref to job in list
             runningJobs.add(job);

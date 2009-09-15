@@ -25,6 +25,7 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 import net.bioclipse.jobs.BioclipseUIJob;
+import net.bioclipse.jobs.ExtendedBioclipseJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 
@@ -71,7 +72,7 @@ public interface IDSManager extends IBioclipseManager {
                                          throws BioclipseException;
 
 
-    public BioclipseJob<List<ITestResult>> runTest(
+    public ExtendedBioclipseJob<List<ITestResult>> runTest(
                    String testID, 
                    IMolecule mol, 
                    BioclipseJobUpdateHook<List<ITestResult>> h)
