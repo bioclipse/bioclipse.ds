@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.Platform;
 
 import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
 import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
+import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
@@ -180,14 +182,22 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
         //Use moltablemanager for parsing the SDFile
         IMoleculeTableManager moltable = net.bioclipse.cdk.ui.sdfeditor.
                                Activator.getDefault().getMoleculeTableManager();
+        
+        IFile file=null;
+        try {
+            file = FileUtil.createLinkedFile(path );
+        } catch ( CoreException e2 ) {
+            e2.printStackTrace();
+            throw new DSException("Could not write linked file: " + path);
+        }
 
         //Read index and parse properties
         //Start by copying file to Virtual since we require IFile
         //Use a random name since might be duplicated uses of this class
-        Random generator=new Random(System.currentTimeMillis());
-        String virtualfile= "sdfile" + (generator.nextInt(9000) + 1000) +".sdf";
-        IFile file = net.bioclipse.core.Activator.getVirtualProject()
-                                              .getFile( virtualfile );
+//        Random generator=new Random(System.currentTimeMillis());
+//        String virtualfile= "sdfile" + (generator.nextInt(9000) + 1000) +".sdf";
+//        IFile file = net.bioclipse.core.Activator.getVirtualProject()
+//                                              .getFile( virtualfile );
         if(!file.exists()) {
             try {
                 InputStream is = url2.openStream();
@@ -203,7 +213,7 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
                                       + getId());
             }
         }
-        logger.debug("Test " + getId() + " wrote virtual file: " + virtualfile);
+//        logger.debug("Test " + getId() + " wrote virtual file: " + virtualfile);
         
         if (monitor.isCanceled())
             throw new DSException("Initialization of test " + 
