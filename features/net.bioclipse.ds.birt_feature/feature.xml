@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds.birt_feature"
       label="Birt_feature Feature"
-      version="2.0.0.v20090707">
+      version="2.1.1.v20091002">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -17,7 +17,7 @@
    </license>
 
    <requires>
-      <import feature="net.bioclipse.ds_feature" version="2.0.0.v20090707" match="greaterOrEqual"/>
+      <import feature="net.bioclipse.ds_feature" version="2.1.1.v20091002" match="greaterOrEqual"/>
       <import feature="net.bioclipse.birt_feature" version="0.1.1"/>
    </requires>
 

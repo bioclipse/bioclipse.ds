@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds_feature"
       label="Decision Support Feature"
-      version="2.0.0.v20090707"
+      version="2.1.1.v20091002"
       provider-name="The Bioclipse Team"
       plugin="net.bioclipse.ds">
 
@@ -34,6 +34,20 @@
 
    <plugin
          id="net.bioclipse.ds.lipinski"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.bursi.signatures"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.cpdb.signatures"
          download-size="0"
          install-size="0"
          version="0.0.0"
