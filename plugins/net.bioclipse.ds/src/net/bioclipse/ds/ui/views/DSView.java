@@ -306,12 +306,19 @@ public class DSView extends ViewPart implements IPartListener,
                     });
                     
                     
-                } catch ( BioclipseException e1 ) {
+                } catch ( Exception e1 ) {
+
+                    LogUtils.handleException( e1, logger, Activator.PLUGIN_ID );
+
+                    Display.getDefault().asyncExec( new Runnable(){
+                        public void run() {
+                            viewer.setInput(new String[]{"Error initializing tests"});
+                        }
+                    });
+
+
                     return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
                                       "All tests could not be initalized: " + e1.getMessage());
-                } catch ( DSException e ) {
-                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-                                      "All tests could not be initalized: " + e.getMessage());
                 }
 
                 monitor.done();
