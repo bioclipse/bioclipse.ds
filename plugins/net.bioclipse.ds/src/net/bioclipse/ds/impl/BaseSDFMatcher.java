@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 
 import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
 import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
@@ -159,8 +160,11 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
         String path="";
         URL url2;
         try {
-            url2 = FileLocator.toFileURL(Platform.getBundle(getPluginID())
-                                         .getEntry(filepath));
+            Bundle bundle = Platform.getBundle(getPluginID());
+            logger.debug("BASESDF Bundle: " + bundle.getBundleId());
+            URL url=bundle.getEntry(filepath);
+            logger.debug("BASESDF URL: " + url);
+            url2 = FileLocator.toFileURL(url);
             path=url2.getFile();
         } catch ( IOException e ) {
             throw new DSException(e.getMessage());
