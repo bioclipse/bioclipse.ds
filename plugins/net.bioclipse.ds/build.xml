@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="net.bioclipse.ds" default="build.jars" basedir=".">
+
+	<property name="p2.build.repo" value="file:${buildDirectory}/buildRepo"/>
+	<property name="basews" value="${ws}"/>
+	<property name="baseos" value="${os}"/>
+	<property name="basearch" value="${arch}"/>
+	<property name="basenl" value="${nl}"/>
+	<property name="bundleId" value="net.bioclipse.ds"/>
+	<property name="bundleVersion" value="2.1.1.v20091002"/>
+	<property name="p2.publishonerror" value="false"/>
+
+	<!-- Compiler settings. -->
+	<property name="javacFailOnError" value="false"/>
+	<property name="javacDebugInfo" value="on"/>
+	<property name="javacVerbose" value="false"/>
+	<property name="logExtension" value=".log"/>
+	<property name="compilerArg" value=""/>
+	<property name="javacSource" value="1.3"/>
+	<property name="javacTarget" value="1.2"/>
+	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
+		<os family="mac"/>
+	</condition>
+	<property name="dir_bootclasspath" value="${java.home}/lib"/>
+	<path id="path_bootclasspath">
+		<fileset dir="${dir_bootclasspath}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<property name="bootclasspath" refid="path_bootclasspath"/>
+	<condition property="bundleBootClasspath" value="${J2SE-1.5}"	>
+		<isset property="J2SE-1.5"/>
+	</condition>
+	<condition property="bundleJavacSource" value="1.5"	>
+		<isset property="J2SE-1.5"/>
+	</condition>
+	<condition property="bundleJavacTarget" value="1.5"	>
+		<isset property="J2SE-1.5"/>
+	</condition>
+	<property name="bundleJavacSource" value="${javacSource}"/>
+	<property name="bundleJavacTarget" value="${javacTarget}"/>
+	<property name="bundleBootClasspath" value="${bootclasspath}"/>
+
+	<target name="init" depends="properties">
+		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="pluginTemp" value="${basedir}"/>
+		<condition property="build.result.folder" value="${pluginTemp}/net.bioclipse.ds_2.1.1.v20091002"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="build.result.folder" value="${basedir}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		<property name="plugin.destination" value="${basedir}"/>
+		<condition property="p2.publish.parts" value="true"		>
+			<istrue value="${p2.gathering}"/>
+		</condition>
+		<property name="compilation.problem.marker" value="${build.result.folder}/compilation.problem"/>
+		<condition property="compilation.problem.marker.exists" value="true"		>
+			<and>
+			<available file="${compilation.problem.marker}"/>
+			<isfalse value="p2.publishonerror"/>
+			</and>
+		</condition>
+	</target>
+
+	<target name="properties" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+
+	</target>
+
+	<target name="build.update.jar" depends="init" description="Build the plug-in: net.bioclipse.ds for an update site.">
+		<delete dir="${temp.folder}"/>
+		<mkdir dir="${temp.folder}"/>
+		<antcall target="build.jars"/>
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
+		</antcall>
+		<jar destfile="${plugin.destination}/net.bioclipse.ds_2.1.1.v20091002.jar" basedir="${temp.folder}/net.bioclipse.ds_2.1.1.v20091002" filesetmanifest="merge"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+
+	<target name="@dot" depends="init" unless="@dot" description="Create jar: net.bioclipse.ds @dot.">
+		<delete dir="${build.result.folder}/@dot"/>
+		<mkdir dir="${build.result.folder}/@dot"/>
+		<path id="@dot.classpath">
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.logger/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.logger/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.logger/bin"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.logger/log4j/log4j-1.2.15.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.runtime_3.5.0.v20090525.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.common_3.5.1.R35x_v20090807-1100.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.jobs_3.4.100.v20090429-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.200.v20090429-1800/runtime_registry_compatibility.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.200.v20090429-1800"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.registry_3.4.100.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.preferences_3.2.300.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.contenttype_3.4.1.R35x_v20090826-0451.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.runtime.compatibility.auth_3.2.100.v20090413.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.app_1.2.0.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.osgi.services_3.2.0.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/javax.servlet_2.5.0.v200806031605.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui_3.5.1.M20090902-1000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.carbon_4.0.0.I20090525-2000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.swt_3.5.1.v3555a.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.swt.carbon.macosx_3.5.1.v3555a.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.jface_3.5.1.M20090826-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.commands_3.5.0.I20090525-2000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.workbench_3.5.1.M20090826-0800a.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.workbench.compatibility_3.2.0.I20090429-1800/compatibility.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.workbench.compatibility_3.2.0.I20090429-1800/e4-workbench.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.workbench.compatibility_3.2.0.I20090429-1800"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/com.ibm.icu_4.0.1.v20090822.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.help_3.4.1.v20090805_35x.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.expressions_3.4.100.v20090429-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.jface.databinding_1.3.1.M20090826-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.databinding.observable_1.2.0.M20090902-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.databinding.property_1.2.0.M20090819-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.databinding_1.2.0.M20090819-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.resources_3.5.1.R35x_v20090826-0451.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.resources.compatibility_3.4.0.v20090505.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ant.core_3.2.100.v20090817_r351.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.variables_3.2.200.v20090521.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.filesystem_1.2.0.v20090507.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.filesystem.macosx_1.1.0.v20090112.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/bin"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/libs/js.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/libs/groovy-1.0.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/libs/asm-2.2.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core/libs/antlr-2.7.5.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.views_3.4.1.M20090826-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.ide_3.5.1.M20090826-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.jface.text_3.5.1.r351_v20090708-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.text_3.5.0.v20090513-2000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.forms_3.4.1.v20090714_35x.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.engine_1.0.101.R35x_v20090825.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.core_1.0.101.R35x_v20090819.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.metadata_1.0.100.v20090525.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.metadata.repository_1.0.101.R35x_v20090812.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.repository_1.0.1.v20090901-1041.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.security_1.0.100.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.security.macosx_1.100.0.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ecf.filetransfer_3.0.0.v20090831-1906.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ecf_3.0.0.v20090831-1906.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ecf.ssl_1.0.0.v20090831-1906.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.concurrent_1.0.0.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ecf.identity_3.0.0.v20090831-1906.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ecf.provider.filetransfer_3.0.1.v20090831-1906.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ecf.provider.filetransfer.ssl_1.0.0.v20090831-1906.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.net_1.2.1.r35x_20090812-1200.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.artifact.repository_1.0.101.R35x_v20090721.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.p2.jarprocessor_1.0.100.v20090520-1905.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/spring-aop-2.5.1.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.commons.logging_1.0.4.v200904062259.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/spring-core-2.5.1.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/libs/log4j.osgi-1.2.13-SNAPSHOT.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/javax.mail_1.4.0.v200905040518.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/javax.activation_1.1.0.v200906290531.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/backport-util-concurrent.osgi-3.1-SNAPSHOT.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/spring-beans-2.5.1.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/libs/cglib-nodep.osgi-2.1.3-SNAPSHOT.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-antlr.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-bcel.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-bsf.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-log4j.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-oro.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-regexp.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-resolver.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-commons-logging.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-commons-net.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jai.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-javamail.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jdepend.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jmf.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jsch.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-junit.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-launcher.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-netrexx.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-nodeps.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-starteam.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-stylebook.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-swing.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-trax.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-weblogic.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/aopalliance.osgi-1.0-SNAPSHOT.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/bin"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/antlr-2.7.5.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/asm-2.2.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/js.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/asm-2.2.3.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/asm-commons-2.2.3.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/backport-util-concurrent.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/bsf.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/jline-0.9.91.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting/libs/groovy-1.0.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/libs/com.springsource.org.mozilla.javascript-1.7.0.R1.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.jsexecution/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.jsexecution/@dot"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.console_3.4.0.v20090513.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.workbench.texteditor_3.5.0.v20090603.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.compare.core_3.5.0.I20090430-0408.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting.ui/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting.ui/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting.tests/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.scripting.tests/@dot"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.junit4_4.5.0.v20090824/junit.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.editors_3.5.0.v20090527-2000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.core.filebuffers_3.5.0.v20090526-2000.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.ui/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.ui/@dot"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.intro_3.3.1.v20090805_35x.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.help.base_3.4.0.v200909170800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.http.jetty_2.0.0.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.equinox.http.servlet_1.0.200.v20090520-1800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.mortbay.jetty.util_6.1.15.v200905182336.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/slf4j-api-1.5.0.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/slf4j-log4j12-1.5.0.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.mortbay.jetty.server_6.1.15.v200905151201.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.jasper_5.5.17.v200903231320.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.commons.el_1.0.0.v200806031608.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.lucene_1.9.1.v20080530-1600.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.lucene.analysis_1.9.1.v20080530-1600.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.views.properties.tabbed_3.5.0.I20090429-1800.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/jcl104-over-slf4j-1.5.0.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.navigator_3.4.1.M20090911-1550.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.navigator.resources_3.4.1.M20090826-0800.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.browser_3.2.300.v20090526.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.cheatsheets_3.3.200.v20090526.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.help.ui_3.4.1.v20090819_35x.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.update.configurator_3.3.0.v20090312.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.update.core_3.2.300.v20090525.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.update.ui_3.2.201.R35x_v20090813.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.ui.intro.universal_3.2.300.v20090526/universal.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/dist/spring-osgi-extender-1.0.2.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/lib/spring-context-2.5.1.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/dist/spring-osgi-core-1.0.2.jar"/>
+			<pathelement path="../../../bioclipse.core/net.bioclipse.target.platform/spring-osgi-1.0.2/dist/spring-osgi-io-1.0.2.jar"/>
+			<pathelement path="../../../bioclipse.core/externals/org.openscience.cdk.ioformats/bin"/>
+			<pathelement path="../../../bioclipse.core/externals/org.openscience.cdk.ioformats/@dot"/>
+			<pathelement path="../../../bioclipse.core/externals/org.openscience.cdk.annotation/bin"/>
+			<pathelement path="../../../bioclipse.core/externals/org.openscience.cdk.annotation/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.ui.business/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.ui.business/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core.tests/bin"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core.tests/junit.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core.tests/bin/"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.core.tests/@dot"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.jdt.junit4.runtime_1.1.0.v20090513-2000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.eclipse.jdt.junit.runtime_3.4.100.v20090513-2000.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.junit_3.8.2.v20090203-1005/junit.jar"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.xom/bin"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.xom/@dot"/>
+			<pathelement path="../../../bioclipse.core/plugins/net.bioclipse.xom/jars/xom-1.1.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.business/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.business/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.io/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.io/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.interfaces/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.interfaces/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/javax.vecmath/jar/vecmath1.2-1.14.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.core/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.core/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.standard/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.standard/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/org.3pq.jgrapht/jar/jgrapht-0.6.0.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.atomtype/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.atomtype/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/org.xmlpull.xpp3/jar/xpp3-1.1.4c.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.data/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.data/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.extra/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.extra/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.valencycheck/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.valencycheck/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.formula/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.formula/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.dict/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.dict/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.smiles/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.smiles/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/org.jama/jar/jama-1.0.2.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.libiocml/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.libiocml/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/externals/org.xmlcml.cmlxom/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/externals/org.xmlcml.cmlxom/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/externals/org.xmlcml.cmlxom/jars/cmlxom-2.5-b1.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.libiomd/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.libiomd/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.builder3d/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.builder3d/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.nonotify/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.nonotify/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.qsar/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.qsar/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.reaction/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.reaction/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.isomorphism/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.isomorphism/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.charges/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.charges/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/org.rosuda.jri/jar/JRI.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/org.omegahat.sjava/jar/sjava-0.68.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.forcefield/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.forcefield/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.qsaratomic/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.qsaratomic/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.sdg/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.sdg/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.smarts/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.smarts/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.pdb/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.pdb/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.pcore/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.pcore/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.fingerprint/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.fingerprint/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.inchi/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.inchi/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/net.sf.jniinchi/jar/jniinchi-0.5.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.inchi/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.inchi/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.jchempaint/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.jchempaint/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.render/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.render/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.control/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.control/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.renderbasic/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.renderbasic/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.renderextra/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.renderextra/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.rendercontrol/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.rendercontrol/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.chemoinformatics/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.chemoinformatics/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.jchempaint.view/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.jchempaint.view/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.controlbasic/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.controlbasic/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.controlextra/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.controlextra/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.smartsmatching/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.smartsmatching/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui.sdfeditor/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui.sdfeditor/nebula_compositetable.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui.sdfeditor/nattable-core-1.6.5.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui.sdfeditor/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.cdk.ui.sdfeditor/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.jmol/bin/"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.jmol/@dot"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.jmol/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/plugins/net.bioclipse.jmol/jars/Jmol.jar"/>
+			<pathelement path="../../../../../../Applications/Eclipse/eclipse351carbon/plugins/org.apache.commons.codec_1.3.0.v20080530-1600.jar"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.renderawt/bin"/>
+			<pathelement path="../../../bioclipse.cheminformatics/cdk-externals/trunk/org.openscience.cdk.renderawt/@dot"/>
+		</path>
+		<!-- compile the source code -->
+		<javac destdir="${build.result.folder}/@dot" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}"		>
+			<compilerarg line="${compilerArg}" compiler="${build.compiler}"/>
+			<classpath refid="@dot.classpath" />
+			<src path="src/"			/>
+			<compilerarg value="@${basedir}/javaCompiler...args" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+			<compilerarg line="-log '${build.result.folder}/@dot${logExtension}'" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+		</javac>
+		<antcall target="checkCompilationResults"/>
+		<!-- Copy necessary resources -->
+		<copy todir="${build.result.folder}/@dot" failonerror="true" overwrite="false">
+			<fileset dir="src/">
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.htm*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="src.zip" depends="init" unless="src.zip">
+		<mkdir dir="${build.result.folder}"/>
+		<antcall target="zip.src.zip"/>
+	</target>
+	<target name="zip.src.zip">
+		<zip destfile="${build.result.folder}/src.zip" filesonly="false" whenempty="skip" update="false">
+			<fileset dir="src/">
+				<include name="**/*.java"/>
+			</fileset>
+		</zip>
+	</target>
+	<target name="copy.src.zip">
+		<copy todir="${source.destination.folder}/" failonerror="true" overwrite="true">
+			<fileset dir="src/">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: net.bioclipse.ds.">
+		<delete file="${compilation.problem.marker}" quiet="true"/>
+		<available property="@dot" file="${build.result.folder}/@dot"/>
+		<antcall target="@dot"/>
+	</target>
+
+	<target name="checkCompilationResults" if="compilation.error.occured">
+		<echo file="${compilation.problem.marker}" message="net.bioclipse.ds : compilation.error.occured=${compilation.error.occured}"/>
+	</target>
+
+	<target name="build.sources" depends="init">
+		<available property="src.zip" file="${build.result.folder}/src.zip"/>
+		<antcall target="src.zip"/>
+	</target>
+
+	<target name="publish.bin.parts" depends="init" if="p2.publish.parts" unless="compilation.problem.marker.exists">
+		<mkdir dir="${build.result.folder}/net.bioclipse.ds_2.1.1.v20091002"/>
+		<copy todir="${build.result.folder}" failonerror="true" overwrite="true">
+			<fileset dir="${basedir}">
+				<include name="META-INF/MANIFEST.MF"/>
+				<include name="plugin.xml"/>
+				<include name="fragment.xml"/>
+			</fileset>
+		</copy>
+		<antcall target="apitools.generation">
+			<param name="target.folder" value="${build.result.folder}"/>
+			<param name="projectLocation" value="${basedir}"/>
+			<param name="projectName" value="${bundleId}_${bundleVersion}"/>
+			<param name="binary.folders" value="${build.result.folder}/@dot"/>
+		</antcall>
+		<eclipse.gatherBundle 
+		   metadataRepository="${p2.build.repo}"
+		   artifactRepository="${p2.build.repo}"
+		   buildResultFolder="${build.result.folder}"
+		   baseDirectory="${basedir}"
+		   unpack="false"
+		/>
+	</target>
+
+	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002"/>
+		<copy todir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002" failonerror="true" overwrite="false">
+			<fileset dir="${build.result.folder}/@dot">
+				<include name="**"/>
+			</fileset>
+		</copy>
+		<copy todir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002" failonerror="true" overwrite="true">
+			<fileset dir="${basedir}">
+				<include name="META-INF/"/>
+				<include name="plugin.xml"/>
+				<include name="contexts.xml"/>
+				<include name="icons/"/>
+				<include name="icons2/"/>
+				<include name="schema/"/>
+				<include name="icons48/"/>
+				<include name="html/"/>
+				<include name="cheatsheets/"/>
+				<include name="toc.xml"/>
+				<include name="about.ini"/>
+				<include name="about.mappings"/>
+				<include name="about.properties"/>
+			</fileset>
+		</copy>
+		<antcall target="apitools.generation">
+			<param name="target.folder" value="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002"/>
+			<param name="projectLocation" value="${basedir}"/>
+			<param name="projectName" value="${bundleId}_${bundleVersion}"/>
+			<param name="binary.folders" value="${build.result.folder}/@dot"/>
+		</antcall>
+	</target>
+
+	<target name="build.zips" depends="init">
+	</target>
+
+	<target name="gather.sources" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002"/>
+		<copy file="${build.result.folder}/src.zip" todir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002" failonerror="false" overwrite="false"/>
+		<antcall target="copy.src.includes">
+			<param name="source.destination.folder" value="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002"/>
+		</antcall>
+	</target>
+
+	<target name="gather.individual.sources" depends="init">
+		<antcall target="copy.src.zip">
+			<param name="source.destination.folder" value="${destination.temp.folder}"/>
+		</antcall>
+		<antcall target="copy.src.includes">
+			<param name="source.destination.folder" value="${destination.temp.folder}"/>
+		</antcall>
+	</target>
+
+	<target name="copy.src.includes" depends="init">
+	</target>
+
+	<target name="gather.logs" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002"/>
+		<copy todir="${destination.temp.folder}/net.bioclipse.ds_2.1.1.v20091002" failonerror="false" overwrite="false">
+			<fileset dir="${build.result.folder}">
+				<include name="@dot${logExtension}"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean" depends="init" description="Clean the plug-in: net.bioclipse.ds of all the zips, jars and logs created.">
+		<delete dir="${build.result.folder}/@dot"/>
+		<delete file="${build.result.folder}/src.zip"/>
+		<delete file="${plugin.destination}/net.bioclipse.ds_2.1.1.v20091002.jar"/>
+		<delete file="${plugin.destination}/net.bioclipse.ds_2.1.1.v20091002.zip"/>
+		<delete dir="${temp.folder}"/>
+		<delete file="${compilation.problem.marker}" quiet="true"/>
+	</target>
+
+	<target name="refresh" depends="init" if="eclipse.running" description="Refresh this folder.">
+		<eclipse.convertPath fileSystemPath="/Users/ola/repos/bioclipse.ds/plugins/net.bioclipse.ds" property="resourcePath"/>
+		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
+	</target>
+
+	<target name="zip.plugin" depends="init" description="Create a zip containing all the elements for the plug-in: net.bioclipse.ds.">
+		<delete dir="${temp.folder}"/>
+		<mkdir dir="${temp.folder}"/>
+		<antcall target="build.jars"/>
+		<antcall target="build.sources"/>
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
+		</antcall>
+		<antcall target="gather.sources">
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
+		</antcall>
+		<delete>
+			<fileset dir="${temp.folder}">
+				<include name="**/*.bin${logExtension}"/>
+			</fileset>
+		</delete>
+		<zip destfile="${plugin.destination}/net.bioclipse.ds_2.1.1.v20091002.zip" basedir="${temp.folder}" filesonly="true" whenempty="skip" update="false"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+
+	<target name="apitools.generation" if="generateAPIDescription">
+		<apitooling.apigeneration  projectName="${projectName}" project="${projectLocation}" binary="${binary.folders}" target="${target.folder}"		/>
+	</target>
+
+</project>
