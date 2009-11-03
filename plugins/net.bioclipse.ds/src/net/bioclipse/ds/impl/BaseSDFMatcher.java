@@ -26,7 +26,7 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
-import net.bioclipse.cdk.ui.sdfeditor.editor.SDFIndexEditorModel;
+import net.bioclipse.cdk.ui.sdfeditor.business.SDFIndexEditorModel;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
