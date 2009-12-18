@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds.birt_feature"
       label="Decision Support Reporting"
-      version="2.2.0.RC2"
+      version="2.2.0.RC3"
       provider-name="The Bioclipse Team"
       plugin="net.bioclipse.ds.birt">
 
@@ -20,8 +20,8 @@ The Eclipse Public License accompanies this distribution, and is available at ht
    </license>
 
    <requires>
-      <import feature="net.bioclipse.ds_feature" version="2.2.0.RC2" match="greaterOrEqual"/>
-      <import feature="net.bioclipse.birt_feature" version="2.2.0.RC2" match="greaterOrEqual"/>
+      <import feature="net.bioclipse.ds_feature" version="2.2.0.RC3" match="greaterOrEqual"/>
+      <import feature="net.bioclipse.birt_feature" version="2.2.0.RC3" match="greaterOrEqual"/>
    </requires>
 
    <plugin
