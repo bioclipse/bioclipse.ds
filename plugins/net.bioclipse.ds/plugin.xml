@@ -86,4 +86,30 @@
  </extension>
 
 
+  	<extension
+  		point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        
+        <menu
+              label="Decision Support"
+              id="net.bioclipse.ds.context">
+              <separator
+                    name="single">
+              </separator>
+              <separator
+                    name="consensus">
+              </separator>
+        <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+              
+        </menu>
+
+   </menuContribution>
+   </extension>
+
 </plugin>
