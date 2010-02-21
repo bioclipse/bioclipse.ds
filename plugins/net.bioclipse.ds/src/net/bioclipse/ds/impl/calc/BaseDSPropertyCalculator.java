@@ -12,7 +12,7 @@ package net.bioclipse.ds.impl.calc;
 
 import java.util.List;
 
-import net.bioclipse.cdk.domain.CDKMolecule;
+import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.ui.sdfeditor.business.IPropertyCalculator;
 import net.bioclipse.core.business.BioclipseException;
@@ -26,9 +26,12 @@ import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.ReportHelper;
 
 import org.apache.log4j.Logger;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public abstract class BaseDSPropertyCalculator implements IPropertyCalculator<TestRun> {
 
     private static final Logger logger = Logger.getLogger(
@@ -40,13 +43,12 @@ public abstract class BaseDSPropertyCalculator implements IPropertyCalculator<Te
     public TestRun calculate( ICDKMolecule molecule ) {
 
         IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
+        ICDKManager cdk =net.bioclipse.cdk.business.Activator
+            .getDefault().getJavaCDKManager();
         try {
             
             //We need to clone the molecule since not managed by the manager
-            IAtomContainer cloneAC=(IAtomContainer) molecule
-                                                    .getAtomContainer().clone();
-
-            ICDKMolecule cloneMol=new CDKMolecule(cloneAC);
+            ICDKMolecule cloneMol=cdk.clone( molecule );
             
             List<ITestResult> results = ds.runTest( getTestID(), cloneMol );
             TestRun tr= new TestRun();
@@ -65,9 +67,7 @@ public abstract class BaseDSPropertyCalculator implements IPropertyCalculator<Te
             return tr;
         } catch ( BioclipseException e ) {
             LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
-        } catch ( CloneNotSupportedException e ) {
-            LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
-        }
+        } 
         return null;
     }
 
