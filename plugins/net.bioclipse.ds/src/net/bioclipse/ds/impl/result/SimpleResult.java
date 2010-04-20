@@ -80,7 +80,7 @@ public class SimpleResult implements ITestResult{
     }
 
     /**
-     * Red for positive, grren for negative, and yellow else. Sunclasses 
+     * Red for positive, green for negative, and yellow for the rest. Subclasses 
      * may override and/or provide a color per atom.
      */
     public java.awt.Color getHighlightingColor( IAtom atom ) {
