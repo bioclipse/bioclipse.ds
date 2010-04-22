@@ -759,18 +759,18 @@ public class DSView extends ViewPart implements IPartListener,
                     //Start by cloning the molecule. This is to avoid threading 
                     //issues in CDK.
                     try {
-                        IAtomContainer cloneAC=(IAtomContainer) mol
+                        IAtomContainer clonedAC=(IAtomContainer) mol
                                                     .getAtomContainer().clone();
                         
-                        ICDKMolecule cloneMol=new CDKMolecule(cloneAC);
+                        ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
                         
                         logger.debug( "== Testrun: " + tr.getTest().getName() + " started" );
                         tr.setStatus( TestRun.RUNNING );
-                        tr.setMolecule( cloneMol );
+                        tr.setMolecule( clonedMol );
                         viewer.refresh(tr);
                         viewer.setExpandedState( tr, true );
 
-                        runTestAsJobs( cloneMol, ds, tr ); 
+                        runTestAsJobs( clonedMol, ds, tr , mol); 
 
                     } catch ( CloneNotSupportedException e ) {
                         LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
@@ -786,13 +786,14 @@ public class DSView extends ViewPart implements IPartListener,
         logger.debug( "===== All testruns started" );
     }
 
-    private void runTestAsJobs( final ICDKMolecule mol, IDSManager ds, final TestRun tr ) {
+    private void runTestAsJobs( final ICDKMolecule clonedMol, IDSManager ds, 
+                                final TestRun tr, final ICDKMolecule originalMol) {
 
             try {
 
                 //Start up a job with the test
                 BioclipseJob<List<ITestResult>> job = 
-                    ds.runTest( tr.getTest().getId(), mol, 
+                    ds.runTest( tr.getTest().getId(), clonedMol, 
                     new BioclipseJobUpdateHook<List<ITestResult>>(tr.getTest().getName()));
                 
             job.addJobChangeListener( new IJobChangeListener(){
@@ -815,6 +816,22 @@ public class DSView extends ViewPart implements IPartListener,
 
                             logger.debug( "лл Job done: " + tr.getTest().getName() );
                             logger.debug( "лл Matches: " + matches.size());
+                            
+                            //Copy properties from result into original molecule
+                            //from the cloned
+                            for (Object obj : clonedMol.getAtomContainer()
+                                    .getProperties().keySet()){
+//                                System.out.println("OBJ found: " + obj);
+                                if (!originalMol.getAtomContainer()
+                                        .getProperties().containsKey( obj )){
+                                    originalMol.getAtomContainer()
+                                    .getProperties().put( 
+                                               obj, clonedMol.getAtomContainer()
+                                               .getProperties().get( obj ) );
+//                                    System.out.println("DS-RES set on:" + clonedMol.getAtomContainer().hashCode() + "="+ clonedMol.getAtomContainer()
+//                                                       .getProperties().get( obj ));
+                                }
+                            }
 
                             for (ITestResult result : matches){
                                     result.setTestRun( tr );
@@ -830,6 +847,16 @@ public class DSView extends ViewPart implements IPartListener,
                             viewer.refresh( tr );
                             viewer.setExpandedState( tr, true );
                             updateConsensusView();
+
+                            //We need to turn on external generators
+                            IEditorPart part = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+                            if ( part instanceof JChemPaintEditor ) {
+                                JChemPaintEditor jcp=(JChemPaintEditor)part;
+                                jcp.getWidget().setUseExtensionGenerators( true );
+                                //manually update jcpeditor
+                                jcp.update();
+                            }
+
                             
                             //If we previously stored a selection, set it now
                             selectIfStoredSelection(tr);
