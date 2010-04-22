@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Signatures
+Bundle-SymbolicName: net.bioclipse.ds.signatures; singleton:=true
+Bundle-Version: 1.0.0.v20100211
+Bundle-Activator: net.bioclipse.ds.signatures.Activator
+Bundle-Vendor: The Bioclipse Team
+Export-Package: net.bioclipse.ds.signatures, net.bioclipse.ds.signatures.business
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.bioclipse.core,
+ net.bioclipse.scripting,
+ org.springframework.bundle.spring.aop,
+ net.sf.cglib,
+ org.springframework.osgi.aopalliance.osgi,
+ net.bioclipse.cdk.business;bundle-version="2.2.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.apache.log4j
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ jars/signatures-1.0-SNAPSHOT.jar

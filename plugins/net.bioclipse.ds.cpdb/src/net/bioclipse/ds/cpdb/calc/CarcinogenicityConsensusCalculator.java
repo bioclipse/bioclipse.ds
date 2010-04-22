@@ -1,0 +1,29 @@
+package net.bioclipse.ds.cpdb.calc;
+
+import net.bioclipse.ds.impl.calc.DSConsensusCalculator;
+
+/**
+ * 
+ * @author ola
+ *
+ */
+public class CarcinogenicityConsensusCalculator extends DSConsensusCalculator {
+    
+    
+
+    @Override
+    public String getPropertyName() {
+        return "Carcinogenicity Consensus";
+    }
+    
+    @Override
+    protected String getTestID() {
+        return "carcinogenicity.consensus";
+    }
+    
+    protected String getEndpoint(){
+        return "net.bioclipse.ds.carcinogenicity";
+    }
+
+
+}
