@@ -4,6 +4,12 @@
 
    <extension-point id="net.bioclipse.decisionsupport" name="Decision Support" schema="schema/decisionsupport.exsd"/>
 
+<extension
+       point="net.bioclipse.cdk.jchempaint.generator">
+    <generator
+          class="net.bioclipse.ds.ui.BlueRedColorScaleGenerator">
+    </generator>
+ </extension>
 
    <extension
          point="org.eclipse.ui.views">
