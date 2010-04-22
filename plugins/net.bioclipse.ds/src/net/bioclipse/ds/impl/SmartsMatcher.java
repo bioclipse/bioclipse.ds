@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
@@ -244,18 +245,20 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
                     matchingAtoms.addAll( atomIndices );
                 }
 
-                //Create new ac to hold substructure
-                IAtomContainer subAC=ac.getBuilder().newAtomContainer();
-                for (int aindex : matchingAtoms){
-                    //                    subAC.addAtom( ac.getAtom( aindex ) );
-                    subAC.addAtom( cdkmol.getAtomContainer().getAtom( aindex ) );
-                }
-
                 //Toxicophores are by definition positive
                 SmartsMatch match=new SmartsMatch(
                                                   smartsName, ITestResult.POSITIVE);
+
+                //Create new ac to hold substructure
+                IAtomContainer subAC=ac.getBuilder().newAtomContainer();
+                for (int aindex : matchingAtoms){
+                    IAtom atom=cdkmol.getAtomContainer().getAtom( aindex );
+                    subAC.addAtom( atom );
+                    match.putAtomResult( atom, 100 );
+                }
                 match.setAtomContainer( subAC );
                 match.setSmartsString( currentSmarts );
+                match.writeResultsAsProperties( cdkmol.getAtomContainer(), "SMARTS");
 
                 results.add( match );
             }        

@@ -16,7 +16,7 @@ package net.bioclipse.ds.impl.result;
  * @author ola
  *
  */
-public class SmartsMatch extends SubStructureMatch{
+public class SmartsMatch extends ScaledResultMatch{
 
     public SmartsMatch(String name, int resultStatus) {
         super( name, resultStatus );

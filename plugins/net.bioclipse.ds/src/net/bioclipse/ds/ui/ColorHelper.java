@@ -39,7 +39,7 @@ public class ColorHelper {
         //Set up map from scaled value 1-100 to a color
         //Blue is 0000FF, Red is FF0000, 
         blueRedScale=new HashMap<Integer, Color>();
-        for (int i=0; i<99; i++){
+        for (int i=0; i<100; i++){
             int red=255-i*(255/100);
             int blue=i*(255/100);
             Color color=new Color( red, 0, blue, DSConstants.OVAL_ALPHA );

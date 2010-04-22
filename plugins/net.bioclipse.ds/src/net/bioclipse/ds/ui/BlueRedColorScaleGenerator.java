@@ -18,6 +18,7 @@ import java.util.Map;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.DSConstants;
 import net.bioclipse.ds.ui.prefs.DSPrefs;
+import net.bioclipse.ds.ui.views.DSView;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.openscience.cdk.interfaces.IAtom;
@@ -47,11 +48,13 @@ public class BlueRedColorScaleGenerator implements IGenerator {
     public IRenderingElement generate( IAtomContainer ac,
                                        RendererModel model ) {
 
-//        System.out.println("Generator found AC: " + ac);
-
         ElementGroup group = new ElementGroup();
-        Object o = ac.getProperty( DSConstants.SCALED_RESULT_PROPERTY );
-        System.out.println("DS-RES:" + ac.hashCode() + "="+o);
+
+        String currentProperty=DSView.getInstance().getCurrentResultProperty();
+        if (currentProperty==null) return group;
+
+        Object o = ac.getProperty( currentProperty );
+//        System.out.println("DS-RES:" + ac.hashCode() + "="+o);
         if (o==null) return group;
         
         //Read prefs for rendering params and compute real values
@@ -59,7 +62,7 @@ public class BlueRedColorScaleGenerator implements IGenerator {
         int circleRadiusPref = store.getInt( DSPrefs.CIRCLE_RADIUS );
         double circleRadius=(double)circleRadiusPref / 10;
         if (circleRadius<=0 || circleRadius >1)
-            circleRadius=0.4;
+            circleRadius=1.2;
 
         Map<Integer, Integer> atomResMap = DSResultHelper
             .getResultsFromProperty( (String)o );
@@ -81,6 +84,9 @@ public class BlueRedColorScaleGenerator implements IGenerator {
                                                         atom.getPoint2d().y,
                                                         circleRadius,true, drawColor ));
                         }
+                        group.add( new OvalElement( atom.getPoint2d().x,
+                                                    atom.getPoint2d().y,
+                                                    circleRadius,true, drawColor ));
 
                     }
                 }

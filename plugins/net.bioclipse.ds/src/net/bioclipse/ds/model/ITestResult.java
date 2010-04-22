@@ -55,5 +55,9 @@ public interface ITestResult extends ISubStructure{
     public void setDetailedMessage( String detailedMessage );
 
     String getSuffix();
+    
+    public String getResultProperty();
+    public void setResultProperty( String propertyKey );
+
 
 }

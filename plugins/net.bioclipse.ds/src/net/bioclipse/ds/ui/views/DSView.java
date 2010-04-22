@@ -119,6 +119,8 @@ public class DSView extends ViewPart implements IPartListener,
      */
     private IStructuredSelection storedSelection;
 
+    private String selectedProperty;
+
     private Action autoRunAction;
     
     private boolean autorun;
@@ -176,8 +178,15 @@ public class DSView extends ViewPart implements IPartListener,
 //        viewer.setSorter(new ViewerSorter());
         viewer.addFilter( new HideNotVisbleFilter() );
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
+
             public void selectionChanged( SelectionChangedEvent event ) {
                 updateActionStates();
+                Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
+                if ( obj instanceof ITestResult ) {
+                    ITestResult tr = (ITestResult) obj;
+                    selectedProperty=tr.getResultProperty();
+                        
+                }
             }
             
         });
@@ -821,15 +830,16 @@ public class DSView extends ViewPart implements IPartListener,
                             //from the cloned
                             for (Object obj : clonedMol.getAtomContainer()
                                     .getProperties().keySet()){
-//                                System.out.println("OBJ found: " + obj);
+                                System.out.println("OBJ found: " + obj);
+                                System.out.println("Existing: " + originalMol.getAtomContainer().getProperties());
                                 if (!originalMol.getAtomContainer()
                                         .getProperties().containsKey( obj )){
                                     originalMol.getAtomContainer()
                                     .getProperties().put( 
                                                obj, clonedMol.getAtomContainer()
                                                .getProperties().get( obj ) );
-//                                    System.out.println("DS-RES set on:" + clonedMol.getAtomContainer().hashCode() + "="+ clonedMol.getAtomContainer()
-//                                                       .getProperties().get( obj ));
+                                    System.out.println("DS-RES set on:" + clonedMol.getAtomContainer().hashCode() + "="+ clonedMol.getAtomContainer()
+                                                       .getProperties().get( obj ));
                                 }
                             }
 
@@ -1438,6 +1448,10 @@ public class DSView extends ViewPart implements IPartListener,
             if (editor!=null)
                 partActivated( editor );
         }
+    }
+
+    public String getCurrentResultProperty() {
+        return selectedProperty;
     }        
 
 }

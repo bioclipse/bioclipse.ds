@@ -37,6 +37,7 @@ public class SimpleResult implements ITestResult{
     private String name;
     private int classification;
     private String detailedMessage;
+    private String resultProperty;  //Used to link a result to a certain property on AC
     
     
     public SimpleResult(String name, int classification) {
@@ -145,6 +146,14 @@ public class SimpleResult implements ITestResult{
 
     public String getSuffix(){
         return "";
+    }
+
+    public String getResultProperty() {
+        return resultProperty;
+    }
+
+    public void setResultProperty( String propertyKey ) {
+        resultProperty=propertyKey;
     }
 
 }
