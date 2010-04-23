@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.17" id="1">
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.20" id="1">
     <property name="author">Ola Spjuth</property>
-    <property name="createdBy">Eclipse BIRT Designer Version 2.3.1.v20080911 Build &lt;2.3.1.v20080917-1340></property>
+    <property name="createdBy">Eclipse BIRT Designer Version 2.5.1.v20090903 Build &lt;2.5.1.v20090917-1447></property>
     <property name="units">in</property>
     <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">auto layout</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <data-sources>
         <script-data-source name="Data Source" id="7"/>
@@ -11,6 +12,7 @@
     <data-sets>
         <script-data-set name="DBExactMatchDataset" id="8">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.DBExactMatchHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
@@ -62,6 +64,7 @@
         </script-data-set>
         <script-data-set name="BDNearestDataset" id="72">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.DBNearestMatchHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
@@ -126,6 +129,7 @@
         </script-data-set>
         <script-data-set name="DSQueryDataset" id="98">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.QueryDSHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
@@ -177,6 +181,7 @@
         </script-data-set>
         <script-data-set name="MainStructureDataset" id="150">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.MainStructureHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
@@ -215,6 +220,7 @@
         </script-data-set>
         <script-data-set name="SmartsMatchesDataset" id="194">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.SmartsMatchHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">0</property>
@@ -279,6 +285,7 @@
         </script-data-set>
         <script-data-set name="SignSigDataset" id="223">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.SignSigHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
@@ -330,6 +337,7 @@
         </script-data-set>
         <script-data-set name="MinStructureDataset" id="261">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.MinStructureHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
@@ -368,6 +376,7 @@
         </script-data-set>
         <script-data-set name="ConsImgDS" id="265">
             <property name="eventHandlerClass">net.bioclipse.ds.birt.handlers.model.ConsImgHandler</property>
+            <property name="newHandlerOnEachEvent">true</property>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">0</property>
@@ -424,6 +433,10 @@
     </styles>
     <page-setup>
         <simple-master-page name="Simple MasterPage" id="2">
+            <property name="topMargin">1in</property>
+            <property name="leftMargin">1.25in</property>
+            <property name="bottomMargin">1in</property>
+            <property name="rightMargin">1.25in</property>
             <page-header>
                 <grid id="233">
                     <property name="width">100%</property>
@@ -439,7 +452,7 @@
                                 <property name="backgroundColor">white</property>
                                 <property name="fontSize">26px</property>
                                 <property name="fontWeight">bold</property>
-                                <text-property name="text">Genetic Toxicology Predictions</text-property>
+                                <text-property name="text">Chemical Liability Predictions</text-property>
                             </label>
                         </cell>
                         <cell id="238">
@@ -559,7 +572,7 @@
                                     <list-property name="boundDataColumns">
                                         <structure>
                                             <property name="name">SMILES</property>
-                                            <property name="displayName">SMILES</property>
+                                            <text-property name="displayName">SMILES</text-property>
                                             <expression name="expression">dataSetRow["SMILES"]</expression>
                                             <property name="dataType">string</property>
                                         </structure>
@@ -580,7 +593,7 @@
                                     <list-property name="boundDataColumns">
                                         <structure>
                                             <property name="name">compoundName</property>
-                                            <property name="displayName">compoundName</property>
+                                            <text-property name="displayName">compoundName</text-property>
                                             <expression name="expression">dataSetRow["compoundName"]</expression>
                                             <property name="dataType">string</property>
                                         </structure>
@@ -601,7 +614,7 @@
                                     <list-property name="boundDataColumns">
                                         <structure>
                                             <property name="name">mw</property>
-                                            <property name="displayName">mw</property>
+                                            <text-property name="displayName">mw</text-property>
                                             <expression name="expression">dataSetRow["mw"]</expression>
                                             <property name="dataType">string</property>
                                         </structure>
@@ -644,7 +657,7 @@
                         <list-property name="boundDataColumns">
                             <structure>
                                 <property name="name">consensus</property>
-                                <property name="displayName">consensus</property>
+                                <text-property name="displayName">consensus</text-property>
                                 <expression name="expression">dataSetRow["consensus"]</expression>
                                 <property name="dataType">string</property>
                             </structure>
@@ -680,7 +693,7 @@
                 </structure>
                 <structure>
                     <property name="name">classification</property>
-                    <property name="displayName">classification</property>
+                    <text-property name="displayName">classification</text-property>
                     <expression name="expression">dataSetRow["classification"]</expression>
                     <property name="dataType">string</property>
                 </structure>
@@ -788,7 +801,7 @@
                 </structure>
                 <structure>
                     <property name="name">classification</property>
-                    <property name="displayName">classification</property>
+                    <text-property name="displayName">classification</text-property>
                     <expression name="expression">dataSetRow["classification"]</expression>
                     <property name="dataType">string</property>
                 </structure>
