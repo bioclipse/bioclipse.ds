@@ -398,19 +398,19 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
             //Also add all atoms connected to significant atoms to list
             for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtom-1 )) ){
                 int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr) + 1;
-                IAtom atomToAdd = cdkmol.getAtomContainer().getAtom(nbrAtomNr-1);
-                significantAtomsContainer.addAtom(atomToAdd);
-                logger.debug("nbr: " + nbrAtomNr);
+//                IAtom atomToAdd = cdkmol.getAtomContainer().getAtom(nbrAtomNr-1);
+//                significantAtomsContainer.addAtom(atomToAdd);
+//                logger.debug("nbr: " + nbrAtomNr);
                 
                 //Set to max for scaledresult
-                match.putAtomResult( atomToAdd, 100 );
+                match.putAtomResult( nbrAtomNr, 100 );
             }
         }
         logger.debug("Number of center atoms: " + significantAtoms.size());
         
         //We want to set the color of the hilighting depending on the prediction. If the decision function > 0.0 the color should be red, otherwise it should be green.
         //we also want the filled circles to be larger so that they become visible for non carbons.
-        match.setAtomContainer( significantAtomsContainer );
+//        match.setAtomContainer( significantAtomsContainer );
         match.writeResultsAsProperties( cdkmol.getAtomContainer(), 
              net.bioclipse.ds.bursi.signatures.Activator.BURSI_RESULT_PROPERTY);
 

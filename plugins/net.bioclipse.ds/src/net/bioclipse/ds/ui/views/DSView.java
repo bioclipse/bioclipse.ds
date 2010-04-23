@@ -25,6 +25,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
+import net.bioclipse.ds.impl.result.SubStructureMatch;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
@@ -67,8 +68,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.nonotify.NNAtomContainer;
 
 public class DSView extends ViewPart implements IPartListener, 
                                                 IContextManagerListener{
@@ -830,8 +834,8 @@ public class DSView extends ViewPart implements IPartListener,
                             //from the cloned
                             for (Object obj : clonedMol.getAtomContainer()
                                     .getProperties().keySet()){
-                                System.out.println("OBJ found: " + obj);
-                                System.out.println("Existing: " + originalMol.getAtomContainer().getProperties());
+//                                System.out.println("OBJ found: " + obj);
+//                                System.out.println("Existing: " + originalMol.getAtomContainer().getProperties());
                                 if (!originalMol.getAtomContainer()
                                         .getProperties().containsKey( obj )){
                                     originalMol.getAtomContainer()
@@ -842,6 +846,23 @@ public class DSView extends ViewPart implements IPartListener,
                                                        .getProperties().get( obj ));
                                 }
                             }
+                            
+                            //We also need to clone any ISubStructureMatches Atoms in AC since they are based on a clone
+//                            for (ITestResult result : matches){
+//                                if ( result instanceof SubStructureMatch) {
+//                                    SubStructureMatch ssmatch = (SubStructureMatch) result;
+//                                    IAtomContainer matchAC = ssmatch.getAtomContainer();
+//                                    IAtomContainer newAC=new NNAtomContainer();
+//                                    for (IAtom matchedAtom : matchAC.atoms()){
+//                                        int clonedAtomno=clonedMol.getAtomContainer().getAtomNumber( matchedAtom );
+//                                        IAtom newAtom = originalMol.getAtomContainer().getAtom( clonedAtomno );
+//                                        newAC.addAtom( newAtom );
+//                                    }
+//                                    ssmatch.setAtomContainer( newAC );
+//                                }
+//                            }
+                            
+                            
 
                             for (ITestResult result : matches){
                                     result.setTestRun( tr );

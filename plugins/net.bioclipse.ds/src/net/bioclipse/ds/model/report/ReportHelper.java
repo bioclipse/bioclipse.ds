@@ -34,6 +34,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.impl.result.SubStructureMatch;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.ui.BlueRedColorScaleGenerator;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -62,7 +63,7 @@ public class ReportHelper {
 
     
     public static byte[] createImage( net.bioclipse.core.domain.IMolecule bcmol,
-                                      ISubStructure match ) 
+                                      ITestResult match ) 
                                       throws BioclipseException {
 
         //Default values
@@ -74,7 +75,7 @@ public class ReportHelper {
     }
     
     public static byte[] createImage( net.bioclipse.core.domain.IMolecule bcmol,
-                        ISubStructure match, int WIDTH, int HEIGHT, double zoom)
+                        ITestResult match, int WIDTH, int HEIGHT, double zoom)
                                                      throws BioclipseException {
 
         if (bcmol==null)
@@ -108,26 +109,25 @@ public class ReportHelper {
         
         //If we have a match:
         //We need to generate a new ISubstructureMatch from pre-clone and SDG
-        if ( match instanceof SubStructureMatch ) {
-            SubStructureMatch submatch = (SubStructureMatch) match;
-
-            newMatch=new SubStructureMatch(submatch.getName(),
-                                                    submatch.getClassification());
-            newMatch.setTestRun( ((SubStructureMatch) match).getTestRun() );
-            IAtomContainer newac = NoNotificationChemObjectBuilder.getInstance().newAtomContainer();
-            for (IAtom atom : match.getAtomContainer().atoms()){
-                int atomno=cdkmol.getAtomContainer().getAtomNumber( atom );
-                IAtom newAtom=mol.getAtom( atomno );
-//                match.getAtomContainer().
-                newac.addAtom( newAtom );
-            }
-            
-            newMatch.setAtomContainer( newac );
-        }
+//        if ( match instanceof SubStructureMatch ) {
+//            SubStructureMatch submatch = (SubStructureMatch) match;
+//
+//            newMatch=new SubStructureMatch(submatch.getName(),
+//                                                    submatch.getClassification());
+//            newMatch.setTestRun( ((SubStructureMatch) match).getTestRun() );
+//            IAtomContainer newac = NoNotificationChemObjectBuilder.getInstance().newAtomContainer();
+//            for (IAtom atom : match.getAtomContainer().atoms()){
+//                int atomno=cdkmol.getAtomContainer().getAtomNumber( atom );
+//                IAtom newAtom=mol.getAtom( atomno );
+//                newac.addAtom( newAtom );
+//            }
+//            
+//            newMatch.setAtomContainer( newac );
+//        }
         
         if (newMatch!=null){
-            SubStructureGenerator generator=new SubStructureGenerator();
-            generator.add( newMatch );
+            BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
+//            generator.add( newMatch );
             generators.add(generator);
         }
         

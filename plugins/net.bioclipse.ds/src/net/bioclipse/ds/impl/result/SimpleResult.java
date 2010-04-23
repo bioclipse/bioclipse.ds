@@ -16,9 +16,6 @@ import net.bioclipse.ds.model.TestRun;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 /**
  * A base class for results with a name, a parent testrun, and a status
@@ -72,28 +69,6 @@ public class SimpleResult implements ITestResult{
         return null;
     }
 
-    /**
-     * No substructure by default. Subclasses may override.
-     */
-    public IAtomContainer getAtomContainer() {
-            return NoNotificationChemObjectBuilder.getInstance().
-                                               newAtomContainer();
-    }
-
-    /**
-     * Red for positive, green for negative, and yellow for the rest. Subclasses 
-     * may override and/or provide a color per atom.
-     */
-    public java.awt.Color getHighlightingColor( IAtom atom ) {
-        
-        if (classification==ITestResult.POSITIVE)
-            return java.awt.Color.RED;
-        if (classification==ITestResult.NEGATIVE)
-            return java.awt.Color.GREEN;
-        else
-            return java.awt.Color.YELLOW;
-    }
-    
     public Image getIcon(){
         if (pos_icon==null || neg_icon==null || incon_icon==null)
             initIcons();

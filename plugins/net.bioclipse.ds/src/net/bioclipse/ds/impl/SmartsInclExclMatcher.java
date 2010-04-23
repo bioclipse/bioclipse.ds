@@ -307,17 +307,10 @@ public class SmartsInclExclMatcher extends AbstractDSTest implements IDSTest{
                     matchingAtoms.addAll( atomIndices );
                 }
  
-                //Create new ac to hold substructure
-                IAtomContainer subAC=ac.getBuilder().newAtomContainer();
-                for (int aindex : matchingAtoms){
-                    subAC.addAtom( ac.getAtom( aindex ) );
-                }
-                
-                
                 //Toxicophores are by definition positive
                 SmartsMatch match=new SmartsMatch(
                                               smartName, ITestResult.POSITIVE);
-                match.setAtomContainer( subAC );
+                match.setAtomNumbers( matchingAtoms );
                 match.setSmartsString( inclSmart + " ; " + exclSmart );
                 
 

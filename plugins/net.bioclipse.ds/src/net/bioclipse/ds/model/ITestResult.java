@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
@@ -21,7 +22,7 @@ import net.bioclipse.cdk.domain.ISubStructure;
  * @author ola
  *
  */
-public interface ITestResult extends ISubStructure{
+public interface ITestResult extends IAdaptable{
 
     //The possible result statuses
     public static final int POSITIVE=0x1;

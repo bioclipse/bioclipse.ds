@@ -371,6 +371,8 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         IAtomContainer significantAtomsContainer = cdkmol.getAtomContainer()
             .getBuilder().newAtomContainer();
         
+        List<Integer> atomNumbers=new ArrayList<Integer>();
+        
         // How many variabels do we want to look at?
         int numberOfVars = (int) fractionOfVars*attributeValues.size();
         // Go through all the variables that we want to look at
@@ -390,9 +392,13 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
             // We should add atoms from the input cdkmol, not the clone!
         	// Get center atom
         	Integer tmp = signatureAtoms.get(signatureList[currentVar-1]).get(0);
-        	IAtom currentAtom = cdkmol.getAtomContainer().getAtom(tmp-1);
-        	significantAtomsContainer.addAtom(currentAtom);
-//            logger.debug("center atom: " + significantAtom);
+        	
+        	//TODO: Verify tmp-1 is atom number. Is Signatures base 1?
+        	
+//        	IAtom currentAtom = cdkmol.getAtomContainer().getAtom(tmp-1);
+//        	significantAtomsContainer.addAtom(currentAtom);
+
+        	//            logger.debug("center atom: " + significantAtom);
 //            //Also add all atoms connected to significant atoms to list
 //            for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtom-1 )) ){
 //                int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr) + 1;
@@ -406,7 +412,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
 
           // Scaling. We rescale the derivative to be between 1 and 100.
           double scaledDeriv = (currentDeriv-smallestDeriv)/(largestDeriv-smallestDeriv)*100+1;
-          match.putAtomResult( currentAtom, (int) scaledDeriv );
+          match.putAtomResult( tmp-1, (int) scaledDeriv );
         	
 /*        	
         	
@@ -426,7 +432,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         
         //We want to set the color of the hilighting depending on the prediction. If the decision function > 0.0 the color should be red, otherwise it should be green.
         //we also want the filled circles to be larger so that they become visible for non carbons.
-        match.setAtomContainer( significantAtomsContainer );
+//        match.setAtomContainer( significantAtomsContainer );
         
         match.writeResultsAsProperties(cdkmol.getAtomContainer(), 
                net.bioclipse.ds.cpdb.signatures.Activator.CPDB_RESULT_PROPERTY);

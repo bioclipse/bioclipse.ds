@@ -10,26 +10,31 @@
  ******************************************************************************/
 package net.bioclipse.ds.impl.result;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.bioclipse.cdk.domain.ISubStructure;
-
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
+/**
+ * 
+ * @author ola
+ *
+ */
+public class SubStructureMatch extends SimpleResult{
 
-public class SubStructureMatch extends SimpleResult implements ISubStructure{
-
+    private List<Integer> atomNumbers;
+    
     public SubStructureMatch(String name, int resultStatus) {
         super( name, resultStatus );
+        atomNumbers=new ArrayList<Integer>();
     }
 
-    private IAtomContainer ac;
-    
     @Override
     public String toString() {
         String ret="SubstructureMatch: Name=" + getName() + ", Matching atoms: ";
-        for (IAtom atom : getAtomContainer().atoms()){
-            ret=ret+ getAtomContainer().getAtomNumber( atom ) + ",";
+        for (Integer i : atomNumbers){
+            ret=ret+ i + ",";
         }
         return ret;
     }
@@ -47,16 +52,14 @@ public class SubStructureMatch extends SimpleResult implements ISubStructure{
         return super.getAdapter( adapter );
     }
 
+    public List<Integer> getAtomNumbers() {
+        return atomNumbers;
+    }
 
-    /**
-     * Return the IAtomContainer with the atoms in the substructure
-     */
-    public IAtomContainer getAtomContainer() {
-        return ac;
-    }
     
-    public void setAtomContainer( IAtomContainer ac ) {
-        this.ac = ac;
+    public void setAtomNumbers( List<Integer> atomNumbers ) {
+        this.atomNumbers = atomNumbers;
     }
-    
+
+
 }

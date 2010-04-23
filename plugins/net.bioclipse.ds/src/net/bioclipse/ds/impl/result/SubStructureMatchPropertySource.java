@@ -66,21 +66,14 @@ public class SubStructureMatchPropertySource extends BasicPropertySource
         addToValueMap(TEST,item.getTestRun().getTest().getName());
 
         //Collect atoms in list and sort it
-        List<Integer> atomnumbers=new ArrayList<Integer>();
-        for (IAtom atom : item.getAtomContainer().atoms()){
-            
-            if ( item.getTestRun().getEditor() instanceof JChemPaintEditor ) {
-                JChemPaintEditor jcp=(JChemPaintEditor)item.getTestRun().getEditor();
-                IAtomContainer origac = jcp.getCDKMolecule().getAtomContainer();
-                atomnumbers.add( origac.getAtomNumber( atom ));
-            }
-        }
-        Collections.sort( atomnumbers );
-
+//        List<Integer> atomnumbers=item.getAtomNumbers();
+//        Collections.sort( atomnumbers );
+//ASSUME SORTED
+        
         //Create readable string
         String atoms="";
-        for (Integer i : atomnumbers){
-            atoms=atoms+ i + ", ";
+        for (Integer i : item.getAtomNumbers()){
+            atoms=atoms+ (i+1) + ", ";
         }
         if (atoms.length()>=2){
             //remove last comma

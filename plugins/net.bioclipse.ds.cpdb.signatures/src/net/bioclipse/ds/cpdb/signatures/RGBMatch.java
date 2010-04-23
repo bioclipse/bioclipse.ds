@@ -17,15 +17,6 @@ public class RGBMatch extends SubStructureMatch{
         super( name, resultStatus );
     }
     
-    @Override
-    public Color getHighlightingColor( IAtom atom ) {
-        
-        if (getColorMap().containsKey( atom ))
-            return getColorMap().get( atom );
-
-        return null;
-    }
-
     public void setColorMap( Map<IAtom, Color> colorMap ) {
 
         this.colorMap = colorMap;

@@ -248,15 +248,9 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
                 //Toxicophores are by definition positive
                 SmartsMatch match=new SmartsMatch(
                                                   smartsName, ITestResult.POSITIVE);
-
-                //Create new ac to hold substructure
-                IAtomContainer subAC=ac.getBuilder().newAtomContainer();
                 for (int aindex : matchingAtoms){
-                    IAtom atom=cdkmol.getAtomContainer().getAtom( aindex );
-                    subAC.addAtom( atom );
-                    match.putAtomResult( atom, 100 );
+                    match.putAtomResult( aindex, 100 );
                 }
-                match.setAtomContainer( subAC );
                 match.setSmartsString( currentSmarts );
                 match.writeResultsAsProperties( cdkmol.getAtomContainer(), "SMARTS");
 

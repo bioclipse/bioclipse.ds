@@ -14,23 +14,28 @@ import net.bioclipse.ds.DSConstants;
  */
 public class ScaledResultMatch extends SubStructureMatch{
     
-    private Map<IAtom, Integer> resultMap; 
+    //AtomNumber > Value
+    private Map<Integer, Integer> resultMap; 
 
     public ScaledResultMatch(String name, int resultStatus) {
         super( name, resultStatus );
+        resultMap=new HashMap<Integer, Integer>();
     }
     
-    public void setResultMap( Map<IAtom, Integer> resulMap ) {
+    public void setResultMap( Map<Integer, Integer> resulMap ) {
         this.resultMap = resulMap;
     }
 
-    public Map<IAtom, Integer> getResultMap() {
+    public Map<Integer, Integer> getResultMap() {
         return resultMap;
     }
 
-    public void putAtomResult( IAtom atomToAdd, Integer result ) {
-        if (resultMap==null) resultMap=new HashMap<IAtom, Integer>();
+    public void putAtomResult( Integer atomToAdd, Integer result ) {
+        if (resultMap==null) resultMap=new HashMap<Integer, Integer>();
         resultMap.put( atomToAdd, result );
+        if (!getAtomNumbers().contains( atomToAdd )){
+            getAtomNumbers().add( atomToAdd );
+        }
         
     }
 
@@ -43,13 +48,12 @@ public class ScaledResultMatch extends SubStructureMatch{
         if (resultMap==null || resultMap.isEmpty()) return;
         
         String prop="";
-        for (IAtom atom : resultMap.keySet()){
-            int no=ac.getAtomNumber( atom );
-            int res=resultMap.get( atom );
+        for (Integer atomNo : resultMap.keySet()){
+            int res=resultMap.get( atomNo );
             if (prop.length()==0){  //first
-                prop=prop+ no + "," + res;
+                prop=prop+ atomNo + "," + res;
             }else{
-                prop=prop+ ";" + no + "," + res;
+                prop=prop+ ";" + atomNo + "," + res;
             }
         }
         
