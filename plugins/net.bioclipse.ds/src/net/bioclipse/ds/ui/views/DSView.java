@@ -1126,21 +1126,24 @@ public class DSView extends ViewPart implements IPartListener,
                 if (ep.getTestruns()!=null)
                     ep.getTestruns().clear();
 
-                //Now, create new TestRuns from the tests
-                for (IDSTest test : ep.getTests()){
+                if (ep.getTests()!=null){
 
-                    TestRun newTestRun=new TestRun(jcp,test);
+                    //Now, create new TestRuns from the tests
+                    for (IDSTest test : ep.getTests()){
 
-                    if (test.getTestErrorMessage()!=null 
-                            && test.getTestErrorMessage().length()>0){
-                        newTestRun.setStatus( TestRun.ERROR );
+                        TestRun newTestRun=new TestRun(jcp,test);
+
+                        if (test.getTestErrorMessage()!=null 
+                                && test.getTestErrorMessage().length()>0){
+                            newTestRun.setStatus( TestRun.ERROR );
+                        }
+                        else if (test.isExcluded()){
+                            newTestRun.setStatus( TestRun.EXCLUDED );
+                        }                
+
+                        newTestRuns.add( newTestRun ); 
+                        ep.addTestRun(newTestRun);
                     }
-                    else if (test.isExcluded()){
-                        newTestRun.setStatus( TestRun.EXCLUDED );
-                    }                
-
-                    newTestRuns.add( newTestRun ); 
-                    ep.addTestRun(newTestRun);
                 }
             }
 
@@ -1288,17 +1291,18 @@ public class DSView extends ViewPart implements IPartListener,
                     if (ep.getTestruns()!=null)
                         ep.getTestruns().clear();
 
-                    //Loop over all tests in this Endpoint
-                    for (IDSTest epTest : ep.getTests()){
-                        //For the active testruns, locate those who are of this test
-                        for (TestRun tr : activeTestRuns){
-                            if (tr.getTest().getId().equals( epTest.getId() )){
-                                ep.addTestRun( tr );
+                    if (ep.getTests()!=null){
+                        //Loop over all tests in this Endpoint
+                        for (IDSTest epTest : ep.getTests()){
+                            //For the active testruns, locate those who are of this test
+                            for (TestRun tr : activeTestRuns){
+                                if (tr.getTest().getId().equals( epTest.getId() )){
+                                    ep.addTestRun( tr );
+                                }
                             }
+
                         }
-                        
-                    }
-                    
+                    }                    
                 }
             } catch ( BioclipseException e1 ) {
                 LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
@@ -1342,16 +1346,19 @@ public class DSView extends ViewPart implements IPartListener,
                     if (ep.getTestruns()!=null)
                         ep.getTestruns().clear();
 
-                    //Loop over all tests in this Endpoint
-                    for (IDSTest epTest : ep.getTests()){
-                        //For the active testruns, locate those who are of this test
-                        for (TestRun tr : activeTestRuns){
-                            if (tr.getTest().getId().equals( epTest.getId() )){
-                                ep.addTestRun( tr );
+                    if (ep.getTests()!=null){
+                        //Loop over all tests in this Endpoint
+                        for (IDSTest epTest : ep.getTests()){
+                            //For the active testruns, locate those who are of this test
+                            for (TestRun tr : activeTestRuns){
+                                if (tr.getTest().getId().equals( epTest.getId() )){
+                                    ep.addTestRun( tr );
+                                }
                             }
+
                         }
-                        
                     }
+
                     
                 }
             } catch ( BioclipseException e1 ) {

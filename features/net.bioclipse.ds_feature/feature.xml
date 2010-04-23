@@ -38,13 +38,6 @@ The Eclipse Public License accompanies this distribution, and is available at ht
          version="0.0.0"/>
 
    <plugin
-         id="net.bioclipse.ds.lipinski"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="net.bioclipse.ds.bursi.signatures"
          download-size="0"
          install-size="0"
@@ -67,6 +60,13 @@ The Eclipse Public License accompanies this distribution, and is available at ht
 
    <plugin
          id="net.bioclipse.ds.cpdb"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.adme"
          download-size="0"
          install-size="0"
          version="0.0.0"

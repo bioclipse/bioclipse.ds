@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.lipinski.impl;
+package net.bioclipse.ds.adme.impl;
 
 import java.util.ArrayList;
 import java.util.List;
