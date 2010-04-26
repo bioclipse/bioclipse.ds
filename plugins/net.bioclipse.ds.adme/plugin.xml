@@ -6,16 +6,50 @@
          point="net.bioclipse.decisionsupport">
          <endpoint
                id="net.bioclipse.ds.adme"
+               icon="icons/drug_cap.png"
+   			   description="Absorption, Distribution, Metabolism, and Excretion"
                name="ADME">
          </endpoint>
       <test
             class="net.bioclipse.ds.adme.impl.RuleOfFiveTest"
             endpoint="net.bioclipse.ds.adme"
             icon="icons/five.gif"
-            id="lipinski"
+            id="adme.lipinski"
             informative="true"
+            description="Lipinski's Rule of Five is a rule of thumb to evaluate druglikeness, or
+determine if a chemical compound with a certain pharmacological  or 
+biological activity has properties that would make it a likely orally active 
+drug in humans."
+			helppage="html/ruleoffive.html"
             name="Lipinski&apos;s Rule of Five">
       </test>
+      <test
+            class="net.bioclipse.ds.adme.impl.LogPTest"
+            endpoint="net.bioclipse.ds.adme"
+            icon="icons/drug_cap.png"
+            id="adme.logp"
+            informative="true"
+            description="A measure of how hydrophilic or hydrophobic a chemical substance is."
+			helppage="html/logp.html"
+            name="LogP">
+      </test>
+      <test
+            class="net.bioclipse.ds.adme.impl.TPSATest"
+            endpoint="net.bioclipse.ds.adme"
+            icon="icons/drug_cap.png"
+            id="adme.tpsa"
+            informative="true"
+            description="The polar surface area (PSA) is defined as the surface sum over all polar atoms, (usually oxygen and nitrogen), including also attached hydrogens."
+			helppage="html/tpsa.html"
+            name="TPSA">
+      </test>
 </extension>
+
+	<extension
+    	point="org.eclipse.help.toc">
+		<toc 
+			file="toc.xml"/>
+	</extension>
+
 
 </plugin>
