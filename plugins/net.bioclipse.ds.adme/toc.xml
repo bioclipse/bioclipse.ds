@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc link_to="../net.bioclipse.ds/toc.xml#ContributedEndpoints" label="ADME" >
+		<topic label="ADME"  href="html/adme.html" > 
+			<topic label="Lipinski's Rule of Five"  href="html/ruleoffive.html" />
+			<topic label="LogP"  href="html/logp.html" /> 
+			<topic label="TPSA"  href="html/tpsa.html" /> 
+
+			<anchor id="ContributedTests" />
+
+		</topic> 
+</toc>
