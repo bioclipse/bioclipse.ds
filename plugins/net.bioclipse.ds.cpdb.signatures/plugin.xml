@@ -23,6 +23,11 @@
             class="net.bioclipse.ds.cpdb.impl.SignMatchImpl">
       </test-->
 
+	<extension
+    	point="org.eclipse.help.toc">
+		<toc 
+			file="toc.xml"/>
+	</extension>
 
 
 </plugin>
