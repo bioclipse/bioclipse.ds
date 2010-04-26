@@ -3,6 +3,8 @@ package net.bioclipse.ds.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.help.IContext2;
+import org.eclipse.help.IHelpResource;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.ds.Activator;
@@ -12,7 +14,7 @@ import net.bioclipse.ds.Activator;
  * @author ola
  *
  */
-public class Endpoint {
+public class Endpoint implements IContext2{
 
     private String id;
     private String name;
@@ -126,5 +128,33 @@ public class Endpoint {
 
         return consensusCalculator;
     }
+
+    
+    /*
+     * BELOW is for CONTEXT
+     */
+    
+    public String getText() {
+        return null;
+    }
+    
+    public String getStyledText() {
+        return getDescription();
+    }
+    
+    
+    public IHelpResource[] getRelatedTopics() {
+        return null;
+    }
+    
+
+    public String getCategory( IHelpResource topic ) {
+        return null;
+    }
+    
+    public String getTitle() {
+        return getName();
+    }
+
     
 }

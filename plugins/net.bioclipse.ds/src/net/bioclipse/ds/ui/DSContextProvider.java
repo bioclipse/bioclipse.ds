@@ -1,5 +1,6 @@
 package net.bioclipse.ds.ui;
 
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
@@ -19,11 +20,14 @@ public class DSContextProvider implements IContextProvider {
         if (tree.getSelection()!=null && tree.getSelection().length>0){
           TreeItem a = tree.getSelection()[0];
           if (a.getData() instanceof ITestResult) {
-//              ITestResult tr= (ITestResult) a.getData();
-//            return tr;
+              ITestResult tr= (ITestResult) a.getData();
+              return tr.getTestRun();
           }
           if (a.getData() instanceof IDSTest) {
               return (IDSTest)a.getData();
+          }
+          if (a.getData() instanceof Endpoint) {
+              return (Endpoint)a.getData();
           }
           if (a.getData() instanceof TestRun) {
               return (TestRun)a.getData();
