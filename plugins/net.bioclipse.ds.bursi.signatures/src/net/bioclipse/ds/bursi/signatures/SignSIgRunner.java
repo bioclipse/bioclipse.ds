@@ -392,15 +392,20 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
         IAtomContainer significantAtomsContainer=cdkmol.getAtomContainer().getBuilder().newAtomContainer();
         for (int significantAtom : significantAtoms){
 
+            int significantAtomNumber=significantAtom;
+            
             //We should add atoms from the input cdkmol, not the clone!
-            significantAtomsContainer.addAtom( cdkmol.getAtomContainer().getAtom( significantAtom-1 ));
+//            significantAtomsContainer.addAtom( cdkmol.getAtomContainer().getAtom( significantAtomNumber ));
             logger.debug("center atom: " + significantAtom);
+            //Set to max for scaledresult
+            match.putAtomResult( significantAtomNumber, 100 );
+
             //Also add all atoms connected to significant atoms to list
-            for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtom-1 )) ){
-                int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr) + 1;
+            for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtomNumber )) ){
+                int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr);// + 1;
 //                IAtom atomToAdd = cdkmol.getAtomContainer().getAtom(nbrAtomNr-1);
 //                significantAtomsContainer.addAtom(atomToAdd);
-//                logger.debug("nbr: " + nbrAtomNr);
+                logger.debug("nbr atom: " + nbrAtomNr);
                 
                 //Set to max for scaledresult
                 match.putAtomResult( nbrAtomNr, 100 );
