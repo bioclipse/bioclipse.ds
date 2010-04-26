@@ -50,6 +50,8 @@ public class BlueRedColorScaleGenerator implements IGenerator {
 
         ElementGroup group = new ElementGroup();
 
+        if (DSView.getInstance()==null) return group;
+
         String currentProperty=DSView.getInstance().getCurrentResultProperty();
         if (currentProperty==null) return group;
 

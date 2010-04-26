@@ -10,9 +10,11 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.help.IContext2;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
@@ -24,7 +26,7 @@ import net.bioclipse.ds.model.report.AbstractTestReportModel;
  * @author ola
  *
  */
-public interface IDSTest extends ISubStructure{
+public interface IDSTest extends ISubStructure, IContext2{
 
     public String getId();    
     public void setId( String id );    
@@ -63,5 +65,10 @@ public interface IDSTest extends ISubStructure{
     public void setConsensusCalculator( IConsensusCalculator consensusCalculator );
     void setPropertycalculator( String propertycalculator );
     String getPropertycalculator();
+
+    public String getHelppage();
+    public void setHelppage( String helppage );
+    public void setDescription( String pdescription );
+    public String getDescription();
 
 }

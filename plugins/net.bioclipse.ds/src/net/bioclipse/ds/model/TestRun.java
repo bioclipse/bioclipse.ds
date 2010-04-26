@@ -17,6 +17,8 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
 
+import org.eclipse.help.IContext2;
+import org.eclipse.help.IHelpResource;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -32,7 +34,7 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
  * @author ola
  *
  */
-public class TestRun implements ISubStructure, IColorProvider{
+public class TestRun implements ISubStructure, IColorProvider, IContext2{
 
     public static final int NOT_STARTED=0x1;
     public static final int RUNNING=0x2;
@@ -347,4 +349,45 @@ public class TestRun implements ISubStructure, IColorProvider{
         return null;
     }
 
+    /*
+     * BELOW is for CONTEXT
+     */
+    
+    public String getText() {
+        return null;
+    }
+    
+    public String getStyledText() {
+        return getTest().getDescription();
+    }
+    
+    
+    public IHelpResource[] getRelatedTopics() {
+
+        //If no web page availabel, return null
+       if (getTest().getHelppage()==null || getTest().getHelppage().length()<=0)
+            return null;
+        
+        IHelpResource res=new IHelpResource(){
+
+            public String getHref() {
+                return getTest().getPluginID() + "/"+getTest().getHelppage();
+            }
+            public String getLabel() {
+              return getTest().getName();
+            }
+          };
+        return new IHelpResource[]{res};
+    }
+    
+
+    public String getCategory( IHelpResource topic ) {
+        //TODO: implement
+        return null;
+    }
+    
+    public String getTitle() {
+        return getTest().getName();
+    }
+    
 }

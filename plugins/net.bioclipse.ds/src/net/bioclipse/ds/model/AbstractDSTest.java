@@ -27,6 +27,7 @@ import net.bioclipse.ds.model.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.help.IHelpResource;
 import org.eclipse.swt.graphics.Image;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -65,6 +66,9 @@ public abstract class AbstractDSTest implements IDSTest{
     private Image excludedIcon;
     private IConsensusCalculator consensusCalculator;
     private String propertycalculator;
+
+    private String helppage;
+
     
     /**
      * Empty if no problems
@@ -97,6 +101,13 @@ public abstract class AbstractDSTest implements IDSTest{
     
     public void addParameter( String name, String value ) {
         parameters.put( name, value );
+    }
+
+    public String getHelppage() {
+        return helppage;
+    }
+    public void setHelppage( String helppage ) {
+        this.helppage = helppage;
     }
 
     public String getId() {
@@ -357,6 +368,42 @@ public abstract class AbstractDSTest implements IDSTest{
         return propertycalculator;
     }
 
+    /*
+     * BELOW is for CONTEXT
+     */
     
+    public String getText() {
+        return "WEE text";
+    }
+    
+    public String getStyledText() {
+        return "Wee <@#$b> weeestyled </@#$b> whoow";
+    }
+    
+    
+    public IHelpResource[] getRelatedTopics() {
+        
+        IHelpResource res=new IHelpResource(){
+
+            public String getHref() {
+                return getHelppage();
+            }
+            ///help/topic/net.bioclipse.qsar.ui/html/descriptors.html
+            public String getLabel() {
+              return getName();
+            }
+          };
+        return new IHelpResource[]{res};
+    }
+    
+
+    public String getCategory( IHelpResource topic ) {
+        //TODO: implement
+        return null;
+    }
+    
+    public String getTitle() {
+        return "mamma mia title";
+    }
     
 }

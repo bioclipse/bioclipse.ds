@@ -147,6 +147,12 @@ public class DSBusinessModel {
                             String ppropcalc=element.getAttribute("propertycalculator");
                             test.setPropertycalculator( ppropcalc);
 
+                            String phelppage=element.getAttribute("helppage");
+                            test.setHelppage( phelppage);
+
+                            String pdescription=element.getAttribute("description");
+                            test.setDescription( pdescription);
+
                             String pep=element.getAttribute("endpoint");
                             //Look up endpoint by id and add to test
                             for (Endpoint ep : endpoints){

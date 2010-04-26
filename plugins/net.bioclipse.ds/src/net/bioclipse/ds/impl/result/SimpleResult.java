@@ -13,6 +13,7 @@ package net.bioclipse.ds.impl.result;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.report.ReportHelper;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -129,6 +130,12 @@ public class SimpleResult implements ITestResult{
 
     public void setResultProperty( String propertyKey ) {
         resultProperty=propertyKey;
+    }
+    
+    @Override
+    public String toString() {
+        return name + " [test=" + testRun.getTest().getName() + "] Res=" 
+        + ReportHelper.statusToString( getClassification());
     }
 
 }

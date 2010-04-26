@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.ui.views;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.report.AbstractTestReportModel;
 import net.bioclipse.ds.model.report.DSSingleReportModel;
 import net.bioclipse.ds.model.report.ReportHelper;
+import net.bioclipse.ds.ui.DSContextProvider;
 import net.bioclipse.ds.ui.IDSViewNoCloseEditor;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
@@ -60,6 +62,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.help.IContextProvider;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -137,6 +140,8 @@ public class DSView extends ViewPart implements IPartListener,
     private Canvas consensusCanvas;
 
     private Action helpAction;
+
+    private IContextProvider contextProvider;
 
     private static DSView instance;
     
@@ -1481,5 +1486,16 @@ public class DSView extends ViewPart implements IPartListener,
     public String getCurrentResultProperty() {
         return selectedProperty;
     }        
+    
+    @Override
+    public Object getAdapter( Class key ) {
+    
+        if (key.equals(IContextProvider.class)) {
+            if (contextProvider==null)
+                contextProvider=new DSContextProvider();
+            return contextProvider;
+          }
+        return super.getAdapter( key );
+    }
 
 }
