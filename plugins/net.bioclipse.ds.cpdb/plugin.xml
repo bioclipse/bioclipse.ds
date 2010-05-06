@@ -24,7 +24,7 @@
             id="cpdb.sdflookup.exact"
             name="CPDB exact matches"
             endpoint="net.bioclipse.ds.carcinogenicity"
-            class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchFP"
             propertycalculator="CPDB Exact Match"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
@@ -40,7 +40,7 @@
             id="cpdb.sdflookup.nearest"
             name="CPDB nearest neighbour"
             endpoint="net.bioclipse.ds.carcinogenicity"
-            class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="CPDB Nearest Neighbours"
             reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
@@ -58,7 +58,7 @@
             name="Carcinogenicity Consensus"
             visible="false"
             endpoint="net.bioclipse.ds.carcinogenicity"
-            class="net.bioclipse.ds.impl.BogusTest"
+            class="net.bioclipse.ds.matcher.BogusTest"
             icon="icons/db.gif">
       </test>
       

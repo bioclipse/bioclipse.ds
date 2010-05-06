@@ -168,8 +168,8 @@ public class WrappedBrowserEditor extends EditorPart implements IDSViewNoCloseEd
             e1.printStackTrace();
         }
 
-        System.out.println("Jar path: " + jarpath);
-        System.out.println("Design path: " + designpath);
+//        System.out.println("Jar path: " + jarpath);
+//        System.out.println("Design path: " + designpath);
         
         EngineConfig config = new EngineConfig();
 
@@ -215,7 +215,7 @@ public class WrappedBrowserEditor extends EditorPart implements IDSViewNoCloseEd
             task.close();
 
             browser.setText(bos.toString());
-            System.out.println("finished");
+//            System.out.println("finished");
             //engine.destroy();
         } catch (Exception e) {
             e.printStackTrace();
@@ -237,7 +237,7 @@ public class WrappedBrowserEditor extends EditorPart implements IDSViewNoCloseEd
 
 
 //        System.out.println("Jar path: " + jarpath);
-        System.out.println("Design path: " + rpt);
+//        System.out.println("Design path: " + rpt);
 
         
         //Do new viewer

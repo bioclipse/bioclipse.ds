@@ -21,9 +21,9 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.Stopwatch;
-import net.bioclipse.ds.impl.result.ExternalMoleculeMatch;
-import net.bioclipse.ds.impl.result.SimpleResult;
-import net.bioclipse.ds.model.report.AbstractTestReportModel;
+import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
+import net.bioclipse.ds.model.result.SimpleResult;
+import net.bioclipse.ds.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;

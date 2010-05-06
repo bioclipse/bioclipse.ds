@@ -33,12 +33,12 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.impl.result.ScaledResultMatch;
-import net.bioclipse.ds.impl.result.SubStructureMatch;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.ScaledResultMatch;
+import net.bioclipse.ds.model.result.SubStructureMatch;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 
 

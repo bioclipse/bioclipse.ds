@@ -10,7 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.cpdb.calc;
 
-import net.bioclipse.ds.impl.calc.BaseDSPropertyCalculator;
+import net.bioclipse.ds.prop.calc.BaseDSPropertyCalculator;
 
 
 /**

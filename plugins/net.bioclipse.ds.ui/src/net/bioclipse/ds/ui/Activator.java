@@ -1,5 +1,6 @@
 package net.bioclipse.ds.ui;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -46,5 +47,10 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
+
+
+	public static ImageDescriptor getImageDecriptor(String path){
+      return imageDescriptorFromPlugin( PLUGIN_ID, path );
+  }
 
 }

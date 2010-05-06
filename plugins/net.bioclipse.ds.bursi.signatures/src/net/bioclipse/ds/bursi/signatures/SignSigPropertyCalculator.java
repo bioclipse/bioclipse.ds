@@ -10,7 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.bursi.signatures;
 
-import net.bioclipse.ds.impl.calc.BaseDSPropertyCalculator;
+import net.bioclipse.ds.prop.calc.BaseDSPropertyCalculator;
 
 
 /**

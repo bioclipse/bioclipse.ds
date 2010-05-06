@@ -19,11 +19,16 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
-import net.bioclipse.ds.model.report.AbstractTestReportModel;
-import net.bioclipse.ds.model.report.DSRow;
-import net.bioclipse.ds.model.report.ReportHelper;
+import net.bioclipse.ds.report.AbstractTestReportModel;
+import net.bioclipse.ds.report.DSRow;
+import net.bioclipse.ds.report.StatusHelper;
+import net.bioclipse.ds.ui.ImageHelper;
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class SignSigTestmodel extends AbstractTestReportModel{
 
    
@@ -43,7 +48,7 @@ public class SignSigTestmodel extends AbstractTestReportModel{
 
                 Map<String, String> params=new HashMap<String, String>();
                 params.put("name",  match.getName());
-                params.put("classification",  ReportHelper.statusToString(
+                params.put("classification",  StatusHelper.statusToString(
                                                       match.getClassification()));
 
                 //Ok, we need to take the query molecule and highlight the 
@@ -51,7 +56,7 @@ public class SignSigTestmodel extends AbstractTestReportModel{
                 ICDKMolecule mainmol = run.getMolecule();
                 byte[] structureImage = null;
                 try {
-                    structureImage = ReportHelper.createImage(mainmol, match);
+                    structureImage = ImageHelper.createImage(mainmol, match);
                 } catch ( BioclipseException e ) {
                     e.printStackTrace();
                 }

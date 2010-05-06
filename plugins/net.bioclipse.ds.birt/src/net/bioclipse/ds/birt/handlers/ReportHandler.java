@@ -16,7 +16,7 @@ import java.util.HashMap;
 import net.bioclipse.ds.birt.editors.WrappedBrowserEditor;
 import net.bioclipse.ds.birt.util.StringInput;
 import net.bioclipse.ds.birt.util.StringStorage;
-import net.bioclipse.ds.model.report.DSSingleReportModel;
+import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.ui.views.DSView;
 
 import org.eclipse.birt.core.framework.Platform;

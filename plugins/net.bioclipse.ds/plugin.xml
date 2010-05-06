@@ -4,118 +4,12 @@
 
    <extension-point id="net.bioclipse.decisionsupport" name="Decision Support" schema="schema/decisionsupport.exsd"/>
 
-<extension
-       point="net.bioclipse.cdk.jchempaint.generator">
-    <generator
-          class="net.bioclipse.ds.ui.BlueRedColorScaleGenerator">
-    </generator>
- </extension>
-
    <extension
-         point="org.eclipse.ui.views">
-      <category
-            id="net.bioclipse.ds.views"
-            name="Decision Support">
-      </category>
-      <view
-            category="net.bioclipse.ds.views"
-            class="net.bioclipse.ds.ui.views.DSView"
-            icon="icons/poll.gif"
-            id="net.bioclipse.ds.ui.views.DSView"
-            name="Decision Support">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.help.contexts">
-      <contexts
-            file="contexts.xml">
-      </contexts>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="net.bioclipse.ds.ui.PerspectiveFactory"
-            id="net.bioclipse.ds.ui.perspective"
-            icon="icons/poll.gif"
-            name="Decision Support">
-      </perspective>
-   </extension>
-
-	<extension
-    	point="org.eclipse.help.toc">
-		<toc
-        	file="toc.xml"
-         	primary="true"/>
-	</extension>
- <extension
-       point="org.eclipse.ui.cheatsheets.cheatSheetContent">
-    <category
-          id="net.bioclipse.ds.cheatsheets"
-          name="Decision Support">
-    </category>
-    <cheatsheet
-          category="net.bioclipse.ds.cheatsheets"
-          composite="false"
-          contentFile="cheatsheets/gettingstarted.xml"
-          id="net.bioclipse.ds.gettingStarted"
-          name="Getting Started with Decision Support">
-    </cheatsheet>
- </extension>
- 
- <extension
-       point="net.bioclipse.decisionsupport">
-       <consensus
-             id="net.bioclipse.ds.consensus.majority"
-             name="Majority Voting"
-             class="net.bioclipse.ds.impl.cons.MajorityVote"
-             description="A majority voting algorithm. Inconclusive if no results">
-       </consensus>
-       <consensus
-             id="net.bioclipse.ds.consensus.majority.emptynegative"
-             name="Normal Consensus"
-             class="net.bioclipse.ds.impl.cons.MajorityVoteEmptyNegative"
-             description="A majority voting algorithm. Negative if no results">
-       </consensus>
-       <consensus
-             id="net.bioclipse.ds.consensus.conservative"
-             name="Conservative Consensus"
-             class="net.bioclipse.ds.impl.cons.ConsensusConservative"
-             description="A conservative consensus calculation. At least one negative means consensus is negative.">
-       </consensus>
-         <endpoint
-               id="net.bioclipse.ds.uncategorized"
-               icon="icons/test_container.gif"
-               description="Tests that are not categorized"
-               name="Uncategorized">
-         </endpoint>
- </extension>
-
-
-  	<extension
-  		point="org.eclipse.ui.menus">
-		<menuContribution
-			locationURI="popup:org.eclipse.ui.popup.any?after=additions">
-        
-        <menu
-              label="Decision Support"
-              id="net.bioclipse.ds.context">
-              <separator
-                    name="single">
-              </separator>
-              <separator
-                    name="consensus">
-              </separator>
-        <visibleWhen
-              checkEnabled="true">
-           <reference
-                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
-           </reference>
-        </visibleWhen>
-              
-        </menu>
-
-   </menuContribution>
+         point="net.bioclipse.scripting.contribution">
+      <scriptContribution
+            service="net.bioclipse.ds.business.DSManagerFactory"
+            id="net.bioclipse.ds.DSManager">
+      </scriptContribution>
    </extension>
 
 </plugin>

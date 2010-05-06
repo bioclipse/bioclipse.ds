@@ -1,6 +1,6 @@
 package net.bioclipse.ds.cpdb.calc;
 
-import net.bioclipse.ds.impl.calc.DSConsensusCalculator;
+import net.bioclipse.ds.prop.calc.DSConsensusCalculator;
 
 /**
  * 

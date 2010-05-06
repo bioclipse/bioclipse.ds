@@ -18,7 +18,7 @@ import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.model.report.AbstractTestReportModel;
+import net.bioclipse.ds.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
@@ -184,7 +184,14 @@ public class DSBusinessModel {
 
                             String pluginID=element.getNamespaceIdentifier();
                             test.setPluginID( pluginID );
+                            
+                            //Add dedicated consensus calculator, or use default
+                            String pconsid = element.getAttribute("consensus");
+                            if (pconsid==null) pconsid=DEFAULT_CONSENSUS_CALCULATOR;
+                            IConsensusCalculator conscalc = createNewConsCalc(pconsid);
+                            test.setConsensusCalculator( conscalc );
 
+                            //Process children
                             for( IConfigurationElement subelement
                                     : element.getChildren() ) {
                                 if ("resource".equals( subelement.getName() )){
@@ -213,12 +220,6 @@ public class DSBusinessModel {
                         LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
                     }
                     
-                    //Add dedicated consensus calculator, or use default
-                    String pconsid = element.getAttribute("consensus");
-                    if (pconsid==null) pconsid=DEFAULT_CONSENSUS_CALCULATOR;
-                    IConsensusCalculator conscalc = createNewConsCalc(pconsid);
-                    test.setConsensusCalculator( conscalc );
-
                     //Add a reportmodel for the Test if it declares one 
                     //in the manifest
 

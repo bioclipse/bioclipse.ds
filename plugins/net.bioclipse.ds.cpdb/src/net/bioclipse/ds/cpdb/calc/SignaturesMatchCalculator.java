@@ -12,7 +12,7 @@ package net.bioclipse.ds.cpdb.calc;
 
 import org.apache.log4j.Logger;
 
-import net.bioclipse.ds.impl.calc.BaseDSPropertyCalculator;
+import net.bioclipse.ds.prop.calc.BaseDSPropertyCalculator;
 
 
 

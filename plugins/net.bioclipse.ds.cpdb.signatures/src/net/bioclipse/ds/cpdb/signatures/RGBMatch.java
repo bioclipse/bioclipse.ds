@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.openscience.cdk.interfaces.IAtom;
 
-import net.bioclipse.ds.impl.result.SubStructureMatch;
+import net.bioclipse.ds.model.result.SubStructureMatch;
 
 
 public class RGBMatch extends SubStructureMatch{

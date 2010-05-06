@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.model.report.AbstractTestReportModel;
+import net.bioclipse.ds.report.AbstractTestReportModel;
 
 /**
  * A top interface for all tests

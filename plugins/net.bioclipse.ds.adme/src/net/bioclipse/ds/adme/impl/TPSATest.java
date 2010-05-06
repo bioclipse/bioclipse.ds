@@ -22,10 +22,10 @@ import org.openscience.cdk.qsar.descriptors.molecular.TPSADescriptor;
 import org.openscience.cdk.qsar.result.DoubleResult;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.ds.impl.result.SimpleResult;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.SimpleResult;
 
 /**
  * 

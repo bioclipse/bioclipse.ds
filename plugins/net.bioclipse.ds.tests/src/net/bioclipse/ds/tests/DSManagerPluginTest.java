@@ -24,7 +24,7 @@ import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.report.ReportHelper;
+import net.bioclipse.ds.report.StatusHelper;
 
 import org.junit.Test;
 
@@ -98,7 +98,7 @@ public class DSManagerPluginTest {
         assertTrue( results.size()>0 );
         for (ITestResult result : results){
             System.out.println("Found exact result: " 
-                               + result.getName() +" - " + ReportHelper.statusToString( result.getClassification()));
+                               + result.getName() +" - " + StatusHelper.statusToString( result.getClassification()));
         }
 
         //No hits
@@ -107,7 +107,7 @@ public class DSManagerPluginTest {
         assertFalse( results.size()>0 );
         for (ITestResult result : results){
             System.out.println("Found exact result: " 
-                               + result.getName() +" - " + ReportHelper.statusToString( result.getClassification()));
+                               + result.getName() +" - " + StatusHelper.statusToString( result.getClassification()));
         }
 
         
@@ -130,7 +130,7 @@ public class DSManagerPluginTest {
         assertTrue( results.size()>0 );
         for (ITestResult result : results){
             System.out.println("Found nearest result: " 
-                               + result.getName() +" - " + ReportHelper.statusToString( result.getClassification()));
+                               + result.getName() +" - " + StatusHelper.statusToString( result.getClassification()));
         }
 
         //No hits
@@ -139,7 +139,7 @@ public class DSManagerPluginTest {
         assertFalse( results.size()>0 );
         for (ITestResult result : results){
             System.out.println("Found nearest result: " 
-                               + result.getName() +" - " + ReportHelper.statusToString( result.getClassification()));
+                               + result.getName() +" - " + StatusHelper.statusToString( result.getClassification()));
         }
 
         

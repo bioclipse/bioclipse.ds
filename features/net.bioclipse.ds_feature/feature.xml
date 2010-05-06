@@ -4,7 +4,7 @@
       label="Decision Support Feature"
       version="2.2.0.v20100127"
       provider-name="The Bioclipse Team"
-      plugin="net.bioclipse.ds">
+      plugin="net.bioclipse.ds.ui">
 
    <description>
       Bioclipse DS provides decision support for evaluating chemical structures with respect to several endpoints, for example mutagenicity.
@@ -67,6 +67,20 @@ The Eclipse Public License accompanies this distribution, and is available at ht
 
    <plugin
          id="net.bioclipse.ds.adme"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

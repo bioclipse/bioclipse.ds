@@ -24,7 +24,7 @@
             id="bursi.sdflookup.exact"
             name="Bursi exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.impl.SDFPosNegExactMatchFP"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchFP"
             propertycalculator="Bursi Exact Match"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
@@ -40,7 +40,7 @@
             id="bursi.sdflookup.nearest"
             name="Bursi nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.impl.SDFPosNegNearestMatchFP"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="Bursi Nearest Neighbours"
             reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
@@ -69,7 +69,7 @@
             reportmodel="net.bioclipse.ds.impl.report.SmartsMatchReportModel"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="Bursi Toxicophores"
-            class="net.bioclipse.ds.impl.SmartsMatcher">
+            class="net.bioclipse.ds.matcher.SmartsMatcher">
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
             </resource>
@@ -89,7 +89,7 @@
             name="Mutagenicity Consensus"
             visible="false"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.impl.BogusTest"
+            class="net.bioclipse.ds.matcher.BogusTest"
             icon="icons/db.gif">
       </test>
       

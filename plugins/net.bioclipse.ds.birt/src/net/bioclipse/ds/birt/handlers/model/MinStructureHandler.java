@@ -10,7 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.birt.handlers.model;
 
-import net.bioclipse.ds.model.report.DSSingleReportModel;
+
+import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.ui.views.DSView;
 
 import org.eclipse.birt.report.engine.api.script.IUpdatableDataSetRow;

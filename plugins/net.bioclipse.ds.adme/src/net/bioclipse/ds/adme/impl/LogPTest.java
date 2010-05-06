@@ -50,8 +50,8 @@ public class LogPTest extends AbstractDSTest{
                                                      IProgressMonitor monitor ){
 
         //Store results here
-        ArrayList<net.bioclipse.ds.impl.result.DoubleResult> results 
-                 = new ArrayList<net.bioclipse.ds.impl.result.DoubleResult>();
+        ArrayList<net.bioclipse.ds.model.result.DoubleResult> results 
+                 = new ArrayList<net.bioclipse.ds.model.result.DoubleResult>();
 
         try {
             Activator.getDefault().getJavaCDKManager()
@@ -79,7 +79,7 @@ public class LogPTest extends AbstractDSTest{
         DescriptorValue res= descriptor.calculate( ac);
         DoubleResult val = (DoubleResult) res.getValue();
         double result=val.doubleValue();
-        results.add(new net.bioclipse.ds.impl.result.DoubleResult(
+        results.add(new net.bioclipse.ds.model.result.DoubleResult(
                                                     "XLogP"
                                                     , result
                                                     , ITestResult.INFORMATIVE));
@@ -109,7 +109,7 @@ public class LogPTest extends AbstractDSTest{
             String name = res2.getNames()[i];
             double value = val2.get( i );
             if (i!=1) //Skip alogp2, which is just the squared alogp
-                results.add(new net.bioclipse.ds.impl.result.DoubleResult(
+                results.add(new net.bioclipse.ds.model.result.DoubleResult(
                                          name, value, ITestResult.INFORMATIVE));
 //                results.add(new SimpleResult(name + ": " + value, ITestResult.INFORMATIVE));
         }

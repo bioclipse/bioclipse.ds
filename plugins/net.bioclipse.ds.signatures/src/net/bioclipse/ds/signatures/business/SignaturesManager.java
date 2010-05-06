@@ -81,7 +81,7 @@ public class SignaturesManager implements IBioclipseManager {
             String gensign=signature.signatureStringForVertex(atomNr, 
                                                     height).toCanonicalString();
             signatures.add( gensign);
-            logger.debug("Sign for atom " + atomNr + ": " +gensign);
+//            logger.debug("Sign for atom " + atomNr + ": " +gensign);
         }
 
         return signatures;

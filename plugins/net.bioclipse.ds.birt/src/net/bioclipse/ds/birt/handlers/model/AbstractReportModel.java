@@ -1,7 +1,7 @@
 package net.bioclipse.ds.birt.handlers.model;
 
-import net.bioclipse.ds.model.report.AbstractTestReportModel;
-import net.bioclipse.ds.model.report.DSRow;
+import net.bioclipse.ds.report.AbstractTestReportModel;
+import net.bioclipse.ds.report.DSRow;
 import net.bioclipse.ds.ui.views.DSView;
 
 import org.eclipse.birt.report.engine.api.script.IUpdatableDataSetRow;
