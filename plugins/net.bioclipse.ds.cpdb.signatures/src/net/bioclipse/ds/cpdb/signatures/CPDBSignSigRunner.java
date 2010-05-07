@@ -266,7 +266,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         ISignaturesManager sign=net.bioclipse.ds.signatures.Activator.
                 getDefault().getJavaSignaturesManager();
         
-        List<String> signatures = sign.generate( mol );
+        List<String> signatures = sign.generate( mol ).getSignatures();
         
         //Loop over all generated signature for the current molecule
         int molSignature=0;
@@ -361,6 +361,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         // Get largest and smallest derivate for scaling (see below)
         Double largestDeriv = varsAndDerivs.lastKey();
         Double smallestDeriv = varsAndDerivs.firstKey();
+        System.out.println("Largest: " + largestDeriv + " - " + " smallest: " + smallestDeriv);
         // Create a new match with correct coloring
 //        RGBMatch match = new RGBMatch("Result: " 
 //                                      + formatter.format( prediction ), 
@@ -379,6 +380,9 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         for (int i = 0; i < numberOfVars; i++)	{
         	Double currentDeriv = null;
         	// Select absolute valued largest remaining variables
+        	if (varsAndDerivs.size()<=0){
+              return returnError( "varsAndDerivs was empty","");
+        	}
         	if(Math.abs(varsAndDerivs.lastKey()) > 
         	    Math.abs(varsAndDerivs.firstKey()))	{
         		currentDeriv = varsAndDerivs.lastKey();

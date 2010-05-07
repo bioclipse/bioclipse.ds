@@ -24,12 +24,12 @@
             id="cpdb.sdflookup.exact"
             name="CPDB exact matches"
             endpoint="net.bioclipse.ds.carcinogenicity"
-            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchFP"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="CPDB Exact Match"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
-                  path="data/cpdb-processed.sdf">
+                  path="data/cpdb-processed_sign2.sdf">
             </resource>
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />
