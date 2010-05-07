@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.ui,
  net.bioclipse.cdk.jchempaint,
  net.bioclipse.cdk.jchempaint.view,
- net.bioclipse.inchi
+ net.bioclipse.inchi,
+ net.bioclipse.ds.signatures;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: net.bioclipse.ds.common,
