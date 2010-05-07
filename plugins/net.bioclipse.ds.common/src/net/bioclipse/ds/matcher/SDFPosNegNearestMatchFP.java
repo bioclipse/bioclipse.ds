@@ -121,7 +121,12 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
 
                     float calcTanimoto = cdk.calculateTanimoto( dbFP, molFP );
                     
-                    if (calcTanimoto >= tanimoto){
+                    if (calcTanimoto == 1){
+                        //Skip if one
+                        logger.debug("Skipped tanimoto 1 in FP Nearest " +
+                        		"Neighbor matcher.");
+                    }
+                    else if (calcTanimoto >= tanimoto){
 
                         //A hit found
                         ICDKMolecule matchmol = getSDFmodel().getMoleculeAt( i );
