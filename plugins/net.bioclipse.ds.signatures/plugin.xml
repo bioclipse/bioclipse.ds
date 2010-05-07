@@ -10,4 +10,29 @@
       </scriptContribution>
    </extension>
 
+   <extension
+       point="net.bioclipse.cdk.propertyCalculator">
+    <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.SignaturesPropertyCalculator"
+          id="Signatures">
+    </Calculator>
+   </extension>
+
+ 	<extension
+  		point="org.eclipse.ui.menus">
+   <menuContribution
+        locationURI="popup:net.bioclipse.sdfeditor.popup.calculateProperty?after=additions">
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Signatures"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Signatures">
+        </parameter>
+     </command>
+   </menuContribution>
+
+ </extension>   
+
 </plugin>
