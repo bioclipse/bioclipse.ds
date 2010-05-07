@@ -31,6 +31,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.report.StatusHelper;
 import net.bioclipse.ds.ui.DSContextProvider;
@@ -827,14 +828,22 @@ public class DSView extends ViewPart implements IPartListener,
                 public void done( IJobChangeEvent event ) {
 
                     final BioclipseJob<List<ITestResult>> job=(BioclipseJob<List<ITestResult>>) event.getJob();
-                    final List<ITestResult> matches = job.getReturnValue();
-                    
+                    List<ITestResult> result = null;
+                    try{
+                        result = job.getReturnValue();
+                    }catch(ClassCastException e){
+                        result=new ArrayList<ITestResult>();
+                        result.add( new SimpleResult( e.getMessage(), SimpleResult.ERROR ) );
+                    }
+
+                    final List<ITestResult> matches = result;
+
                     //Update viewer in SWT thread
                     Display.getDefault().asyncExec( new Runnable(){
                         public void run() {
 
-                            logger.debug( "лл Job done: " + tr.getTest().getName() );
-                            logger.debug( "лл Matches: " + matches.size());
+                            logger.debug("Matcher '" + tr.getTest().getName() 
+                                        + "' finished with " + matches.size() + " hits");
                             
                             //Copy properties from result into original molecule
                             //from the cloned
@@ -875,7 +884,7 @@ public class DSView extends ViewPart implements IPartListener,
                                     tr.addResult(result);
                             } 
                             tr.setMatches( matches );
-                            logger.debug( "===== " + tr + " finished" );
+//                            logger.debug( "===== " + tr + " finished" );
                             if (tr.getTest().getTestErrorMessage()!="")
                                 tr.setStatus( TestRun.ERROR );
                             else
@@ -892,7 +901,12 @@ public class DSView extends ViewPart implements IPartListener,
                                 jcp.getWidget().setUseExtensionGenerators( true );
                                 //manually update jcpeditor
                                 jcp.update();
+                            }else if ( part instanceof MultiPageMoleculesEditorPart ) {
+                                MultiPageMoleculesEditorPart mpe = (MultiPageMoleculesEditorPart)part;
+                                mpe.getMoleculesPage().setUseExtensionGenerators( true );
+                                mpe.getMoleculesPage().refresh();
                             }
+
 
                             
                             //If we previously stored a selection, set it now
