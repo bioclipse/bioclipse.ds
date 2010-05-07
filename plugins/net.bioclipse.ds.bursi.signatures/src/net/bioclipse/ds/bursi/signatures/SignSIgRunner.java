@@ -283,7 +283,7 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
         ISignaturesManager sign=net.bioclipse.ds.signatures.Activator.
                 getDefault().getJavaSignaturesManager();
         
-        List<String> signatures = sign.generate( mol );
+        List<String> signatures = sign.generate( mol ).getSignatures();
         
         //Loop over all generated signature for the current molecule
         int molSignature=0;

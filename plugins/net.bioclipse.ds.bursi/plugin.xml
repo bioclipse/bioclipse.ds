@@ -24,12 +24,12 @@
             id="bursi.sdflookup.exact"
             name="Bursi exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchFP"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="Bursi Exact Match"
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_100426.sdf">
+                  path="data/cas_4337_noH_props_sign.sdf">
             </resource>
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
