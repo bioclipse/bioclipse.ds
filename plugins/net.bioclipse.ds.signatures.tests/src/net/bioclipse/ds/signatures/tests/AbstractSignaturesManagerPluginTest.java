@@ -12,13 +12,12 @@ package net.bioclipse.ds.signatures.tests;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
+import net.bioclipse.ds.signatures.prop.calc.Signatures;
 
 import org.junit.Test;
 
@@ -40,12 +39,10 @@ public abstract class AbstractSignaturesManagerPluginTest {
 
         ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
         ICDKMolecule mol=cdk.fromSMILES( "C1CCCCC1CC(CC)" );
-        List<String> signs=managerNamespace.generate( mol );
-        assertTrue( signs.size()>0 );
+        Signatures sp = managerNamespace.generate( mol );
+        assertTrue( sp.getSignatures().size()==1 );
+        assertEquals( "WEEE", sp );
         
-        for (String sign : signs ){
-            System.out.println(sign);
-        }
     }
 
 }
