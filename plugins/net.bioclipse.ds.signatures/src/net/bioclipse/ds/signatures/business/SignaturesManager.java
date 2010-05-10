@@ -180,7 +180,7 @@ public class SignaturesManager implements IBioclipseManager {
               MoleculeSignature signature = new MoleculeSignature(mol);
               for ( int atomNr = 0; atomNr < mol.getAtomCount(); atomNr++){
                   String gensign=signature.signatureStringForVertex(atomNr, 
-                                                    height).toCanonicalString();
+                                                    height);//.toCanonicalString();
                   signatureString.add( gensign);
 //                  logger.debug("Sign for atom " + atomNr + ": " +gensign);
               }
