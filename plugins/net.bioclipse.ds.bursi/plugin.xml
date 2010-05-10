@@ -29,7 +29,7 @@
             informative="true"
             reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_sign.sdf">
+                  path="data/cas_4337_noH_props_sign_100510.sdf">
             </resource>
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
@@ -45,7 +45,7 @@
             propertycalculator="Bursi Nearest Neighbours"
             reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_100426.sdf">
+                  path="data/cas_4337_noH_props_sign_100510.sdf">
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="Ames test categorisation" />
