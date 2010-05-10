@@ -784,6 +784,8 @@ public class DSView extends ViewPart implements IPartListener,
                         
                         ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
                         
+                        preprocessClonedMol(clonedMol);
+                        
                         logger.debug( "== Testrun: " + tr.getTest().getName() + " started" );
                         tr.setStatus( TestRun.RUNNING );
                         tr.setMolecule( clonedMol );
@@ -804,6 +806,23 @@ public class DSView extends ViewPart implements IPartListener,
         }
 
         logger.debug( "===== All testruns started" );
+    }
+
+    /**
+     * Preprocess the molecule:
+     * 
+     * a) Remove explicit hydrogens
+     * 
+     * @param clonedMol
+     */
+    private void preprocessClonedMol( ICDKMolecule clonedMol ) {
+        
+        ICDKManager cdk = net.bioclipse.cdk.business.Activator
+        .getDefault().getJavaCDKManager();
+        
+        cdk.removeExplicitHydrogens( clonedMol );
+
+        
     }
 
     private void runTestAsJobs( final ICDKMolecule clonedMol, IDSManager ds, 
