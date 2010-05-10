@@ -8,32 +8,35 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.impl.report;
+package net.bioclipse.ds.ui.report;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.ds.report.AbstractTestReportModel;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
-import net.bioclipse.ds.model.result.SmartsMatch;
-import net.bioclipse.ds.report.AbstractTestReportModel;
+import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.report.DSRow;
 import net.bioclipse.ds.report.StatusHelper;
 import net.bioclipse.ds.ui.ImageHelper;
 
 
-public class SmartsMatchReportModel extends AbstractTestReportModel{
+public class NNReportModel extends AbstractTestReportModel{
 
    
-    public SmartsMatchReportModel() {
+    public NNReportModel() {
         super();
     }
     
     public List<DSRow> extractRows(TestRun run){
+
+        DecimalFormat twoDForm = new DecimalFormat("#.##");
 
         //for a testrunm transform to a DSRow with a structure image and paams
         List<DSRow> newrows=new ArrayList<DSRow>();
@@ -42,21 +45,20 @@ public class SmartsMatchReportModel extends AbstractTestReportModel{
         for (int i=0; i<run.getMatches().size(); i++){
             
             ITestResult match = run.getMatches().get( i );
-            if ( match instanceof SmartsMatch ) {
-                SmartsMatch extmolmatch = (SmartsMatch) match;
+            if ( match instanceof ExternalMoleculeMatch ) {
+                ExternalMoleculeMatch extmolmatch = (ExternalMoleculeMatch) match;
 
                 Map<String, String> params=new HashMap<String, String>();
                 params.put("name",  match.getName());
                 params.put("classification",  StatusHelper.statusToString(
                                                       match.getClassification()));
-                params.put("smarts",  extmolmatch.getSmartsString());
+                params.put("tanimoto",  twoDForm.format( 
+                                                  extmolmatch.getSimilarity()));
 
-                //Ok, we need to take the query molecule and highlight the 
-                // substructure from this match
-                ICDKMolecule mainmol = run.getMolecule();
+                IMolecule bcmol=(IMolecule) match.getAdapter( IMolecule.class );
                 byte[] structureImage = null;
                 try {
-                    structureImage = ImageHelper.createImage(mainmol, match);
+                    structureImage = ImageHelper.createImage(bcmol, null);
                 } catch ( BioclipseException e ) {
                     e.printStackTrace();
                 }

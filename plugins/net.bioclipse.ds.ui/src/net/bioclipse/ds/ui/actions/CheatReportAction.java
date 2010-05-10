@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.actions;
+package net.bioclipse.ds.ui.actions;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;

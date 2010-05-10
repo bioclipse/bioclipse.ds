@@ -27,9 +27,9 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.ui.sdfeditor,
  net.bioclipse.cdk.jchempaint.view
 Bundle-ActivationPolicy: lazy
-Export-Package: net.bioclipse.ds.actions,
- net.bioclipse.ds.impl.report,
- net.bioclipse.ds.ui,
+Export-Package: net.bioclipse.ds.ui,
+ net.bioclipse.ds.ui.actions,
+ net.bioclipse.ds.ui.report,
  net.bioclipse.ds.ui.views
 Import-Package: javax.vecmath,
  org.apache.log4j
