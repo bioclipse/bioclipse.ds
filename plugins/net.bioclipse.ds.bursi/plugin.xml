@@ -27,7 +27,7 @@
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="Bursi Exact Match"
             informative="true"
-            reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
+            reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
             <resource name="file"
                   path="data/cas_4337_noH_props_sign_100510.sdf">
             </resource>
@@ -43,9 +43,9 @@
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="Bursi Nearest Neighbours"
-            reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
+            reportmodel="net.bioclipse.ds.ui.report.NNReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_sign_100510.sdf">
+                  path="data/cas_4337_noH_props_100426.sdf">
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="Ames test categorisation" />
@@ -66,7 +66,7 @@
             id="bursi.smarts"
             name="Bursi Toxicophores"
             endpoint="net.bioclipse.ds.mutagenicity"
-            reportmodel="net.bioclipse.ds.impl.report.SmartsMatchReportModel"
+            reportmodel="net.bioclipse.ds.ui.report.SmartsMatchReportModel"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="Bursi Toxicophores"
             class="net.bioclipse.ds.matcher.SmartsMatcher">

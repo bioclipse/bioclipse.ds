@@ -27,7 +27,7 @@
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="CPDB Exact Match"
             informative="true"
-            reportmodel="net.bioclipse.ds.impl.report.ExactMatchReportModel">
+            reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
             <resource name="file"
                   path="data/cpdb-processed_sign_100510.sdf">
             </resource>
@@ -43,7 +43,7 @@
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="CPDB Nearest Neighbours"
-            reportmodel="net.bioclipse.ds.impl.report.NNReportModel">
+            reportmodel="net.bioclipse.ds.ui.report.NNReportModel">
             <resource name="file"
                   path="data/cpdb-processed.sdf">
             </resource>
