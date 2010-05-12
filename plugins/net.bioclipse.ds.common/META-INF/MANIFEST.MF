@@ -33,4 +33,4 @@ Export-Package: net.bioclipse.ds.common,
  net.bioclipse.ds.cons,
  net.bioclipse.ds.matcher,
  net.bioclipse.ds.prop.calc
-Import-Package: org.apache.log4j;version="1.2.15"
+Import-Package: org.apache.log4j
