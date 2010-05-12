@@ -29,7 +29,7 @@
             informative="true"
             reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
             <resource name="file"
-                  path="data/cpdb-processed_sign_100510.sdf">
+                  path="data/cpdb-processed_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />

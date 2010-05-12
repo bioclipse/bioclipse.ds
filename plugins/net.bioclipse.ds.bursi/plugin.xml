@@ -29,7 +29,7 @@
             informative="true"
             reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_sign_100510.sdf">
+                  path="data/cas_4337_noH_props_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
