@@ -1,4 +1,4 @@
-package net.bioclipse.ds.cpdb.signatures;
+package net.bioclipse.ds.model.result;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.openscience.cdk.interfaces.IAtom;
 
-import net.bioclipse.ds.model.result.SubStructureMatch;
 
 
 public class RGBMatch extends SubStructureMatch{
