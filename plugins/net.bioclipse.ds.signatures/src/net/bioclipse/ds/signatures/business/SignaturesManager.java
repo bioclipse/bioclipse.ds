@@ -19,6 +19,9 @@ import java.util.Map;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.PublishedMethod;
+import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.signatures.prop.calc.Signatures;
@@ -72,7 +75,7 @@ public class SignaturesManager implements IBioclipseManager {
         mdlString=mdlString+"\n$$$$";
         ByteArrayInputStream b= new ByteArrayInputStream( mdlString.getBytes());
         
-        List<Signatures> list = doGenerateFromSDFStream( b, height );
+        List<Signatures> list = doGenerateAtomSignaturesFromSDFStream( b, height );
         if (list==null || list.size()<=0)
             throw new BioclipseException( "Signatures empty" );
         if (list.size()>1)
@@ -142,7 +145,7 @@ public class SignaturesManager implements IBioclipseManager {
 
     public List<Signatures> generate(IFile file, int height) 
     throws BioclipseException, CoreException{
-        return doGenerateFromSDFStream( file.getContents(), height);
+        return doGenerateAtomSignaturesFromSDFStream( file.getContents(), height);
     }
 
 
@@ -157,7 +160,7 @@ public class SignaturesManager implements IBioclipseManager {
      * @return Map from molecule > property
      * @throws BioclipseException if reading or calculation failed
      */
-    private List<Signatures> doGenerateFromSDFStream(
+    private List<Signatures> doGenerateAtomSignaturesFromSDFStream(
                                                         InputStream inputstream,
                                                        int height)
                                                      throws BioclipseException {
@@ -191,18 +194,61 @@ public class SignaturesManager implements IBioclipseManager {
           }
           
           return signaturesList;
-          
-//          Molecule molecule = molecules.get( 0 );
-//          MoleculeSignature signature = new MoleculeSignature(molecule);
-//          for ( int atomNr = 0; atomNr < molecule.getAtomCount(); atomNr++){
-//              String gensign=signature.signatureStringForVertex(atomNr, 
-//                                                  height).toCanonicalString();
-//              signatureString.add( gensign);
-////              logger.debug("Sign for atom " + atomNr + ": " +gensign);
-//          }
-//
-//          return new SignaturesProperty(signatureString);
       }
 
+
+    /**
+     * This is the actual Signature generation.
+     * It accepts an SDF content as an InputStream.
+     * 
+     * @param inputstream SDF content as an InputStream.
+     * @param height Signatures height
+     * @return Map from molecule > property
+     * @throws BioclipseException if reading or calculation failed
+     */
+    private List<String> doGenerateMoleculSignaturesFromSDFStream(
+                                                        InputStream inputstream)
+                                                     throws BioclipseException {
+
+          List<Molecule> molecules = MoleculeReader.readSDFfromStream( 
+                                                                  inputstream );
+
+          //Store results
+          List<String> signaturesList = new ArrayList<String>();
+
+          //Should be only one
+          if (molecules==null || molecules.size()<=0)
+              throw new BioclipseException( "Could not read any molecules " +
+                  "from SDF inputstream" );
+
+          //Loop over all molecules
+          for (Molecule mol : molecules){
+              MoleculeSignature signature = new MoleculeSignature(mol);
+              signaturesList.add( signature.getMolecularSignature() );
+          }
+          
+          return signaturesList;
+          
+      }
+    
+    public String generateMoleculeSignature( ICDKMolecule mol )
+        throws BioclipseException{
+            
+            //Serialize to SDF
+            ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
+            
+            String mdlString=cdk.getMDLMolfileString( mol );
+            mdlString=mdlString+"\n$$$$";
+            ByteArrayInputStream b= new ByteArrayInputStream( mdlString.getBytes());
+            
+            List<String> list = doGenerateMoleculSignaturesFromSDFStream( b);
+            if (list==null || list.size()<=0)
+                throw new BioclipseException( "Signatures empty" );
+            if (list.size()>1)
+                throw new BioclipseException( "Signatures contained more than one "+
+                    "result." );
+            else
+                return list.get( 0 );
+        }
 
 }

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 
+import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
@@ -111,5 +112,16 @@ public interface ISignaturesManager extends IBioclipseManager {
         		"a given height")
     public Map<IMolecule, Signatures> generate(List<IMolecule> molecules
                                                        ,int height);
+
+    /**
+     * Generate MoleculeSignature from a molecule
+     * @param mol 
+     * @return String
+     */
+    @Recorded
+    @PublishedMethod( 
+        params = "ICDKMolecule cdkmol",
+        methodSummary = "Generate a MolecularSignature from a molecule.")
+    public String generateMoleculeSignature( ICDKMolecule cdkmol );
 
 }

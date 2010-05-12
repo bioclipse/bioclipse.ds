@@ -27,17 +27,17 @@ import net.bioclipse.ds.signatures.business.ISignaturesManager;
  *
  */
 public class SignaturesPropertyCalculator 
-                            implements IPropertyCalculator<Signatures> {
+                            implements IPropertyCalculator<String> {
 
     Logger logger = Logger.getLogger( SignaturesPropertyCalculator.class );
 
-    public Signatures calculate( ICDKMolecule molecule ) {
+    public String calculate( ICDKMolecule molecule ) {
         
         ISignaturesManager signatures= Activator.getDefault()
             .getJavaSignaturesManager();
 
         try {
-            return signatures.generate( molecule );
+            return signatures.generateMoleculeSignature( molecule );
         } catch ( Exception e ) {
             logger.warn( "Failed to calculate Signatures for mol: " + molecule);
         }
@@ -49,20 +49,16 @@ public class SignaturesPropertyCalculator
         return "net.bioclipse.signature";
     }
 
-    public Signatures parse( String value ) {
-        String[] values = value.split( "," );
-        List<String> signs = Arrays.asList( values );
-        for (String s : signs)
-            s=s.trim();
-        Signatures result = new Signatures(signs);
-        return result;
+    public String parse( String value ) {
+        return value;
     }
 
     public String toString( Object value ) {
 
-        if(value instanceof Signatures) {
-            Signatures sign = (Signatures)value;
-            return sign.toString();
+        if(value instanceof String) {
+            return (String) value;
         }
         return "";
-    }}
+    }
+    
+}
