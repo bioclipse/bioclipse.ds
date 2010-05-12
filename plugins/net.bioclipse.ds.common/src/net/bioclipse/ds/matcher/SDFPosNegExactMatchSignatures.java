@@ -63,28 +63,26 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
         ISignaturesManager signatures= Activator.getDefault()
         .getJavaSignaturesManager();
 
-        Signatures querySignature=null;
+        String querySignature=null;
         try {
-            querySignature = signatures.generate( cdkmol );
+            querySignature = signatures.generateMoleculeSignature( cdkmol );
         } catch ( Exception e ) {
             logger.error( "Failed to calculate Signatures for mol: " + cdkmol);
             return returnError( "Error generating Signatures", e.getMessage() );
         }
         
-        if (querySignature==null 
-                || querySignature.getSignatures()==null 
-                || querySignature.getSignatures().size()<=0){
-            logger.error( "Signatures empty for mol: " + cdkmol);
-            return returnError( "No Signatures for molecule", "" );
+        if (querySignature==null){
+            logger.error( "MolSignatures empty for mol: " + cdkmol);
+            return returnError( "No MolSignaturee for molecule", "" );
         }
 
         //What to search for
-        logger.debug( "Query signatures: " + querySignature);
+        logger.debug( "Query MolecularSignature: " + querySignature);
 
         //Search the entire SDFmodel
         for (int i=0; i<getSDFmodel().getNumberOfMolecules(); i++){
 
-            Signatures sigprop=getSDFmodel().getPropertyFor( i, 
+            String sigprop=getSDFmodel().getPropertyFor( i, 
                                                       SIGNATURES_PROPERTY_KEY );
             //Null check not required since verified in initialize()
 
