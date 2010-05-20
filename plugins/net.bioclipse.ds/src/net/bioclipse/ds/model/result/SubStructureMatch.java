@@ -33,7 +33,7 @@ public class SubStructureMatch extends SimpleResult{
     public String toString() {
         String ret="SubstructureMatch: Name=" + getName() + ", Matching atoms: ";
         for (Integer i : atomNumbers){
-            ret=ret+ i + ",";
+            ret=ret+ (i+1) + ",";
         }
         return ret;
     }
