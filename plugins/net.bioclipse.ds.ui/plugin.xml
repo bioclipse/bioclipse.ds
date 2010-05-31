@@ -23,6 +23,12 @@
             id="net.bioclipse.ds.ui.views.DSView"
             name="Decision Support">
       </view>
+      <view
+            class="net.bioclipse.ds.ui.views.Eventview"
+            id="net.bioclipse.ds.ui.eventview"
+            name="Chem Event View"
+            restorable="true">
+      </view>
    </extension>
 
    <extension
