@@ -3,13 +3,18 @@ package net.bioclipse.ds.ui.views;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.bioclipse.cdk.domain.CDKMolecule;
+import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -32,10 +37,10 @@ public class Eventview extends ViewPart implements IPartListener2{
 
     private static final Logger logger = Logger.getLogger(DSView.class);
     
-    private Map<JChemPaintEditor, IPropertyChangeListener> editorListenerMap;
+    private Map<ICDKMolecule, IPropertyChangeListener> editorListenerMap;
 
 	public Eventview() {
-		editorListenerMap=new HashMap<JChemPaintEditor, IPropertyChangeListener>();
+		editorListenerMap=new HashMap<ICDKMolecule, IPropertyChangeListener>();
 	}
 
 	
@@ -45,6 +50,10 @@ public class Eventview extends ViewPart implements IPartListener2{
         getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
 		//TODO: What if we already have an editor open on view creation?
+        IEditorPart editor=getSite().getPage().getActiveEditor();
+        
+        if (editor!=null)
+        	handleEditor(editor);
 		
 	}
 
@@ -60,12 +69,14 @@ public class Eventview extends ViewPart implements IPartListener2{
 
 	@Override
 	public void partBroughtToTop(IWorkbenchPartReference partRef) {
-//		logger.debug("Part brouight to top: " + partRef.getId() + " detected in Eventview.");
+		logger.debug("Part brouight to top: " + partRef.getId() + " detected in Eventview.");
+		//TODO: Switch view model here
 	}
 
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
-//		logger.debug("Part Closed: " + partRef.getId() + " detected in Eventview.");
+		logger.debug("Part Closed: " + partRef.getId() + " detected in Eventview.");
+		//TODO: Remove listeners here
 	}
 
 	@Override
@@ -75,7 +86,7 @@ public class Eventview extends ViewPart implements IPartListener2{
 
 	@Override
 	public void partHidden(IWorkbenchPartReference partRef) {
-//		logger.debug("Part Hidden: " + partRef.getId() + " detected in Eventview.");
+		logger.debug("Part Hidden: " + partRef.getId() + " detected in Eventview.");
 	}
 
 	@Override
@@ -86,9 +97,7 @@ public class Eventview extends ViewPart implements IPartListener2{
 	@Override
 	public void partOpened(IWorkbenchPartReference partRef) {
 		logger.debug("Part Opened: " + partRef.getId() + " detected in Eventview.");
-
-		handleEditor(partRef);
-
+		handlePartRef(partRef);
 	}
 
 	@Override
@@ -96,48 +105,64 @@ public class Eventview extends ViewPart implements IPartListener2{
 //		logger.debug("Part Visible: " + partRef.getId() + " detected in Eventview.");
 	}
 	
-	
-	
-	
-	
-	
-	
-	private void handleEditor(IWorkbenchPartReference partRef){
-
+	@Override
+	public void dispose() {
+		//Remove all listeners here
 		
+		super.dispose();
+	}
+	
+	
+	
+	private void handlePartRef(IWorkbenchPartReference partRef){
 		if (!(partRef instanceof IEditorReference)) return;
 		IEditorReference editorRef = (IEditorReference) partRef;
 		
-		JChemPaintEditor jcp=null;
+		IEditorPart editor=null;
 		if (editorRef.getId().startsWith("net.bioclipse.cdk.ui.editors.jchempaint")) {
-			logger.debug("Part Opened is JChemPaintEditor");
-			jcp=(JChemPaintEditor) editorRef.getEditor(false);
+			logger.debug("Handled part is JChemPaintEditor");
+			editor= editorRef.getEditor(false);
 		}
         else if ( editorRef.getId().equals("net.bioclipse.cdk.ui.sdfeditor")) {
-            MultiPageMoleculesEditorPart editor = (MultiPageMoleculesEditorPart)editorRef.getEditor(false);
-			logger.debug("Part Opened is MultiPageMoleculesEditorPart");
-            
-            if (editor.isJCPVisible()){
-    			logger.debug("MultiPageMoleculesEditorPart has JCP page open");
-                //JCP is active
-                Object obj = editor.getAdapter(JChemPaintEditor.class);
-                if (obj!= null){
-                    jcp=(JChemPaintEditor)obj;
-                }
-            }else{
-    			logger.debug("MultiPageMoleculesEditorPart has not the JCP page open");
-            }
+            editor = editorRef.getEditor(false);
+			logger.debug("Handled part is MultiPageMoleculesEditorPart");
         }
+		if (editor!=null)
+			handleEditor(editor);
 		
-		if (jcp!=null)
-			registerJCPListeners(jcp);
-			
+	}
+	
+	private void handleEditor(IEditorPart editor){
+		
+		JChemPaintEditor jcp=null;
+		if (editor instanceof JChemPaintEditor) {
+			registerJCPListeners((JChemPaintEditor) editor);			
+		}
+		else if (editor instanceof MultiPageMoleculesEditorPart) {
+			MultiPageMoleculesEditorPart moltable = (MultiPageMoleculesEditorPart) editor;
+
+			moltable.addPageChangedListener(new IPageChangedListener() {
+
+				@Override
+				public void pageChanged(PageChangedEvent event) {
+					Object obj = event.getSelectedPage();
+					System.out.println("Moltable changed page to: " + obj);
+					if (obj instanceof JChemPaintEditor) {
+						JChemPaintEditor jcp = (JChemPaintEditor) obj;
+						registerJCPListeners(jcp);
+					}
+					else {
+						logger.debug("No JCP visible anymore.");
+					}
+				}
+			});
+        }
 	}
 
 	
 	
 	/**
-	 * Register listeners on teh active JCPeditor. This should only be done once per 
+	 * Register listeners on the active JCPeditor. This should only be done once per 
 	 * JCP instance or, even better, once per underlying CDKMolecule (if possible).
 	 * 
 	 * @param jcp
@@ -145,7 +170,10 @@ public class Eventview extends ViewPart implements IPartListener2{
 	private void registerJCPListeners(JChemPaintEditor jcp) {
 
 		//If editor already is registered, skip adding property listeners
-		if (editorListenerMap.keySet().contains(jcp)) return;
+		if (editorListenerMap.keySet().contains(jcp.getCDKMolecule())){
+			logger.debug("   Skipped registering listeners, cdkmol already in map.");
+			return;
+		}
 
 		IPropertyChangeListener jcplistener = new IPropertyChangeListener() {
 			public void propertyChange( PropertyChangeEvent event ) {
@@ -157,13 +185,14 @@ public class Eventview extends ViewPart implements IPartListener2{
 				}
 				else if(event.getProperty().equals( JChemPaintEditor.
 						MODEL_LOADED )) {
-					logger.debug
-					("EventView reacting: JCP model is loaded");
-
+					JChemPaintEditor jcp=(JChemPaintEditor)event.getSource();
+					ICDKMolecule cdkmol = jcp.getCDKMolecule();
+					logger.debug ("EventView reacting: JCP model is loaded. Molecule: " + cdkmol);
 				}
 			}
 		};
 		jcp.addPropertyChangedListener(jcplistener);
+		editorListenerMap.put(jcp.getCDKMolecule(), jcplistener);
 	}
 
 }
