@@ -138,7 +138,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
 
     public IAtomContainer getAtomContainer() {
         return NoNotificationChemObjectBuilder.getInstance().
-        newAtomContainer();
+        newInstance(IAtomContainer.class);
     }
 
     public java.awt.Color getHighlightingColor( IAtom atom ) {
