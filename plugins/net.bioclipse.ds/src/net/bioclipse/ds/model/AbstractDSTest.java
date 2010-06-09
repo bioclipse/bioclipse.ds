@@ -196,7 +196,7 @@ public abstract class AbstractDSTest implements IDSTest{
     
     public IAtomContainer getAtomContainer() {
         return NoNotificationChemObjectBuilder.getInstance().
-        newAtomContainer();
+        newInstance(IAtomContainer.class);
     }
     
     public java.awt.Color getHighlightingColor( IAtom atom ) {

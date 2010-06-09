@@ -20,6 +20,7 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.SubStructureMatch;
 
 import org.openscience.cdk.Molecule;
+import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.renderer.AtomContainerRenderer;
@@ -27,6 +28,7 @@ import org.openscience.cdk.renderer.font.AWTFontManager;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator;
 import org.openscience.cdk.renderer.generators.BasicBondGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
+import org.openscience.cdk.renderer.generators.HighlightAtomGenerator.HighlightAtomDistance;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 
 
@@ -70,7 +72,7 @@ public class ImageHelper {
         mol = sdg.getMolecule();
         
         // generators make the image elements
-        List<IGenerator> generators = new ArrayList<IGenerator>();
+        List<IGenerator<IAtomContainer>> generators = new ArrayList<IGenerator<IAtomContainer>>();
 
         //Add the standard generators
         generators.add(new BasicBondGenerator());
@@ -108,7 +110,7 @@ public class ImageHelper {
         
         // the call to 'setup' only needs to be done on the first paint
         renderer.setup(mol, drawArea);
-        renderer.getRenderer2DModel().setHighlightDistance( 18 );
+        renderer.getRenderer2DModel().setRenderingParameter(HighlightAtomDistance.class, 18.0 );
 
         //TODO: belows does not seem to work properly
 //        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );

@@ -370,7 +370,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
                                       + formatter.format( prediction ), 
                                       ITestResult.INCONCLUSIVE);
         IAtomContainer significantAtomsContainer = cdkmol.getAtomContainer()
-            .getBuilder().newAtomContainer();
+            .getBuilder().newInstance(IAtomContainer.class);
         
         List<Integer> atomNumbers=new ArrayList<Integer>();
         

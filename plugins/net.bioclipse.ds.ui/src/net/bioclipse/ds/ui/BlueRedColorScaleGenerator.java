@@ -36,7 +36,7 @@ import org.openscience.cdk.renderer.generators.BasicAtomGenerator.CompactAtom;
  * @author ola
  *
  */
-public class BlueRedColorScaleGenerator implements IGenerator {
+public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
 
     public BlueRedColorScaleGenerator() {
 

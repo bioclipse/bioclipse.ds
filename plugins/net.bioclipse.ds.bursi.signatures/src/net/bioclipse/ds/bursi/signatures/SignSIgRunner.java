@@ -389,7 +389,8 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
         else
             match.setClassification( ITestResult.NEGATIVE );
             
-        IAtomContainer significantAtomsContainer=cdkmol.getAtomContainer().getBuilder().newAtomContainer();
+//        IAtomContainer significantAtomsContainer=cdkmol.getAtomContainer()
+//                .getBuilder().newInstance(IAtomContainer.class);
         for (int significantAtom : significantAtoms){
 
             int significantAtomNumber=significantAtom;
