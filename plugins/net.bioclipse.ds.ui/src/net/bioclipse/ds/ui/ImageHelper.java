@@ -110,7 +110,7 @@ public class ImageHelper {
         
         // the call to 'setup' only needs to be done on the first paint
         renderer.setup(mol, drawArea);
-        renderer.getRenderer2DModel().setRenderingParameter(HighlightAtomDistance.class, 18.0 );
+        renderer.getRenderer2DModel().set(HighlightAtomDistance.class, 18.0 );
 
         //TODO: belows does not seem to work properly
 //        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );

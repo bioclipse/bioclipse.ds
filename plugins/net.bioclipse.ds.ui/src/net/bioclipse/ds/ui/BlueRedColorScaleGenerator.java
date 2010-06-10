@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.ds.Activator;
-import net.bioclipse.ds.DSConstants;
 import net.bioclipse.ds.ui.prefs.DSPrefs;
 import net.bioclipse.ds.ui.views.DSView;
 
@@ -81,7 +80,7 @@ public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
                     .getBlueRedColor( resValue );
 
                     if(drawColor != null){
-                        if (model.getRenderingParameter( CompactAtom.class ).getValue()){
+                        if (model.get( CompactAtom.class )){
                             group.add( new OvalElement( atom.getPoint2d().x,
                                                         atom.getPoint2d().y,
                                                         circleRadius,true, drawColor ));
