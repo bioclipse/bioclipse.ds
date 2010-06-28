@@ -63,7 +63,7 @@ public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
         int circleRadiusPref = store.getInt( DSPrefs.CIRCLE_RADIUS );
         double circleRadius=(double)circleRadiusPref / 10;
         if (circleRadius<=0 || circleRadius >1)
-            circleRadius=1.0;
+            circleRadius=0.4;
 
         Map<Integer, Integer> atomResMap = DSResultHelper
             .getResultsFromProperty( (String)o );
