@@ -20,7 +20,6 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
-import net.bioclipse.cdk.ui.sdfeditor.editor.MoleculesEditor;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
@@ -35,7 +34,6 @@ import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.report.StatusHelper;
 import net.bioclipse.ds.ui.DSContextProvider;
-import net.bioclipse.ds.ui.IDSViewNoCloseEditor;
 import net.bioclipse.ds.ui.ImageHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
 import net.bioclipse.jobs.BioclipseJob;
@@ -51,12 +49,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
-import org.eclipse.core.commands.contexts.ContextEvent;
-import org.eclipse.core.commands.contexts.ContextManagerEvent;
-import org.eclipse.core.commands.contexts.IContextManagerListener;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -666,16 +660,17 @@ public class DSView extends ViewPart implements IPartListener2 {
 
         IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                                             .getActivePage().getActiveEditor();
-        if ( editor instanceof JChemPaintEditor ) {
-            JChemPaintEditor jcp = (JChemPaintEditor) editor;
-            doClearAndSetUpNewTestRuns( jcp );
+        JChemPaintEditor jcp = getJCPfromActiveEditor();
+        if (jcp != null){
+            doClearAndSetUpNewTestRuns( jcp.getCDKMolecule() );
         }else{
-            logger.warn( "NOT IMPLEMENTED FOR EDITOR: " + editor );
+            logger.warn( "ClearAllTests NOT IMPLEMENTED FOR EDITOR: " + editor );
         }
         
     }
 
-    private void doRunAllTests() {
+
+	private void doRunAllTests() {
 
         logger.debug("Running tests...");
 
@@ -688,14 +683,11 @@ public class DSView extends ViewPart implements IPartListener2 {
         storedSelection=(IStructuredSelection) viewer.getSelection();
 
         //Get the molecule from the editor
-        //Assumption: All testruns operate on the same molecule
-        IEditorPart part=activeTestRuns.get( 0 ).getEditor();
-        if (!( part instanceof JChemPaintEditor )) {
-            showError("The editor: " + part + " is not " +
-            "supported to run DS tests on.");
+        JChemPaintEditor jcp = getJCPfromActiveEditor();
+        if (jcp==null){
+            showError("The current editor is not supported to run DS tests on.");
             return;
         }
-        JChemPaintEditor jcp = (JChemPaintEditor) part;
         final ICDKMolecule mol=jcp.getCDKMolecule();
         
         //Cancel all running tests
@@ -717,8 +709,8 @@ public class DSView extends ViewPart implements IPartListener2 {
 
         //We need to clear previous tests if already run
         if (isExecuted()==true){
-            doClearAndSetUpNewTestRuns( jcp );
-            activeTestRuns=editorTestMap.get( part );
+            doClearAndSetUpNewTestRuns( mol );
+            activeTestRuns=molTestMap.get( mol );
 //            partActivated( jcp );
             viewer.refresh();
         }
@@ -979,57 +971,7 @@ public class DSView extends ViewPart implements IPartListener2 {
         viewer.getControl().setFocus();
     }
 
-    private IWorkbenchPart getSupportedEditor( IWorkbenchPart part ) {
-        if ( part instanceof JChemPaintEditor ) {
-            logger.debug("We have a JCP editor for TestsView!");
-            return part;
-        }
-        else if ( part instanceof MoleculesEditor ) {
-            //TODO: when does this happen?
-            return part;
-        }
-        else if ( part instanceof MultiPageMoleculesEditorPart ) {
-            logger.debug("We have a MPE editor for TestsView");
-            MultiPageMoleculesEditorPart editor = (MultiPageMoleculesEditorPart)part;
-            
-            if (editor.isJCPVisible()){
-                //JCP is active
-                Object obj = editor.getAdapter(JChemPaintEditor.class);
-                if (obj!= null){
-                    JChemPaintEditor jcp=(JChemPaintEditor)obj;
-                    return jcp;
-                }
-            }
-                
-            
-//            IContextService contextService = (IContextService) PlatformUI.getWorkbench().
-//                                                      getService(IContextService.class);
-//            for (Object cs : contextService.getActiveContextIds()){
-//                if (MultiPageMoleculesEditorPart.JCP_CONTEXT.equals( cs )){
-//                    //JCP is active
-//                    Object obj = editor.getAdapter(JChemPaintEditor.class);
-//                    if (obj!= null){
-//                        JChemPaintEditor jcp=(JChemPaintEditor)obj;
-//                        return jcp;
-//                    }
-//                }
-//            }
-            
-//            Object obj = editor.getAdapter(JChemPaintEditor.class);
-//            if (obj== null){
-//                logger.debug("     MPE editor for TestsView did not have JCP page to provide");
-//                return null;
-//            }
-//            logger.debug("     MPE editor for TestsView provided JCP page!");
-//            JChemPaintEditor jcp=(JChemPaintEditor)obj;
-//            return jcp;
-        }
 
-        logger.debug("No supported editor for TestsView");
-
-        //Not supported editor
-        return null;
-    }
 
     private void updateView() {
         
@@ -1052,9 +994,10 @@ public class DSView extends ViewPart implements IPartListener2 {
 
 
 
-
-
-    
+    /**
+     * Wait for all jobs to finish, then return ReportModel
+     * @return
+     */
     public DSSingleReportModel waitAndReturnReportModel(){
         
         //Wait for all jobs to finish
@@ -1330,7 +1273,39 @@ public class DSView extends ViewPart implements IPartListener2 {
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
 		logger.debug("Part Closed: " + partRef.getId() + " detected in Eventview.");
-		//TODO: Remove listeners here
+
+		 IEditorPart editor = getSupportedEditor(partRef);
+		 JChemPaintEditor jcp=getJCPfromEditor(editor);
+		 
+		 //We are currently unable to unregister listeners for ICDKMolecules in MolTable
+		 //TODO: Get all mols in MolTable and unregister them, or unregister on page change also
+		 if (jcp!=null){
+			 ICDKMolecule mol=jcp.getCDKMolecule();
+
+			 molListenerMap.remove( mol );
+			 if (molTestMap.keySet().contains( mol )){
+				 molTestMap.remove( mol );
+			 }
+		 }
+		 
+		 //If no more editor, clear all
+		 if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
+			 molTestMap.clear();
+			 activeTestRuns=null;
+		     IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
+		     try {
+				for (Endpoint ep : ds.getFullEndpoints()){
+					if (ep.getTestruns()!=null)
+						ep.getTestruns().clear();
+				 }
+			} catch (BioclipseException e) {
+				e.printStackTrace();
+			}
+
+		 }
+		 
+		 updateView();
+
 	}
 
 	@Override
@@ -1367,6 +1342,13 @@ public class DSView extends ViewPart implements IPartListener2 {
 	
 	private void handlePartRef(IWorkbenchPartReference partRef){
 		if (!(partRef instanceof IEditorReference)) return;
+		IEditorPart editor = getSupportedEditor(partRef);
+		if (editor!=null)
+			handleEditor(editor);
+		
+	}
+
+	private IEditorPart getSupportedEditor(IWorkbenchPartReference partRef) {
 		IEditorReference editorRef = (IEditorReference) partRef;
 		
 		IEditorPart editor=null;
@@ -1378,9 +1360,7 @@ public class DSView extends ViewPart implements IPartListener2 {
             editor = editorRef.getEditor(false);
 			logger.debug("Handled part is MultiPageMoleculesEditorPart");
         }
-		if (editor!=null)
-			handleEditor(editor);
-		
+		return editor;
 	}
 	
 	private void handleEditor(IEditorPart editor){
@@ -1408,6 +1388,36 @@ public class DSView extends ViewPart implements IPartListener2 {
 			});
         }
 	}
+
+    private JChemPaintEditor getJCPfromActiveEditor() {
+    
+    	if (getSite()==null) return null;
+        if (getSite().getWorkbenchWindow()==null) return null;
+        if (getSite().getWorkbenchWindow().getActivePage()==null) return null;
+
+        IEditorPart editor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+        return getJCPfromEditor(editor);
+    }
+    
+    private JChemPaintEditor getJCPfromEditor(IEditorPart editor) {
+    	
+    	if (editor instanceof JChemPaintEditor) {
+    		return (JChemPaintEditor)editor;			
+    	}
+    	else if (editor instanceof MultiPageMoleculesEditorPart) {
+    		MultiPageMoleculesEditorPart moltable = (MultiPageMoleculesEditorPart) editor;
+    		if (moltable.isJCPVisible()){
+				Object obj = moltable.getSelectedPage();
+				if (obj instanceof JChemPaintEditor) {
+					return (JChemPaintEditor) obj;
+				}
+    		}
+    	}
+
+    	return null;
+	}
+
+	
 
 	
 	
@@ -1444,20 +1454,26 @@ public class DSView extends ViewPart implements IPartListener2 {
 		};
 		jcp.addPropertyChangedListener(jcplistener);
 		molListenerMap.put(jcp.getCDKMolecule(), jcplistener);
+		
+		//Ok, we have LOADED now
+		ICDKMolecule cdkmol = jcp.getCDKMolecule();
+		JCPModelLoaded(cdkmol);
+
 	}
 
 	private void JCPModelLoaded(ICDKMolecule cdkmol){
 		logger.debug ("EventView reacting: JCP model is loaded. Molecule: " + cdkmol);
-		//TODO: IMPLEMENT!
-		
+		doClearAndSetUpNewTestRuns(cdkmol);
+		//TODO: VERIFY
 	}
 
 	private void JCPModelChanged(ICDKMolecule cdkmol){
 		logger.debug
 		("EventView reacting: JCP editor model has changed");
-		//TODO: IMPLEMENT!
-		
+		doClearAndSetUpNewTestRuns(cdkmol);
+		//TODO: VERIFY
 	}
+
 
 	
 	/*
@@ -1465,7 +1481,7 @@ public class DSView extends ViewPart implements IPartListener2 {
 	 */
 	
 
-    private void doClearAndSetUpNewTestRuns( JChemPaintEditor jcp ) {
+    private void doClearAndSetUpNewTestRuns( ICDKMolecule mol ) {
 
         List<TestRun> newTestRuns=new ArrayList<TestRun>();
         
@@ -1485,7 +1501,7 @@ public class DSView extends ViewPart implements IPartListener2 {
                     //Now, create new TestRuns from the tests
                     for (IDSTest test : ep.getTests()){
 
-                        TestRun newTestRun=new TestRun(jcp,test);
+                        TestRun newTestRun=new TestRun(mol,test);
 
                         if (test.getTestErrorMessage()!=null 
                                 && test.getTestErrorMessage().length()>0){
@@ -1505,11 +1521,10 @@ public class DSView extends ViewPart implements IPartListener2 {
             LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
         }
         
-        editorTestMap.put( jcp, newTestRuns );
+        molTestMap.put( mol, newTestRuns );
         activeTestRuns=newTestRuns;
         setExecuted( false );
         updateView();
     }    
-    
 
 }

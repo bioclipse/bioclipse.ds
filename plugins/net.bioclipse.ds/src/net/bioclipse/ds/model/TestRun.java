@@ -53,7 +53,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
 
 
     private IDSTest test;
-    private IEditorPart editor;
+    private ICDKMolecule mol;
     private List<ITestResult> results;
     private int status;
     private ICDKMolecule molecule;
@@ -63,9 +63,9 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
         setStatus( NOT_STARTED );
     }
     
-    public TestRun(IEditorPart editor, IDSTest test) {
+    public TestRun(ICDKMolecule mol, IDSTest test) {
         this();
-        this.editor=editor;
+        this.mol=mol;
         this.test=test;
     }
 
@@ -113,18 +113,6 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
     public boolean hasMatches() {
         if (results!=null && results.size()>0) return true;
         return false;
-    }
-
-    
-    public IEditorPart getEditor() {
-    
-        return editor;
-    }
-
-    
-    public void setEditor( IEditorPart editor ) {
-    
-        this.editor = editor;
     }
 
     public Object getAdapter( Class adapter ) {
