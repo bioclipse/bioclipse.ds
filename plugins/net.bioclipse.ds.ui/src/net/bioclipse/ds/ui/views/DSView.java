@@ -710,7 +710,6 @@ public class DSView extends ViewPart implements IPartListener2 {
         //We need to clear previous tests if already run
         if (isExecuted()==true){
             doClearAndSetUpNewTestRuns( mol );
-            activeTestRuns=molTestMap.get( mol );
 //            partActivated( jcp );
             viewer.refresh();
         }
@@ -1289,23 +1288,29 @@ public class DSView extends ViewPart implements IPartListener2 {
 		 }
 		 
 		 //If no more editor, clear all
+		 if (getSite()==null) return;
+		 if (getSite().getWorkbenchWindow()==null) return;
+		 if (getSite().getWorkbenchWindow().getActivePage()==null) return;
 		 if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
-			 molTestMap.clear();
-			 activeTestRuns=null;
-		     IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
-		     try {
-				for (Endpoint ep : ds.getFullEndpoints()){
-					if (ep.getTestruns()!=null)
-						ep.getTestruns().clear();
-				 }
-			} catch (BioclipseException e) {
-				e.printStackTrace();
-			}
-
+			 deactivateView();
 		 }
 		 
 		 updateView();
 
+	}
+
+	private void deactivateView() {
+//		molTestMap.clear();
+		activeTestRuns=null;
+		IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
+		try {
+			for (Endpoint ep : ds.getFullEndpoints()){
+				if (ep.getTestruns()!=null)
+					ep.getTestruns().clear();
+			}
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -1341,7 +1346,6 @@ public class DSView extends ViewPart implements IPartListener2 {
 	
 	
 	private void handlePartRef(IWorkbenchPartReference partRef){
-		if (!(partRef instanceof IEditorReference)) return;
 		IEditorPart editor = getSupportedEditor(partRef);
 		if (editor!=null)
 			handleEditor(editor);
@@ -1349,6 +1353,8 @@ public class DSView extends ViewPart implements IPartListener2 {
 	}
 
 	private IEditorPart getSupportedEditor(IWorkbenchPartReference partRef) {
+		if (!(partRef instanceof IEditorReference)) return null;
+
 		IEditorReference editorRef = (IEditorReference) partRef;
 		
 		IEditorPart editor=null;
@@ -1380,9 +1386,23 @@ public class DSView extends ViewPart implements IPartListener2 {
 					if (obj instanceof JChemPaintEditor) {
 						JChemPaintEditor jcp = (JChemPaintEditor) obj;
 						registerJCPListeners(jcp);
+
+						ICDKMolecule mol = jcp.getCDKMolecule();
+						//Use cached if exists, else set up new
+						if (molTestMap.containsKey(mol)){
+							
+							doSetUpTestRuns(mol);
+							
+							updateView();
+						}else{
+							doClearAndSetUpNewTestRuns(mol);
+						}
+
 					}
 					else {
-						logger.debug("No JCP visible anymore.");
+						logger.debug("No JCP page visible anymore in moltable.");
+						deactivateView();
+						updateView();
 					}
 				}
 			});
@@ -1454,16 +1474,11 @@ public class DSView extends ViewPart implements IPartListener2 {
 		};
 		jcp.addPropertyChangedListener(jcplistener);
 		molListenerMap.put(jcp.getCDKMolecule(), jcplistener);
-		
-		//Ok, we have LOADED now
-		ICDKMolecule cdkmol = jcp.getCDKMolecule();
-		JCPModelLoaded(cdkmol);
-
 	}
 
 	private void JCPModelLoaded(ICDKMolecule cdkmol){
 		logger.debug ("EventView reacting: JCP model is loaded. Molecule: " + cdkmol);
-		doClearAndSetUpNewTestRuns(cdkmol);
+		doSetUpTestRuns(cdkmol);
 		//TODO: VERIFY
 	}
 
@@ -1525,6 +1540,48 @@ public class DSView extends ViewPart implements IPartListener2 {
         activeTestRuns=newTestRuns;
         setExecuted( false );
         updateView();
+    }    
+    
+    
+    
+    private void doSetUpTestRuns( ICDKMolecule mol ) {
+
+    	//Use cached, if no cached, clear and create new
+		activeTestRuns=molTestMap.get(mol);
+		if (activeTestRuns==null){
+			doClearAndSetUpNewTestRuns(mol);
+			return;
+		}
+		
+        //For all endpoints, clear old and add these testruns
+        IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
+        try {
+			for (Endpoint ep : ds.getFullEndpoints()){
+
+			    //First remove any old TestRuns
+			    if (ep.getTestruns()!=null)
+			        ep.getTestruns().clear();
+
+			    if (ep.getTests()!=null){
+			        //Loop over all tests in this Endpoint
+			        for (IDSTest epTest : ep.getTests()){
+			            //For the active testruns, locate those who are of this test
+			            for (TestRun tr : activeTestRuns){
+			                if (tr.getTest().getId().equals( epTest.getId() )){
+			                    ep.addTestRun( tr );
+			                    logger.debug("Added cached TestRun: " + tr);
+			                }
+			            }
+
+			        }
+			    }
+			}
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}
+		
+        updateView();
+		
     }    
 
 }

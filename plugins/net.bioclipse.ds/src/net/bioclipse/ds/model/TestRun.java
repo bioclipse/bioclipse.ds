@@ -105,9 +105,9 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
 //            return tr.getConsensusString();
 //        else
         if (results!=null)
-            return getConsensusString() + " [" + results.size() + " hits]";
+            return getTest().getName() + " - " + getConsensusString() + " [" + results.size() + " hits]";
         else
-            return getConsensusString();
+            return getTest().getName() + " - " + getConsensusString();
     }
 
     public boolean hasMatches() {
