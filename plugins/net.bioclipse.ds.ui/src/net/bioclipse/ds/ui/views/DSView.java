@@ -1288,6 +1288,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		 if (getSite().getWorkbenchWindow().getActivePage()==null) return;
 		 if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
 			 deactivateView();
+			 return;
 		 }
 		 
 		 updateView();
@@ -1328,7 +1329,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
      ==============================*/
 
 	private void deactivateView() {
-//		molTestMap.clear();
 		activeTestRuns=null;
 		IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
 		try {
@@ -1339,6 +1339,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		} catch (BioclipseException e) {
 			e.printStackTrace();
 		}
+		updateView();
 	}
 
 	
@@ -1417,6 +1418,45 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		}
 		else if (editor instanceof MultiPageMoleculesEditorPart) {
 			MultiPageMoleculesEditorPart moltable = (MultiPageMoleculesEditorPart) editor;
+			if (!moltable.isJCPVisible()){
+				logger.debug("JCP is not the visible page. Deactivate view.");
+				 if (getSite()==null) return;
+				 if (getSite().getWorkbenchWindow()==null) return;
+				 if (getSite().getWorkbenchWindow().getActivePage()==null) return;
+				 deactivateView();
+			}else{
+				//TODO: Handle case when switch to MolTable with JCP open
+				//This should mean we have a cached mol.
+				logger.debug("JCP is the visible page. Probably cached.");
+
+				Object obj = moltable.getSelectedPage();
+				if (obj instanceof JChemPaintEditor) {
+
+					JChemPaintEditor jcp = (JChemPaintEditor) obj;
+					jcp.addPropertyChangedListener(DSView.getInstance());
+					logger.debug("Added prop-listener to JCP");
+
+					ICDKMolecule mol = jcp.getCDKMolecule();
+					if (mol==null){
+						logger.debug("Molecule is null, not loaded yet?");
+						return;
+					}
+
+					//Use cached if exists, else set up new
+					if (molTestMap.containsKey(mol)){
+
+						doSetUpTestRuns(mol);
+
+						updateView();
+					}else{
+						doClearAndSetUpNewTestRuns(mol);
+					}
+				}else{
+					logger.error("JCP is visible but class is not JCP!");
+				}
+
+			}
+			
 
 			moltable.addPageChangedListener(new IPageChangedListener() {
 
@@ -1449,7 +1489,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 					else {
 						logger.debug("No JCP page visible anymore in moltable.");
 						deactivateView();
-						updateView();
 						return;
 					}
 				}
