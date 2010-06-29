@@ -76,7 +76,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * @author ola
  *
  */
-public class DSView extends ViewPart implements IPartListener2 {
+public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(DSView.class);
 
@@ -301,6 +301,7 @@ public class DSView extends ViewPart implements IPartListener2 {
                             IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
                             try {
                                 viewer.setInput(ds.getFullEndpoints().toArray());
+                                viewer.expandAll();
                             } catch ( BioclipseException e ) {
                                 LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
                                 viewer.setInput(new String[]{"Error initializing tests"});
@@ -324,7 +325,7 @@ public class DSView extends ViewPart implements IPartListener2 {
                                                  .getActivePage().getActiveEditor();
 
                             if (openEditor!=null){
-                            	handleEditor(openEditor);
+                            	activateEditor(openEditor);
                             	
                                 if (isAutorun()){
 //                                    doRunAllTests();
@@ -973,15 +974,7 @@ public class DSView extends ViewPart implements IPartListener2 {
 
 
     private void updateView() {
-        
-        if (getSite()==null) return;
-        if (getSite().getWorkbenchWindow()==null) return;
-        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
-        
-        if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
-          activeTestRuns=null;
-        }
-        
+                
         viewer.refresh();
 //        viewer.expandToLevel( 1 );
         viewer.expandAll();
@@ -1265,8 +1258,8 @@ public class DSView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partBroughtToTop(IWorkbenchPartReference partRef) {
-		logger.debug("Part brouight to top: " + partRef.getId() + " detected in Eventview.");
-		//TODO: Switch view model here
+		logger.debug("Part brought to top: " + partRef.getId() + " detected in Eventview.");
+		activatePartRef(partRef);
 	}
 
 	@Override
@@ -1275,19 +1268,21 @@ public class DSView extends ViewPart implements IPartListener2 {
 
 		 IEditorPart editor = getSupportedEditor(partRef);
 		 JChemPaintEditor jcp=getJCPfromEditor(editor);
-		 
+
 		 //We are currently unable to unregister listeners for ICDKMolecules in MolTable
-		 //TODO: Get all mols in MolTable and unregister them, or unregister on page change also
+		 //TODO: Unregister last mol in moltable (get last JCP page)
 		 if (jcp!=null){
+			 jcp.removePropertyChangedListener(this);
+			 logger.debug("Removed prop-listener from JCP");
+
 			 ICDKMolecule mol=jcp.getCDKMolecule();
 
-			 molListenerMap.remove( mol );
 			 if (molTestMap.keySet().contains( mol )){
 				 molTestMap.remove( mol );
 			 }
 		 }
 		 
-		 //If no more editor, clear all
+		 //If no more editor, clear all in view
 		 if (getSite()==null) return;
 		 if (getSite().getWorkbenchWindow()==null) return;
 		 if (getSite().getWorkbenchWindow().getActivePage()==null) return;
@@ -1298,6 +1293,39 @@ public class DSView extends ViewPart implements IPartListener2 {
 		 updateView();
 
 	}
+
+
+	@Override
+	public void partDeactivated(IWorkbenchPartReference partRef) {
+//		logger.debug("Part Deactivated: " + partRef.getId() + " detected in Eventview.");
+	}
+
+	@Override
+	public void partHidden(IWorkbenchPartReference partRef) {
+		logger.debug("Part Hidden: " + partRef.getId() + " detected in Eventview.");
+		deactivatePartRef(partRef);
+	}
+
+	@Override
+	public void partInputChanged(IWorkbenchPartReference partRef) {
+//		logger.debug("Part Input changed: " + partRef.getId() + " detected in Eventview.");
+	}
+
+	@Override
+	public void partOpened(IWorkbenchPartReference partRef) {
+//		logger.debug("Part Opened: " + partRef.getId() + " detected in Eventview.");
+		//TODO: Cache results on load?
+	}
+
+	@Override
+	public void partVisible(IWorkbenchPartReference partRef) {
+//		logger.debug("Part Visible: " + partRef.getId() + " detected in Eventview.");
+	}
+	
+	
+    /*==============================
+     * Remake of part handling logic
+     ==============================*/
 
 	private void deactivateView() {
 //		molTestMap.clear();
@@ -1313,44 +1341,21 @@ public class DSView extends ViewPart implements IPartListener2 {
 		}
 	}
 
-	@Override
-	public void partDeactivated(IWorkbenchPartReference partRef) {
-//		logger.debug("Part Deactivated: " + partRef.getId() + " detected in Eventview.");
-	}
-
-	@Override
-	public void partHidden(IWorkbenchPartReference partRef) {
-		logger.debug("Part Hidden: " + partRef.getId() + " detected in Eventview.");
-	}
-
-	@Override
-	public void partInputChanged(IWorkbenchPartReference partRef) {
-//		logger.debug("Part Input changed: " + partRef.getId() + " detected in Eventview.");
-	}
-
-	@Override
-	public void partOpened(IWorkbenchPartReference partRef) {
-		logger.debug("Part Opened: " + partRef.getId() + " detected in Eventview.");
-		handlePartRef(partRef);
-	}
-
-	@Override
-	public void partVisible(IWorkbenchPartReference partRef) {
-//		logger.debug("Part Visible: " + partRef.getId() + " detected in Eventview.");
-	}
 	
-	
-    /*==============================
-     * Remake of part handling logic
-     ==============================*/
-	
-	
-	private void handlePartRef(IWorkbenchPartReference partRef){
+	private void activatePartRef(IWorkbenchPartReference partRef){
 		IEditorPart editor = getSupportedEditor(partRef);
 		if (editor!=null)
-			handleEditor(editor);
+			activateEditor(editor);
 		
 	}
+	
+	private void deactivatePartRef(IWorkbenchPartReference partRef){
+		IEditorPart editor = getSupportedEditor(partRef);
+		if (editor!=null)
+			deactivateEditor(editor);
+		
+	}
+
 
 	private IEditorPart getSupportedEditor(IWorkbenchPartReference partRef) {
 		if (!(partRef instanceof IEditorReference)) return null;
@@ -1369,10 +1374,46 @@ public class DSView extends ViewPart implements IPartListener2 {
 		return editor;
 	}
 	
-	private void handleEditor(IEditorPart editor){
+	
+	private void deactivateEditor(IEditorPart editor){
+		if (editor instanceof JChemPaintEditor) {
+			JChemPaintEditor jcp = (JChemPaintEditor) editor;
+			jcp.removePropertyChangedListener(this);
+			logger.debug("Removed prop-listener from JCP");
+		}
+		else if (editor instanceof MultiPageMoleculesEditorPart) {
+			MultiPageMoleculesEditorPart moltable = (MultiPageMoleculesEditorPart) editor;
+			//TODO: how do we handle a hidden moltable?
+        }
+	}
+	
+	private void activateEditor(IEditorPart editor){
 		
 		if (editor instanceof JChemPaintEditor) {
-			registerJCPListeners((JChemPaintEditor) editor);			
+			JChemPaintEditor jcp = (JChemPaintEditor) editor;
+			jcp.addPropertyChangedListener(this);
+			logger.debug("Activating JCP: Added prop-listener");
+
+			ICDKMolecule mol = jcp.getCDKMolecule();
+			
+			if (mol==null){
+				logger.debug("Molecule is null, probably not loaded yet.");
+				return;
+			}
+			
+			logger.debug("Mol exists, looking up in cache.");
+			
+			//Use cached if exists, else set up new
+			if (molTestMap.containsKey(mol)){
+				logger.debug("Using cached results.");
+				
+				doSetUpTestRuns(mol);
+				
+				updateView();
+			}else{
+				logger.debug("Clear and creating new results.");
+				doClearAndSetUpNewTestRuns(mol);
+			}
 		}
 		else if (editor instanceof MultiPageMoleculesEditorPart) {
 			MultiPageMoleculesEditorPart moltable = (MultiPageMoleculesEditorPart) editor;
@@ -1385,9 +1426,15 @@ public class DSView extends ViewPart implements IPartListener2 {
 					System.out.println("Moltable changed page to: " + obj);
 					if (obj instanceof JChemPaintEditor) {
 						JChemPaintEditor jcp = (JChemPaintEditor) obj;
-						registerJCPListeners(jcp);
+						jcp.addPropertyChangedListener(DSView.getInstance());
+						logger.debug("Added prop-listener to JCP");
 
 						ICDKMolecule mol = jcp.getCDKMolecule();
+						if (mol==null){
+							logger.debug("Molecule is null, not loaded yet?");
+							return;
+						}
+						
 						//Use cached if exists, else set up new
 						if (molTestMap.containsKey(mol)){
 							
@@ -1403,6 +1450,7 @@ public class DSView extends ViewPart implements IPartListener2 {
 						logger.debug("No JCP page visible anymore in moltable.");
 						deactivateView();
 						updateView();
+						return;
 					}
 				}
 			});
@@ -1441,40 +1489,25 @@ public class DSView extends ViewPart implements IPartListener2 {
 
 	
 	
-	/**
-	 * Register listeners on the CDKMolecule of the active JCPeditor.
-	 * Only one per instance.
-	 * 
-	 * @param jcp
-	 */
-	private void registerJCPListeners(JChemPaintEditor jcp) {
-
-		//If editor already is registered, skip adding property listeners
-		if (molListenerMap.keySet().contains(jcp.getCDKMolecule())){
-			logger.debug("   Skipped registering listeners, cdkmol already in map.");
-			return;
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		
+		logger.debug("Property changed!!!");
+		
+		if(event.getProperty().equals( JChemPaintEditor.
+				STRUCUTRE_CHANGED_EVENT )) {
+			JChemPaintEditor jcp=(JChemPaintEditor)event.getSource();
+			ICDKMolecule cdkmol = jcp.getCDKMolecule();
+			JCPModelChanged(cdkmol);
 		}
+		else if(event.getProperty().equals( JChemPaintEditor.
+				MODEL_LOADED )) {
+			JChemPaintEditor jcp=(JChemPaintEditor)event.getSource();
+			ICDKMolecule cdkmol = jcp.getCDKMolecule();
+			JCPModelLoaded(cdkmol);
+		}
+	}    
 
-		IPropertyChangeListener jcplistener = new IPropertyChangeListener() {
-			public void propertyChange( PropertyChangeEvent event ) {
-
-				if(event.getProperty().equals( JChemPaintEditor.
-						STRUCUTRE_CHANGED_EVENT )) {
-					JChemPaintEditor jcp=(JChemPaintEditor)event.getSource();
-					ICDKMolecule cdkmol = jcp.getCDKMolecule();
-					JCPModelChanged(cdkmol);
-				}
-				else if(event.getProperty().equals( JChemPaintEditor.
-						MODEL_LOADED )) {
-					JChemPaintEditor jcp=(JChemPaintEditor)event.getSource();
-					ICDKMolecule cdkmol = jcp.getCDKMolecule();
-					JCPModelLoaded(cdkmol);
-				}
-			}
-		};
-		jcp.addPropertyChangedListener(jcplistener);
-		molListenerMap.put(jcp.getCDKMolecule(), jcplistener);
-	}
 
 	private void JCPModelLoaded(ICDKMolecule cdkmol){
 		logger.debug ("EventView reacting: JCP model is loaded. Molecule: " + cdkmol);
@@ -1569,7 +1602,7 @@ public class DSView extends ViewPart implements IPartListener2 {
 			            for (TestRun tr : activeTestRuns){
 			                if (tr.getTest().getId().equals( epTest.getId() )){
 			                    ep.addTestRun( tr );
-			                    logger.debug("Added cached TestRun: " + tr);
+//			                    logger.debug("Added cached TestRun: " + tr);
 			                }
 			            }
 
@@ -1582,6 +1615,7 @@ public class DSView extends ViewPart implements IPartListener2 {
 		
         updateView();
 		
-    }    
+    }
+
 
 }
