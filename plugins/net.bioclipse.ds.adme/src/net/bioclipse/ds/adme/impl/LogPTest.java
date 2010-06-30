@@ -79,12 +79,18 @@ public class LogPTest extends AbstractDSTest{
         DescriptorValue res= descriptor.calculate( ac);
         DoubleResult val = (DoubleResult) res.getValue();
         double result=val.doubleValue();
-        results.add(new net.bioclipse.ds.model.result.DoubleResult(
+        if (Double.isNaN(result))
+	        results.add(new net.bioclipse.ds.model.result.DoubleResult(
                                                     "XLogP"
                                                     , result
-                                                    , ITestResult.INFORMATIVE));
-
-        
+                                                    , ITestResult.ERROR));
+        else{
+            results.add(new net.bioclipse.ds.model.result.DoubleResult(
+                    "XLogP"
+                    , result
+                    , ITestResult.INFORMATIVE));
+            logger.debug("   XLogP" + "=" + result);
+        }        
         /*
          * ALOGP
          */
@@ -108,10 +114,18 @@ public class LogPTest extends AbstractDSTest{
         for (int i=0; i< res2.getNames().length;i++){
             String name = res2.getNames()[i];
             double value = val2.get( i );
-            if (i!=1) //Skip alogp2, which is just the squared alogp
-                results.add(new net.bioclipse.ds.model.result.DoubleResult(
-                                         name, value, ITestResult.INFORMATIVE));
-//                results.add(new SimpleResult(name + ": " + value, ITestResult.INFORMATIVE));
+
+            //Skip alogp2, which is just the squared alogp
+            if (i!=1){
+                if (Double.isNaN(value))
+                    results.add(new net.bioclipse.ds.model.result.DoubleResult(
+                            name, value, ITestResult.ERROR));
+                else{
+                    results.add(new net.bioclipse.ds.model.result.DoubleResult(
+                            name, value, ITestResult.INFORMATIVE));
+                    logger.debug("   " + name + "=" + value);
+                }
+            }
         }
         
         return results;
