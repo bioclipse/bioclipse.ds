@@ -14,6 +14,8 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import net.bioclipse.ds.DSConstants;
 import net.bioclipse.ds.model.ITestResult;
 
@@ -23,6 +25,8 @@ import net.bioclipse.ds.model.ITestResult;
  *
  */
 public class ColorHelper {
+ 
+    private static final Logger logger = Logger.getLogger(ColorHelper.class);
     
     private static Map<Integer, Color> blueRedScale;
 
@@ -32,6 +36,9 @@ public class ColorHelper {
      * @return
      */
     public static Color getBlueRedColor( int resValue ) {
+    	
+    	if (resValue<1 || resValue>100)
+    		logger.error("Value is " + resValue + " but must be between 1 and 100");
         
         if (blueRedScale!=null)
             return blueRedScale.get( resValue );
