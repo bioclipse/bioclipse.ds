@@ -12,4 +12,14 @@
       </scriptContribution>
    </extension>
 
+<extension
+       point="net.bioclipse.cdk.jchempaint.generator">
+    <generator
+          class="net.bioclipse.ds.model.result.BlueRedColorScaleGenerator">
+    </generator>
+    <generator
+          class="net.bioclipse.ds.model.result.PosNegIncColorGenerator">
+    </generator>
+ </extension>
+
 </plugin>

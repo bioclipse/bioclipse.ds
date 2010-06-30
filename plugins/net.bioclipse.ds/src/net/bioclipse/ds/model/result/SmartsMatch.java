@@ -16,7 +16,7 @@ package net.bioclipse.ds.model.result;
  * @author ola
  *
  */
-public class SmartsMatch extends ScaledResultMatch{
+public class SmartsMatch extends PosNegIncMatch{
 
     public SmartsMatch(String name, int resultStatus) {
         super( name, resultStatus );
@@ -33,5 +33,5 @@ public class SmartsMatch extends ScaledResultMatch{
         this.smartsString = smarts;
         
     }
-
+    
 }

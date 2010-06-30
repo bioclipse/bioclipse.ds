@@ -10,6 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.model.result;
 
+import java.util.Map;
+
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
@@ -17,6 +19,8 @@ import net.bioclipse.ds.report.StatusHelper;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.renderer.generators.IGenerator;
+import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 
 /**
  * A base class for results with a name, a parent testrun, and a status
@@ -35,7 +39,7 @@ public class SimpleResult implements ITestResult{
     private String name;
     private int classification;
     private String detailedMessage;
-    private String resultProperty;  //Used to link a result to a certain property on AC
+//    private String resultProperty;  //Used to link a result to a certain property on AC
     
     
     public SimpleResult(String name, int classification) {
@@ -124,18 +128,33 @@ public class SimpleResult implements ITestResult{
         return "";
     }
 
-    public String getResultProperty() {
-        return resultProperty;
-    }
-
-    public void setResultProperty( String propertyKey ) {
-        resultProperty=propertyKey;
-    }
+//    public String getResultProperty() {
+//        return resultProperty;
+//    }
+//
+//    public void setResultProperty( String propertyKey ) {
+//        resultProperty=propertyKey;
+//    }
     
     @Override
     public String toString() {
         return name + " [test=" + testRun.getTest().getName() + "] Res=" 
         + StatusHelper.statusToString( getClassification());
     }
+
+    /**
+     * No default generator visibility.
+     */
+	@Override
+	public Class<? extends IGeneratorParameter<Boolean>> getGeneratorVisibility() {
+		return null;
+	}
+
+	@Override
+	public Class<? extends IGeneratorParameter<Map<Integer, Integer>>> getGeneratorAtomMap() {
+		return null;
+	}
+
+	
 
 }

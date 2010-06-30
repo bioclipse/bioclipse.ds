@@ -2,14 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-
-<extension
-       point="net.bioclipse.cdk.jchempaint.generator">
-    <generator
-          class="net.bioclipse.ds.ui.BlueRedColorScaleGenerator">
-    </generator>
- </extension>
-
    <extension
          point="org.eclipse.ui.views">
       <category

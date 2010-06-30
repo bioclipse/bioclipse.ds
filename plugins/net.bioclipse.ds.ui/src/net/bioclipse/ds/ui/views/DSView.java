@@ -20,6 +20,7 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
+import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
@@ -30,7 +31,12 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.result.AtomResultMatch;
+import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
+import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
+import net.bioclipse.ds.model.result.PosNegIncMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
+import net.bioclipse.ds.model.result.SubStructureMatch;
 import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.report.StatusHelper;
 import net.bioclipse.ds.ui.DSContextProvider;
@@ -70,6 +76,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.renderer.RendererModel;
+import org.openscience.cdk.renderer.generators.IGenerator;
+import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 
 /**
  * 
@@ -204,13 +213,70 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
             public void selectionChanged( SelectionChangedEvent event ) {
                 updateActionStates();
+                turnOffAllExternalGenerators();
                 Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if ( obj instanceof ITestResult ) {
                     ITestResult tr = (ITestResult) obj;
-                    selectedProperty=tr.getResultProperty();
-                        
+
+                    Class<? extends IGeneratorParameter<Boolean>> visibilityParam = tr.getGeneratorVisibility();
+                    Class<? extends IGeneratorParameter<Map<Integer, Integer>>> atomMapParam = tr.getGeneratorAtomMap();
+                    
+                    if (visibilityParam==null){
+                    	logger.debug("The selected TestResult does not provide a generatorVisibility.");
+                    	return;
+                    }
+                    
+                    JChemPaintEditor jcp=getJCPfromActiveEditor();
+                    if (jcp==null) return;
+
+                    RendererModel model = jcp.getWidget().getRenderer2DModel();
+
+                    //And turn only the selected on
+                    model.set(visibilityParam, true);
+					logger.debug("Turned on Generator: " + tr.getGeneratorVisibility());
+
+					if (atomMapParam!=null){
+						if (tr instanceof AtomResultMatch) {
+							AtomResultMatch atomResMatch = (AtomResultMatch) tr;
+		                    model.set(atomMapParam, atomResMatch.getResultMap());
+	    					logger.debug("  ...and AtomMapGeneratorParameter is used with content.");
+						}else{
+	    					logger.debug("  ...however, an AtomMapGeneratorParameter is available but TestResult is not PosNegIncMatch.");
+						}
+						
+					}
+					else{
+    					logger.debug("  ...however, no AtomMapGeneratorParameter is available.");
+                    }
+                    
+                    
                 }
             }
+
+			private void turnOffAllExternalGenerators() {
+                //Switch off all other DS-generators!
+                List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
+                for(IGenerator generator: generators) {
+                	List<IGeneratorParameter<?>> params = generator.getParameters();
+                	if(params.isEmpty()) continue;
+                	for (IGeneratorParameter param : params){
+                		if (param instanceof BlueRedColorScaleGenerator.Visibility) {
+							BlueRedColorScaleGenerator.Visibility v = (BlueRedColorScaleGenerator.Visibility) param;
+							v.setValue(false);
+							logger.debug("Turned off Generator: " + generator);
+						}
+                		if (param instanceof PosNegIncColorGenerator.Visibility) {
+                			PosNegIncColorGenerator.Visibility v = (PosNegIncColorGenerator.Visibility) param;
+							v.setValue(false);
+							logger.debug("Turned off Generator: " + generator);
+						}
+//                		if (param instanceof IGeneratorParameter<Boolean>) {
+//                			IGeneratorParameter<Boolean> bp= (IGeneratorParameter<Boolean>)param;
+//                            model.set(bp, false);
+//						}
+                	}
+                }				
+			}
             
         });
 

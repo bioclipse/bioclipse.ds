@@ -252,7 +252,6 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
                     match.putAtomResult( aindex, 100 );
                 }
                 match.setSmartsString( currentSmarts );
-                match.writeResultsAsProperties( cdkmol.getAtomContainer(), "SMARTS");
 
                 results.add( match );
             }        

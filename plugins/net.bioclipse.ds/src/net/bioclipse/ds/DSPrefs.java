@@ -1,4 +1,4 @@
-package net.bioclipse.ds.ui.prefs;
+package net.bioclipse.ds;
 
 /**
  * 

@@ -10,8 +10,12 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.graphics.Image;
+import org.openscience.cdk.renderer.generators.IGenerator;
+import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 
@@ -57,8 +61,10 @@ public interface ITestResult extends IAdaptable{
 
     String getSuffix();
     
-    public String getResultProperty();
-    public void setResultProperty( String propertyKey );
+//    public String getResultProperty();
+//    public void setResultProperty( String propertyKey );
 
+	public Class<? extends IGeneratorParameter<Boolean>> getGeneratorVisibility();
+	public Class<? extends IGeneratorParameter<Map<Integer, Integer>>> getGeneratorAtomMap();
 
 }

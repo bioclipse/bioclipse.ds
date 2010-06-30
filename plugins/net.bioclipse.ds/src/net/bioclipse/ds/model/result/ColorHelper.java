@@ -8,13 +8,14 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ui;
+package net.bioclipse.ds.model.result;
 
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.bioclipse.ds.DSConstants;
+import net.bioclipse.ds.model.ITestResult;
 
 /**
  * 
@@ -47,6 +48,22 @@ public class ColorHelper {
         }
         
         return blueRedScale.get( resValue );
+    }
+
+    /**
+     * Return a color based on POS/NEG/INCONCLUSIVE
+     * @param resValue An integer as defined in ITestResult
+     * @return
+     */
+    public static Color getPosNegIncDiscreteColor( int resValue ) {
+    	
+    	if (resValue==ITestResult.POSITIVE)
+    		return Color.RED;
+    	if (resValue==ITestResult.NEGATIVE)
+    		return Color.GREEN;
+
+    	return Color.ORANGE;
+        
     }
 
 }

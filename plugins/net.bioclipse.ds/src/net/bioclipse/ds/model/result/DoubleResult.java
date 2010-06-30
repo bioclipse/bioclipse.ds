@@ -25,8 +25,12 @@ public class DoubleResult extends SimpleResult {
     
     @Override
     public String getName() {
+    	if (Double.isNaN(getValue()))
+            return super.getName() + ": NaN" ;
+    	else
         return super.getName() + ": " + formatter.format( getValue() );
     }
+    
     
     public double getValue() {
         return value;

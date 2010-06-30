@@ -438,8 +438,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         //we also want the filled circles to be larger so that they become visible for non carbons.
 //        match.setAtomContainer( significantAtomsContainer );
         
-        match.writeResultsAsProperties(cdkmol.getAtomContainer(), 
-               net.bioclipse.ds.cpdb.signatures.Activator.CPDB_RESULT_PROPERTY);
+//        match.writeResultsAsProperties(cdkmol.getAtomContainer(), "BOGUS");
 
         //We can have multiple hits...
         List<ITestResult> results=new ArrayList<ITestResult>();

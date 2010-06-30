@@ -17,6 +17,8 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
+import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
 import net.bioclipse.ds.model.result.SubStructureMatch;
 
 import org.openscience.cdk.Molecule;
@@ -103,8 +105,9 @@ public class ImageHelper {
         
         if (newMatch!=null){
             BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
-//            generator.add( newMatch );
+            PosNegIncColorGenerator gen2=new PosNegIncColorGenerator();
             generators.add(generator);
+            generators.add( gen2 );
         }
         
         generators.add(new BasicAtomGenerator());

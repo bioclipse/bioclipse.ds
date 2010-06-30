@@ -22,6 +22,9 @@ import org.eclipse.ui.views.properties.IPropertySource;
  */
 public class SubStructureMatch extends SimpleResult{
 
+	/**
+	 * A list of atom numbers defining this substructure match
+	 */
     private List<Integer> atomNumbers;
     
     public SubStructureMatch(String name, int resultStatus) {

@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ui;
+package net.bioclipse.ds.model.result;
 
 import java.util.HashMap;
 import java.util.Map;

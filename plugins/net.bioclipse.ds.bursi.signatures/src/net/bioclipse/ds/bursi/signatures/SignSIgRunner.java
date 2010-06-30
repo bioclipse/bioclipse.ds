@@ -37,6 +37,7 @@ import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.PosNegIncMatch;
 import net.bioclipse.ds.model.result.ScaledResultMatch;
 import net.bioclipse.ds.model.result.SubStructureMatch;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
@@ -382,7 +383,7 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
 
         //Create a new match with correct coloring
 //        SubStructureMatch match = new SubStructureMatch(significantSignature,ITestResult.INCONCLUSIVE);
-        ScaledResultMatch match = new ScaledResultMatch(significantSignature,ITestResult.INCONCLUSIVE);
+        PosNegIncMatch match = new PosNegIncMatch(significantSignature,ITestResult.INCONCLUSIVE);
         
         if (prediction>0)
             match.setClassification( ITestResult.POSITIVE );
@@ -398,8 +399,9 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
             //We should add atoms from the input cdkmol, not the clone!
 //            significantAtomsContainer.addAtom( cdkmol.getAtomContainer().getAtom( significantAtomNumber ));
             logger.debug("center atom: " + significantAtom);
-            //Set to max for scaledresult
-            match.putAtomResult( significantAtomNumber, 100 );
+
+            //Set each atom to overall match classification
+            match.putAtomResult( significantAtomNumber, match.getClassification() );
 
             //Also add all atoms connected to significant atoms to list
             for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtomNumber )) ){
@@ -408,8 +410,8 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
 //                significantAtomsContainer.addAtom(atomToAdd);
                 logger.debug("nbr atom: " + nbrAtomNr);
                 
-                //Set to max for scaledresult
-                match.putAtomResult( nbrAtomNr, 100 );
+                //Set each atom to overall match classification
+                match.putAtomResult( nbrAtomNr, match.getClassification() );
             }
         }
         logger.debug("Number of center atoms: " + significantAtoms.size());
@@ -417,8 +419,8 @@ public class SignSIgRunner extends AbstractDSTest implements IDSTest{
         //We want to set the color of the hilighting depending on the prediction. If the decision function > 0.0 the color should be red, otherwise it should be green.
         //we also want the filled circles to be larger so that they become visible for non carbons.
 //        match.setAtomContainer( significantAtomsContainer );
-        match.writeResultsAsProperties( cdkmol.getAtomContainer(), 
-             net.bioclipse.ds.bursi.signatures.Activator.BURSI_RESULT_PROPERTY);
+//        match.writeResultsAsProperties( cdkmol.getAtomContainer(), 
+//        		net.bioclipse.ds.bursi.signatures.Activator.BURSI_RESULT_PROPERTY);
 
         //We can have multiple hits...
         List<ITestResult> results=new ArrayList<ITestResult>();
