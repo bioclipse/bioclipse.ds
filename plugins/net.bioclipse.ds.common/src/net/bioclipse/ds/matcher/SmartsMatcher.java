@@ -249,7 +249,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
                 SmartsMatch match=new SmartsMatch(
                                                   smartsName, ITestResult.POSITIVE);
                 for (int aindex : matchingAtoms){
-                    match.putAtomResult( aindex, 100 );
+                    match.putAtomResult( aindex, ITestResult.POSITIVE );
                 }
                 match.setSmartsString( currentSmarts );
 
