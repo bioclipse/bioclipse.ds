@@ -253,31 +253,27 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 }
             }
 
-			private void turnOffAllExternalGenerators() {
-                //Switch off all other DS-generators!
-                List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
-                for(IGenerator generator: generators) {
-                	List<IGeneratorParameter<?>> params = generator.getParameters();
-                	if(params.isEmpty()) continue;
-                	for (IGeneratorParameter param : params){
-                		if (param instanceof BlueRedColorScaleGenerator.Visibility) {
-							BlueRedColorScaleGenerator.Visibility v = (BlueRedColorScaleGenerator.Visibility) param;
-							v.setValue(false);
-							logger.debug("Turned off Generator: " + generator);
-						}
-                		if (param instanceof PosNegIncColorGenerator.Visibility) {
-                			PosNegIncColorGenerator.Visibility v = (PosNegIncColorGenerator.Visibility) param;
-							v.setValue(false);
-							logger.debug("Turned off Generator: " + generator);
-						}
-//                		if (param instanceof IGeneratorParameter<Boolean>) {
-//                			IGeneratorParameter<Boolean> bp= (IGeneratorParameter<Boolean>)param;
-//                            model.set(bp, false);
-//						}
-                	}
-                }				
-			}
-            
+            private void turnOffAllExternalGenerators() {
+            	//Switch off all other DS-generators!
+            	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
+
+            	JChemPaintEditor jcp=getJCPfromActiveEditor();
+            	if (jcp==null) return;
+
+            	RendererModel model = jcp.getWidget().getRenderer2DModel();
+
+            	for(IGenerator generator: generators) {
+            		List<IGeneratorParameter<?>> params = generator.getParameters();
+            		if(params.isEmpty()) continue;
+            		for (IGeneratorParameter param : params){
+            			if (param.getDefault() instanceof Boolean) {
+            				IGeneratorParameter<Boolean> bp= (IGeneratorParameter<Boolean>)param;
+            				model.set(bp.getClass(), false);
+            			}
+            		}
+            	}				
+            }
+
         });
 
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
