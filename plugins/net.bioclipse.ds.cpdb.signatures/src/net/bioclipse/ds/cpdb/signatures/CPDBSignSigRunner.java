@@ -415,7 +415,8 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
 //            }
 
           // Scaling. We rescale the derivative to be between 1 and 100.
-          double scaledDeriv = (currentDeriv-smallestDeriv)/(largestDeriv-smallestDeriv)*100+1;
+          double scaledDeriv = (currentDeriv-smallestDeriv)/(largestDeriv-smallestDeriv)*100;
+          if (scaledDeriv==0) scaledDeriv=1;
           match.putAtomResult( tmp-1, (int) scaledDeriv );
         	
 /*        	
