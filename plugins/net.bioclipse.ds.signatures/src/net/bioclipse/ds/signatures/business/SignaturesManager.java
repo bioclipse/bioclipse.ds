@@ -206,7 +206,7 @@ public class SignaturesManager implements IBioclipseManager {
      * @return Map from molecule > property
      * @throws BioclipseException if reading or calculation failed
      */
-    private List<String> doGenerateMoleculSignaturesFromSDFStream(
+    private List<String> doGenerateMoleculeSignaturesFromSDFStream(
                                                         InputStream inputstream)
                                                      throws BioclipseException {
 
@@ -241,7 +241,7 @@ public class SignaturesManager implements IBioclipseManager {
             mdlString=mdlString+"\n$$$$";
             ByteArrayInputStream b= new ByteArrayInputStream( mdlString.getBytes());
             
-            List<String> list = doGenerateMoleculSignaturesFromSDFStream( b);
+            List<String> list = doGenerateMoleculeSignaturesFromSDFStream( b);
             if (list==null || list.size()<=0)
                 throw new BioclipseException( "Signatures empty" );
             if (list.size()>1)
