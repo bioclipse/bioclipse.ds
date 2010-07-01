@@ -22,43 +22,50 @@ import net.bioclipse.ds.signatures.Activator;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 
 /**
+ * Abstract class for calculating atom signatures properties for a molecule.
  * 
  * @author ola
  *
  */
-public class SignaturesPropertyCalculator 
-                            implements IPropertyCalculator<String> {
+public abstract class AtomSignaturePropertyCalculator 
+                            implements IPropertyCalculator<AtomSignatures> {
 
-    Logger logger = Logger.getLogger( SignaturesPropertyCalculator.class );
+    Logger logger = Logger.getLogger( AtomSignaturePropertyCalculator.class );
 
-    public String calculate( ICDKMolecule molecule ) {
+    public AtomSignatures calculate( ICDKMolecule molecule ) {
         
         ISignaturesManager signatures= Activator.getDefault()
             .getJavaSignaturesManager();
 
         try {
-            return signatures.generateMoleculeSignature( molecule );
+            return signatures.generate(molecule, getHeight());
         } catch ( Exception e ) {
-            logger.warn( "Failed to calculate Signatures for mol: " + molecule);
+            logger.error( "Failed to calculate AtomSignatures height " + getHeight() + " for mol: " + molecule);
         }
         return null;
     }
 
-    public String getPropertyName() {
+    /**
+     * Split Comma-separated signatures into a String
+     */
+    public AtomSignatures parse( String value ) {
 
-        return "net.bioclipse.signature";
+    	String[] lst = value.split(",");
+    	List<String> list = Arrays.asList(lst);
+        return new AtomSignatures(list);
     }
 
-    public String parse( String value ) {
-        return value;
-    }
-
+    /**
+     * Serialize to comma-separated string
+     */
     public String toString( Object value ) {
-
-        if(value instanceof String) {
-            return (String) value;
-        }
-        return "";
+    	return ((AtomSignatures)value).toString();
     }
-    
+
+    /**
+     * The hight of the signatures
+     * @return
+     */
+    protected abstract int getHeight();
+
 }

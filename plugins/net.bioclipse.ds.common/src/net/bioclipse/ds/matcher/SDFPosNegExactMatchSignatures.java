@@ -19,7 +19,7 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.signatures.Activator;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
-import net.bioclipse.ds.signatures.prop.calc.Signatures;
+import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;

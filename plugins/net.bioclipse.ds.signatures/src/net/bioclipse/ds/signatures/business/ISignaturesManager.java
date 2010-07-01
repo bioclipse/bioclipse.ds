@@ -21,7 +21,7 @@ import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.signatures.prop.calc.Signatures;
+import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 /**
@@ -45,8 +45,8 @@ public interface ISignaturesManager extends IBioclipseManager {
     @PublishedMethod( 
         params = "String path",
         methodSummary = "Generate Signatures from SDFile")
-    public List<Signatures> generate(String path);
-    public List<Signatures> generate(IFile path);
+    public List<AtomSignatures> generate(String path);
+    public List<AtomSignatures> generate(IFile path);
 
     /**
      * Generate Signatures from SDFile.
@@ -58,8 +58,8 @@ public interface ISignaturesManager extends IBioclipseManager {
     @PublishedMethod( 
         params = "String path, int height",
         methodSummary = "Generate Signatures from SDFile with a given height")
-    public List<Signatures> generate(String path, int height);
-    public List<Signatures> generate(IFile path, int height);
+    public List<AtomSignatures> generate(String path, int height);
+    public List<AtomSignatures> generate(IFile path, int height);
     
     
     /**
@@ -72,7 +72,7 @@ public interface ISignaturesManager extends IBioclipseManager {
     @PublishedMethod( 
         params = "IMolecule molecule",
         methodSummary = "Generate Signatures for a molecule")
-    public Signatures generate(IMolecule molecule)  
+    public AtomSignatures generate(IMolecule molecule)  
     throws BioclipseException;
 
     /**
@@ -85,7 +85,7 @@ public interface ISignaturesManager extends IBioclipseManager {
     @PublishedMethod( 
         params = "IMolecule molecule, int height",
         methodSummary ="Generate Signatures with a given height for a molecule")
-    public Signatures generate(IMolecule molecule, int height) 
+    public AtomSignatures generate(IMolecule molecule, int height) 
     throws BioclipseException;
 
     /**
@@ -97,7 +97,7 @@ public interface ISignaturesManager extends IBioclipseManager {
     @PublishedMethod( 
         params = "List<IMolecule> molecules",
         methodSummary = "Generate Signatures from a list of molecules")
-    public Map<IMolecule, Signatures> generate(
+    public Map<IMolecule, AtomSignatures> generate(
                                                      List<IMolecule> molecules);
 
     /**
@@ -110,7 +110,7 @@ public interface ISignaturesManager extends IBioclipseManager {
         params = "List<IMolecule> molecules, int height",
         methodSummary = "Generate Signatures from a list of molecules with " +
         		"a given height")
-    public Map<IMolecule, Signatures> generate(List<IMolecule> molecules
+    public Map<IMolecule, AtomSignatures> generate(List<IMolecule> molecules
                                                        ,int height);
 
     /**

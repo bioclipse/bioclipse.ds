@@ -13,8 +13,28 @@
    <extension
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
-          class="net.bioclipse.ds.signatures.prop.calc.SignaturesPropertyCalculator"
-          id="Signatures">
+          class="net.bioclipse.ds.signatures.prop.calc.MolecularSignaturePropertyCalculator"
+          id="Molecular Signature">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight1PropertyCalculator"
+          id="Atom Signatures height 1">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight2PropertyCalculator"
+          id="Atom Signatures height 2">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight3PropertyCalculator"
+          id="Atom Signatures height 3">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight4PropertyCalculator"
+          id="Atom Signatures height 4">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight5PropertyCalculator"
+          id="Atom Signatures height 5">
     </Calculator>
    </extension>
 
@@ -24,14 +44,39 @@
         locationURI="popup:net.bioclipse.sdfeditor.popup.calculateProperty?after=additions">
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Signatures"
+           label="Molecular Signature"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="Signatures">
+              value="Molecular Signature">
         </parameter>
      </command>
-   </menuContribution>
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Atom Signatures height 1"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Atom Signatures height 1">
+        </parameter>
+     </command>
+
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Atom Signatures height 1-5"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Atom Signatures height 1,Atom Signatures height 2,Atom Signatures height 3,Atom Signatures height 4,Atom Signatures height 5">
+        </parameter>
+        <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+     </command>     
+     </menuContribution>
 
  </extension>   
 

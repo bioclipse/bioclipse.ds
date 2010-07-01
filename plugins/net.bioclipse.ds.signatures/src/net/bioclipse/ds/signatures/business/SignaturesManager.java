@@ -24,7 +24,7 @@ import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.signatures.prop.calc.Signatures;
+import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 import org.apache.log4j.Logger;
@@ -59,13 +59,13 @@ public class SignaturesManager implements IBioclipseManager {
      * @return
      * @throws BioclipseException
      */
-    public Signatures generate(IMolecule mol) 
+    public AtomSignatures generate(IMolecule mol) 
     throws BioclipseException{
         return generate( mol, SIGNATURES_DEFAULT_HEIGHT );
     }
 
 
-    public Signatures generate(IMolecule mol, int height) 
+    public AtomSignatures generate(IMolecule mol, int height) 
     throws BioclipseException{
         
         //Serialize to SDF
@@ -75,7 +75,7 @@ public class SignaturesManager implements IBioclipseManager {
         mdlString=mdlString+"\n$$$$";
         ByteArrayInputStream b= new ByteArrayInputStream( mdlString.getBytes());
         
-        List<Signatures> list = doGenerateAtomSignaturesFromSDFStream( b, height );
+        List<AtomSignatures> list = doGenerateAtomSignaturesFromSDFStream( b, height );
         if (list==null || list.size()<=0)
             throw new BioclipseException( "Signatures empty" );
         if (list.size()>1)
@@ -90,14 +90,14 @@ public class SignaturesManager implements IBioclipseManager {
      * @param mols List of IMoleculs
      * @return list of Signatures
      */
-    public Map<IMolecule, Signatures> generate(List<IMolecule> mols){
+    public Map<IMolecule, AtomSignatures> generate(List<IMolecule> mols){
 
-        Map<IMolecule, Signatures> retmap = 
-                                   new HashMap<IMolecule, Signatures>();
+        Map<IMolecule, AtomSignatures> retmap = 
+                                   new HashMap<IMolecule, AtomSignatures>();
         
         for (IMolecule mol : mols){
             try {
-                Signatures s = generate( mol );
+                AtomSignatures s = generate( mol );
                 if (s.getSignatures() !=null && s.getSignatures().size()>0)
                     retmap.put( mol, s );
             } catch ( BioclipseException e ) {
@@ -116,15 +116,15 @@ public class SignaturesManager implements IBioclipseManager {
      * @param height Signatures height
      * @return list of Signatures
      */
-    public Map<IMolecule, Signatures> generate(List<IMolecule> mols, 
+    public Map<IMolecule, AtomSignatures> generate(List<IMolecule> mols, 
                                                        int height){
 
-        Map<IMolecule, Signatures> retmap = 
-                                   new HashMap<IMolecule, Signatures>();
+        Map<IMolecule, AtomSignatures> retmap = 
+                                   new HashMap<IMolecule, AtomSignatures>();
         
         for (IMolecule mol : mols){
             try {
-                Signatures s = generate( mol , height);
+                AtomSignatures s = generate( mol , height);
                 if (s.getSignatures() !=null && s.getSignatures().size()>0)
                     retmap.put( mol, s );
             } catch ( BioclipseException e ) {
@@ -138,12 +138,12 @@ public class SignaturesManager implements IBioclipseManager {
     }
 
     
-    public List<Signatures> generate(IFile file) 
+    public List<AtomSignatures> generate(IFile file) 
     throws BioclipseException, CoreException{
         return generate( file, SIGNATURES_DEFAULT_HEIGHT );
     }
 
-    public List<Signatures> generate(IFile file, int height) 
+    public List<AtomSignatures> generate(IFile file, int height) 
     throws BioclipseException, CoreException{
         return doGenerateAtomSignaturesFromSDFStream( file.getContents(), height);
     }
@@ -160,7 +160,7 @@ public class SignaturesManager implements IBioclipseManager {
      * @return Map from molecule > property
      * @throws BioclipseException if reading or calculation failed
      */
-    private List<Signatures> doGenerateAtomSignaturesFromSDFStream(
+    private List<AtomSignatures> doGenerateAtomSignaturesFromSDFStream(
                                                         InputStream inputstream,
                                                        int height)
                                                      throws BioclipseException {
@@ -168,8 +168,8 @@ public class SignaturesManager implements IBioclipseManager {
           List<Molecule> molecules = MoleculeReader.readSDFfromStream( 
                                                                   inputstream );
 
-          List<Signatures> signaturesList = 
-              new ArrayList<Signatures>();
+          List<AtomSignatures> signaturesList = 
+              new ArrayList<AtomSignatures>();
 
           //Should be only one
           if (molecules==null || molecules.size()<=0)
@@ -187,7 +187,7 @@ public class SignaturesManager implements IBioclipseManager {
                   signatureString.add( gensign);
 //                  logger.debug("Sign for atom " + atomNr + ": " +gensign);
               }
-              Signatures signprop = new Signatures(
+              AtomSignatures signprop = new AtomSignatures(
                                                                signatureString);
 
               signaturesList.add( signprop );

@@ -17,7 +17,7 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
-import net.bioclipse.ds.signatures.prop.calc.Signatures;
+import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ public abstract class AbstractSignaturesManagerPluginTest {
 
         ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
         ICDKMolecule mol=cdk.fromSMILES( "C1CCCCC1CC(CC)" );
-        Signatures sp = managerNamespace.generate( mol );
+        AtomSignatures sp = managerNamespace.generate( mol );
         assertTrue( sp.getSignatures().size()==1 );
         assertEquals( "WEEE", sp );
         

@@ -7,15 +7,15 @@ import java.util.List;
  * @author ola
  *
  */
-public class Signatures {
+public class AtomSignatures {
 
     List<String> signatures;
 
-    public Signatures(List<String> signatures) {
+    public AtomSignatures(List<String> signatures) {
         this.signatures = signatures;
     }
 
-    public Signatures() {
+    public AtomSignatures() {
     }
 
     public List<String> getSignatures() {
@@ -43,9 +43,9 @@ public class Signatures {
     @Override
     public boolean equals( Object obj ) {
         
-        if (!( obj instanceof Signatures )) return false;
+        if (!( obj instanceof AtomSignatures )) return false;
 
-        Signatures sp = (Signatures) obj;
+        AtomSignatures sp = (AtomSignatures) obj;
 
         //Ensure equal size
         if (getSignatures().size()!=sp.getSignatures().size()) return false;
