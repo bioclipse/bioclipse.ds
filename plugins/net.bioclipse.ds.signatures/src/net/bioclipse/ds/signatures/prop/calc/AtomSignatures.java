@@ -28,13 +28,13 @@ public class AtomSignatures {
     }
 
     /**
-     * Return a comma-separated list of signatures
+     * Return a semi-colon-separated list of signatures
      */
     @Override
     public String toString() {
         StringBuffer buf=new StringBuffer();
         for (String s : signatures){
-            buf.append( s +",");
+            buf.append( s +";");
         }
         //Omit last comma
         return buf.substring( 0, buf.length()-1 );
