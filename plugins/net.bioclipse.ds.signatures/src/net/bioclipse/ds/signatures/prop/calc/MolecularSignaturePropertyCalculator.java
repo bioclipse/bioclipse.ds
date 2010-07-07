@@ -11,9 +11,6 @@
 
 package net.bioclipse.ds.signatures.prop.calc;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
@@ -46,7 +43,7 @@ public class MolecularSignaturePropertyCalculator
 
     public String getPropertyName() {
 
-        return "net.bioclipse.signature";
+        return "Molecular Signature";
     }
 
     public String parse( String value ) {

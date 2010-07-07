@@ -46,11 +46,11 @@ public abstract class AtomSignaturePropertyCalculator
     }
 
     /**
-     * Split Comma-separated signatures into a String
+     * Parse semi-colon-separated signatures into an AtomSignatures class
      */
     public AtomSignatures parse( String value ) {
 
-    	String[] lst = value.split(",");
+    	String[] lst = value.split(";");
     	List<String> list = Arrays.asList(lst);
         return new AtomSignatures(list);
     }

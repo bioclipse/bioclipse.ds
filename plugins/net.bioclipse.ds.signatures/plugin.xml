@@ -17,6 +17,10 @@
           id="Molecular Signature">
     </Calculator>
     <Calculator
+          class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight0PropertyCalculator"
+          id="Atom Signatures height 0">
+    </Calculator>
+    <Calculator
           class="net.bioclipse.ds.signatures.prop.calc.AtomSignatureHeight1PropertyCalculator"
           id="Atom Signatures height 1">
     </Calculator>
@@ -63,11 +67,11 @@
 
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Atom Signatures height 1-5"
+           label="Atom Signatures height 0-5"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="Atom Signatures height 1,Atom Signatures height 2,Atom Signatures height 3,Atom Signatures height 4,Atom Signatures height 5">
+              value="Atom Signatures height 0,Atom Signatures height 1,Atom Signatures height 2,Atom Signatures height 3,Atom Signatures height 4,Atom Signatures height 5">
         </parameter>
         <visibleWhen
               checkEnabled="true">
