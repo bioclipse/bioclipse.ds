@@ -122,6 +122,9 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
     }
 
     public String toString( Object value ) {
+    	if (value instanceof String) {
+			return (String) value;
+		}
         TestRun tr = (TestRun)value;
         return tr.getConsensusString();
     }
