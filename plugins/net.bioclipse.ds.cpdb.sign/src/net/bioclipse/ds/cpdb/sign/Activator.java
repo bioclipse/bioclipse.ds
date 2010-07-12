@@ -1,4 +1,4 @@
-package net.bioclipse.ds.cpdb.signatures;
+package net.bioclipse.ds.cpdb.sign;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

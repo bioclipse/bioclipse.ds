@@ -10,7 +10,7 @@
  *     Lars Carlsson
  *     Martin Eklund
  ******************************************************************************/
-package net.bioclipse.ds.cpdb.signatures;
+package net.bioclipse.ds.cpdb.sign;
 
 import java.awt.Color;
 import java.io.IOException;

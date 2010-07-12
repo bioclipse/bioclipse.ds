@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CPDB Signatures
-Bundle-SymbolicName: net.bioclipse.ds.cpdb.signatures;singleton:=true
+Bundle-SymbolicName: net.bioclipse.ds.cpdb.sign;singleton:=true
 Bundle-Version: 2.4.0.20100709
-Bundle-Activator: net.bioclipse.ds.cpdb.signatures.Activator
+Bundle-Activator: net.bioclipse.ds.cpdb.sign.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
