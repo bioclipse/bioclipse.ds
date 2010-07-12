@@ -27,7 +27,7 @@ public class NearestMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getTestID() {
-        return "ames.sdflookup.nearest";
+        return "ames.lookup.nearest";
     }
 
 }

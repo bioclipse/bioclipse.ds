@@ -27,7 +27,7 @@ public class ExactMatchCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getTestID() {
-        return "ames.sdflookup.exact";
+        return "ames.lookup.exact";
     }
     
 }

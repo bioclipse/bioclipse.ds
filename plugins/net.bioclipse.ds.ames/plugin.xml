@@ -21,7 +21,7 @@
          </endpoint>
          
       <test
-            id="ames.sdflookup.exact"
+            id="ames.lookup.exact"
             name="Ames exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
@@ -29,7 +29,7 @@
             informative="true"
             reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_molsign.sdf">
+                  path="data/ames_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
@@ -37,7 +37,7 @@
       </test>
 
       <test
-            id="ames.sdflookup.nearest"
+            id="ames.lookup.nearest"
             name="Ames nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
@@ -45,7 +45,7 @@
             propertycalculator="Ames Nearest Neighbours"
             reportmodel="net.bioclipse.ds.ui.report.NNReportModel">
             <resource name="file"
-                  path="data/cas_4337_noH_props_100426.sdf">
+                  path="data/ames_fp.sdf">
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="Ames test categorisation" />
