@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Libsvm
-Bundle-SymbolicName: net.bioclipse.ds.libsvm
+Bundle-SymbolicName: net.bioclipse.ds.libsvm;singleton:=true
 Bundle-Version: 2.91
 Bundle-Activator: net.bioclipse.ds.libsvm.Activator
 Bundle-Vendor: The Bioclipse Team
