@@ -26,10 +26,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
-import net.bioclipse.cdk.business.Activator;
-import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
@@ -38,14 +35,15 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.PosNegIncMatch;
-import net.bioclipse.ds.model.result.ScaledResultMatch;
-import net.bioclipse.ds.model.result.SubStructureMatch;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 
 
+/**
+ * 
+ * @author Ola Spjuth, Lars Carlsson, Martin Eklund
+ *
+ */
 public class SignSIgRunner extends AbstractDSTest implements IDSTest{
-
-    
     
     //The logger of the class
     private static final Logger logger = Logger.getLogger(SignSIgRunner.class);
