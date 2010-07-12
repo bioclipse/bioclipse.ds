@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -307,6 +308,14 @@ public abstract class AbstractDSTest implements IDSTest{
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
+        
+        cdk.removeExplicitHydrogens(cdkmol);
+        try {
+			cdkmol=cdk.addImplicitHydrogens(cdkmol);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+            return returnError( "Error: " + e.getMessage(),"e.getMessage()");
+		}
 
         List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
         
