@@ -19,7 +19,6 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.signatures.Activator;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
-import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -34,7 +33,7 @@ import org.openscience.cdk.CDKConstants;
  */
 public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implements IDSTest{
 
-    private static final String SIGNATURES_PROPERTY_KEY="net.bioclipse.signature";
+    private static final String SIGNATURES_PROPERTY_KEY="Molecular Signature";
 
     private static final Logger logger = Logger.getLogger(SDFPosNegExactMatchSignatures.class);
 
@@ -112,6 +111,11 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
                  return returnError( "Cancelled","");
 
         }
+        
+        if (results.size()<=0)
+        	logger.debug("No Mol Signatures matches found");
+        else
+        	logger.debug("Mol Signatures found " + results.size() + "matches");
 
         return results;
     }

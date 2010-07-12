@@ -36,7 +36,7 @@ import org.openscience.cdk.CDKConstants;
  */
 public class SDFPosNegExactMatchFP extends BaseSDFPosNegMatcher implements IDSTest{
 
-    private static final String CDK_FP_PROPERTY_KEY="net.bioclipse.cdk.fingerprint";
+    private static final String CDK_FP_PROPERTY_KEY="CDK Fingerprint";
 
     private static final Logger logger = Logger.getLogger(SDFPosNegExactMatchFP.class);
 

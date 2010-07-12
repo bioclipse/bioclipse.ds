@@ -21,7 +21,7 @@
          </endpoint>
          
       <test
-            id="cpdb.sdflookup.exact"
+            id="cpdb.lookup.exact"
             name="CPDB exact matches"
             endpoint="net.bioclipse.ds.carcinogenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
@@ -37,7 +37,7 @@
       </test>
 
       <test
-            id="cpdb.sdflookup.nearest"
+            id="cpdb.lookup.nearest"
             name="CPDB nearest neighbour"
             endpoint="net.bioclipse.ds.carcinogenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"

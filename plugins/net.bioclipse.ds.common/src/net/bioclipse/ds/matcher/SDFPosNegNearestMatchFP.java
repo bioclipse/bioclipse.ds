@@ -37,7 +37,7 @@ import org.openscience.cdk.CDKConstants;
  */
 public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDSTest{
 
-    private static final String CDK_FP_PROPERTY_KEY="net.bioclipse.cdk.fingerprint";
+    private static final String CDK_FP_PROPERTY_KEY="CDK Fingerprint";
     private static final String TANIMOTO_PARAMETER="distance.tanimoto";
 
     private static final Logger logger = Logger.getLogger(SDFPosNegNearestMatchFP.class);
