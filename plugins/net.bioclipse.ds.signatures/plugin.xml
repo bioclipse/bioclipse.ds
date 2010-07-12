@@ -2,6 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+	<extension
+    	point="org.eclipse.help.toc">
+		<toc
+        	file="toc.xml"
+         	primary="false"/>
+	</extension>
+
    <extension
          point="net.bioclipse.scripting.contribution">
       <scriptContribution
