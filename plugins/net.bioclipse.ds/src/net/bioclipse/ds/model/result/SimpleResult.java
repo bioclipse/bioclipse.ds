@@ -138,8 +138,13 @@ public class SimpleResult implements ITestResult{
     
     @Override
     public String toString() {
-        return name + " [test=" + testRun.getTest().getName() + "] Res=" 
-        + StatusHelper.statusToString( getClassification());
+    	if (testRun!=null){
+    		return name + " [test=" + testRun.getTest().getName() + "] Res=" 
+    		+ StatusHelper.statusToString( getClassification());
+    	}
+    	else{
+    		return StatusHelper.statusToString( getClassification());
+    	}
     }
 
     /**
