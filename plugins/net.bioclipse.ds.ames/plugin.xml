@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+	<extension
+    	point="org.eclipse.help.toc">
+		<toc
+        	file="toc.xml"
+         	primary="false"/>
+	</extension>
+
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+         
+         <endpoint
+               id="net.bioclipse.ds.mutagenicity"
+               description="Ability to induce mutations to DNA"
+               icon="icons/radioactive.png"
+               name="Mutagenicity">
+         </endpoint>
+         
+      <test
+            id="ames.sdflookup.exact"
+            name="Ames exact matches"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
+            propertycalculator="Ames Exact Match"
+            informative="true"
+            reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
+            <resource name="file"
+                  path="data/cas_4337_noH_props_molsign.sdf">
+            </resource>
+            <parameter name="responseProperty" value="Ames test categorisation" />
+            <parameter name="positiveValue" value="mutagen" />
+            <parameter name="negativeValue" value="nonmutagen" />
+      </test>
+
+      <test
+            id="ames.sdflookup.nearest"
+            name="Ames nearest neighbour"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            propertycalculator="Ames Nearest Neighbours"
+            reportmodel="net.bioclipse.ds.ui.report.NNReportModel">
+            <resource name="file"
+                  path="data/cas_4337_noH_props_100426.sdf">
+            </resource>
+            <parameter name="distance.tanimoto" value="0.7" />
+            <parameter name="responseProperty" value="Ames test categorisation" />
+            <parameter name="positiveValue" value="mutagen" />
+            <parameter name="negativeValue" value="nonmutagen" />
+      </test>
+      
+      <!--test
+            id="smarts.sample"
+            name="Sample simple SMARTS"
+            icon="icons/form.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
+            <resource name="file"
+                  path="data/sample.txt">
+            </resource>
+      </test-->
+      <test
+            id="ames.smarts"
+            name="Ames Toxicophores"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            reportmodel="net.bioclipse.ds.ui.report.SmartsMatchReportModel"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            propertycalculator="Ames Toxicophores"
+            class="net.bioclipse.ds.matcher.SmartsMatcher">
+            <resource name="file"
+                  path="data/bursiApprovedCDKCorrected.txt">
+            </resource>
+      </test>
+      <!--test
+            id="smarts.ames.inclexcl"
+            name="Ames inclusive/exclusive toxicophores"
+            icon="icons/form.gif"
+            class="net.bioclipse.ds.smarts.model.impl.SmartsInclusiveExclusiveTest">
+            <resource name="file"
+                  path="data/amesApprovedInclExclCDKCorrected.txt">
+            </resource>
+      </test-->
+
+      <test
+            id="ames.consensus"
+            name="Mutagenicity Consensus"
+            visible="false"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            class="net.bioclipse.ds.matcher.BogusTest"
+            icon="icons/db.gif">
+      </test>
+      
+   </extension>
+
+
+
+
+       <extension
+       point="net.bioclipse.cdk.propertyCalculator">
+    <Calculator
+          class="net.bioclipse.ds.ames.calc.ExactMatchCalculator"
+          id="Ames Exact Match">
+    </Calculator>
+    <Calculator
+          class="net.bioclipse.ds.ames.calc.NearestMatchCalculator"
+          id="Ames Nearest Neighbours">
+    </Calculator>
+    
+     <Calculator
+          class="net.bioclipse.ds.ames.calc.SmartsMatchCalculator"
+          id="Ames Toxicophores">
+    </Calculator>
+
+    <Calculator
+          class="net.bioclipse.ds.ames.calc.MutagenicityConsensusCalculator"
+          id="Mutagenicity Consensus">
+    </Calculator>
+    
+ </extension>
+ 
+ 	<extension
+  		point="org.eclipse.ui.menus">
+   <menuContribution
+        locationURI="popup:net.bioclipse.ds.context?after=single">
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Ames Exact Matches"
+            icon="icons/db.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Ames Exact Match">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Ames Nearest Neighbors"
+            icon="icons/db.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Ames Nearest Neighbours">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+     
+     <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Ames Toxicophores Matches"
+            icon="icons/form.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Ames Toxicophores">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+     
+   </menuContribution>
+ </extension>
+   
+   
+  
+  	<extension
+  		point="org.eclipse.ui.menus">
+
+   <menuContribution
+        locationURI="popup:net.bioclipse.ds.context?after=consensus">
+        
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Mutagenicity Consensus Clasification"
+            icon="icons/poll.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Ames Exact Match,Ames Nearest Neighbours,Ames Toxicophores,Ames Signature Significance,Mutagenicity Consensus">
+        </parameter>
+        <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+     </command>
+   </menuContribution>
+ </extension>
+   
+
+
+ <!--extension
+       point="org.eclipse.core.expressions.definitions">
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.file">
+       <iterate
+             ifEmpty="false"
+             operator="and">
+          <adapt
+                type="org.eclipse.core.resources.IResource">
+             <or>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf0d">
+                </test>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf2d">
+                </test>
+                <test
+                      property="org.eclipse.core.resources.contentTypeId"
+                      value="net.bioclipse.contenttypes.sdf3d">
+                </test>
+             </or>
+          </adapt>
+       </iterate>
+    </definition>
+
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.editor">
+       <with
+             variable="activeEditor">
+          <instanceof
+                value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+          </instanceof>
+       </with>
+    </definition>
+    <definition
+          id="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+       <or>
+          <iterate
+                ifEmpty="false"
+                operator="and">
+             <adapt
+                   type="org.eclipse.core.resources.IResource">
+                <or>
+	                <test
+    	                  property="org.eclipse.core.resources.contentTypeId"
+    	                  value="net.bioclipse.contenttypes.sdf0d">
+	                </test>
+                   <test
+                         property="org.eclipse.core.resources.contentTypeId"
+                         value="net.bioclipse.contenttypes.sdf2d">
+                   </test>
+                   <test
+                         property="org.eclipse.core.resources.contentTypeId"
+                         value="net.bioclipse.contenttypes.sdf3d">
+                   </test>
+                </or>
+             </adapt>
+          </iterate>
+          <with
+                variable="activeEditor">
+             <instanceof
+                   value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+             </instanceof>
+          </with>
+       </or>
+    </definition>
+ </extension-->
+   
+   
+   
+</plugin>

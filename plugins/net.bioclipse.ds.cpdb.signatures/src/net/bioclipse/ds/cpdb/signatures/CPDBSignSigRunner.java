@@ -78,7 +78,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
     public static final double[] feature_max = {12.0 , 6.0 , 13.0 , 10.0 , 4.0 , 9.0 , 18.0 , 5.0 , 8.0 , 2.0 , 1.0 , 6.0 , 2.0 , 2.0 , 7.0 , 4.0 , 8.0 , 2.0 , 1.0 , 9.0 , 6.0 , 6.0 , 6.0 , 6.0 , 2.0 , 2.0 , 4.0 , 1.0 , 4.0 , 1.0 , 1.0 , 2.0 , 1.0 , 2.0 , 10.0 , 10.0 , 3.0 , 3.0 , 3.0 , 2.0 , 1.0 , 2.0 , 2.0 , 4.0 , 2.0 , 1.0 , 2.0 , 6.0 , 12.0 , 1.0 , 1.0 , 1.0 , 1.0 , 3.0 , 3.0 , 2.0 , 1.0 , 1.0 , 1.0 , 1.0 , 2.0 , 1.0 , 2.0 , 1.0 , 6.0 , 8.0 , 2.0 , 1.0 , 2.0 , 6.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 3.0 , 1.0 , 1.0 , 1.0 , 3.0 , 1.0 , 2.0 , 1.0 , 1.0 , 1.0 , 6.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 2.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 2.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 3.0};
 
     //The SVM model. Read once on initialization.
-    public static svm_model bursiModel;
+    public static svm_model svmModel;
     
     // The ones below are needed, but they depend on some hardcoded info.
     //We need to avoid this, reading 198.
@@ -131,7 +131,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
         //So, load the model file into memory
         //===================================
         try {
-            bursiModel = svm.svm_load_model(modelPath);
+            svmModel = svm.svm_load_model(modelPath);
         } catch (IOException e) {
             throw new DSException("Could not read model file '" + modelPath 
                                   + "' due to: " + e.getMessage());
@@ -184,7 +184,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
 
         // Retrieve the decision function value.
         double[] decValues = new double[1]; // We only have two classes so this should be one. Look in svm_predict_values for an explanation. 
-        svm.svm_predict_values(bursiModel, xScaled, decValues);
+        svm.svm_predict_values(svmModel, xScaled, decValues);
 
         xScaled[component-1].value = xScaledCompOld;
 
@@ -196,14 +196,14 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
     
     private void predict() throws DSException{
         
-        prediction = svm.svm_predict(bursiModel, xScaled);
+        prediction = svm.svm_predict(svmModel, xScaled);
         
         logger.debug("libsvm prediction: " + prediction);
 
 //        // Retrieve the decision function value.
 //        double lowPointDecisionFuncValue;
 //        double[] decValues = new double[1]; // We only have two classes so this should be one. Look in svm_predict_values for an explanation. 
-//        svm.svm_predict_values(bursiModel, xScaled, decValues);
+//        svm.svm_predict_values(svmModel, xScaled, decValues);
 //        logger.debug("Decision function value: " + decValues[0]);
 //        lowPointDecisionFuncValue = decValues[0];
 //
