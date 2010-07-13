@@ -26,11 +26,13 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.jchempaint,
  net.bioclipse.cdk.jchempaint.view,
  net.bioclipse.inchi,
- net.bioclipse.ds.signatures;bundle-version="1.0.0"
+ net.bioclipse.ds.signatures;bundle-version="1.0.0",
+ org.eclipse.ui.views;bundle-version="3.4.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: net.bioclipse.ds.common,
  net.bioclipse.ds.cons,
  net.bioclipse.ds.matcher,
+ net.bioclipse.ds.matcher.model,
  net.bioclipse.ds.prop.calc
 Import-Package: org.apache.log4j
