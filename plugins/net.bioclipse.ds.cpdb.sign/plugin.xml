@@ -11,6 +11,16 @@
             class="net.bioclipse.ds.cpdb.sign.CPDBSignSigRunner"
             endpoint="net.bioclipse.ds.carcinogenicity">
       </test>
+      <test
+            id="cpdb.alerts.signatures"
+            name="CPDB Toxicophores"
+            endpoint="net.bioclipse.ds.carcinogenicity"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            class="net.bioclipse.ds.matcher.SignatureAlertsMatcher">
+            <resource name="file"
+                  path="data/cpdb_atomsign0_5.sdf_exportedSignatures.txt">
+            </resource>
+      </test>
    </extension>
 
       <!--test

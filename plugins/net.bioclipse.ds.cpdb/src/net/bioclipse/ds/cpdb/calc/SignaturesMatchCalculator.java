@@ -10,25 +10,24 @@
  ******************************************************************************/
 package net.bioclipse.ds.cpdb.calc;
 
-import org.apache.log4j.Logger;
-
 import net.bioclipse.ds.prop.calc.BaseDSPropertyCalculator;
 
 
-
+/**
+ * 
+ * @author ola
+ *
+ */
 public class SignaturesMatchCalculator extends BaseDSPropertyCalculator{
 
-    private static final Logger logger = Logger.getLogger(
-                                               SignaturesMatchCalculator.class);
-    
     @Override
     public String getPropertyName() {
-        return "CPDB Signatures";
+        return "CPDB Signatures Matches";
     }
 
     @Override
     public String getTestID() {
-        return "cpdb.signatures";
+        return "CPDB Signatures";
     }
     
 }
