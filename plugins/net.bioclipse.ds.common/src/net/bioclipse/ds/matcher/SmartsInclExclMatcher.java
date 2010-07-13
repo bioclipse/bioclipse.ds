@@ -35,7 +35,7 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.SimpleResult;
-import net.bioclipse.ds.model.result.SmartsMatch;
+import net.bioclipse.ds.model.result.StructuralAlertsMatch;
 
 
 /**
@@ -308,7 +308,7 @@ public class SmartsInclExclMatcher extends AbstractDSTest implements IDSTest{
                 }
  
                 //Toxicophores are by definition positive
-                SmartsMatch match=new SmartsMatch(
+                StructuralAlertsMatch match=new StructuralAlertsMatch(
                                               smartName, ITestResult.POSITIVE);
                 match.setAtomNumbers( matchingAtoms );
                 match.setSmartsString( inclSmart + " ; " + exclSmart );

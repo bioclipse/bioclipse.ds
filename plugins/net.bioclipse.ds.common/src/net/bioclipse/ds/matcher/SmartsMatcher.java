@@ -36,7 +36,7 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.SimpleResult;
-import net.bioclipse.ds.model.result.SmartsMatch;
+import net.bioclipse.ds.model.result.StructuralAlertsMatch;
 
 
 /**
@@ -53,15 +53,6 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
     private static final String FILE_PROPERTY_PARAM="file";
 
     Map<String, String> smarts;  //Smarts string -> Smarts Name
-
-    /**
-     * The required parameters in the manifest of contributed test. Default 
-     * impl is empty, subclasses may override.
-     * @return
-     */
-    List<String> getRequiredParameters(){
-        return new ArrayList<String>();
-    }
 
     /**
      * Verify parameters, read/parse SDF file into model, and verify properties
@@ -85,7 +76,8 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
         //Verify parameters
         //=================
 
-        //All SDFile implementations require the 'file' parameter (resource)
+        //This implementations requires the 'file' parameter (resource)
+        //pointing to a file of SMARTS
         String filepath=getParameters().get( FILE_PROPERTY_PARAM );
         if (filepath==null)
             throw new DSException("Required parameter '" + FILE_PROPERTY_PARAM 
@@ -96,7 +88,8 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
 
         String path="";
         try {
-            logger.debug("Trying to locate file: " + filepath + " from plugin: " + getPluginID());
+            logger.debug("Trying to locate file: " + filepath + " from plugin: "
+            		+ getPluginID());
             URL url = Platform.getBundle(getPluginID()).getEntry(filepath);
             logger.debug("File has URL: " + url);
             URL fileURL = FileLocator.toFileURL(url);
@@ -246,7 +239,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
                 }
 
                 //Toxicophores are by definition positive
-                SmartsMatch match=new SmartsMatch(
+                StructuralAlertsMatch match=new StructuralAlertsMatch(
                                                   smartsName, ITestResult.POSITIVE);
                 for (int aindex : matchingAtoms){
                     match.putAtomResult( aindex, ITestResult.POSITIVE );

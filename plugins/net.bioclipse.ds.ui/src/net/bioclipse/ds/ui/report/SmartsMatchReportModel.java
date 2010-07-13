@@ -19,7 +19,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
-import net.bioclipse.ds.model.result.SmartsMatch;
+import net.bioclipse.ds.model.result.StructuralAlertsMatch;
 import net.bioclipse.ds.report.AbstractTestReportModel;
 import net.bioclipse.ds.report.DSRow;
 import net.bioclipse.ds.report.StatusHelper;
@@ -42,8 +42,8 @@ public class SmartsMatchReportModel extends AbstractTestReportModel{
         for (int i=0; i<run.getMatches().size(); i++){
             
             ITestResult match = run.getMatches().get( i );
-            if ( match instanceof SmartsMatch ) {
-                SmartsMatch extmolmatch = (SmartsMatch) match;
+            if ( match instanceof StructuralAlertsMatch ) {
+                StructuralAlertsMatch extmolmatch = (StructuralAlertsMatch) match;
 
                 Map<String, String> params=new HashMap<String, String>();
                 params.put("name",  match.getName());

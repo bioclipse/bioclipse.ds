@@ -12,13 +12,13 @@ package net.bioclipse.ds.model.result;
 
 
 /**
- * A result that also holds a SMARTS string
+ * A result that also holds a Structural Alerts string (E.g. SMARTS)
  * @author ola
  *
  */
-public class SmartsMatch extends PosNegIncMatch{
+public class StructuralAlertsMatch extends PosNegIncMatch{
 
-    public SmartsMatch(String name, int resultStatus) {
+    public StructuralAlertsMatch(String name, int resultStatus) {
         super( name, resultStatus );
     }
 
