@@ -24,7 +24,7 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ds.signatures,
  net.bioclipse.ds.ui,
  net.bioclipse.ds.common,
- net.bioclipse.ds.libsvm
+ net.bioclipse.libsvm
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j

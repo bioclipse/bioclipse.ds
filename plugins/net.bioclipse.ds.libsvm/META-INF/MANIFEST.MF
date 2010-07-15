@@ -1,15 +1,20 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Libsvm
-Bundle-SymbolicName: net.bioclipse.ds.libsvm;singleton:=true
-Bundle-Version: 2.91
+Bundle-Name: DS Libsvm
+Bundle-SymbolicName: net.bioclipse.ds.libsvm
+Bundle-Version: 0.1.1
 Bundle-Activator: net.bioclipse.ds.libsvm.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.help,
+ org.eclipse.core.resources,
+ net.bioclipse.ds,
+ net.bioclipse.libsvm;visibility:=reexport,
+ net.bioclipse.cdk.business,
+ net.bioclipse.core,
+ net.bioclipse.ds.signatures,
+ org.openscience.cdk.interfaces
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- lib/libsvm.jar
-Export-Package: libsvm,
- net.bioclipse.ds.libsvm
+Import-Package: org.apache.log4j
