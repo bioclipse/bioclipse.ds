@@ -53,7 +53,7 @@ public abstract class BaseSDFPosNegMatcher extends BaseSDFMatcher implements IDS
      * The parameters that this test requires
      */
     @Override
-    List<String> getRequiredParameters() {
+    public List<String> getRequiredParameters() {
         List<String> ret=new ArrayList<String>();
 
         //The property value for positive prediction

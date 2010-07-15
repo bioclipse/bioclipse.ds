@@ -10,6 +10,9 @@
             endpoint="net.bioclipse.ds.mutagenicity"
             propertycalculator="Ames Signature Significance"
             reportmodel="net.bioclipse.ds.ames.sign.SignSigTestmodel">
+            <resource name="modelfile" path="data/bursiSignsXYZ_1.txt.model" />
+            <resource name="rangefile" path="data/bursiSignsXYZ_1.txt.range" />
+            <parameter name="signaturesfile" value="data/bursi.signatures" />
       </test>
    </extension>
    

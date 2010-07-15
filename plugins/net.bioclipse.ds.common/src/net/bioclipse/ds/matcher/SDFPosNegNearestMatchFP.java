@@ -79,7 +79,7 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
      * Add the tanimoto parameter
      */
     @Override
-    List<String> getRequiredParameters() {
+	public List<String> getRequiredParameters() {
     
         List<String> ret=super.getRequiredParameters();
         ret.add( TANIMOTO_PARAMETER );

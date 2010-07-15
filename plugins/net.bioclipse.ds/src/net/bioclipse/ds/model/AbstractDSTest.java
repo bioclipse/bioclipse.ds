@@ -274,24 +274,42 @@ public abstract class AbstractDSTest implements IDSTest{
      */
     public List<? extends ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
 
-        //Start stopwatch
-        Stopwatch watch=new Stopwatch();
-        watch.start();
-        
+    	//Do not initialize if we have an error message
+        if (getTestErrorMessage().length()>1){
+            logger.error("Trying to initialize test: " + getName() + " while " +
+                "error message exists");
+            return returnError( "Error message already exists for test: " 
+            		+ getName() + ". Should not attempt to run test.","");
+        }
+
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
 
-        //Read database file if not already done that
+        //Start stopwatch
+        Stopwatch watch=new Stopwatch();
+        watch.start();
+        
+        //Initialize if not already initialized
         try {
-            if (!isInitialized())
+            if (!isInitialized()){
+            	
+            	//Assert required parameters for this test
+            	assertRequiredParameters();
+ 
+            	//Delegate initialization to test
                 initialize(monitor);
+
+                //If no exception, assume correctly initialized
+                setInitialized(true);
+            }
         } catch ( Exception e1 ) {
             logger.error( "Failed to initialize test: " + getId() + " due to: " 
                           + e1.getMessage() );
-            setTestErrorMessage( "Failed to initialize: " + e1.getMessage() );
+            setTestErrorMessage( "Initialization error: " + e1.getMessage() );
         }
 
+        //Exit if error messages have occured.
         if (getTestErrorMessage().length()>1){
             return new ArrayList<ExternalMoleculeMatch>();
         }
@@ -308,15 +326,17 @@ public abstract class AbstractDSTest implements IDSTest{
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
-        
-        cdk.removeExplicitHydrogens(cdkmol);
+
+        //Preprocess the molecule: Remove explicit and add implicit hydrogens
         try {
+            cdk.removeExplicitHydrogens(cdkmol);
 			cdkmol=cdk.addImplicitHydrogens(cdkmol);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
             return returnError( "Error: " + e.getMessage(),"e.getMessage()");
 		}
 
+		//Delegate teh actual test to the implementation
         List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
         
         //Store timing of test
@@ -329,7 +349,34 @@ public abstract class AbstractDSTest implements IDSTest{
 
 
 
-    protected abstract List<? extends ITestResult> doRunTest( 
+    /**
+     * Make sure that we have the required parameters for the test
+     * defined in plugin.xml. Subclasses should override getRequiredParameters()
+     * to state the required parameters.
+     * @throws DSException 
+     */
+    private void assertRequiredParameters() throws DSException {
+        for (String reqParam : getRequiredParameters()){
+            String param=getParameters().get( reqParam );
+            if (param==null)
+                throw new DSException("Test '" + getName() + "' is missing " +
+                		"required parameter: '" + reqParam + "'"); 
+        }
+        
+		
+	}
+    
+    /**
+     * The required SDF properties in the file. 
+     * Default is empty, Subclasses may override.
+     * @return
+     */
+    public List<String> getRequiredParameters() {
+        return new ArrayList<String>();
+    }
+
+
+	protected abstract List<? extends ITestResult> doRunTest( 
                                                   ICDKMolecule cdkmol, 
                                                   IProgressMonitor monitor);
 

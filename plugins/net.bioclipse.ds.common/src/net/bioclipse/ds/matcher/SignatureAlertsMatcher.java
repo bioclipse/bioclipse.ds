@@ -193,8 +193,6 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 			throw new DSException("File: " + filepath + " could not be read.");
 		}
 
-        setInitialized( true );
-
         logger.debug("SignaturesMatcher.init parsed: " + signCount 
                      + " Signatures in file: " + filepath);
 

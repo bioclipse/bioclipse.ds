@@ -165,8 +165,6 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
             throw new DSException("File: " + filepath + " could not be read.");
         }
 
-        setInitialized( true );
-
         logger.debug("SmartsMatchingTest.init parsed: " + smarts.size() 
                      + " SMARTS in file: " + filepath 
                      + " and skipped: " + noSkipped);

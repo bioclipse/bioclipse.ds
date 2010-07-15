@@ -59,14 +59,6 @@ public class SmartsInclExclMatcher extends AbstractDSTest implements IDSTest{
     //Smarts Name -> incl smarts, exkl smarts
     Map<String, Map<String,String>> smarts;
 
-    /**
-     * The required parameters in the manifest of contributed test. Default 
-     * impl is empty, subclasses may override.
-     * @return
-     */
-    List<String> getRequiredParameters(){
-        return new ArrayList<String>();
-    }
 
     /**
      * Verify parameters, read/parse SDF file into model, and verify properties

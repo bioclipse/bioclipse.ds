@@ -83,7 +83,7 @@ public class Activator extends AbstractUIPlugin {
     public IDSManager getJavaManager() {
         IDSManager manager = null;
         try {
-            manager = (IDSManager) javaDsManagerTracker.waitForService(1000*10);
+            manager = (IDSManager) javaDsManagerTracker.waitForService(3000*10);
         } catch (InterruptedException e) {
             logger.warn( 
             "Exception occurred while attempting to get the DSManager" + e);

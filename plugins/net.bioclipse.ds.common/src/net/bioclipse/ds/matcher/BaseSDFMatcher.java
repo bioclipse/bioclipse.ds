@@ -63,14 +63,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
      */
     private SDFIndexEditorModel SDFmodel;
 
-    /**
-     * The required parameters in the manifest of contributed test. Default 
-     * impl is empty, subclasses may override.
-     * @return
-     */
-    List<String> getRequiredParameters(){
-        return new ArrayList<String>();
-    }
 
     /**
      * Enables subclasses to provide validation of response property values 
@@ -89,6 +81,14 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
      */
     List<String> getRequiredProperties() {
         return new ArrayList<String>();
+    }
+    
+    @Override
+    public List<String> getRequiredParameters() {
+    	return new ArrayList<String>(){{
+    	    add(RESPONSE_PROPERTY_PARAM);
+    	    add(FILE_PROPERTY_PARAM);
+    	}};
     }
     
     /**
@@ -120,38 +120,11 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
             throw new DSException("Initialization of test " + 
                                                         getId() + " cancelled");
 
-        //TODO: try to remove this
-        if (getTestErrorMessage().length()>1){
-            logger.error("Trying to initialize test: " + getName() + " while " +
-                "error message exists");
-            return;
-        }
-
-        //=================
-        //Verify parameters
-        //=================
-        
-        //All SDFile implementations require the 'file' parameter (resource)
+        //Read parameters as defined in extension
+        //We have already asserted that they exist
         String filepath=getParameters().get( FILE_PROPERTY_PARAM );
-        if (filepath==null)
-            throw new DSException("Required parameter '" + FILE_PROPERTY_PARAM 
-                                  + "' was not provided by test " + getId() ); 
-
-        //All SDFile implementations require the 'responseProperty' parameter 
         responseProperty=getParameters().get( RESPONSE_PROPERTY_PARAM );
-        if (responseProperty==null)
-            throw new DSException("Required response parameter '" 
-            + RESPONSE_PROPERTY_PARAM 
-            + "' was" + " not provided by test " + getId() ); 
 
-        //Assert all other required parameters exist or else throw exception
-        for (String reqParam : getRequiredParameters()){
-            String param=getParameters().get( reqParam );
-            if (param==null)
-                throw new DSException("Required parameter '" + reqParam 
-                                      + "' not provided by test " + getId() ); 
-        }
-        
         //=================
         //Read SDFile
         //=================
@@ -314,7 +287,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
             }
         }
         
-        setInitialized( true );
         logger.debug("Test " + getId() + " base initialization completed " +
         		"                                                    successfully");
     }
