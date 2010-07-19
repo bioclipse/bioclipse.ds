@@ -13,6 +13,7 @@ package net.bioclipse.ds.signatures.business;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,21 +72,38 @@ public class SignaturesManager implements IBioclipseManager {
     throws BioclipseException{
 
     	//Adapt IMolecule to ICDKMolecule
-        ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
-        ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
-        
-    	Molecule signmol = CDKMoleculeSignatureAdapter.convert(cdkmol.getAtomContainer());
-    	
-            List<String> signatureString=new ArrayList<String>();
+    	ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
+    	ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
 
-            MoleculeSignature signature = new MoleculeSignature(signmol);
-            for ( int atomNr = 0; atomNr < signmol.getAtomCount(); atomNr++){
-                String gensign=signature.signatureStringForVertex(atomNr, height);
-                signatureString.add( gensign);
-//                logger.debug("Sign for atom " + atomNr + ": " +gensign);
-            }
-        
-        return new AtomSignatures(signatureString);
+    	Molecule signmol = CDKMoleculeSignatureAdapter.convert(cdkmol.getAtomContainer());
+
+    	List<String> signatureString=new ArrayList<String>();
+
+    	MoleculeSignature signature = new MoleculeSignature(signmol);
+    	for ( int atomNr = 0; atomNr < signmol.getAtomCount(); atomNr++){
+    		String gensign=signature.signatureStringForVertex(atomNr, height);
+    		if (gensign==null || gensign.isEmpty()){
+    			logger.error("Produced null or empty " +
+    					"signature for atom: " + atomNr 
+    					+ " in molecule: " + cdkmol);
+    			throw new BioclipseException("Produced null or empty " +
+    					"signature for atom: " + atomNr 
+    					+ " in molecule: " + cdkmol);
+    		}
+
+    		signatureString.add( gensign);
+//    		logger.debug("Sign for atom " + atomNr + ": " +gensign);
+    	}
+    	
+    	//Test correct number of produced signatures (should not be an issue)
+    	if (signatureString.size()!=cdkmol.getAtomContainer().getAtomCount())
+			throw new BioclipseException("Number of atoms and atom signatures " +
+					"differ for molecule: " + cdkmol +" ; Number of atoms: " + 
+					cdkmol.getAtomContainer().getAtomCount() + 
+					" and number of signatures produced: " 
+					+ signatureString.size());
+
+    	return new AtomSignatures(signatureString);
 
     }
 
@@ -110,16 +128,25 @@ public class SignaturesManager implements IBioclipseManager {
         Map<IMolecule, AtomSignatures> retmap = 
                                    new HashMap<IMolecule, AtomSignatures>();
         
+        
         for (IMolecule mol : mols){
             try {
-                AtomSignatures s = generate( mol , height);
-                if (s.getSignatures() !=null && s.getSignatures().size()>0)
-                    retmap.put( mol, s );
+                AtomSignatures as = generate( mol , height);
+                
+                if (as.getSignatures() == null || as.getSignatures().size()<=0)
+                    logger.error( "No signatures generated for for molecule: " 
+                            + mol + ".  Skipping this entry." );
+                else
+                	//All is well
+                	retmap.put( mol, as );
+
+
             } catch ( BioclipseException e ) {
                 logger.error( "Error generating signatures for molecule: " 
-                              + mol + ".  Skipping this entry." );
+                              + mol + ".  Skipping this entry. " +
+                              		"Reason: " + e.getMessage() );
             }
-            
+
         }
     
         return retmap;
