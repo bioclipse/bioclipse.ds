@@ -40,7 +40,9 @@ public abstract class AtomSignaturePropertyCalculator
         try {
             return signatures.generate(molecule, getHeight());
         } catch ( Exception e ) {
-            logger.error( "Failed to calculate AtomSignatures height " + getHeight() + " for mol: " + molecule);
+            logger.error( "Failed to calculate AtomSignatures height " 
+            		+ getHeight() + " for mol: " + molecule 
+            		+ " Reason: " + e.getMessage());
         }
         return null;
     }

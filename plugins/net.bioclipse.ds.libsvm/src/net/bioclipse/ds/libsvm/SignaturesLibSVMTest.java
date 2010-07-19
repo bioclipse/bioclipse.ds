@@ -79,6 +79,12 @@ public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDS
         ret.add( SIGNATURES_FILE_PARAMETER );
         return ret;
     }
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 
     /**
      * Initialize all paths and read model files into memory.
