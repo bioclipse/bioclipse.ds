@@ -157,7 +157,7 @@ public class CPDBSignSigRunner extends AbstractDSTest implements IDSTest{
             URL url = FileLocator.toFileURL(Platform.getBundle(getPluginID())
                                             .getEntry(MODEL_FILE));
             modelPath=url.getFile();
-        } catch ( IOException e1 ) {
+        } catch ( Exception e1 ) {
             throw new DSException("Could not read model file: " + MODEL_FILE 
                                   + ". Reason: " + e1.getMessage());
         }
