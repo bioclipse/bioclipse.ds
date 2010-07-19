@@ -6,13 +6,13 @@
       <test
             id="ames.signatures"
             name="Ames Signature Significance"
-            class="net.bioclipse.ds.ames.sign.SignSIgRunner"
+            class="net.bioclipse.ds.ames.sign.AmesSignSignificanceTest"
             endpoint="net.bioclipse.ds.mutagenicity"
             propertycalculator="Ames Signature Significance"
             reportmodel="net.bioclipse.ds.ames.sign.SignSigTestmodel">
-            <resource name="modelfile" path="data/bursiSignsXYZ_1.txt.model" />
-            <resource name="rangefile" path="data/bursiSignsXYZ_1.txt.range" />
-            <parameter name="signaturesfile" value="data/bursi.signatures" />
+            <resource name="modelfile" path="data/bursi.train.model" />
+            <resource name="rangefile" path="data/bursi.train.range" />
+            <resource name="signaturesfile" path="data/bursi.signatures" />
       </test>
    </extension>
    
