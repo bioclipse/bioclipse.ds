@@ -27,6 +27,7 @@ import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.report.AbstractTestReportModel;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.business.IDSManager;
+import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
@@ -346,15 +347,20 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             protected IStatus run( IProgressMonitor monitor ) {
 
                 IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
+
                 try {
-                    monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
-                    monitor.worked( 1 );
-                    for (String testID : ds.getTests()){
-                        IDSTest test = ds.getTest( testID );
-                        monitor.subTask( "Initializing test: " + testID );
-                        test.initialize( monitor );
-                    }
-                    
+					monitor.beginTask( "Initializing decision support tests", ds.getTests().size()+1 );
+                monitor.worked( 1 );
+                for (String testID : ds.getTests()){
+                	IDSTest test = ds.getTest( testID );
+                	monitor.subTask( "Initializing test: " + testID );
+                	try {
+						test.initialize( monitor );
+					} catch (Exception e) {
+						test.setTestErrorMessage("Error: "+e.getMessage());
+					}
+                }
+
                     Display.getDefault().asyncExec( new Runnable(){
 
                         public void run() {
@@ -398,20 +404,17 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                         
                     });
                     
-                    
-                } catch ( Exception e1 ) {
+                } catch (BioclipseException e1) {
+                	LogUtils.handleException( e1, logger, Activator.PLUGIN_ID );
 
-                    LogUtils.handleException( e1, logger, Activator.PLUGIN_ID );
+                	Display.getDefault().asyncExec( new Runnable(){
+                		public void run() {
+                			viewer.setInput(new String[]{"Error initializing tests"});
+                		}
+                	});
 
-                    Display.getDefault().asyncExec( new Runnable(){
-                        public void run() {
-                            viewer.setInput(new String[]{"Error initializing tests"});
-                        }
-                    });
-
-
-                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-                                      "All tests could not be initalized: " + e1.getMessage());
+                	return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+                			"All tests could not be initalized: " + e1.getMessage());
                 }
 
                 monitor.done();
