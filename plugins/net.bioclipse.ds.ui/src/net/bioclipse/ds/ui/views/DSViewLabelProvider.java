@@ -116,7 +116,8 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
         //Decorate with no results and no errors
         else if ( element instanceof TestRun ) {
             TestRun tr = (TestRun) element;
-            if (tr.getTest().getTestErrorMessage().length()>1){
+            if (tr.getTest().getTestErrorMessage()!=null && 
+            		tr.getTest().getTestErrorMessage().length()>1){
                 return Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
             }
             else if (tr.getStatus()==TestRun.EXCLUDED){
