@@ -6,6 +6,7 @@
 			<topic label="Ames Exact Match"  href="html/exact.html" /> 
 			<topic label="Ames Nearest Neighbour"  href="html/nearest.html" /> 
 			<topic label="Ames Toxicophores"  href="html/toxicophores.html" />
+		    <topic label="Ames Signatures"  href="html/ames-sign.html" /> 
 			
 			<anchor id="ContributedTests" />
 			

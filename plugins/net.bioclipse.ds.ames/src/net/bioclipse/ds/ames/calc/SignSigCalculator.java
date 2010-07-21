@@ -8,39 +8,26 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ames.sign;
+package net.bioclipse.ds.ames.calc;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.bioclipse.ds.prop.calc.BaseDSPropertyCalculator;
 
-import net.bioclipse.ds.model.ITestResult;
 
 /**
  * 
  * @author ola
  *
  */
-public class DSTestsProperty {
+public class SignSigCalculator extends BaseDSPropertyCalculator{
 
-    Map<String, List<ITestResult>> result;
-
-    
-    public DSTestsProperty() {
-        result=new HashMap<String, List<ITestResult>>();
+    @Override
+    public String getPropertyName() {
+        return "Ames Signature Significance";
     }
 
-
-    public Map<String, List<ITestResult>> getResult() {
-    
-        return result;
+    @Override
+    public String getTestID() {
+        return "ames.signatures";
     }
-
-    
-    public void setResult( Map<String, List<ITestResult>> result ) {
-    
-        this.result = result;
-    }
-
     
 }

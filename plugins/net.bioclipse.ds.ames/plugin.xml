@@ -83,6 +83,18 @@
                   path="data/amesApprovedInclExclCDKCorrected.txt">
             </resource>
       </test-->
+      
+            <test
+            id="ames.signatures"
+            name="Ames Signature Significance"
+            class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            propertycalculator="Ames Signature Significance"
+            reportmodel="net.bioclipse.ds.ames.report.SignSigTestmodel">
+            <resource name="modelfile" path="models/ames.model" />
+            <resource name="rangefile" path="models/ames.range" />
+            <resource name="signaturesfile" path="models/ames.signatures" />
+      </test>
 
       <test
             id="ames.consensus"
@@ -98,7 +110,7 @@
 
 
 
-       <extension
+   <extension
        point="net.bioclipse.cdk.propertyCalculator">
     <Calculator
           class="net.bioclipse.ds.ames.calc.ExactMatchCalculator"
@@ -115,7 +127,12 @@
     </Calculator>
 
     <Calculator
-          class="net.bioclipse.ds.ames.calc.MutagenicityConsensusCalculator"
+          class="net.bioclipse.ds.ames.calc.SignSigCalculator"
+          id="Ames Signature Significance">
+    </Calculator>
+
+    <Calculator
+          class="net.bioclipse.ds.ames.calc.ConsensusCalculator"
           id="Mutagenicity Consensus">
     </Calculator>
     
@@ -186,12 +203,30 @@
      </command>
      
    </menuContribution>
- </extension>
-   
-   
-  
-  	<extension
-  		point="org.eclipse.ui.menus">
+
+    <menuContribution
+        locationURI="popup:net.bioclipse.ds.context?after=single">
+      <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="Ames Signature Significance"
+            icon="icons/form.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="Signature Significance">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>
+   </menuContribution>
+
 
    <menuContribution
         locationURI="popup:net.bioclipse.ds.context?after=consensus">
@@ -213,6 +248,7 @@
         </visibleWhen>
      </command>
    </menuContribution>
+
  </extension>
    
 

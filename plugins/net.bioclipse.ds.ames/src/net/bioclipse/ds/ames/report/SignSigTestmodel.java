@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ames.sign;
+package net.bioclipse.ds.ames.report;
 
  import java.util.ArrayList;
 import java.util.HashMap;

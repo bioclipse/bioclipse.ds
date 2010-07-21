@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.ames.sign;
+package net.bioclipse.ds.libsvm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,19 +34,18 @@ import net.bioclipse.ds.signatures.business.ISignaturesManager;
 
 
 /**
- * A clssification model test for data expressed as Signatures, implemented 
- * using LIBSVM. Abstract class is responsible for loading of model.
+ * A classification model test for data expressed as Signatures, implemented 
+ * using LIBSVM. Superclass is responsible for loading of model, this class 
+ * only implements the classification step for a two-class problem.
  * 
  * @author Ola Spjuth, Lars Carlsson, Martin Eklund
  *
  */
-public class AmesSignSignificanceTest extends SignaturesLibSVMTest implements IDSTest{
+public class Signatures2ClassesPredictionTest extends SignaturesLibSVMTest implements IDSTest{
     
     //The logger of the class
-    private static final Logger logger = Logger.getLogger(AmesSignSignificanceTest.class);
+    private static final Logger logger = Logger.getLogger(Signatures2ClassesPredictionTest.class);
    
-    // The ones below are needed, but they depend on some hardcoded info.
-    //We need to avoid this
     private svm_node[] xScaled;
     private double[] x;
 
@@ -60,11 +59,9 @@ public class AmesSignSignificanceTest extends SignaturesLibSVMTest implements ID
     /**
      * Default constructor
      */
-    public AmesSignSignificanceTest(){
+    public Signatures2ClassesPredictionTest(){
         super();
     }
-
-
 
 
     private double partialDerivative(int component)

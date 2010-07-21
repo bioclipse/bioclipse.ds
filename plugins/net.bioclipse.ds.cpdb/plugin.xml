@@ -53,6 +53,26 @@
             <parameter name="negativeValue" value="inactive" />
       </test>
       
+     <test
+            id="cpdb.signatures"
+            name="CPDB Signature Significance"
+            class="net.bioclipse.ds.libsvm.SignaturesRegressionTest"
+            endpoint="net.bioclipse.ds.carcinogenicity">
+            <resource name="modelfile" path="models/cpdb.model" />
+            <resource name="rangefile" path="models/cpdb.range" />
+            <resource name="signaturesfile" path="models/cpdb.signatures" />
+      </test>
+      <test
+            id="cpdb.alerts.signatures"
+            name="CPDB Toxicophores"
+            endpoint="net.bioclipse.ds.carcinogenicity"
+            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            class="net.bioclipse.ds.matcher.SignatureAlertsMatcher">
+            <resource name="file"
+                  path="models/cpdb.signature.alerts">
+            </resource>
+      </test>
+      
       <test
             id="cpdb.consensus"
             name="Carcinogenicity Consensus"

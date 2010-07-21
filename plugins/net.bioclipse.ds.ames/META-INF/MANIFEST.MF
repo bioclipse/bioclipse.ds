@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AMES data
-undle-SymbolicName: net.bioclipse.ds.ames;singleton:=true
+Bundle-SymbolicName: net.bioclipse.ds.ames;singleton:=true
 Bundle-Version: 2.4.0.20100709
 Bundle-Activator: net.bioclipse.ds.ames.Activator
 Bundle-Vendor: The Bioclipse Team
@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.business,
  net.bioclipse.core,
  net.bioclipse.ds.common,
- net.bioclipse.ds.ui
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+ net.bioclipse.ds.ui,
+ net.bioclipse.ds.libsvm
 Bundle-ActivationPolicy: lazy
-Bundle-SymbolicName: net.bioclipse.ds.ames;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

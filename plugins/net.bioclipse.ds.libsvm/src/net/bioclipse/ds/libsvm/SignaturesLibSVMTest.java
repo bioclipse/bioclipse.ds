@@ -23,6 +23,7 @@ import libsvm.svm_model;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
@@ -125,9 +126,19 @@ public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDS
         if (signatureList==null || signatureList.length<=0)
             throw new DSException("Signatures file: " + signaturesPath 
             		+ " was empty for test " + getName());
-        
+
+        logger.debug("Read signatures file " + signaturesPath + " with size " 
+        		+ signatureList.length);
+
         // Add the reading of the range file and set up the related variables.
         readRangeFile(rangePath);
+        
+        logger.debug("Read range file " + rangePath + " with size " 
+        		+ feature_min.length);
+        
+        if (signatureList.length != feature_min.length)
+            throw new DSException("Size of signatures and range arrays is " +
+            		"not equal in test: " + getName());
 
         
         //Load the model file into memory using SVM
@@ -153,13 +164,14 @@ public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDS
     			new BufferedReader(new FileReader(new File(rangePath)));
 
     		String line=br.readLine();
-    		//Skip first line //TODO: confirm this
+    		
+    		//Skip first line if starts with x
+    		if (line.startsWith("x"))
+    			line=br.readLine();
 
-    		//Second line
-    		line=br.readLine();
     		String[] splitLine = line.split(" ");
-    		lower_range=Double.parseDouble(splitLine[0]);
-    		upper_range=Double.parseDouble(splitLine[1]);
+    		lower_range=Double.parseDouble(splitLine[0].trim());
+    		upper_range=Double.parseDouble(splitLine[1].trim());
     		logger.debug("Lower range=" + lower_range 
     				+ " ; Upper range=" + upper_range);
 
@@ -167,13 +179,40 @@ public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDS
     		line=br.readLine();
     		List<Double> feature_min_list=new ArrayList<Double>();
     		List<Double> feature_max_list=new ArrayList<Double>();
+    		int r_lineno=1;	//range line number
     		while(line!=null){
         		splitLine = line.split(" ");
-        		feature_min_list.add(Double.parseDouble(splitLine[1]));
-        		feature_max_list.add(Double.parseDouble(splitLine[2]));
+        		if (splitLine.length==2){
+        		  feature_min_list.add(Double.parseDouble(splitLine[0].trim()));
+        		  feature_max_list.add(Double.parseDouble(splitLine[1].trim()));
+        		}
+        		else if (splitLine.length==3){
+        			//Confirm we read r_lineno in first, else impute 0,0
+        			double nextLine=Double.parseDouble(splitLine[0].trim());
+
+        			while (nextLine > r_lineno) {
+    					feature_min_list.add(new Double(0));
+    					feature_max_list.add(new Double(0));
+    					logger.debug("Imputed range (0,0) for entry: " 
+    							+ r_lineno);
+    					r_lineno++;
+					}
+        			
+        			//Ok, process with read values
+        			feature_min_list.add(Double.parseDouble(
+        					splitLine[1].trim()));
+        			feature_max_list.add(Double.parseDouble(
+        					splitLine[2].trim()));
+        		}
+        		else{
+        			throw new DSException("Range file: " + rangePath + " line " 
+        					+ line + " does not have either 2 or 3 " +
+        							"entries separated by space.");
+        		}
 
     			//Read next line
     			line=br.readLine();
+    			r_lineno++;
     		}
     		
     		br.close();
