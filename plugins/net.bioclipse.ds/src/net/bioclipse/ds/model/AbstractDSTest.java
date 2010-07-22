@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,6 @@ import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.Stopwatch;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
-import net.bioclipse.ds.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,7 +58,6 @@ public abstract class AbstractDSTest implements IDSTest{
     private boolean informative;
     private boolean initialized;
     private boolean visible;
-    private AbstractTestReportModel reportmodel;
     private Endpoint endpoint;
     private long executionTimeMilliSeconds;
     private String iconpath;
@@ -245,17 +242,6 @@ public abstract class AbstractDSTest implements IDSTest{
     }
 
     
-    public AbstractTestReportModel getReportmodel() {
-    
-        return reportmodel;
-    }
-
-    
-    public void setReportmodel( AbstractTestReportModel reportmodel ) {
-    
-        this.reportmodel = reportmodel;
-    }
-
     public boolean isInitialized() {
         
         return initialized;

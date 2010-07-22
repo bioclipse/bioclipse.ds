@@ -26,10 +26,9 @@
             endpoint="net.bioclipse.ds.carcinogenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="CPDB Exact Match"
-            informative="true"
-            reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
+            informative="true">
             <resource name="file"
-                  path="data/cpdb-processed_molsign.sdf">
+                  path="data/cpdb_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />
@@ -42,10 +41,9 @@
             endpoint="net.bioclipse.ds.carcinogenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
-            propertycalculator="CPDB Nearest Neighbours"
-            reportmodel="net.bioclipse.ds.ui.report.NNReportModel">
+            propertycalculator="CPDB Nearest Neighbours">
             <resource name="file"
-                  path="data/cpdb-processed.sdf">
+                  path="data/cpdb_fp.sdf">
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
@@ -58,13 +56,13 @@
             name="CPDB Signature Significance"
             class="net.bioclipse.ds.libsvm.SignaturesRegressionTest"
             endpoint="net.bioclipse.ds.carcinogenicity">
-            <resource name="modelfile" path="models/cpdb.model" />
-            <resource name="rangefile" path="models/cpdb.range" />
-            <resource name="signaturesfile" path="models/cpdb.signatures" />
+            <resource name="modelfile" path="models/cpdb.train.model" />
+            <resource name="rangefile" path="models/cpdb.train.range" />
+            <resource name="signaturesfile" path="models/cpdb.train.signatures" />
       </test>
       <test
             id="cpdb.alerts.signatures"
-            name="CPDB Toxicophores"
+            name="CPDB Signature Alerts"
             endpoint="net.bioclipse.ds.carcinogenicity"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             class="net.bioclipse.ds.matcher.SignatureAlertsMatcher">

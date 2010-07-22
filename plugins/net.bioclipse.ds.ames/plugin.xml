@@ -26,8 +26,7 @@
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="Ames Exact Match"
-            informative="true"
-            reportmodel="net.bioclipse.ds.ui.report.ExactMatchReportModel">
+            informative="true">
             <resource name="file"
                   path="data/ames_molsign.sdf">
             </resource>
@@ -42,8 +41,7 @@
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
-            propertycalculator="Ames Nearest Neighbours"
-            reportmodel="net.bioclipse.ds.ui.report.NNReportModel">
+            propertycalculator="Ames Nearest Neighbours">
             <resource name="file"
                   path="data/ames_fp.sdf">
             </resource>
@@ -64,9 +62,8 @@
       </test-->
       <test
             id="ames.smarts"
-            name="Ames Toxicophores"
+            name="Ames Structural Alerts"
             endpoint="net.bioclipse.ds.mutagenicity"
-            reportmodel="net.bioclipse.ds.ui.report.SmartsMatchReportModel"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="Ames Toxicophores"
             class="net.bioclipse.ds.matcher.SmartsMatcher">
@@ -89,8 +86,7 @@
             name="Ames Signature Significance"
             class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
             endpoint="net.bioclipse.ds.mutagenicity"
-            propertycalculator="Ames Signature Significance"
-            reportmodel="net.bioclipse.ds.ames.report.SignSigTestmodel">
+            propertycalculator="Ames Signature Significance">
             <resource name="modelfile" path="models/ames.model" />
             <resource name="rangefile" path="models/ames.range" />
             <resource name="signaturesfile" path="models/ames.signatures" />

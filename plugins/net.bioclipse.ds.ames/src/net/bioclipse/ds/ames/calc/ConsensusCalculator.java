@@ -7,7 +7,7 @@ import net.bioclipse.ds.prop.calc.DSConsensusCalculator;
  * @author ola
  *
  */
-public class MutagenicityConsensusCalculator extends DSConsensusCalculator {
+public class ConsensusCalculator extends DSConsensusCalculator {
     
     
 
