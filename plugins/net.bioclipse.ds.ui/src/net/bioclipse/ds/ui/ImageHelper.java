@@ -1,44 +1,61 @@
-package net.bioclipse.ds.ui;
+/* *****************************************************************************
+ * Copyright (c) 2009-2010 Ola Spjuth.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Ola Spjuth - initial API and implementation
+ ******************************************************************************/package net.bioclipse.ds.ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
+import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.AtomResultMatch;
 import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
+import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
 import net.bioclipse.ds.model.result.SubStructureMatch;
 
+import org.apache.log4j.Logger;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.renderer.AtomContainerRenderer;
+import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.font.AWTFontManager;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator;
 import org.openscience.cdk.renderer.generators.BasicBondGenerator;
 import org.openscience.cdk.renderer.generators.BasicSceneGenerator;
 import org.openscience.cdk.renderer.generators.HighlightAtomGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
+import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.openscience.cdk.renderer.generators.HighlightAtomGenerator.HighlightAtomDistance;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 
-
+/**
+ * Helper classes to generate Images of structures with DS-highlighting
+ * @author ola
+ *
+ */
 public class ImageHelper {
 
-    public static byte[] createImage( net.bioclipse.core.domain.IMolecule bcmol,
+    private static final Logger logger = Logger.getLogger(ImageHelper.class);
+
+    public static Image createImage( net.bioclipse.core.domain.IMolecule bcmol,
                                       ITestResult match ) 
                                       throws BioclipseException {
 
@@ -50,16 +67,28 @@ public class ImageHelper {
         
     }
     
-    public static byte[] createImage( net.bioclipse.core.domain.IMolecule bcmol,
+    @SuppressWarnings("unchecked")
+	public static Image createImage( net.bioclipse.core.domain.IMolecule bcmol,
                         ITestResult match, int WIDTH, int HEIGHT, double zoom)
                                                      throws BioclipseException {
 
         if (bcmol==null)
             return null;
-        
+
         ICDKManager cdk = net.bioclipse.cdk.business.Activator
-                                              .getDefault().getJavaCDKManager();
-        ICDKMolecule cdkmol= cdk.asCDKMolecule( bcmol );
+        .getDefault().getJavaCDKManager();
+
+        ICDKMolecule cdkmol=null;
+
+        //Render external match
+        if (match instanceof ExternalMoleculeMatch) {
+			ExternalMoleculeMatch extmatch = (ExternalMoleculeMatch) match;
+			cdkmol=extmatch.getMatchedMolecule();
+		}else{
+	        //Or the query molecule
+			cdkmol=cdk.asCDKMolecule( bcmol );
+		}
+        
 
         // the draw area and the image should be the same size
         Rectangle drawArea = new Rectangle(WIDTH, HEIGHT);
@@ -80,44 +109,78 @@ public class ImageHelper {
 
         //Add the standard generators
         generators.add(new BasicSceneGenerator());
-        generators.add(new HighlightAtomGenerator());
+//        generators.add(new HighlightAtomGenerator());
         generators.add(new BasicBondGenerator());
 
-        SubStructureMatch newMatch=null;
         
-        //If we have a match:
-        //We need to generate a new ISubstructureMatch from pre-clone and SDG
-//        if ( match instanceof SubStructureMatch ) {
-//            SubStructureMatch submatch = (SubStructureMatch) match;
-//
-//            newMatch=new SubStructureMatch(submatch.getName(),
-//                                                    submatch.getClassification());
-//            newMatch.setTestRun( ((SubStructureMatch) match).getTestRun() );
-//            IAtomContainer newac = NoNotificationChemObjectBuilder.getInstance().newAtomContainer();
-//            for (IAtom atom : match.getAtomContainer().atoms()){
-//                int atomno=cdkmol.getAtomContainer().getAtomNumber( atom );
-//                IAtom newAtom=mol.getAtom( atomno );
-//                newac.addAtom( newAtom );
-//            }
-//            
-//            newMatch.setAtomContainer( newac );
-//        }
+        //Add all generators, we turn them on/off by a parameter now
+        BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
+        PosNegIncColorGenerator gen2=new PosNegIncColorGenerator();
+        generators.add(generator);
+        generators.add( gen2 );
         
-        if (newMatch!=null){
-            BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
-            PosNegIncColorGenerator gen2=new PosNegIncColorGenerator();
-            generators.add(generator);
-            generators.add( gen2 );
-        }
-        
-        generators.add(new BasicAtomGenerator());
-        
+        BasicAtomGenerator agen = new BasicAtomGenerator();
+        generators.add(agen);
+
         // the renderer needs to have a toolkit-specific font manager 
         AtomContainerRenderer renderer = new AtomContainerRenderer(generators, new AWTFontManager());
         
-        // the call to 'setup' only needs to be done on the first paint
         renderer.setup(mol, drawArea);
-        renderer.getRenderer2DModel().set(HighlightAtomDistance.class, 18.0 );
+        RendererModel model = renderer.getRenderer2DModel();
+//        model.set(HighlightAtomDistance.class, 18.0 );
+
+        model.set(BasicAtomGenerator.CompactAtom.class, true);
+
+        //Turn off all external generators
+    	for(IGenerator gen : generators) {
+    		List<IGeneratorParameter<?>> params = gen.getParameters();
+    		if(params.isEmpty()) continue;
+    		for (IGeneratorParameter param : params){
+    			if (param.getDefault() instanceof Boolean) {
+    				IGeneratorParameter<Boolean> bp= (IGeneratorParameter<Boolean>)param;
+    				model.set(bp.getClass(), false);
+    			}
+    		}
+    	}				
+    	
+    	//Now, turn on the generator for this match
+        //IF match, turn on the supplied generator
+        if ( match != null ) {
+
+            Class<? extends IGeneratorParameter<Boolean>> visibilityParam = match.getGeneratorVisibility();
+            Class<? extends IGeneratorParameter<Map<Integer, Integer>>> atomMapParam = match.getGeneratorAtomMap();
+            
+            if (visibilityParam==null){
+            	logger.debug("The selected TestResult does not provide a " +
+            			"generatorVisibility. No generator turned on.");
+//            	return null;
+            }
+            else{
+
+
+            //And turn only the selected on
+            model.set(visibilityParam, true);
+			logger.debug("Turned on visibility for " +
+					"Generator: " + match.getGeneratorVisibility());
+
+			if (atomMapParam!=null){
+				if (match instanceof AtomResultMatch) {
+					AtomResultMatch atomResMatch = (AtomResultMatch) match;
+                    model.set(atomMapParam, atomResMatch.getResultMap());
+					logger.debug("  ...and AtomMapGeneratorParameter is used with content.");
+				}else{
+					logger.debug("  ...however, an AtomMapGeneratorParameter is available but TestResult is not PosNegIncMatch.");
+				}
+				
+			}
+			else{
+				logger.debug("  ...however, no AtomMapGeneratorParameter is available.");
+            }
+            }
+            
+        }
+        
+        
 
         //TODO: belows does not seem to work properly
 //        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );
@@ -130,7 +193,12 @@ public class ImageHelper {
         
         // the paint method also needs a toolkit-specific renderer
         renderer.paint(mol, new AWTDrawVisitor(g2));
+        
+        return image;
 
+        /*
+         * We don't serialize to byte[] anymore
+         * 
         ByteArrayOutputStream bo=new ByteArrayOutputStream();
         
         try {
@@ -145,6 +213,7 @@ public class ImageHelper {
         }
         
         return null;
+        */
 
     }
 }

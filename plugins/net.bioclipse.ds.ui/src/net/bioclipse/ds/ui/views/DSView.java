@@ -24,24 +24,17 @@ import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
-import net.bioclipse.ds.report.AbstractTestReportModel;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.business.IDSManager;
-import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.result.AtomResultMatch;
-import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
-import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
-import net.bioclipse.ds.model.result.PosNegIncMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
-import net.bioclipse.ds.model.result.SubStructureMatch;
 import net.bioclipse.ds.report.DSSingleReportModel;
-import net.bioclipse.ds.report.StatusHelper;
 import net.bioclipse.ds.ui.DSContextProvider;
-import net.bioclipse.ds.ui.ImageHelper;
+import net.bioclipse.ds.ui.GeneratorHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
@@ -75,7 +68,6 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
-import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.generators.IGenerator;
@@ -214,7 +206,15 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
             public void selectionChanged( SelectionChangedEvent event ) {
                 updateActionStates();
-                turnOffAllExternalGenerators();
+
+                JChemPaintEditor jcp=getJCPfromActiveEditor();
+                if (jcp==null) return;
+
+                //Turn off all ext generators who has a boolean parameter
+                //Not the best, but nothing else to do currently
+                //TODO: Improve on this!
+                GeneratorHelper.turnOffAllExternalGenerators(jcp);
+
                 Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if ( obj instanceof ITestResult ) {
                     ITestResult tr = (ITestResult) obj;
@@ -227,8 +227,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     	return;
                     }
                     
-                    JChemPaintEditor jcp=getJCPfromActiveEditor();
-                    if (jcp==null) return;
 
                     RendererModel model = jcp.getWidget().getRenderer2DModel();
 
@@ -254,28 +252,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 }
             }
 
-            private void turnOffAllExternalGenerators() {
-            	//Switch off all other DS-generators!
-            	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
-
-            	JChemPaintEditor jcp=getJCPfromActiveEditor();
-            	if (jcp==null) return;
-
-            	RendererModel model = jcp.getWidget().getRenderer2DModel();
-
-            	for(IGenerator generator: generators) {
-            		List<IGeneratorParameter<?>> params = generator.getParameters();
-            		if(params.isEmpty()) continue;
-            		for (IGeneratorParameter param : params){
-            			if (param.getDefault() instanceof Boolean) {
-            				IGeneratorParameter<Boolean> bp= (IGeneratorParameter<Boolean>)param;
-            				model.set(bp.getClass(), false);
-            			}
-            		}
-            	}				
-            }
-
         });
+
 
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         viewer.getTree().setLayoutData(gridData);
@@ -925,7 +903,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             else
                                 tr.setStatus( TestRun.FINISHED );
                             
-                            viewer.refresh( tr );
+                            viewer.refresh(  );
                             viewer.setExpandedState( tr, true );
                             updateConsensusView();
 
@@ -1072,9 +1050,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             return null;
         }
 
-        //Set up and return ReportModel
-        DSSingleReportModel reportmodel=new DSSingleReportModel();
-
         //Get mol from first testrun
         TestRun first = activeTestRuns.get( 0 );
         ICDKMolecule mol = first.getMolecule();
@@ -1084,49 +1059,17 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             return null;
         }
 
-        //Get name
-        String name = (String) mol.getAtomContainer().getProperty( CDKConstants.TITLE );
-        if (name==null)
-            name="N/A";
-        reportmodel.setCompoundName( name );
-        
-        ICDKManager cdk = net.bioclipse.cdk.business.Activator
-                                              .getDefault().getJavaCDKManager();
-        try {
-            //Generate SMILES
-            String smi=cdk.calculateSMILES( mol );
-            reportmodel.setSMILES( smi );
+        IDSManager ds =net.bioclipse.ds.Activator.getDefault().getJavaManager();
+        //Set up and return ReportModel
+        DSSingleReportModel reportmodel=null;
+		try {
+			reportmodel = new DSSingleReportModel(mol, ds.getFullEndpoints());
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}
 
-            //Generate Mass
-            double mw=cdk.calculateMass( mol );
-            reportmodel.setMw( mw );
-
-            //Generate structure image
-            byte[] structureImage = ImageHelper.createImage(
-                                                          mol, null, 200,200,0.5);
-            reportmodel.setQueryStructure( structureImage );
-            int cons=VotingConsensus.getConsensusFromTestRuns(activeTestRuns);
-            reportmodel.setConsensusText( StatusHelper.statusToString( cons ) );
-            reportmodel.setConsensusImage( StatusHelper.statusToImageData(cons ) );
-        } catch ( BioclipseException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-       
-        //Add all testmodels to ReportModel
-        for (TestRun tr : activeTestRuns){
-            AbstractTestReportModel testreportmodel = 
-                                                  tr.getTest().getReportmodel();
-            if (testreportmodel!=null){
-                testreportmodel.setName( tr.getTest().getId() );
-                if (testreportmodel!=null){
-                    testreportmodel.setTestrun( tr );
-                    reportmodel.addTestModel( testreportmodel );
-                }
-            }
-        }
-        
         return reportmodel;
+
         
     }
     
@@ -1548,6 +1491,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 							updateView();
 						}else{
 							doClearAndSetUpNewTestRuns(mol);
+							if (autorun)
+								runAction.run();
 						}
 
 					}
@@ -1617,6 +1562,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		logger.debug ("EventView reacting: JCP model is loaded. Molecule: " + cdkmol);
 		doSetUpTestRuns(cdkmol);
 		//TODO: VERIFY
+		if (autorun && !executed)
+			runAction.run();
 	}
 
 	private void JCPModelChanged(ICDKMolecule cdkmol){
@@ -1624,6 +1571,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		("EventView reacting: JCP editor model has changed");
 		doClearAndSetUpNewTestRuns(cdkmol);
 		//TODO: VERIFY
+		if (autorun && !executed)
+			runAction.run();
 	}
 
 

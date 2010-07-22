@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * Copyright (c) 2009 Ola Spjuth.
+ * Copyright (c) 2009-2010 Ola Spjuth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,23 +10,21 @@
  ******************************************************************************/
 package net.bioclipse.ds.ui.views;
 
-import net.bioclipse.ds.Activator;
+
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.ui.utils.PieChartProducer;
 
-import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.IColorProvider;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * 
@@ -39,6 +37,29 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 
         if ( element instanceof Endpoint ) {
             Endpoint ep = (Endpoint)element;
+            
+            if (ep.getTestruns()!=null){
+            	int pos=0;
+            	int neg=0;
+            	int inc=0;
+                for (TestRun run : ep.getTestruns()){
+                	if (run.getMatches()==null || run.getMatches().size()<=0) 
+                		continue;
+                	if (run.getConsensusStatus()==ITestResult.POSITIVE)
+                		pos++;
+                	else if (run.getConsensusStatus()==ITestResult.NEGATIVE)
+                		neg++;
+                	else if (run.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+                		inc++;
+                }
+                if ( neg!=0 || pos!=0 || inc!=0){
+                	Display display = PlatformUI.getWorkbench().getDisplay();
+                	Image img = PieChartProducer.generatePieChart(display, 
+                			neg, pos, inc, 12, 16);
+                	return img;
+                }
+            }
+
             return ep.getIcon();
         }
         else if ( element instanceof ITestResult ) {
@@ -51,6 +72,29 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
         }
         else if ( element instanceof TestRun ) {
             TestRun run = (TestRun) element;
+            
+            if (run.getMatches()!=null){
+            	int pos=0;
+            	int neg=0;
+            	int inc=0;
+                for (ITestResult res : run.getMatches()){
+                	if (run.getMatches()==null || run.getMatches().size()<=0) 
+                		continue;
+                	if (res.getClassification()==ITestResult.POSITIVE)
+                		pos++;
+                	else if (res.getClassification()==ITestResult.NEGATIVE)
+                		neg++;
+                	else if (res.getClassification()==ITestResult.INCONCLUSIVE)
+                		inc++;
+                }
+                if ( neg!=0 || pos!=0 || inc!=0){
+                	Display display = PlatformUI.getWorkbench().getDisplay();
+                	Image img = PieChartProducer.generatePieChart(display, 
+                			neg, pos, inc, 12, 16);
+                	return img;
+                }
+            }
+            
             return run.getIcon();
         }
 

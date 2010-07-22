@@ -30,7 +30,7 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Export-Package: net.bioclipse.ds.ui,
  net.bioclipse.ds.ui.actions,
- net.bioclipse.ds.ui.report,
+ net.bioclipse.ds.ui.utils,
  net.bioclipse.ds.ui.views
 Import-Package: javax.vecmath,
  org.apache.log4j
