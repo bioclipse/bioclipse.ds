@@ -8,6 +8,7 @@ import org.eclipse.help.IHelpResource;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.report.StatusHelper;
 
 /**
  * An endpoint in Decision Support.
@@ -155,6 +156,26 @@ public class Endpoint implements IContext2{
     public String getTitle() {
         return getName();
     }
+
+    /**
+     * Use consensuscalculator to compute consensus from all testruns
+     * @return
+     */
+    public String getConsensusString(){
+    	return StatusHelper.statusToString(getConsensus());
+    }
+
+	public int getConsensus() {
+		if (testruns==null) return ITestResult.ERROR;
+		
+		List<Integer> res=new ArrayList<Integer>();
+    	for (TestRun tr : testruns){
+    		res.add(tr.getConsensusStatus());
+    	}
+    	
+    	int consensus = getConsensusCalculator().calculate(res);
+		return consensus;
+	}
 
     
 }

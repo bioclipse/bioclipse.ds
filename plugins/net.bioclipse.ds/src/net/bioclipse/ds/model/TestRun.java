@@ -16,6 +16,7 @@ import java.util.List;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
+import net.bioclipse.ds.report.StatusHelper;
 
 import org.eclipse.help.IContext2;
 import org.eclipse.help.IHelpResource;
@@ -198,20 +199,8 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
     
     public String getConsensusString(){
         int cons=getConsensusStatus();
-        
-        if (cons==ITestResult.POSITIVE)
-            return "POSITIVE";
-        else if (cons==ITestResult.NEGATIVE)
-            return"NEGATIVE";
-        else if (cons==ITestResult.INCONCLUSIVE)
-            return"INCONCLUSIVE";
-        else if (cons==ITestResult.INFORMATIVE)
-            return"INFORMATIVE";
-        else if (cons==ITestResult.ERROR)
-            return"ERROR";
-        else
-            return"N/A";
-        
+
+        return StatusHelper.statusToString(cons);
     }
     
     public String getSuffix(){

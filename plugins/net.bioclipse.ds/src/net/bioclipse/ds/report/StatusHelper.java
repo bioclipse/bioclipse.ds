@@ -10,10 +10,15 @@
  ******************************************************************************/
 package net.bioclipse.ds.report;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.ITestResult;
@@ -29,14 +34,11 @@ import org.osgi.framework.Bundle;
  */
 public class StatusHelper {
 
-    private static byte[] questImg;
-    private static byte[] warnImg;
-    private static byte[] crossImg;
-    private static byte[] checkImg;
-    private static byte[] wheelImg;
-
-    
-
+    private static Image questImg;
+    private static Image warnImg;
+    private static Image crossImg;
+    private static Image checkImg;
+    private static Image wheelImg;
 
     public static String statusToString(int status){
         
@@ -71,7 +73,7 @@ public class StatusHelper {
         
     }
 
-    public static byte[] statusToImageData( int consensus ) {
+    public static Image statusToImageData( int consensus ) {
 
         if (checkImg==null)
             readImages();
@@ -103,7 +105,7 @@ public class StatusHelper {
 
     }
     
-    private static byte[] readImage(String relativePath) throws IOException{
+    private static BufferedImage readImage(String relativePath) throws IOException{
         
         //Get absolute path
         Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(
@@ -111,17 +113,32 @@ public class StatusHelper {
         URL url = FileLocator.find(bundle, 
                                    new Path(relativePath), null);
         String absPath = FileLocator.toFileURL(url).getPath();
-
-        //Read the absolute path as file
-        File myFile=new File(absPath);
-        FileInputStream is;
-            is = new FileInputStream(myFile);
-        long lengthi=myFile.length();
-        byte[] imagedata=new byte[(int)lengthi];
-        is.read(imagedata);
-        is.close();
         
-        return imagedata;
+		FileInputStream fis=null;
+		try {
+			fis = new FileInputStream(new File(absPath));
+			BufferedImage image = ImageIO.read(fis);
+			fis.close();
+			return image;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+
+//        //Read the absolute path as file
+//        File myFile=new File(absPath);
+//        FileInputStream is;
+//            is = new FileInputStream(myFile);
+//        long lengthi=myFile.length();
+//        byte[] imagedata=new byte[(int)lengthi];
+//        is.read(imagedata);
+//        is.close();
+//        
+//        return imagedata;
 
     }
     
