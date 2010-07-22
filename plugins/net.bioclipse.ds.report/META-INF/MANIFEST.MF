@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DS Report
+Bundle-SymbolicName: net.bioclipse.ds.report;singleton:=true
+Bundle-Version: 0.1.1
+Bundle-Activator: net.bioclipse.ds.report.Activator
+Bundle-Vendor: The Bioclipse Team
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.bioclipse.ds,
+ net.bioclipse.core,
+ net.bioclipse.jasper,
+ org.eclipse.core.resources,
+ net.bioclipse.ds.ui,
+ org.eclipse.ui.ide,
+ org.openscience.cdk.qsar,
+ org.openscience.cdk.qsaratomic,
+ org.openscience.cdk.qsarmolecular,
+ org.openscience.cdk.standard,
+ org.openscience.cdk.interfaces,
+ net.bioclipse.cdk.business,
+ net.bioclipse.ds.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.log4j

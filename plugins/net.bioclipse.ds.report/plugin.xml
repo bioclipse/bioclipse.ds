@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+
+    <extension
+        point="org.eclipse.ui.commands">
+        <category
+              id="net.bioclipse.ds.commands"
+              name="Decision Support">
+        </category>
+
+		<command
+		        categoryId="net.bioclipse.ds.commands"
+		        defaultHandler="net.bioclipse.ds.report.handlers.ReportHandler"
+		        id="net.bioclipse.ds.ui.report"
+		        name="Report">
+		</command>
+ </extension>
+
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="net.bioclipse.ds.birt.SingleReportTester"
+      type="java.lang.Object"
+      namespace="net.bioclipse.ds.birt"
+      properties="isDSViewRun"
+      class="net.bioclipse.ds.report.handlers.SingleReportTester">
+    </propertyTester>
+ </extension>
+
+
+<extension
+  		point="org.eclipse.ui.menus">
+
+	<menuContribution
+           locationURI="popup:net.bioclipse.ds.ui.views.DSView?after=additions">
+        <command
+              commandId="net.bioclipse.ds.ui.report"
+              icon="icons/pie.png">
+        </command>
+	</menuContribution>
+  </extension>
+
+
+</plugin>
