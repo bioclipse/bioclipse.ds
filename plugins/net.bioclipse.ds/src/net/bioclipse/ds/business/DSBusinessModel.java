@@ -18,7 +18,6 @@ import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
-import net.bioclipse.ds.report.AbstractTestReportModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
@@ -219,31 +218,9 @@ public class DSBusinessModel {
                                      ": " + e.getLocalizedMessage() );
                         LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
                     }
-                    
-                    //Add a reportmodel for the Test if it declares one 
-                    //in the manifest
-
-                    if (test!=null){
-                        try {
-                            Object rmodel = element
-                            .createExecutableExtension("reportmodel");
-                            if ( rmodel instanceof AbstractTestReportModel ) {
-                                AbstractTestReportModel abmodel = 
-                                    (AbstractTestReportModel) rmodel;
-                                test.setReportmodel( abmodel );
-                            }
-                        } catch ( CoreException e ) {
-                            logger.debug("The test: " + test.getName() 
-                                         + " did not provide a reportmodel.");
-                        }
-                    }
-
                 }
-
-
             }
         }
-
     }
 
     private IConsensusCalculator createNewConsCalc( String pconsid ) {

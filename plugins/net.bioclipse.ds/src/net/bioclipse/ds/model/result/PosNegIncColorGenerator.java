@@ -105,7 +105,7 @@ public class PosNegIncColorGenerator implements IGenerator<IAtomContainer> {
         int circleRadiusPref = store.getInt( DSPrefs.CIRCLE_RADIUS );
         double circleRadius=(double)circleRadiusPref / 10;
         if (circleRadius<=0 || circleRadius >1)
-            circleRadius=0.4;
+            circleRadius=0.6;
 
         for(int i = 0;i<ac.getAtomCount();i++) {  //Loop over all atoms
             for (Integer ii : atomMap.getValue().keySet()){   //Loop over list of atom indices with a result

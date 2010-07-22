@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.report.AbstractTestReportModel;
+
 
 /**
  * A top interface for all tests
@@ -43,10 +43,7 @@ public interface IDSTest extends ISubStructure, IContext2{
     public void setTestErrorMessage( String testErrorMessage );
     public void setInformative( boolean informative );
     public boolean isInformative();
-    public AbstractTestReportModel getReportmodel();
-    public void setReportmodel( AbstractTestReportModel reportmodel );
-//    public void setClone( boolean clone );
-//    public boolean isClone();
+
     public void setVisible( boolean visible );
     public boolean isVisible();
     public Endpoint getEndpoint();
