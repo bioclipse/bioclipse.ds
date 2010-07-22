@@ -58,7 +58,7 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
     private TreeMap<Double, Integer> varsAndDerivs = null;
     
     //We need to ensure that '.' is always decimal separator in all locales
-    DecimalFormat formatter;
+    DecimalFormat formatter=new DecimalFormat("0.000");
     
     /**
      * Default constructor
@@ -115,7 +115,7 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
         // The easiest way (which is also reasonably fast) is to collect all gradients in a TreeMap
         varsAndDerivs = new TreeMap<Double, Integer>();
         for (int key : attributeValues.keySet()) {
-            varsAndDerivs.put(partialDerivative(key), key);
+       		varsAndDerivs.put(partialDerivative(key), key);
         }
     }
 
