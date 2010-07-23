@@ -7,11 +7,12 @@ Bundle-Activator: net.bioclipse.ds.ames.test.Activator
 Bundle-Vendor: Ola Spjuth
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.bioclipse.ds;bundle-version="2.4.0",
- net.bioclipse.ds.ames;bundle-version="2.4.0",
- net.bioclipse.cdk.business;bundle-version="2.4.0",
- org.junit4;bundle-version="4.5.0",
- net.bioclipse.core;bundle-version="2.4.0",
- org.eclipse.core.resources;bundle-version="3.5.2"
+ net.bioclipse.ds,
+ net.bioclipse.ds.ames,
+ net.bioclipse.cdk.business,
+ org.junit4,
+ net.bioclipse.core,
+ org.eclipse.core.resources,
+ net.bioclipse.ds.signatures;bundle-version="2.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
