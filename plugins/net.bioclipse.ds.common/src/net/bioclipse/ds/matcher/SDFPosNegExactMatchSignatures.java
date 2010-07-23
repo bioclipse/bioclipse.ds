@@ -72,11 +72,12 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
         
         if (querySignature==null){
             logger.error( "MolSignatures empty for mol: " + cdkmol);
-            return returnError( "No MolSignaturee for molecule", "" );
+            return returnError( "No MolSignature created for molecule: " 
+            		+ cdkmol, "" );
         }
 
         //What to search for
-        logger.debug( "Query MolecularSignature: " + querySignature);
+//        logger.debug( "Query MolecularSignature: " + querySignature);
 
         //Search the entire SDFmodel
         for (int i=0; i<getSDFmodel().getNumberOfMolecules(); i++){
@@ -85,10 +86,10 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
                                                       SIGNATURES_PROPERTY_KEY );
             //Null check not required since verified in initialize()
 
-             //Compare Insignatures
+             //Compare signatures
             if (querySignature.equals( sigprop )){
                 
-                logger.debug("Found signature match for mol " + i + ": " + sigprop);
+//                logger.debug("Found signature match for mol " + i + ": " + sigprop);
                 
                 ICDKMolecule matchmol = getSDFmodel().getMoleculeAt( i );
                 String molResponse = getSDFmodel().getPropertyFor( i, 
@@ -112,10 +113,10 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
 
         }
         
-        if (results.size()<=0)
-        	logger.debug("No Mol Signatures matches found");
-        else
-        	logger.debug("Mol Signatures found " + results.size() + "matches");
+//        if (results.size()<=0)
+//        	logger.debug("No Mol Signatures matches found");
+//        else
+//        	logger.debug("Mol Signatures found " + results.size() + " matches");
 
         return results;
     }
