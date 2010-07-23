@@ -28,7 +28,7 @@
             propertycalculator="Ames Exact Match"
             informative="true">
             <resource name="file"
-                  path="data/ames_molsign.sdf">
+                  path="data/bursi_nosalts_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
@@ -43,7 +43,7 @@
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             propertycalculator="Ames Nearest Neighbours">
             <resource name="file"
-                  path="data/ames_fp.sdf">
+                  path="data/bursi_nosalts_fp.sdf">
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="Ames test categorisation" />
