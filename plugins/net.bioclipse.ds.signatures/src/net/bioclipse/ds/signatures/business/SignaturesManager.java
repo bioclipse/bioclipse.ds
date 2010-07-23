@@ -176,6 +176,14 @@ public class SignaturesManager implements IBioclipseManager {
         ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
         ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
         
+        cdkmol=cdk.perceiveAromaticity(cdkmol);
+        try {
+        	cdkmol=cdk.addImplicitHydrogens(cdkmol);
+		} catch (InvocationTargetException e) {
+			throw new BioclipseException("Error adding implicit hydrogens: " 
+					+ e.getMessage());
+		}
+        
     	Molecule signmol = CDKMoleculeSignatureAdapter.convert(cdkmol.getAtomContainer());
 
         MoleculeSignature signature = new MoleculeSignature(signmol);
