@@ -67,7 +67,7 @@
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
             class="net.bioclipse.ds.matcher.SignatureAlertsMatcher">
             <resource name="file"
-                  path="models/cpdb.signature.alerts">
+                  path="models/cpdb_atomsign0_5.sdf_exportedSignatures.txt">
             </resource>
       </test>
       
