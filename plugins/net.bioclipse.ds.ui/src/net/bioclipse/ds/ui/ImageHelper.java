@@ -21,6 +21,7 @@ import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
@@ -43,6 +44,7 @@ import org.openscience.cdk.renderer.generators.BasicSceneGenerator;
 import org.openscience.cdk.renderer.generators.HighlightAtomGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
+import org.openscience.cdk.renderer.generators.BasicAtomGenerator.AtomColor;
 import org.openscience.cdk.renderer.generators.HighlightAtomGenerator.HighlightAtomDistance;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 
@@ -109,9 +111,6 @@ public class ImageHelper {
 
         //Add the standard generators
         generators.add(new BasicSceneGenerator());
-//        generators.add(new HighlightAtomGenerator());
-        generators.add(new BasicBondGenerator());
-
         
         //Add all generators, we turn them on/off by a parameter now
         BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
@@ -119,6 +118,7 @@ public class ImageHelper {
         generators.add(generator);
         generators.add( gen2 );
         
+        generators.add(new BasicBondGenerator());
         BasicAtomGenerator agen = new BasicAtomGenerator();
         generators.add(agen);
 
@@ -127,11 +127,34 @@ public class ImageHelper {
         
         renderer.setup(mol, drawArea);
         RendererModel model = renderer.getRenderer2DModel();
-//        model.set(HighlightAtomDistance.class, 18.0 );
 
-        model.set(BasicAtomGenerator.CompactAtom.class, true);
+//        model.set(AtomColor.class, Color.BLUE);
+//        model.set(BasicAtomGenerator.CompactAtom.class, true);
 
-        //Turn off all external generators
+        enableSelectedExternalGenerators(match, model);
+
+        //TODO: belows does not seem to work properly
+//        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );
+        renderer.setZoom( zoom );
+        
+        // paint the background
+        Graphics2D g2 = (Graphics2D)image.getGraphics();
+        g2.setColor(Color.WHITE);
+        g2.fillRect(0, 0, WIDTH, HEIGHT);
+        
+        // the paint method also needs a toolkit-specific renderer
+        renderer.paint(mol, new AWTDrawVisitor(g2));
+        
+        return image;
+
+    }
+
+	private static void enableSelectedExternalGenerators(ITestResult match,
+			RendererModel model) {
+		
+		//Get all external generators
+    	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
+		
     	for(IGenerator gen : generators) {
     		List<IGeneratorParameter<?>> params = gen.getParameters();
     		if(params.isEmpty()) continue;
@@ -179,41 +202,5 @@ public class ImageHelper {
             }
             
         }
-        
-        
-
-        //TODO: belows does not seem to work properly
-//        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );
-        renderer.setZoom( zoom );
-        
-        // paint the background
-        Graphics2D g2 = (Graphics2D)image.getGraphics();
-        g2.setColor(Color.WHITE);
-        g2.fillRect(0, 0, WIDTH, HEIGHT);
-        
-        // the paint method also needs a toolkit-specific renderer
-        renderer.paint(mol, new AWTDrawVisitor(g2));
-        
-        return image;
-
-        /*
-         * We don't serialize to byte[] anymore
-         * 
-        ByteArrayOutputStream bo=new ByteArrayOutputStream();
-        
-        try {
-            ImageIO.write((RenderedImage)image, "PNG", bo);
-//            ImageIO.write((RenderedImage)image, "PNG", new File("/Users/ola/tmp/molOLA.png"));
-            bo.flush();
-            bo.close();
-            byte[] imagedata=bo.toByteArray();
-            return imagedata;
-        } catch ( IOException e1 ) {
-            e1.printStackTrace();
-        }
-        
-        return null;
-        */
-
-    }
+	}
 }
