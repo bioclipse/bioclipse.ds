@@ -1471,7 +1471,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 				@Override
 				public void pageChanged(PageChangedEvent event) {
 					Object obj = event.getSelectedPage();
-					System.out.println("Moltable changed page to: " + obj);
+					logger.debug("Moltable changed page to: " + obj);
 					if (obj instanceof JChemPaintEditor) {
 						JChemPaintEditor jcp = (JChemPaintEditor) obj;
 						jcp.addPropertyChangedListener(DSView.getInstance());

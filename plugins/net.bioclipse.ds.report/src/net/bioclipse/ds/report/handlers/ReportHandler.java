@@ -61,7 +61,7 @@ public class ReportHandler extends AbstractHandler{
 
         
 
-        System.out.println("Executing Jasper Report.");
+        logger.debug("Executing Jasper Report.");
 
         IWorkbenchPage page = PlatformUI.getWorkbench()
         .getActiveWorkbenchWindow()

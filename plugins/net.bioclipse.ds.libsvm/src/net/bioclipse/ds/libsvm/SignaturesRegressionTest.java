@@ -253,7 +253,7 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
         // Get largest and smallest derivate for scaling (see below)
         Double largestDeriv = varsAndDerivs.lastKey();
         Double smallestDeriv = varsAndDerivs.firstKey();
-        System.out.println("Largest: " + largestDeriv + " - " + " smallest: " + smallestDeriv);
+//        System.out.println("Largest: " + largestDeriv + " - " + " smallest: " + smallestDeriv);
         // Create a new match with correct coloring
 //        RGBMatch match = new RGBMatch("Result: " 
 //                                      + formatter.format( prediction ), 

@@ -1,5 +1,6 @@
 package net.bioclipse.ds.ui.views;
 
+import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.TestRun;
 
@@ -20,6 +21,11 @@ public class HideNotVisbleFilter extends ViewerFilter {
         else if ( element instanceof TestRun ) {
             TestRun tr = (TestRun)element;
             if (!tr.getTest().isVisible())
+                return false;
+        }       
+        else if ( element instanceof Endpoint ) {
+        	Endpoint ep = (Endpoint)element;
+            if (ep.getTests()==null || ep.getTests().size()<=0)
                 return false;
         }       
         return true;
