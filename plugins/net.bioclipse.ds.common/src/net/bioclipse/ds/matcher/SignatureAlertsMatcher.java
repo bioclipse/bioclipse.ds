@@ -142,7 +142,7 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 				else if (line.startsWith("significantSignature")){
 
 					StringTokenizer tk=new StringTokenizer(line, " ");
-					logger.debug("Parsing line: " + line);
+//					logger.debug("Parsing line: " + line);
 
 					int i=0;
 					String sign="";
@@ -174,7 +174,7 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
   					  sign, nrpos, nrtot, pvalue, accuracy, activeCall, height);
 					signsignlist.add(signsign);
 					signsignStringlist.add(sign);
-					logger.debug("  Added SignSignature: " + signsign);
+//					logger.debug("  Added SignSignature: " + signsign);
 					signCount++;
 				}
 				else{
