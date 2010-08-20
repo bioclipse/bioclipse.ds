@@ -200,7 +200,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         viewer.setContentProvider(new DSViewContentProvider());
 //        viewer.setLabelProvider(new DecoratingLabelProvider(new DSViewLabelProvider(),new DSViewDecorator()));
         viewer.setLabelProvider(new DSViewLabelProvider());
-//        viewer.setSorter(new ViewerSorter());
+        viewer.setComparator(new DSViewerComparator());
         viewer.addFilter( new HideNotVisbleFilter() );
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
 
