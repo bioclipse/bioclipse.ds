@@ -135,7 +135,7 @@ public class ImageHelper {
 
         //TODO: belows does not seem to work properly
 //        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );
-        renderer.setZoom( zoom );
+//        renderer.setZoom( zoom );
         
         // paint the background
         Graphics2D g2 = (Graphics2D)image.getGraphics();
