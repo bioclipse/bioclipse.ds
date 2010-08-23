@@ -13,6 +13,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.BufferedImage;
 
 import java.util.ArrayList;
@@ -143,7 +145,9 @@ public class ImageHelper {
         g2.fillRect(0, 0, WIDTH, HEIGHT);
         
         // the paint method also needs a toolkit-specific renderer
-        renderer.paint(mol, new AWTDrawVisitor(g2));
+        Double bounds = new Rectangle2D.Double(0, 0, WIDTH, HEIGHT);
+        renderer.paintMolecule(mol, new AWTDrawVisitor(g2), bounds, true);
+//        renderer.paint(mol, new AWTDrawVisitor(g2));
         
         return image;
 
