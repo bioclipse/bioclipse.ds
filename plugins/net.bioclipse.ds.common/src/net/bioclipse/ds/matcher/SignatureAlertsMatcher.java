@@ -204,7 +204,8 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
                                                      IProgressMonitor monitor ) {
 
         //Store results here
-        ArrayList<SimpleResult> results=new ArrayList<SimpleResult>();
+        ArrayList<SignificantSignatureMatch> results = 
+        	new ArrayList<SignificantSignatureMatch>();
         
         //Generate atom signatures for molecule
         ISignaturesManager signatures= Activator.getDefault()
@@ -281,16 +282,29 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 						}
 						else{
 							//Found good result
-							//Toxicophores are by definition positive
-							SignificantSignatureMatch match = 
-								new SignificantSignatureMatch(
-										signinfo, ITestResult.POSITIVE);
+							SignificantSignatureMatch match=null;
+							
+							//Have we added the same sign already? If so, 
+							//this is a duplicate so add atoms to existing list
+							for (SignificantSignatureMatch oldMatch : results){
+								if (oldMatch.getSignificantSignature()
+										.getSignature().equals(
+												signinfo.getSignature())){
+									match=oldMatch;
+								}
+							}
+
+							//If no prev match with this sign found, create new
+							if (match==null){
+								match = new SignificantSignatureMatch(
+											signinfo, ITestResult.POSITIVE);
+								results.add( match );
+							}
 
 							for (int aindex : matchingAtoms){
 								match.putAtomResult( aindex, 
 										ITestResult.POSITIVE );
 							}
-	    					results.add( match );    			
 						}
     				}
     			}
@@ -359,6 +373,11 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 		return ret;
 	}
 	
+	/**
+	 * Seems unused? Schedule for removal.
+	 * @param arlList
+	 */
+	@Deprecated
 	public static void removeDuplicateWithOrder(List<IAtom> arlList)
 	{
 		Set<IAtom> set = new HashSet<IAtom>();
