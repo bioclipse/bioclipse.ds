@@ -144,6 +144,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
     private IContextProvider contextProvider;
 
+	private JChemPaintEditor lastJCP;
+
     private static DSView instance;
     
     /**
@@ -1347,6 +1349,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		} catch (BioclipseException e) {
 			e.printStackTrace();
 		}
+		
 		updateView();
 	}
 
@@ -1441,6 +1444,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 				if (obj instanceof JChemPaintEditor) {
 
 					JChemPaintEditor jcp = (JChemPaintEditor) obj;
+					lastJCP=jcp;
 					jcp.addPropertyChangedListener(DSView.getInstance());
 					logger.debug("Added prop-listener to JCP");
 
@@ -1499,6 +1503,13 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 					else {
 						logger.debug("No JCP page visible anymore in moltable.");
 						deactivateView();
+						
+						//Also turn off generators
+						if (lastJCP!=null)
+							GeneratorHelper.turnOffAllExternalGenerators(lastJCP);
+						else
+							logger.debug("Could not turn off ext generators: lastJCP is null!");
+							
 						return;
 					}
 				}
