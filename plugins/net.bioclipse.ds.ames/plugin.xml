@@ -234,7 +234,7 @@
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="Ames Exact Match,Ames Nearest Neighbours,Ames Toxicophores,Ames Signature Significance,Mutagenicity Consensus">
+              value="Ames Exact Match,Ames Nearest Neighbours,Ames Toxicophores,Ames Signature Significance">
         </parameter>
         <visibleWhen
               checkEnabled="true">

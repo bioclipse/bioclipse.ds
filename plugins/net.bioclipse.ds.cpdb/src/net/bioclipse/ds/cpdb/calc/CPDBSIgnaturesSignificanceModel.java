@@ -1,33 +1,35 @@
 /*******************************************************************************
- * Copyright (c) 2009 Ola Spjuth.
+ * Copyright (c) 2010 Ola Spjuth <ola@bioclipse.net>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     Ola Spjuth - initial API and implementation
+ *     Ola Spjuth
  ******************************************************************************/
 package net.bioclipse.ds.cpdb.calc;
 
-import net.bioclipse.ds.prop.calc.BaseDSPropertyCalculator;
-
+import net.bioclipse.ds.libsvm.SignaturesRegressionTest;
 
 /**
+ * The values are for scaling the gradient results above/below a percentile.
  * 
  * @author ola
  *
  */
-public class SignaturesMatchCalculator extends BaseDSPropertyCalculator{
+public class CPDBSIgnaturesSignificanceModel extends SignaturesRegressionTest{
 
-    @Override
-    public String getPropertyName() {
-        return "CPDB Signatures Matches";
-    }
+				
+	@Override
+	public Double getHighPercentileDeriv() {
+		return 1.812;
+	}
 
-    @Override
-    public String getTestID() {
-        return "cpdb.alerts.signatures";
-    }
-    
+	@Override
+	public Double getLowPercentileDeriv() {
+		return -1.471;
+	}
+
+
 }

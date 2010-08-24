@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Ola Spjuth, Lars Carlsson, Martin Eklund
+ * Copyright (c) 2009-2010 Ola Spjuth, Lars Carlsson, Martin Eklund
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import libsvm.svm_node;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openscience.cdk.interfaces.IAtom;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
@@ -39,7 +40,7 @@ import net.bioclipse.ds.signatures.business.ISignaturesManager;
  * @author Ola Spjuth, Lars Carlsson, Martin Eklund
  *
  */
-public class SignaturesRegressionTest extends SignaturesLibSVMTest implements IDSTest{
+public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest implements IDSTest{
 
     //The logger of the class
     private static final Logger logger = Logger.getLogger(SignaturesRegressionTest.class);
@@ -87,7 +88,7 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
 
         xScaled[component-1].value = xScaledCompOld;
 
-        pD = decValues[0];
+        pD = decValues[0]-prediction;
 
         return pD;
     }
@@ -141,7 +142,7 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
             int signatureNr = i + 1;
             if (attributeValues.containsKey(signatureNr) ){
                 x[i] = attributeValues.get(signatureNr);
-                logger.debug("Singature number: " + signatureNr + ", value: " + x[i]);
+//                logger.debug("Singature number: " + signatureNr + ", value: " + x[i]);
             }
             else{
                 x[i] = 0.0;
@@ -255,12 +256,18 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
         Double smallestDeriv = varsAndDerivs.firstKey();
 //        System.out.println("Largest: " + largestDeriv + " - " + " smallest: " + smallestDeriv);
         // Create a new match with correct coloring
-//        RGBMatch match = new RGBMatch("Result: " 
-//                                      + formatter.format( prediction ), 
-//                                      ITestResult.INCONCLUSIVE);
+
+        //A positive valued prediction means we were able to predicta TD50.
         ScaledResultMatch match = new ScaledResultMatch("Result: " 
                                       + formatter.format( prediction ), 
-                                      ITestResult.INCONCLUSIVE);
+                                      ITestResult.POSITIVE);
+        
+        //Neg prediction means green - Negative results!
+        if (prediction<=0)
+        	match.setClassification(ITestResult.NEGATIVE);
+        
+        //For debugging of gradients
+        List<Double> gradients=new ArrayList<Double>();
         
         // How many variabels do we want to look at?
         int numberOfVars = (int) fractionOfVars*attributeValues.size();
@@ -288,7 +295,7 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
 //        	IAtom currentAtom = cdkmol.getAtomContainer().getAtom(tmp-1);
 //        	significantAtomsContainer.addAtom(currentAtom);
 
-        	//            logger.debug("center atom: " + significantAtom);
+//            logger.debug("center atom: " + significantAtom);
 //            //Also add all atoms connected to significant atoms to list
 //            for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtom-1 )) ){
 //                int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr) + 1;
@@ -300,11 +307,17 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
 //                logger.debug("nbr: " + nbrAtomNr);
 //            }
 
-          // Scaling. We rescale the derivative to be between 1 and 100.
-          double scaledDeriv = (currentDeriv-smallestDeriv)/(largestDeriv-smallestDeriv)*100;
-          if (scaledDeriv==0) scaledDeriv=1;
-          match.putAtomResult( tmp-1, (int) scaledDeriv );
+          // Scaling. We rescale the derivative to be between -1 and 1.
+        	double scaledDeriv = scaleDerivative(currentDeriv);
+        	match.putAtomResult( tmp-1, scaledDeriv );
+        	System.out.println("Atom " + (tmp-1) + " with pD=" + currentDeriv 
+        			+ " is scaled to: " + scaledDeriv);
         	
+//        	IAtom currentAtom = cdkmol.getAtomContainer().getAtom(tmp-1);
+//        	currentAtom.setProperty(getId(),scaledDeriv);
+
+        	gradients.add(currentDeriv);
+          
 /*        	
         	
             // Scaling. We rescale the derivative to be between 0 and 1.
@@ -332,9 +345,37 @@ public class SignaturesRegressionTest extends SignaturesLibSVMTest implements ID
         //...but here we only have one
         results.add( match );
 
+        //For debugging all gradients to stdout
+        String s = gradients.toString();
+        System.out.print(s.substring(1,s.length()-1) + ",");
+
         return results;
         
     }
 
 
+
+
+    /**
+     * Return a scaling between -1 and 1
+     * @param currentDeriv
+     * @return
+     */
+	private double scaleDerivative(Double currentDeriv) {
+
+		//We have a fixed boundary on a low and high percentile
+		//so cut away anything below or above this
+		if (currentDeriv<=getLowPercentileDeriv())
+			return -1;
+
+		if (currentDeriv>=getHighPercentileDeriv())
+			return 1;
+
+       return currentDeriv/getHighPercentileDeriv();
+
+	}
+
+	//Below are model-specific
+	public abstract Double getHighPercentileDeriv();
+	public abstract Double getLowPercentileDeriv();
 }

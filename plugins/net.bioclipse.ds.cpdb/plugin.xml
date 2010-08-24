@@ -54,8 +54,9 @@
      <test
             id="cpdb.signatures"
             name="CPDB Signature Significance"
-            class="net.bioclipse.ds.libsvm.SignaturesRegressionTest"
-            endpoint="net.bioclipse.ds.carcinogenicity">
+            class="net.bioclipse.ds.cpdb.calc.CPDBSIgnaturesSignificanceModel"
+            endpoint="net.bioclipse.ds.carcinogenicity"
+            propertycalculator="CPDB Signature Significance">
             <resource name="modelfile" path="models/cpdb.train.model" />
             <resource name="rangefile" path="models/cpdb.train.range" />
             <resource name="signaturesfile" path="models/cpdb.train.signatures" />
@@ -65,7 +66,8 @@
             name="CPDB Signature Alerts"
             endpoint="net.bioclipse.ds.carcinogenicity"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
-            class="net.bioclipse.ds.matcher.SignatureAlertsMatcher">
+            class="net.bioclipse.ds.matcher.SignatureAlertsMatcher"
+            propertycalculator="CPDB Signature Matches">
             <resource name="file"
                   path="models/cpdb_atomsign0_5.sdf_exportedSignatures.txt">
             </resource>
@@ -98,7 +100,12 @@
     
      <Calculator
           class="net.bioclipse.ds.cpdb.calc.SignaturesMatchCalculator"
-          id="CPDB Signatures">
+          id="CPDB Signature Matches">
+    </Calculator>
+
+     <Calculator
+          class="net.bioclipse.ds.cpdb.calc.SignatureSignificanceCalculator"
+          id="CPDB Signature Significance">
     </Calculator>
 
     <Calculator
@@ -159,7 +166,7 @@
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="CPDB Signatures">
+              value="CPDB Signature Matches">
         </parameter>
         <visibleWhen
               checkEnabled="false">
@@ -171,14 +178,27 @@
            </with>
         </visibleWhen>
      </command>
-     
+
+     <command
+           commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
+           label="CPDB Signatures Significance"
+            icon="icons/form.gif"
+           style="push">
+        <parameter
+              name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
+              value="CPDB Signature Significance">
+        </parameter>
+        <visibleWhen
+              checkEnabled="false">
+           <with
+                 variable="activeEditor">
+              <instanceof
+                    value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
+              </instanceof>
+           </with>
+        </visibleWhen>
+     </command>     
    </menuContribution>
- </extension>
-   
-   
-  
-  	<extension
-  		point="org.eclipse.ui.menus">
 
 
    <menuContribution
@@ -191,7 +211,7 @@
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="CPDB Exact Match,CPDB Nearest Neighbours,CPDB Signatures,CPDB Signature Significance,Carcinogenicity Consensus">
+              value="CPDB Exact Match,CPDB Nearest Neighbours,CPDB Signature Matches,CPDB Signature Significance">
         </parameter>
         <visibleWhen
               checkEnabled="true">
