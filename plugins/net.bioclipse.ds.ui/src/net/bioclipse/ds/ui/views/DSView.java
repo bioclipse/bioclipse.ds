@@ -222,7 +222,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     ITestResult tr = (ITestResult) obj;
 
                     Class<? extends IGeneratorParameter<Boolean>> visibilityParam = tr.getGeneratorVisibility();
-                    Class<? extends IGeneratorParameter<Map<Integer, Integer>>> atomMapParam = tr.getGeneratorAtomMap();
+                    Class<? extends IGeneratorParameter<Map<Integer, Number>>> atomMapParam = tr.getGeneratorAtomMap();
                     
                     if (visibilityParam==null){
                     	logger.debug("The selected TestResult does not provide a generatorVisibility.");
@@ -1480,6 +1480,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 						JChemPaintEditor jcp = (JChemPaintEditor) obj;
 						jcp.addPropertyChangedListener(DSView.getInstance());
 						logger.debug("Added prop-listener to JCP");
+						lastJCP=jcp;
 
 						ICDKMolecule mol = jcp.getCDKMolecule();
 						if (mol==null){

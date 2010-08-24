@@ -65,6 +65,6 @@ public interface ITestResult extends IAdaptable{
 //    public void setResultProperty( String propertyKey );
 
 	public Class<? extends IGeneratorParameter<Boolean>> getGeneratorVisibility();
-	public Class<? extends IGeneratorParameter<Map<Integer, Integer>>> getGeneratorAtomMap();
+	public Class<? extends IGeneratorParameter<Map<Integer, Number>>> getGeneratorAtomMap();
 
 }

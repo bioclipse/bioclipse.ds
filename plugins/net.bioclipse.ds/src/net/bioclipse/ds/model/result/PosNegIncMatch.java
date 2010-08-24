@@ -21,7 +21,7 @@ public class PosNegIncMatch extends AtomResultMatch{
     }
 
     @Override
-    public Class<? extends IGeneratorParameter<Map<Integer, Integer>>> getGeneratorAtomMap() {
-    	return (Class<? extends IGeneratorParameter<Map<Integer, Integer>>>)PosNegIncColorGenerator.AtomMap.class;
+    public Class<? extends IGeneratorParameter<Map<Integer, Number>>> getGeneratorAtomMap() {
+    	return (Class<? extends IGeneratorParameter<Map<Integer, Number>>>)PosNegIncColorGenerator.AtomMap.class;
     }
 }

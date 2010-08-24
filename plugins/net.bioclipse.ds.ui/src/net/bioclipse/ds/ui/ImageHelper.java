@@ -175,7 +175,7 @@ public class ImageHelper {
         if ( match != null ) {
 
             Class<? extends IGeneratorParameter<Boolean>> visibilityParam = match.getGeneratorVisibility();
-            Class<? extends IGeneratorParameter<Map<Integer, Integer>>> atomMapParam = match.getGeneratorAtomMap();
+            Class<? extends IGeneratorParameter<Map<Integer, Number>>> atomMapParam = match.getGeneratorAtomMap();
             
             if (visibilityParam==null){
             	logger.debug("The selected TestResult does not provide a " +

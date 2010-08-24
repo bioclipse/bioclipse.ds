@@ -10,23 +10,23 @@ import java.util.Map;
 public class AtomResultMatch extends SubStructureMatch{
 	
     //AtomNumber > Value
-    private Map<Integer, Integer> resultMap; 
+    private Map<Integer, Number> resultMap; 
 
     public AtomResultMatch(String name, int resultStatus) {
         super( name, resultStatus );
-        resultMap=new HashMap<Integer, Integer>();
+        resultMap=new HashMap<Integer, Number>();
     }
     
-    public void setResultMap( Map<Integer, Integer> resulMap ) {
+    public void setResultMap( Map<Integer, Number> resulMap ) {
         this.resultMap = resulMap;
     }
 
-    public Map<Integer, Integer> getResultMap() {
+    public Map<Integer, Number> getResultMap() {
         return resultMap;
     }
 
-    public void putAtomResult( Integer atomToAdd, Integer result ) {
-        if (resultMap==null) resultMap=new HashMap<Integer, Integer>();
+    public void putAtomResult( Integer atomToAdd, Number result ) {
+        if (resultMap==null) resultMap=new HashMap<Integer, Number>();
         resultMap.put( atomToAdd, result );
         if (!getAtomNumbers().contains( atomToAdd )){
             getAtomNumbers().add( atomToAdd );

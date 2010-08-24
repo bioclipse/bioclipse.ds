@@ -26,8 +26,8 @@ public class ScaledResultMatch extends AtomResultMatch{
     }
 
     @Override
-    public Class<? extends IGeneratorParameter<Map<Integer, Integer>>> getGeneratorAtomMap() {
-    	return (Class<? extends IGeneratorParameter<Map<Integer, Integer>>>)BlueRedColorScaleGenerator.AtomMap.class;
+    public Class<? extends IGeneratorParameter<Map<Integer, Number>>> getGeneratorAtomMap() {
+    	return (Class<? extends IGeneratorParameter<Map<Integer, Number>>>)BlueRedColorScaleGenerator.AtomMap.class;
     }
 
 }

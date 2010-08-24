@@ -156,7 +156,7 @@ public class SimpleResult implements ITestResult{
 	}
 
 	@Override
-	public Class<? extends IGeneratorParameter<Map<Integer, Integer>>> getGeneratorAtomMap() {
+	public Class<? extends IGeneratorParameter<Map<Integer, Number>>> getGeneratorAtomMap() {
 		return null;
 	}
 

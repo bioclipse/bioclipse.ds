@@ -10,7 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.model.result;
 
- import java.awt.Color;
+import java.awt.Color;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,109 +34,106 @@ import org.openscience.cdk.renderer.generators.BasicAtomGenerator.CompactAtom;
 import org.openscience.cdk.renderer.generators.parameter.AbstractGeneratorParameter;
 
 /**
- * A generator to draw circles with color on a scale between blue and red.
+ * A generator to draw circles with color on a scale between blue > yellow > red.
  * 
  * @author ola
  *
  */
 public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
 
-    private static final Logger logger = Logger.getLogger(BlueRedColorScaleGenerator.class);
+	private static final Logger logger = Logger.getLogger(BlueRedColorScaleGenerator.class);
 
-    public BlueRedColorScaleGenerator() {
+	public BlueRedColorScaleGenerator() {
 
-    }
-    
+	}
+
 	/**
 	 * Adds the ability to turn the generator on/off via a Handler.
 	 * False by default.
 	 */
-    public static class Visibility extends
-    AbstractGeneratorParameter<Boolean> {
-        public Boolean getDefault() {
-            return false;
-        }
-    }
-    private static IGeneratorParameter<Boolean> visible = new Visibility();
+	public static class Visibility extends
+	AbstractGeneratorParameter<Boolean> {
+		public Boolean getDefault() {
+			return false;
+		}
+	}
+	private static IGeneratorParameter<Boolean> visible = new Visibility();
 
 	public static void setVisible(Boolean visible1) {
 		visible.setValue(visible1);
 	}
-	
+
 	/**
 	 * Define values for per atom index for coloring
 	 */
-    public static class AtomMap extends
-    AbstractGeneratorParameter<Map<Integer, Integer>> {
-        public Map<Integer, Integer> getDefault() {
-            return Collections.EMPTY_MAP;
-        }
-    }
-    private static IGeneratorParameter<Map<Integer, Integer>> atomMap = new AtomMap();
+	public static class AtomMap extends
+	AbstractGeneratorParameter<Map<Integer, Number>> {
+		public Map<Integer, Number> getDefault() {
+			return Collections.EMPTY_MAP;
+		}
+	}
+	private static IGeneratorParameter<Map<Integer, Number>> atomMap = new AtomMap();
 
-	public static void setVisible(Map<Integer, Integer> map) {
+	public static void setVisible(Map<Integer, Number> map) {
 		atomMap.setValue(map);
 	}
 
-    
-    /**
-     * Set up the colored M2D circles based on calculated properties
-     */
-    public IRenderingElement generate( IAtomContainer ac,
-                                       RendererModel model ) {
 
-        ElementGroup group = new ElementGroup();
-        
-        if (visible.getValue()==false)
-        	return group;
-        //If no atommap, do not paint
-        if (atomMap.getValue().size()<=0){
-        	logger.error("A BlueRedColorScaleGenerator is used, but AtomMap was empty.");
-        	return group;
-        }
-        
-        //Read prefs for rendering params and compute real values
-        IPreferenceStore store=Activator.getDefault().getPreferenceStore();
-        int circleRadiusPref = store.getInt( DSPrefs.CIRCLE_RADIUS );
-        double circleRadius=(double)circleRadiusPref / 10;
-        if (circleRadius<=0 || circleRadius >1)
-            circleRadius=0.6;
+	/**
+	 * Set up the colored M2D circles based on calculated properties
+	 */
+	public IRenderingElement generate( IAtomContainer ac,
+			RendererModel model ) {
+
+		ElementGroup group = new ElementGroup();
+
+		if (visible.getValue()==false)
+			return group;
+		//If no atommap, do not paint
+		if (atomMap.getValue().size()<=0){
+			logger.error("A BlueRedColorScaleGenerator is used, but AtomMap was empty.");
+			return group;
+		}
+
+		//Read prefs for rendering params and compute real values
+		IPreferenceStore store=Activator.getDefault().getPreferenceStore();
+		int circleRadiusPref = store.getInt( DSPrefs.CIRCLE_RADIUS );
+		double circleRadius=(double)circleRadiusPref / 10;
+		if (circleRadius<=0 || circleRadius >1)
+			circleRadius=0.6;
 
 
-        for(int i = 0;i<ac.getAtomCount();i++) {  //Loop over all atoms
-            for (Integer ii : atomMap.getValue().keySet()){   //Loop over list of atom indices with a result
-                if (ii.intValue()==i){
-                    IAtom atom = ac.getAtom( i );
+		for(int i = 0;i<ac.getAtomCount();i++) {  //Loop over all atoms
+			IAtom atom = ac.getAtom( i );
 
-                    int resValue=atomMap.getValue().get( ii );
+			Color drawColor=Color.BLACK;	//Error color
+			double resValue=0;
 
-                    Color drawColor=ColorHelper
-                    .getBlueRedColor( resValue );
+			//If we have a result value for this atom, use this
+			if (atomMap.getValue().keySet().contains(i)){
+				resValue=atomMap.getValue().get( i ).doubleValue();
+			}
 
-                    if(drawColor != null){
-//                        if (model.get( CompactAtom.class )){
-//                            group.add( new OvalElement( atom.getPoint2d().x,
-//                                                        atom.getPoint2d().y,
-//                                                        circleRadius,true, drawColor ));
-//                        }
-                        group.add( new OvalElement( atom.getPoint2d().x,
-                                                    atom.getPoint2d().y,
-                                                    circleRadius,true, drawColor ));
+			//Get rainbow color, green from default value 0
+			drawColor=ColorHelper.getRainbowColor( resValue );
 
-                    }
-                }
-            }
-        }
+			if(drawColor != null){
+				group.add( new OvalElement( atom.getPoint2d().x,
+						atom.getPoint2d().y,
+						circleRadius,true, drawColor ));
 
-        
-        return group;
-    }
+			}
+		}
 
-    public List<IGeneratorParameter<?>> getParameters() {
-        return Arrays.asList(
-                new IGeneratorParameter<?>[] {
-                	visible, atomMap
-                }
-            );
-    }
+
+		return group;
+	}
+
+	public List<IGeneratorParameter<?>> getParameters() {
+		return Arrays.asList(
+				new IGeneratorParameter<?>[] {
+						visible, atomMap
+				}
+		);
+	}
 }

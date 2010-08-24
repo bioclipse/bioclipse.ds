@@ -31,30 +31,40 @@ public class ColorHelper {
     private static Map<Integer, Color> blueRedScale;
 
     /**
-     * Return a color from blue to red
-     * @param resValue A scaled integer between 1 and 100
+     * Return a color from blue to red via yellow
+     * @param resValue A double between -1 and 1
      * @return
      */
-    public static Color getBlueRedColor( int resValue ) {
+    public static Color getRainbowColor( double resValue ) {
+
+    	if (resValue<-1 || resValue>1){
+    		logger.error("Value is " + resValue + 
+    		" but must be between -1 and 1");
+    		return Color.BLACK;
+    	}
     	
-    	if (resValue<1 || resValue>100)
-    		logger.error("Value is " + resValue + " but must be between 1 and 100");
-        
         if (blueRedScale!=null)
             return blueRedScale.get( resValue );
+
+        double red = Math.round(resValue*255);
+        if (red<0) red=0;
+
+        double green=0;
+        if (resValue<0)
+        	green=Math.round(resValue*255+255);
+        else
+        	green=Math.round(-resValue*255+255);
+
+        double blue = Math.round(-resValue*255);
+        if (blue<0) blue=0;
         
-        
-        //Set up map from scaled value 1-100 to a color
-        //Blue is 0000FF, Red is FF0000, 
-        blueRedScale=new HashMap<Integer, Color>();
-        for (int i=0; i<100; i++){
-            int red=255-i*(255/100);
-            int blue=i*(255/100);
-            Color color=new Color( red, 0, blue, DSConstants.OVAL_ALPHA );
-            blueRedScale.put( i+1, color );
-        }
-        
-        return blueRedScale.get( resValue );
+        Color color = new Color( (int)red, (int)green, (int)blue, 
+        		DSConstants.OVAL_ALPHA );
+
+//        System.out.println("Value=" + resValue + " genrated color: " + color);
+
+        return color;
+
     }
 
     /**
@@ -72,5 +82,13 @@ public class ColorHelper {
     	return Color.ORANGE;
         
     }
+    
+    public static void main(String[] args) {
+		
+    	for (double i = -1; i < 1; i=i+0.1){
+    		System.out.println(i + " scales to: " + getRainbowColor(i));
+    	}
+    	
+	}
 
 }
