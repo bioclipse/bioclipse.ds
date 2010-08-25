@@ -63,7 +63,7 @@ public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDS
     protected double[] feature_max;
 
     //The SVM model.
-    public static svm_model svmModel;
+    public svm_model svmModel;
     
     /**
      * Default constructor
