@@ -367,12 +367,16 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
 		//so cut away anything below or above this
 		if (currentDeriv<=getLowPercentileDeriv())
 			return -1;
-
-		if (currentDeriv>=getHighPercentileDeriv())
+		else if (currentDeriv>=getHighPercentileDeriv())
 			return 1;
+		else if (currentDeriv==0)
+			return 0;
 
-       return currentDeriv/getHighPercentileDeriv();
-
+		//Since not symmetric around 0, scale pos and neg intervals individually
+		if (currentDeriv<0)
+			return currentDeriv/getLowPercentileDeriv();
+		else
+			return currentDeriv/getHighPercentileDeriv();
 	}
 
 	//Below are model-specific
