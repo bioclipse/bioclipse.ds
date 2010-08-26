@@ -67,5 +67,7 @@ public interface IDSTest extends ISubStructure, IContext2{
     public void setHelppage( String helppage );
     public void setDescription( String pdescription );
     public String getDescription();
+	public void setInitialized(boolean initialized);
+	public boolean isInitialized();
 
 }

@@ -53,6 +53,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -335,10 +336,17 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 	IDSTest test = ds.getTest( testID );
                 	monitor.subTask( "Initializing test: " + testID );
                 	try {
-						test.initialize( monitor );
-					} catch (Exception e) {
-						test.setTestErrorMessage("Error: "+e.getMessage());
-					}
+                		if (!test.isInitialized()){
+                			test.initialize( monitor );
+
+                			//If no exception, assume all is well
+                			test.setInitialized(true);
+                		}
+                	} catch (Exception e) {
+                		logger.error("Failed initializing test " + 
+                				test.getName() + " Reason: " + e.getMessage());
+                		test.setTestErrorMessage("Error: "+e.getMessage());
+                	}
                 }
 
                     Display.getDefault().asyncExec( new Runnable(){
@@ -1035,11 +1043,15 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
      * Wait for all jobs to finish, then return ReportModel
      * @return
      */
-    public DSSingleReportModel waitAndReturnReportModel(){
+    public DSSingleReportModel waitAndReturnReportModel(IProgressMonitor monitor){
         
         //Wait for all jobs to finish
-        for (BioclipseJob<List<ITestResult>> job : runningJobs){
+  
+//Should probably use this approach instead: TODO
+//    	Job.getJobManager().join(family, monitor);
+        for (BioclipseJob job : runningJobs.toArray(new BioclipseJob[0])){
             logger.debug("Waiting for Job: " + job.getName() + " to finish...");
+            monitor.subTask("Waiting for Job: " + job.getName() + " to finish...");
             try {
                 job.join();
             } catch ( InterruptedException e ) {
