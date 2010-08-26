@@ -61,11 +61,6 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 	Map<Integer, List<SignificantSignature>> significantSignatures;
 	Map<Integer, List<String>> significantSignatureStrings;
 
-    /**
-     * Verify parameters, read/parse SDF file into model, and verify properties
-     * @param monitor 
-     * @throws DSException
-     */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
         if (monitor.isCanceled())
@@ -217,6 +212,10 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
         try {
         	
         	for (int height=0; height<6; height++){
+        		
+                if (monitor.isCanceled())
+                    return returnError( "Cancelled","");
+
                 AtomSignatures as = signatures.generate(cdkmol, height);
 
                 //For all stored signatures at this height
@@ -245,6 +244,9 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
     				//Loop over all hits
     				for (String hit : union){
     					
+    	                if (monitor.isCanceled())
+    	                    return returnError( "Cancelled","");
+
     					List<Integer> matchingAtoms =new ArrayList<Integer>();
 
     					//Get atoms from this hit, since possible to get several

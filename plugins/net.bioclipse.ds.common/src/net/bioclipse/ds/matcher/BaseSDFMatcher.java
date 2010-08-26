@@ -116,10 +116,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
-        if (monitor.isCanceled())
-            throw new DSException("Initialization of test " + 
-                                                        getId() + " cancelled");
-
         //Read parameters as defined in extension
         //We have already asserted that they exist
         String filepath=getParameters().get( FILE_PROPERTY_PARAM );
@@ -148,10 +144,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
             throw new DSException("File: " + filepath + " could not be read by " +
             		"test: " + getId());
         }
-
-        if (monitor.isCanceled())
-            throw new DSException("Initialization of test " + 
-                                                        getId() + " cancelled");
 
         logger.debug("Test " + getId() + " reading and parsing file: " 
                      + path );
@@ -190,12 +182,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
                                       + getId());
             }
         }
-//        logger.debug("Test " + getId() + " wrote virtual file: " + virtualfile);
-        
-        if (monitor.isCanceled())
-            throw new DSException("Initialization of test " + 
-                                                        getId() + " cancelled");
-
 
         //Create the SDF index and wait until ready
         BioclipseJob<SDFIndexEditorModel> job1 = 
@@ -220,9 +206,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
         }
         logger.debug("Test " + getId() + " created SDFindex successfully");
 
-        if (monitor.isCanceled())
-            throw new DSException("Initialization of test " + 
-                                                        getId() + " cancelled");
         
         //=================
         //Parse SDFile
@@ -253,9 +236,6 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
         logger.debug("Parsed SDF index with properties successfully. No mols: " + 
                      SDFmodel.getNumberOfMolecules());
 
-        if (monitor.isCanceled())
-            throw new DSException("Initialization of test " + 
-                                                        getId() + " cancelled");
         
         //========================
         //Verify SDFile properties (if set)

@@ -278,6 +278,10 @@ public class Signatures2ClassesPredictionTest extends SignaturesLibSVMTest imple
             return returnError( e.getMessage(),"");
         }
         
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+        
         PosNegIncMatch match = new PosNegIncMatch(significantSignature, 
         		ITestResult.INCONCLUSIVE);
         if (prediction>0)
