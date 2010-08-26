@@ -250,6 +250,11 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
         } catch ( DSException e ) {
             return returnError( e.getMessage(),"");
         }
+        
+        //Check for cancellation
+        if (monitor.isCanceled())
+            return returnError( "Cancelled","");
+
 
         // Get largest and smallest derivate for scaling (see below)
         Double largestDeriv = varsAndDerivs.lastKey();
@@ -374,7 +379,7 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
 
 		//Since not symmetric around 0, scale pos and neg intervals individually
 		if (currentDeriv<0)
-			return currentDeriv/getLowPercentileDeriv();
+			return currentDeriv/(-getLowPercentileDeriv());
 		else
 			return currentDeriv/getHighPercentileDeriv();
 	}
