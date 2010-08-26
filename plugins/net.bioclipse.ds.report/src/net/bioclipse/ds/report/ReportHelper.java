@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.descriptors.molecular.ALOGPDescriptor;
@@ -38,6 +39,7 @@ import net.bioclipse.ds.report.model.Result;
 import net.bioclipse.ds.report.model.Test;
 import net.bioclipse.ds.ui.ImageHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
+import net.bioclipse.ds.ui.views.DSView;
 
 /**
  * A helper class for DS Jasper Reports.
@@ -46,6 +48,8 @@ import net.bioclipse.ds.ui.VotingConsensus;
  *
  */
 public class ReportHelper {
+
+    private static final Logger logger = Logger.getLogger(ReportHelper.class);
 
 	/**
 	 * Create the parameters part of a JasperReport
@@ -179,8 +183,11 @@ public class ReportHelper {
 
 			for (TestRun tr : ep.getTestruns()){
 				
-				if (tr.getMatches()==null || tr.getMatches().size()==0)
+				if (tr.getMatches()==null || tr.getMatches().size()==0 
+						|| tr.getTest().isExcluded() ){
+					logger.debug("Excluded testrun: " + tr + " from report.");
 					continue;
+				}
 				
 				Test test=new Test(tr.getTest().getName(), 
 						tr.getConsensusString(), 
