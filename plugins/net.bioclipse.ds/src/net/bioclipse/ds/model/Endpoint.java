@@ -170,7 +170,8 @@ public class Endpoint implements IContext2{
 		
 		List<Integer> res=new ArrayList<Integer>();
     	for (TestRun tr : testruns){
-    		res.add(tr.getConsensusStatus());
+    		if (!(tr.getTest().isExcluded()) && tr.getTest().isVisible())
+    			res.add(tr.getConsensusStatus());
     	}
     	
     	int consensus = getConsensusCalculator().calculate(res);

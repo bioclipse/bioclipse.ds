@@ -88,14 +88,14 @@ public class ReportHelper {
 		try {
 			parameters.put("DS_COMPOUND_SMILES", cdk.calculateSMILES( mol ));
 		} catch (BioclipseException e1) {
-			parameters.put("DS_COMPOUND_SMILES", "");
+			parameters.put("DS_COMPOUND_SMILES", "N/A");
 		}
 
 		try {
 			parameters.put("DS_COMPOUND_INCHI", 
 					mol.getInChI(Property.USE_CALCULATED));
 		} catch (BioclipseException e1) {
-			parameters.put("DS_COMPOUND_INCHI", "");
+			parameters.put("DS_COMPOUND_INCHI", "N/A");
 		}
 
 		
@@ -108,7 +108,7 @@ public class ReportHelper {
 		try {
 			parameters.put("DS_PROP_MW", ""+format.format(cdk.calculateMass( mol )));
 		} catch (BioclipseException e) {
-			parameters.put("DS_PROP_MW", "");
+			parameters.put("DS_PROP_MW", "N/A");
 		}
 
 		try {
@@ -118,7 +118,7 @@ public class ReportHelper {
 
 			parameters.put("DS_PROP_ALOGP", "" + format.format(val.get(0)));
 		} catch (CDKException e) {
-			parameters.put("DS_PROP_ALOGP", "");
+			parameters.put("DS_PROP_ALOGP", "N/A");
 		}
 
 		HBondAcceptorCountDescriptor haccdesc= new HBondAcceptorCountDescriptor();
@@ -132,7 +132,7 @@ public class ReportHelper {
 		parameters.put("DS_PROP_HDONORS", "" + val.intValue());
 
 		parameters.put("DS_PAGE_FOOTER", "This safety prediction was done " +
-				"with Bioclipse version X.X.X.");
+				"with Bioclipse version: " + System.getProperty( "eclipse.buildId" ));
 
 		int npos=0;
 		int nneg=0;
@@ -183,8 +183,8 @@ public class ReportHelper {
 
 			for (TestRun tr : ep.getTestruns()){
 				
-				if (tr.getMatches()==null || tr.getMatches().size()==0 
-						|| tr.getTest().isExcluded() ){
+				if (tr.getMatches()==null || tr.getTest().isExcluded() 
+									      || !tr.getTest().isVisible()  ){
 					logger.debug("Excluded testrun: " + tr + " from report.");
 					continue;
 				}

@@ -33,174 +33,192 @@ import org.eclipse.ui.PlatformUI;
  */
 public class DSViewLabelProvider extends ColumnLabelProvider{
 
-    public Image getImage( Object element ) {
+	public Image getImage( Object element ) {
 
-        if ( element instanceof Endpoint ) {
-            Endpoint ep = (Endpoint)element;
-            
-            if (ep.getTestruns()!=null){
-            	int pos=0;
-            	int neg=0;
-            	int inc=0;
-                for (TestRun run : ep.getTestruns()){
-                	if (run.getMatches()==null || run.getMatches().size()<=0) 
-                		continue;
-                	if (run.getConsensusStatus()==ITestResult.POSITIVE)
-                		pos++;
-                	else if (run.getConsensusStatus()==ITestResult.NEGATIVE)
-                		neg++;
-                	else if (run.getConsensusStatus()==ITestResult.INCONCLUSIVE)
-                		inc++;
-                }
-                if ( neg!=0 || pos!=0 || inc!=0){
-                	Display display = PlatformUI.getWorkbench().getDisplay();
-                	Image img = PieChartProducer.generatePieChart(display, 
-                			neg, pos, inc, 12, 16);
-                	return img;
-                }
-            }
+		if ( element instanceof Endpoint ) {
+			Endpoint ep = (Endpoint)element;
 
-            return ep.getIcon();
-        }
-        else if ( element instanceof ITestResult ) {
-            ITestResult match = (ITestResult) element;
-            return match.getIcon();
-        }
-        else if ( element instanceof IDSTest ) {
-            IDSTest test = (IDSTest)element;
-            return test.getIcon();
-        }
-        else if ( element instanceof TestRun ) {
-            TestRun run = (TestRun) element;
-            
-            if (run.getMatches()!=null){
-            	int pos=0;
-            	int neg=0;
-            	int inc=0;
-                for (ITestResult res : run.getMatches()){
-                	if (run.getMatches()==null || run.getMatches().size()<=0) 
-                		continue;
-                	if (res.getClassification()==ITestResult.POSITIVE)
-                		pos++;
-                	else if (res.getClassification()==ITestResult.NEGATIVE)
-                		neg++;
-                	else if (res.getClassification()==ITestResult.INCONCLUSIVE)
-                		inc++;
-                }
-                if ( neg!=0 || pos!=0 || inc!=0){
-                	Display display = PlatformUI.getWorkbench().getDisplay();
-                	Image img = PieChartProducer.generatePieChart(display, 
-                			neg, pos, inc, 12, 16);
-                	return img;
-                }
-            }
-            
-            return run.getIcon();
-        }
+			if (ep.getTestruns()!=null){
+				int pos=0;
+				int neg=0;
+				int inc=0;
+				for (TestRun run : ep.getTestruns()){
 
-        return null;
-    }
+					if (run.getTest().isExcluded() || !run.getTest().isVisible()
+										   || run.getStatus()!=TestRun.FINISHED)
+						continue;
 
-    public String getText( Object element ) {
+					//                	if (run.getMatches()==null || run.getMatches().size()<=0) 
+						//                		continue;
+					if (run.getConsensusStatus()==ITestResult.POSITIVE)
+						pos++;
+					else if (run.getConsensusStatus()==ITestResult.NEGATIVE)
+						neg++;
+					else if (run.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+						inc++;
+				}
+				if ( neg!=0 || pos!=0 || inc!=0){
+					Display display = PlatformUI.getWorkbench().getDisplay();
+					Image img = PieChartProducer.generatePieChart(display, 
+							neg, pos, inc, 12, 16);
+					return img;
+				}
+			}
 
-        if ( element instanceof Endpoint ) {
-            Endpoint ep = (Endpoint)element;
-            return ep.getName();
-        }
+			return ep.getIcon();
+		}
+		else if ( element instanceof ITestResult ) {
+			ITestResult match = (ITestResult) element;
+			return match.getIcon();
+		}
+		else if ( element instanceof IDSTest ) {
+			IDSTest test = (IDSTest)element;
+			return test.getIcon();
+		}
+		else if ( element instanceof TestRun ) {
+			TestRun run = (TestRun) element;
 
-        else if ( element instanceof ITestResult ) {
-            ITestResult match = (ITestResult) element;
-            return match.getName() + match.getSuffix();
-        }
-        else if ( element instanceof TestRun ) {
-            TestRun run = (TestRun) element;
-            return run.getTest().getName()+ run.getSuffix();
-        }
-        else if ( element instanceof IDSTest ) {
-            IDSTest dstest = (IDSTest) element;
-            if (dstest.getTestErrorMessage()!=null 
-                    && dstest.getTestErrorMessage().length()>1){
-                return dstest.getName() + " [" 
-                                           + dstest.getTestErrorMessage() + "]";
-            }
-        }
+			if (run.getTest().isExcluded() || !run.getTest().isVisible() 
+										   || run.getStatus()!=TestRun.FINISHED)
+				return run.getIcon();
 
-        return element.toString();
-    }
+			int pos=0;
+			int neg=0;
+			int inc=0;
+			if (run.getMatches()!=null && run.getMatches().size()>0){
+				for (ITestResult res : run.getMatches()){
+					//                	if (run.getMatches()==null || run.getMatches().size()<=0) 
+						//                		continue;
+					if (res.getClassification()==ITestResult.POSITIVE)
+						pos++;
+					else if (res.getClassification()==ITestResult.NEGATIVE)
+						neg++;
+					else if (res.getClassification()==ITestResult.INCONCLUSIVE)
+						inc++;
+				}
+			}else{
+				//We have no test results, so use consensus status of testrun
+				if (run.getConsensusStatus()==ITestResult.POSITIVE)
+					pos++;
+				else if (run.getConsensusStatus()==ITestResult.NEGATIVE)
+					neg++;
+				else if (run.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+					inc++;
+			}
+			
+			if ( neg!=0 || pos!=0 || inc!=0){
+				Display display = PlatformUI.getWorkbench().getDisplay();
+				Image img = PieChartProducer.generatePieChart(display, 
+						neg, pos, inc, 12, 16);
+				return img;
+			}
 
-    public void addListener( ILabelProviderListener listener ) {
-    }
+			return run.getIcon();
+		}
 
-    public void dispose() {
-    }
+		return null;
+	}
 
-    public boolean isLabelProperty( Object element, String property ) {
-        return false;
-    }
+	public String getText( Object element ) {
 
-    public void removeListener( ILabelProviderListener listener ) {
-    }
+		if ( element instanceof Endpoint ) {
+			Endpoint ep = (Endpoint)element;
+			return ep.getName();
+		}
+
+		else if ( element instanceof ITestResult ) {
+			ITestResult match = (ITestResult) element;
+			return match.getName() + match.getSuffix();
+		}
+		else if ( element instanceof TestRun ) {
+			TestRun run = (TestRun) element;
+			return run.getTest().getName()+ run.getSuffix();
+		}
+		else if ( element instanceof IDSTest ) {
+			IDSTest dstest = (IDSTest) element;
+			if (dstest.getTestErrorMessage()!=null 
+					&& dstest.getTestErrorMessage().length()>1){
+				return dstest.getName() + " [" 
+				                             + dstest.getTestErrorMessage() + "]";
+			}
+		}
+
+		return element.toString();
+	}
+
+	public void addListener( ILabelProviderListener listener ) {
+	}
+
+	public void dispose() {
+	}
+
+	public boolean isLabelProperty( Object element, String property ) {
+		return false;
+	}
+
+	public void removeListener( ILabelProviderListener listener ) {
+	}
 
 
-    public Color getBackground( Object element ) {
-        return null;
-    }
+	public Color getBackground( Object element ) {
+		return null;
+	}
 
-    /**
-     * The color of the text in the treeviewer
-     */
-    public Color getForeground( Object element ) {
-        if ( element instanceof IDSTest ) {
-            IDSTest dst = (IDSTest) element;
-            if (dst.isExcluded())
-                return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
-            else 
-                return Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
-        }
-        //Decorate with no results and no errors
-        else if ( element instanceof TestRun ) {
-            TestRun tr = (TestRun) element;
-            if (tr.getTest().getTestErrorMessage()!=null && 
-            		tr.getTest().getTestErrorMessage().length()>1){
-                return Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
-            }
-            else if (tr.getStatus()==TestRun.EXCLUDED){
-                return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
-                
-            }
-        }
+	/**
+	 * The color of the text in the treeviewer
+	 */
+	public Color getForeground( Object element ) {
+		if ( element instanceof IDSTest ) {
+			IDSTest dst = (IDSTest) element;
+			if (dst.isExcluded())
+				return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+			else 
+				return Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
+		}
+		//Decorate with no results and no errors
+		else if ( element instanceof TestRun ) {
+			TestRun tr = (TestRun) element;
+			if (tr.getTest().getTestErrorMessage()!=null && 
+					tr.getTest().getTestErrorMessage().length()>1){
+				return Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+			}
+			else if (tr.getStatus()==TestRun.EXCLUDED){
+				return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
 
-        return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-    }
+			}
+		}
 
-    
+		return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipText(java.lang.Object)
-     */
-    public String getToolTipText(Object element) {
-      return element.toString();
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipShift(java.lang.Object)
-     */
-    public Point getToolTipShift(Object object) {
-      return new Point(5,5);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipDisplayDelayTime(java.lang.Object)
-     */
-    public int getToolTipDisplayDelayTime(Object object) {
-      return 500;
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipText(java.lang.Object)
+	 */
+	public String getToolTipText(Object element) {
+		return element.toString();
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipTimeDisplayed(java.lang.Object)
-     */
-    public int getToolTipTimeDisplayed(Object object) {
-      return 10000;
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipShift(java.lang.Object)
+	 */
+	public Point getToolTipShift(Object object) {
+		return new Point(5,5);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipDisplayDelayTime(java.lang.Object)
+	 */
+	public int getToolTipDisplayDelayTime(Object object) {
+		return 500;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ViewerLabelProvider#getTooltipTimeDisplayed(java.lang.Object)
+	 */
+	public int getToolTipTimeDisplayed(Object object) {
+		return 10000;
+	}
 
 }
