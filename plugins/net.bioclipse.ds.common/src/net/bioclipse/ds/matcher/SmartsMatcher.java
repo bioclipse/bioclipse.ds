@@ -187,6 +187,9 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
     protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
                                                      IProgressMonitor monitor ) {
 
+    	//Task size is number of smarts
+//    	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+    	
         //Store results here
         ArrayList<SimpleResult> results=new 
         ArrayList<SimpleResult>();

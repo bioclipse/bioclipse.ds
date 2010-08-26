@@ -92,6 +92,10 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
     protected List<? extends ITestResult> doRunTest( 
                                                      ICDKMolecule cdkmol, 
                                                      IProgressMonitor monitor) {
+    	
+//    	//We divide in 5 parts
+//    	monitor.beginTask(getName(), 5);
+
         //Store results here
         ArrayList<ExternalMoleculeMatch> results=new 
                                              ArrayList<ExternalMoleculeMatch>();
@@ -106,9 +110,13 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
                                                   USE_CALCULATED );
             logger.debug( "FP to search for: " + molFP);
             logger.debug( "Molecule to search for: " + cdkmol);
+            int noMols=getSDFmodel().getNumberOfMolecules();
+            logger.debug( "# molecules to search: " + noMols);
+
+//            int workedLimit=noMols/5;
 
             //Search the index for this FP
-            for (int i=0; i<getSDFmodel().getNumberOfMolecules(); i++){
+            for (int i=0; i<noMols; i++){
                 BitSet dbFP = getSDFmodel().getPropertyFor( i, CDK_FP_PROPERTY_KEY);
                 //Null check not required since verified in initialize()
 
@@ -153,6 +161,10 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
 
                 if (monitor.isCanceled())
                     return returnError( "Cancelled","");
+//                if (i%workedLimit==0){
+//                	monitor.worked(1);
+//                	System.out.println("processed: " + i);
+//                }
 
             }
             

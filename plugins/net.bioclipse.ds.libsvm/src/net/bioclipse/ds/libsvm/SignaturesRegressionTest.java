@@ -216,6 +216,8 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
     protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
                                                      IProgressMonitor monitor ) {
 
+//    	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+
         //Make room for new predicions
         attributeValues=new HashMap<Integer, Integer>();
         signatureAtoms=new HashMap<String, ArrayList<Integer>>();

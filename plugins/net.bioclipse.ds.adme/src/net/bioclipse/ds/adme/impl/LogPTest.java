@@ -49,6 +49,8 @@ public class LogPTest extends AbstractDSTest{
     protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
                                                      IProgressMonitor monitor ){
 
+//    	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+
         //Store results here
         ArrayList<net.bioclipse.ds.model.result.DoubleResult> results 
                  = new ArrayList<net.bioclipse.ds.model.result.DoubleResult>();

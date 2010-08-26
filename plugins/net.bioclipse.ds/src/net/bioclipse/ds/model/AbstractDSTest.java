@@ -267,7 +267,7 @@ public abstract class AbstractDSTest implements IDSTest{
             return returnError( "Error message already exists for test: " 
             		+ getName() + ". Should not attempt to run test.","");
         }
-
+        
         //Check for cancellation
         if (monitor.isCanceled())
             return returnError( "Cancelled","");
@@ -322,12 +322,14 @@ public abstract class AbstractDSTest implements IDSTest{
             return returnError( "Error: " + e.getMessage(),"e.getMessage()");
 		}
 
-		//Delegate teh actual test to the implementation
+		//Delegate the actual test to the implementation
         List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
         
         //Store timing of test
         watch.stop();
         executionTimeMilliSeconds=watch.elapsedTimeMillis();
+
+        monitor.done();
 
         return ret;
 

@@ -41,6 +41,8 @@ public class RuleOfFiveTest extends AbstractDSTest{
     protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
                                                      IProgressMonitor monitor ) {
 
+//    	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+
         //Store results here
         ArrayList<SimpleResult> results=new 
                                              ArrayList<SimpleResult>();

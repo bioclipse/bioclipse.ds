@@ -198,6 +198,11 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
     protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
                                                      IProgressMonitor monitor ) {
 
+//    	//We divide in 6 parts and increment one per height processed
+//    	monitor.beginTask(getName(), 6);
+    	//Task size is number of smarts
+//    	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+
         //Store results here
         ArrayList<SignificantSignatureMatch> results = 
         	new ArrayList<SignificantSignatureMatch>();
