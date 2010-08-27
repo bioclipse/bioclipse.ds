@@ -1065,8 +1065,12 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         }
 
         //Get mol from first testrun
-        TestRun first = activeTestRuns.get( 0 );
-        ICDKMolecule mol = first.getMolecule();
+        ICDKMolecule mol = null;
+        for (TestRun tr : activeTestRuns){
+        	mol=tr.getMolecule();
+        	if (mol!=null)
+        		break;
+        }
 
         if (mol==null){
             logger.error( "No molecule to make a chart from." );
