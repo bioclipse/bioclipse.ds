@@ -23,12 +23,12 @@ public class CPDBSIgnaturesSignificanceModel extends SignaturesRegressionTest{
 				
 	@Override
 	public Double getHighPercentileDeriv() {
-		return 1.812;
+		return 10.0; //1.812;
 	}
 
 	@Override
 	public Double getLowPercentileDeriv() {
-		return -1.471;
+		return -10.0; //-1.471;
 	}
 
 

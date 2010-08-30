@@ -56,7 +56,8 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
     // Add control over number of selected variables
     // The present proof-of-principle default is to look at all variables in the regression case
     private double fractionOfVars = 1;	// Selects all variables
-    private TreeMap<Double, Integer> varsAndDerivs = null;
+    private Map<Integer, Double> varsAndDerivs = null;
+    private Map<Integer, Integer> atomNrAndVars = null;
     
     //We need to ensure that '.' is always decimal separator in all locales
     DecimalFormat formatter=new DecimalFormat("0.000");
@@ -100,23 +101,11 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
         
         logger.debug("libsvm prediction: " + prediction);
 
-//        // Retrieve the decision function value.
-//        double lowPointDecisionFuncValue;
-//        double[] decValues = new double[1]; // We only have two classes so this should be one. Look in svm_predict_values for an explanation. 
-//        svm.svm_predict_values(svmModel, xScaled, decValues);
-//        logger.debug("Decision function value: " + decValues[0]);
-//        lowPointDecisionFuncValue = decValues[0];
-//
-//        // Confirm that the libsvm prediction and our prediction give the same result. 
-//        if ((decValues[0] * prediction)<0){
-//            throw new DSException("Ambiguous result.");
-//        }
-
-        // Searching for the 'numberOfVars' largest (absolute valued) gradients
-        // The easiest way (which is also reasonably fast) is to collect all gradients in a TreeMap
-        varsAndDerivs = new TreeMap<Double, Integer>();
+        // Collect the model atribute numbers as key and the corresponding component of the gradient. 
+        // A TreeMap is probably not needed but rather a HashMap. But it probably won't slow things down much.
+        varsAndDerivs = new HashMap<Integer, Double>();
         for (int key : attributeValues.keySet()) {
-       		varsAndDerivs.put(partialDerivative(key), key);
+       		varsAndDerivs.put(key, partialDerivative(key));
         }
     }
 
@@ -165,10 +154,11 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
 
         ISignaturesManager sign=net.bioclipse.ds.signatures.Activator.
                 getDefault().getJavaSignaturesManager();
+        atomNrAndVars = new HashMap<Integer, Integer>();
         
         List<String> signatures = sign.generate( mol ).getSignatures();
         
-        //Loop over all generated signature for the current molecule
+        //Loop over all generated signatures for the current molecule
         int molSignature=0;
         for (String sig : signatures){
 
@@ -181,8 +171,9 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
             for (String signature : signatureList) {
                 modelSignatureNr = modelSignatureNr + 1;
                 if (signature.equals(sig)){
-                    // We have a matching signature. Add 1 to the attribute and append the atomNr to the signature hashmap list.
-                    if (attributeValues.containsKey(modelSignatureNr)){
+                    // We have a matching signatures. Add 1 to the attribute and append the atomNr to the signature hashmap list.
+                	atomNrAndVars.put(molSignature, modelSignatureNr);
+                	if (attributeValues.containsKey(modelSignatureNr)){
                         currentAttributeValue = (Integer) attributeValues.get(modelSignatureNr);
                         attributeValues.put(modelSignatureNr, new Integer(currentAttributeValue + 1));
                     }
@@ -191,14 +182,10 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
                     }
                     if (signatureAtoms.containsKey(signature)){ 
                       signatureAtoms.get(signature).add(molSignature);
-                      //System.out.println("Significant atom:" + lineNr);
-                      //System.out.println(signature);
                     }
                     else {
                       signatureAtoms.put(signature, new ArrayList<Integer>());
                       signatureAtoms.get(signature).add(molSignature);
-                      //System.out.println("Significant atom:" + lineNr);
-                      //System.out.println(signature);
                     }
                 }
             }
@@ -258,12 +245,6 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
             return returnError( "Cancelled","");
 
 
-        // Get largest and smallest derivate for scaling (see below)
-        Double largestDeriv = varsAndDerivs.lastKey();
-        Double smallestDeriv = varsAndDerivs.firstKey();
-//        System.out.println("Largest: " + largestDeriv + " - " + " smallest: " + smallestDeriv);
-        // Create a new match with correct coloring
-
         //A positive valued prediction means we were able to predicta TD50.
         ScaledResultMatch match = new ScaledResultMatch("Result: " 
                                       + formatter.format( prediction ), 
@@ -277,76 +258,31 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
         List<Double> gradients=new ArrayList<Double>();
         
         // How many variabels do we want to look at?
-        int numberOfVars = (int) fractionOfVars*attributeValues.size();
         // Go through all the variables that we want to look at
-        for (int i = 0; i < numberOfVars; i++)	{
+        for (int key : attributeValues.keySet()) {
         	Double currentDeriv = null;
-        	// Select absolute valued largest remaining variables
+        	//Integer currentAtomNr = null;
         	if (varsAndDerivs.size()<=0){
               return returnError( "varsAndDerivs was empty","");
         	}
-        	if(Math.abs(varsAndDerivs.lastKey()) > 
-        	    Math.abs(varsAndDerivs.firstKey()))	{
-        		currentDeriv = varsAndDerivs.lastKey();
+
+        	currentDeriv = varsAndDerivs.get(key);
+        	for (int currentAtomNr : atomNrAndVars.keySet()) {
+        		if (atomNrAndVars.get(currentAtomNr) == key) {
+        			// We should add atoms from the input cdkmol, not the clone!
+        			// Get center atom
+        			//Integer tmp = signatureAtoms.get(signatureList[currentVar-1]).get(0);
+        	
+        			// Scaling. We rescale the derivative to be between -1 and 1.
+        			double scaledDeriv = scaleDerivative(currentDeriv);
+        			match.putAtomResult( currentAtomNr-1, scaledDeriv );
+        			System.out.println("Atom " + (currentAtomNr-1) + " with pD=" + currentDeriv 
+        					+ " is scaled to: " + scaledDeriv + " and has model signature nr: " + key + ", with signature: " + signatureList[key-1]);
+        	
+        			gradients.add(currentDeriv);
+        		}
         	}
-        	else	{
-        		currentDeriv = varsAndDerivs.firstKey();
-        	}
-        	Integer currentVar = varsAndDerivs.get(currentDeriv);
-        	// Remove current largest derivative
-        	varsAndDerivs.remove(currentDeriv);
-            // We should add atoms from the input cdkmol, not the clone!
-        	// Get center atom
-        	Integer tmp = signatureAtoms.get(signatureList[currentVar-1]).get(0);
-        	
-//        	IAtom currentAtom = cdkmol.getAtomContainer().getAtom(tmp-1);
-//        	significantAtomsContainer.addAtom(currentAtom);
-
-//            logger.debug("center atom: " + significantAtom);
-//            //Also add all atoms connected to significant atoms to list
-//            for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(cdkmol.getAtomContainer().getAtom( significantAtom-1 )) ){
-//                int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr) + 1;
-//                IAtom atomToAdd = cdkmol.getAtomContainer().getAtom(nbrAtomNr-1);
-//                significantAtomsContainer.addAtom(atomToAdd);
-//                
-//                //This is where we set the color of the atom. These values are just example.
-//                match.putAtomColor( atomToAdd, new Color(100,200,150) );
-//                logger.debug("nbr: " + nbrAtomNr);
-//            }
-
-          // Scaling. We rescale the derivative to be between -1 and 1.
-        	double scaledDeriv = scaleDerivative(currentDeriv);
-        	match.putAtomResult( tmp-1, scaledDeriv );
-        	System.out.println("Atom " + (tmp-1) + " with pD=" + currentDeriv 
-        			+ " is scaled to: " + scaledDeriv);
-        	
-//        	IAtom currentAtom = cdkmol.getAtomContainer().getAtom(tmp-1);
-//        	currentAtom.setProperty(getId(),scaledDeriv);
-
-        	gradients.add(currentDeriv);
-          
-/*        	
-        	
-            // Scaling. We rescale the derivative to be between 0 and 1.
-            // FIXME: The scaling should probably be done in a more clever way. It is probably more desirable that the scaling isn't relative - now small differences will look "inflated".
-            double scaledDeriv = (currentDeriv-smallestDeriv)/(largestDeriv-smallestDeriv);
-            // Calculate color
-            double frequency = 2*Math.PI;
-            int red = (int) Math.round(Math.sin(frequency*scaledDeriv + 0)*127 + 128);
-            int green = (int) Math.round(Math.sin(frequency*scaledDeriv + 2*Math.PI/3)*127 + 128);
-            int blue = (int) Math.round(Math.sin(frequency*scaledDeriv + 4*Math.PI/3)*127 + 128);
-            match.putAtomColor(currentAtom, new Color(red, green, blue));
-*/
-        	
         }
-//        logger.debug("Number of center atoms: " + significantAtoms.size());
-        
-        //We want to set the color of the hilighting depending on the prediction. If the decision function > 0.0 the color should be red, otherwise it should be green.
-        //we also want the filled circles to be larger so that they become visible for non carbons.
-//        match.setAtomContainer( significantAtomsContainer );
-        
-//        match.writeResultsAsProperties(cdkmol.getAtomContainer(), "BOGUS");
-
         //We can have multiple hits...
         List<ITestResult> results=new ArrayList<ITestResult>();
         //...but here we only have one
