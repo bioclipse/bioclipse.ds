@@ -17,9 +17,11 @@ import net.bioclipse.ds.model.ITestResult;
 
 
 /**
+ * A conservative consensus, if at least one positive then return positive.
+ * 
  * This implementation follows the following rules:
  * <ol>
- *         <li>if #neg > 0 >> NEGATIVE
+ *         <li>if #pos > 0 >> POSOTIVE
  *         <li>if #err > #pos && #err > #neg >> ERROR
  *         <li>if #incon >=pos && #incon >= #neg >> INCONCLUSIVE
  *         <li>if #pos == #neg >> INCONCLUSIVE
@@ -56,8 +58,9 @@ public class ConsensusConservative extends AbstractConsensusCalculator{
                 numinf++;
         }
 
-        if (numneg > 0)
-            return ITestResult.NEGATIVE;
+        //If we have at least one pos, then return pos
+        if (numpos > 0)
+            return ITestResult.POSITIVE;
 
         //If at least one but more pos than neg:
         else if (numerr>numneg && numerr>numpos)
