@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -314,13 +315,26 @@ public abstract class AbstractDSTest implements IDSTest{
             return returnError( "Cancelled","");
 
         //Preprocess the molecule: Remove explicit and add implicit hydrogens
-        try {
-            cdk.removeExplicitHydrogens(cdkmol);
-			cdkmol=cdk.addImplicitHydrogens(cdkmol);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-            return returnError( "Error: " + e.getMessage(),"e.getMessage()");
-		}
+//        try {
+		try {
+				cdk.removeExplicitHydrogens(cdkmol);
+				cdk.addImplicitHydrogens(cdkmol); 
+			} catch (BioclipseException e) {
+				logger.error(e.getMessage());
+	            return returnError( "Error: " + e.getMessage(),e.getMessage());
+			} catch (InvocationTargetException e) {
+				logger.error(e.getTargetException().getMessage());
+	            return returnError( "Error: " + e.getTargetException()
+	            		.getMessage(),e.getTargetException().getMessage());
+			} catch (RuntimeException e) {
+				if (e.getCause() instanceof InvocationTargetException) {
+					InvocationTargetException ie = 
+						(InvocationTargetException) e.getCause();
+					logger.error(ie.getTargetException().getMessage());
+		            return returnError( "Error: " + ie.getTargetException()
+		            		.getMessage(),ie.getTargetException().getMessage());
+				}
+			}
 
 		//Delegate the actual test to the implementation
         List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
