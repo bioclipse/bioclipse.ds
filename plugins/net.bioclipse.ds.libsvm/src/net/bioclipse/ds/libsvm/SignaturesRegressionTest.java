@@ -33,6 +33,7 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.ScaledResultMatch;
+import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 
 /**
@@ -225,8 +226,9 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
         
         //Ensure we have what we need
         if (signatureAtoms.size()<=0){
-            return returnError("No signature atoms produced by signaturesrunner"
-                               , "");
+        	logger.debug("No matching signature atoms for test: " + getName());
+        	return new ArrayList<ITestResult>();
+//            return returnError("No matching signature atoms", "");
         }
 
         //Check for cancellation
@@ -276,7 +278,7 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
         			// Scaling. We rescale the derivative to be between -1 and 1.
         			double scaledDeriv = scaleDerivative(currentDeriv);
         			match.putAtomResult( currentAtomNr-1, scaledDeriv );
-        			System.out.println("Atom " + (currentAtomNr-1) + " with pD=" + currentDeriv 
+        			logger.debug("Atom " + (currentAtomNr-1) + " with pD=" + currentDeriv 
         					+ " is scaled to: " + scaledDeriv + " and has model signature nr: " + key + ", with signature: " + signatureList[key-1]);
         	
         			gradients.add(currentDeriv);

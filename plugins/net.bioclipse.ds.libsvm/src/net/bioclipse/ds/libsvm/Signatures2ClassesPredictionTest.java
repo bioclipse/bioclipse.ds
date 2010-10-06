@@ -149,6 +149,8 @@ public class Signatures2ClassesPredictionTest extends SignaturesLibSVMTest imple
         significantSignature = signatureList[significantSignatureNr-1];
         // Make sure significantAtoms is empty.
         significantAtoms.clear();
+        if (signatureAtoms==null)
+        	throw new DSException("SignatureAtoms was null in SVM prediction");
         for (int i : signatureAtoms.get(signatureList[significantSignatureNr-1])){
         	significantAtoms.add(i-1);
         }
@@ -265,8 +267,9 @@ public class Signatures2ClassesPredictionTest extends SignaturesLibSVMTest imple
         }
         
         //Ensure we have what we need
-        if (signatureAtoms.size()<=0){
-            return returnError("No signature atoms produced by signaturesrunner", "");
+        if (signatureAtoms==null || signatureAtoms.size()<=0){
+        	logger.debug("No matching signature atoms for test: " + getName());
+        	return new ArrayList<ITestResult>();
         }
 
         //Check for cancellation
