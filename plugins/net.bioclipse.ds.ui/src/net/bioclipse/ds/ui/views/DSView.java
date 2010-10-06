@@ -269,6 +269,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         hookContextMenu();
         contributeToActionBars();
 
+        /*
         //Create the ConsensusSection at the bottom of View
         Composite consensusComposite=new Composite(parent,SWT.BORDER);
         GridData gridData2 = new GridData(GridData.FILL, GridData.END, true, false);
@@ -312,6 +313,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         gridData4.minimumHeight=50;
         gridData4.minimumWidth=50;
         consensusCanvas.setLayoutData(gridData4);
+        */
 
         //Initialize instance variables
         molTestMap=new HashMap<ICDKMolecule, List<TestRun>>();
@@ -415,7 +417,11 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         
     }
 
-    private void updateConsensusView() {
+    @SuppressWarnings("unused")
+	private void updateConsensusView() {
+
+    	//TODO: Remove if consensus part returns
+    	if (true) return;
 
         if (activeTestRuns==null){
             consensusText.setText( "Not run"); 
