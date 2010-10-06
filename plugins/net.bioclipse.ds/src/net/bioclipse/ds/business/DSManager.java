@@ -23,6 +23,7 @@ import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -139,7 +140,21 @@ public class DSManager implements IBioclipseManager {
                              throws BioclipseException{
 
         IDSTest test = getTest( testID );
-        List<? extends ITestResult> ret = test.runWarningTest( mol, monitor);
+        List<? extends ITestResult> ret=null;
+        try{
+            ret = test.runWarningTest( mol, monitor);
+        }catch (Exception e){
+        	//in case of error...
+            ITestResult er=new SimpleResult("Error: " + e.getMessage(), 
+            		ITestResult.ERROR);
+            er.setDetailedMessage( e.getMessage() );
+            List<ITestResult> trlist=new ArrayList<ITestResult>();
+            trlist.add( er );
+            monitor.done();
+            returner.completeReturn( trlist );
+            return;
+        }
+        
         monitor.done();
         returner.completeReturn( ret );
     }
