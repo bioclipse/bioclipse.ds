@@ -18,7 +18,7 @@ public class CarcinogenicityConsensusCalculator extends DSConsensusCalculator {
     
     @Override
     protected String getTestID() {
-        return "carcinogenicity.consensus";
+        return "cpdb.consensus";
     }
     
     protected String getEndpoint(){
