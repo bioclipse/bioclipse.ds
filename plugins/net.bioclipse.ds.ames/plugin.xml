@@ -40,7 +40,7 @@
             name="Ames nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
-            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            consensus="net.bioclipse.ds.consensus.majority.emptyinconclusive"
             propertycalculator="Ames Nearest Neighbours">
             <resource name="file"
                   path="data/bursi_nosalts_fp.sdf">
