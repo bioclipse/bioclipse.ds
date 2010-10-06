@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc link_to="../net.bioclipse.ds.ui/toc.xml#ContributedModels" label="Models" >
+			<topic label="Exact Match InChI"  href="html/exactInchi.html" /> 
+			<topic label="Exact Match Signatures"  href="html/exactMolSign.html" /> 
+			<topic label="Exact Match CDK Fingerprint"  href="html/exactFP.html" /> 
+
+			<topic label="Nearest Neighbour CDK Fingerprint"  href="html/nearestFP.html" /> 
+			<topic label="Structural Alerts SMARTS"  href="html/structAlertSMARTS.html" />
+		    <topic label="Structural Signatures Signatures"  href="html/structAlertSignatures.html" /> 
+</toc>
