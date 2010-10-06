@@ -26,7 +26,7 @@
             endpoint="net.bioclipse.ds.carcinogenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="CPDB Exact Match"
-            informative="true">
+            override="true">
             <resource name="file"
                   path="data/cpdb_molsign.sdf">
             </resource>

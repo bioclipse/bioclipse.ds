@@ -172,6 +172,14 @@ public class Endpoint implements IContext2{
     	for (TestRun tr : testruns){
     		if (!(tr.getTest().isExcluded()) && tr.getTest().isVisible())
     			res.add(tr.getConsensusStatus());
+    		
+            //If any test with a hit has isOverride, then just assign
+            //result based on this test
+    		if (tr.getTest().isOverride() && tr.hasMatches())
+    			if (tr.getConsensusStatus()==ITestResult.POSITIVE 
+    					|| 
+    				tr.getConsensusStatus()==ITestResult.NEGATIVE)
+    			return tr.getConsensusStatus();
     	}
     	
     	int consensus = getConsensusCalculator().calculate(res);

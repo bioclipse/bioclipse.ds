@@ -19,7 +19,7 @@ import net.bioclipse.ds.model.ITestResult;
  * This implementation follows the following rules:
  * <ol>
  *         <li>if #err > #pos && #err > #neg >> ERROR
- *         <li>if #incon >=pos && #incon >= #neg >> INCONCLUSIVE
+ *         <li>if #incon >pos && #incon > #neg >> INCONCLUSIVE
  *         <li>if #pos == #neg >> INCONCLUSIVE
  *         <li>if #pos > #neg >> POSITIVE
  *         <li>else >> NEGATIVE
@@ -58,7 +58,7 @@ public class MajorityVote extends AbstractConsensusCalculator{
         if (numerr>numneg && numerr>numpos)
             return ITestResult.ERROR;
 
-        else if (numinc >= numpos && numinc >= numneg)
+        else if (numinc > numpos && numinc > numneg)
             return ITestResult.INCONCLUSIVE;
 
         else if (numpos==numneg)

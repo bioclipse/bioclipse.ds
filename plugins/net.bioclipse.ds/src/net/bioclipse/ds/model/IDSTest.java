@@ -69,5 +69,7 @@ public interface IDSTest extends ISubStructure, IContext2{
     public String getDescription();
 	public void setInitialized(boolean initialized);
 	public boolean isInitialized();
+	boolean isOverride();
+	void setOverride(boolean override);
 
 }

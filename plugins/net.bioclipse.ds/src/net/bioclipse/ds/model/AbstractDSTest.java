@@ -65,8 +65,9 @@ public abstract class AbstractDSTest implements IDSTest{
     private Image excludedIcon;
     private IConsensusCalculator consensusCalculator;
     private String propertycalculator;
+    public boolean override;
 
-    private String helppage;
+	private String helppage;
 
     
     /**
@@ -83,6 +84,15 @@ public abstract class AbstractDSTest implements IDSTest{
         testErrorMessage="";
     }
     
+    public boolean isOverride() {
+		return override;
+	}
+
+	public void setOverride(boolean override) {
+		this.override = override;
+	}
+
+
     public boolean isExcluded() {
         return excluded;
     }

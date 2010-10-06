@@ -193,7 +193,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
                 ints.add( res.getClassification() );
             }
         }
-        
+
         //Use the consensuscalculator from the test
         if (getTest().getConsensusCalculator()==null){
         	logger.error("Could not get ConsensusCalculator for test: " 

@@ -215,6 +215,13 @@ This atribute is deprecated and will be ignored.
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="override" type="boolean">
+            <annotation>
+               <documentation>
+                  If set to true, a non-inconclusive model result will be directly assign to its endpoint.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

@@ -170,6 +170,17 @@ public class DSBusinessModel {
                             }
                             else
                                 test.setInformative(false);
+                            
+                            String pOver=element.getAttribute("override");
+                            if (pOver!=null){
+                                if (pOver.equalsIgnoreCase( "true" ))
+                                    test.setOverride(true);
+                                else
+                                	test.setOverride(false);
+                            }
+                            else
+                            	test.setOverride(false);
+
 
                             String pvisible=element.getAttribute("visible");
                             if (pvisible!=null){

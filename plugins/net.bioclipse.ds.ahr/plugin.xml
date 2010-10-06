@@ -22,6 +22,8 @@
             id="ahr.lookup.exact"
             name="AHR exact matches"
             endpoint="net.bioclipse.ds.ahr"
+            override="true"
+            propertycalculator="AHR Exact Match"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures">
             <resource name="file"
                   path="data/2796_nosalts_molsign.sdf">
@@ -36,6 +38,7 @@
             name="AHR nearest neighbour"
             endpoint="net.bioclipse.ds.ahr"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            propertycalculator="AHR Nearest Neighbours"
             consensus="net.bioclipse.ds.consensus.majority.emptyinconclusive">
             <resource name="file"
                   path="data/2796_nosalts_fp.sdf">
@@ -51,6 +54,7 @@
             name="AHR Signature Alerts"
             endpoint="net.bioclipse.ds.ahr"
             consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            propertycalculator="AHR Signature Matches"
             class="net.bioclipse.ds.matcher.SignatureAlertsMatcher">
             <resource name="file"
                   path="models/2796_nosalts_as0-5.sdf_exportedSignatures.txt">
@@ -61,6 +65,7 @@
             id="ahr.signatures"
             name="AHR Signature Significance"
             class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
+            propertycalculator="AHR Signature Significance"
             endpoint="net.bioclipse.ds.ahr">
             <resource name="modelfile" path="models/ahr.train.model" />
             <resource name="rangefile" path="models/ahr.train.range" />

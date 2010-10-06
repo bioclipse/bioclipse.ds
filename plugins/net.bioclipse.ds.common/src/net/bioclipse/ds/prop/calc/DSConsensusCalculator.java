@@ -30,6 +30,7 @@ import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.report.StatusHelper;
@@ -60,7 +61,22 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
             TestRun tr = (TestRun) molecule.getProperty( id, Property.USE_CACHED );
             
             if (tr!=null){
-                if (!(tr.getTest().isInformative())){
+            	
+            	//If we find one with override and either pos or neg,
+            	//set consensus to this
+            	//testruns consensus directly, ignoring all other testruns.
+            	if (tr.getTest().isOverride() 
+            			&& 
+            			(tr.getConsensusStatus()==ITestResult.POSITIVE 
+    					|| 
+        				tr.getConsensusStatus()==ITestResult.NEGATIVE)
+            			){
+            		classifications.clear();
+            		classifications.add(tr.getConsensusStatus());
+            		break;
+            	}
+
+            	if (!(tr.getTest().isInformative())){
                     if (tr.getTest().getTestErrorMessage().length()<1){
                         classifications.add( new Integer(tr.getConsensusStatus()));
                         logger.debug(" $$ Test: " + tr.getTest() + " got " +
@@ -84,6 +100,7 @@ public abstract class DSConsensusCalculator implements IPropertyCalculator<TestR
         
         TestRun consrun=new TestRun();
         consrun.setTest( consensusTest );
+        
         //Add a single result to consrun
         SimpleResult consres = new SimpleResult(getPropertyName(), 
                          consCalc.calculate( classifications ) );

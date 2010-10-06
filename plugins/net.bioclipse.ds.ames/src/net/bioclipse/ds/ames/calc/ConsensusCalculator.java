@@ -13,7 +13,7 @@ public class ConsensusCalculator extends DSConsensusCalculator {
 
     @Override
     public String getPropertyName() {
-        return "Mutagenicity Consensus";
+        return "Ames Consensus";
     }
     
     @Override

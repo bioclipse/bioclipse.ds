@@ -26,7 +26,7 @@
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             propertycalculator="Ames Exact Match"
-            informative="true">
+            override="true">
             <resource name="file"
                   path="data/bursi_nosalts_molsign.sdf">
             </resource>
@@ -94,7 +94,7 @@
 
       <test
             id="ames.consensus"
-            name="Mutagenicity Consensus"
+            name="Ames Consensus"
             visible="false"
             endpoint="net.bioclipse.ds.mutagenicity"
             class="net.bioclipse.ds.matcher.BogusTest"
@@ -129,7 +129,7 @@
 
     <Calculator
           class="net.bioclipse.ds.ames.calc.ConsensusCalculator"
-          id="Mutagenicity Consensus">
+          id="Ames Consensus">
     </Calculator>
     
  </extension>
@@ -229,12 +229,12 @@
         
       <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Mutagenicity Consensus Clasification"
+           label="Ames Consensus Clasification"
             icon="icons/poll.gif"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="Ames Exact Match,Ames Nearest Neighbours,Ames Toxicophores,Ames Signature Significance">
+              value="Ames Exact Match,Ames Nearest Neighbours,Ames Toxicophores,Ames Signature Significance, Ames Consensus">
         </parameter>
         <visibleWhen
               checkEnabled="true">
@@ -246,79 +246,6 @@
    </menuContribution>
 
  </extension>
-   
-
-
- <!--extension
-       point="org.eclipse.core.expressions.definitions">
-    <definition
-          id="net.bioclipse.cdk.ui.sdfeditor.menu.file">
-       <iterate
-             ifEmpty="false"
-             operator="and">
-          <adapt
-                type="org.eclipse.core.resources.IResource">
-             <or>
-                <test
-                      property="org.eclipse.core.resources.contentTypeId"
-                      value="net.bioclipse.contenttypes.sdf0d">
-                </test>
-                <test
-                      property="org.eclipse.core.resources.contentTypeId"
-                      value="net.bioclipse.contenttypes.sdf2d">
-                </test>
-                <test
-                      property="org.eclipse.core.resources.contentTypeId"
-                      value="net.bioclipse.contenttypes.sdf3d">
-                </test>
-             </or>
-          </adapt>
-       </iterate>
-    </definition>
-
-    <definition
-          id="net.bioclipse.cdk.ui.sdfeditor.menu.editor">
-       <with
-             variable="activeEditor">
-          <instanceof
-                value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
-          </instanceof>
-       </with>
-    </definition>
-    <definition
-          id="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
-       <or>
-          <iterate
-                ifEmpty="false"
-                operator="and">
-             <adapt
-                   type="org.eclipse.core.resources.IResource">
-                <or>
-	                <test
-    	                  property="org.eclipse.core.resources.contentTypeId"
-    	                  value="net.bioclipse.contenttypes.sdf0d">
-	                </test>
-                   <test
-                         property="org.eclipse.core.resources.contentTypeId"
-                         value="net.bioclipse.contenttypes.sdf2d">
-                   </test>
-                   <test
-                         property="org.eclipse.core.resources.contentTypeId"
-                         value="net.bioclipse.contenttypes.sdf3d">
-                   </test>
-                </or>
-             </adapt>
-          </iterate>
-          <with
-                variable="activeEditor">
-             <instanceof
-                   value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
-             </instanceof>
-          </with>
-       </or>
-    </definition>
- </extension-->
-   
-   
+      
    
 </plugin>
