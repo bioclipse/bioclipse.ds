@@ -40,7 +40,7 @@
             name="CPDB nearest neighbour"
             endpoint="net.bioclipse.ds.carcinogenicity"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
-            consensus="net.bioclipse.ds.consensus.majority.emptynegative"
+            consensus="net.bioclipse.ds.consensus.majority.emptyinconclusive"
             propertycalculator="CPDB Nearest Neighbours">
             <resource name="file"
                   path="data/cpdb_fp.sdf">
@@ -211,7 +211,7 @@
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="CPDB Exact Match,CPDB Nearest Neighbours,CPDB Signature Matches,CPDB Signature Significance">
+              value="CPDB Exact Match,CPDB Nearest Neighbours,CPDB Signature Matches,CPDB Signature Significance,Carcinogenicity Consensus">
         </parameter>
         <visibleWhen
               checkEnabled="true">
@@ -222,79 +222,6 @@
      </command>
    </menuContribution>
  </extension>
-   
-
-
- <!--extension
-       point="org.eclipse.core.expressions.definitions">
-    <definition
-          id="net.bioclipse.cdk.ui.sdfeditor.menu.file">
-       <iterate
-             ifEmpty="false"
-             operator="and">
-          <adapt
-                type="org.eclipse.core.resources.IResource">
-             <or>
-                <test
-                      property="org.eclipse.core.resources.contentTypeId"
-                      value="net.bioclipse.contenttypes.sdf0d">
-                </test>
-                <test
-                      property="org.eclipse.core.resources.contentTypeId"
-                      value="net.bioclipse.contenttypes.sdf2d">
-                </test>
-                <test
-                      property="org.eclipse.core.resources.contentTypeId"
-                      value="net.bioclipse.contenttypes.sdf3d">
-                </test>
-             </or>
-          </adapt>
-       </iterate>
-    </definition>
-
-    <definition
-          id="net.bioclipse.cdk.ui.sdfeditor.menu.editor">
-       <with
-             variable="activeEditor">
-          <instanceof
-                value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
-          </instanceof>
-       </with>
-    </definition>
-    <definition
-          id="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
-       <or>
-          <iterate
-                ifEmpty="false"
-                operator="and">
-             <adapt
-                   type="org.eclipse.core.resources.IResource">
-                <or>
-	                <test
-    	                  property="org.eclipse.core.resources.contentTypeId"
-    	                  value="net.bioclipse.contenttypes.sdf0d">
-	                </test>
-                   <test
-                         property="org.eclipse.core.resources.contentTypeId"
-                         value="net.bioclipse.contenttypes.sdf2d">
-                   </test>
-                   <test
-                         property="org.eclipse.core.resources.contentTypeId"
-                         value="net.bioclipse.contenttypes.sdf3d">
-                   </test>
-                </or>
-             </adapt>
-          </iterate>
-          <with
-                variable="activeEditor">
-             <instanceof
-                   value="net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart">
-             </instanceof>
-          </with>
-       </or>
-    </definition>
- </extension-->
-   
    
    
 </plugin>

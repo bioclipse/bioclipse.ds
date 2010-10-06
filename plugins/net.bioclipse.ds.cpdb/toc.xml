@@ -2,8 +2,5 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc link_to="../net.bioclipse.ds.ui/toc.xml#ContributedEndpoints" label="Carcinogenicity" >
-		<topic label="Carcinogenicity"  href="html/carcinogenicity.html" > 
-			<topic label="CPDB Signatures"  href="html/cpdb-sign.html" />
-			<anchor id="ContributedTests" />
-		</topic> 
+		<topic label="Carcinogenicity"  href="html/carcinogenicity.html" /> 
 </toc>
