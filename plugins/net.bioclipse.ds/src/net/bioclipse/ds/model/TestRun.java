@@ -18,13 +18,13 @@ import net.bioclipse.cdk.domain.ISubStructure;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.report.StatusHelper;
 
+import org.apache.log4j.Logger;
 import org.eclipse.help.IContext2;
 import org.eclipse.help.IHelpResource;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -36,6 +36,8 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
  *
  */
 public class TestRun implements ISubStructure, IColorProvider, IContext2{
+
+    private static final Logger logger = Logger.getLogger(TestRun.class);
 
     public static final int NOT_STARTED=0x1;
     public static final int RUNNING=0x2;
@@ -116,7 +118,8 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
         return false;
     }
 
-    public Object getAdapter( Class adapter ) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Object getAdapter( Class adapter ) {
 
         if (adapter.isAssignableFrom(IPropertySource.class)) {
             return new TestRunPropertySource(this);
@@ -192,7 +195,11 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
         }
         
         //Use the consensuscalculator from the test
-        
+        if (getTest().getConsensusCalculator()==null){
+        	logger.error("Could not get ConsensusCalculator for test: " 
+        			+ getTest());
+        	return ITestResult.ERROR;
+        }
         return getTest().getConsensusCalculator().calculate( ints );
 
     }
@@ -253,7 +260,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
             
             if (numpos>0 || numneg>0 || numinc>0 || numerr>0)
                 return " [" + pospart + negpart + incpart + errpart +"]";
-            else return "";
+            else return " [no hits]";
             
         }
 
