@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bioclipse.balloon.business.BalloonManager;
+import net.bioclipse.balloon.business.IBalloonManager;
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
@@ -27,12 +29,14 @@ import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.signatures.CDKMoleculeSignatureAdapter;
+import net.bioclipse.ds.signatures.chiral.CalculateChiralSignatures;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.openscience.cdk.exception.CDKException;
 
 import signature.chemistry.Molecule;
 import signature.chemistry.MoleculeReader;
@@ -189,6 +193,23 @@ public class SignaturesManager implements IBioclipseManager {
         MoleculeSignature signature = new MoleculeSignature(signmol);
         return signature.getMolecularSignature();
 
+    }
+    
+    
+    public AtomSignatures generateChiral(IMolecule molecule, int height) 
+    throws BioclipseException, CDKException{
+    	
+    	//Step 1: generate 3D with balloon
+    	ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
+    	if (!cdk.has3d(molecule)){
+        	IBalloonManager ballon = net.bioclipse.balloon.business.Activator.getDefault().getJavaBalloonManager();
+        	molecule = ballon.generate3Dcoordinates(molecule);
+    	}
+    	
+    	List<String> signatures = CalculateChiralSignatures.generate(cdk.getMDLMolfileString(molecule), height);
+    	System.out.println("Chiral signs: " + signatures.toString());
+    	
+    	return new AtomSignatures(signatures);
     }
 
 }

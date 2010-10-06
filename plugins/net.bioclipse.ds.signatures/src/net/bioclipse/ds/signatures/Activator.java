@@ -26,6 +26,9 @@ public class Activator extends AbstractUIPlugin {
 
     private static final Logger logger = Logger.getLogger(Activator.class);
 
+    // The plug-in ID
+    public static final String PLUGIN_ID = "net.bioclipse.ds.signatures";
+
     // The shared instance
     private static Activator plugin;
 
