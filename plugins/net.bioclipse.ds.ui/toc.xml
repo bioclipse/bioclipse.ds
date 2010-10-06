@@ -2,8 +2,12 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Decision Support">
-	<topic label="About Decision Support"  href="html/maintopic.html" /> 
+	<topic label="About Decision Support"  href="html/aboutDS.html" /> 
 	<topic label="Endpoints"> 
 		<anchor id="ContributedEndpoints" />
 	</topic>
+	<topic label="Models"> 
+		<anchor id="ContributedModels" />
+	</topic>
+	<topic label="Users Guide"  href="html/usersguide.html" /> 
 </toc>
