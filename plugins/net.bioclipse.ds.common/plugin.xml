@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+ 	<extension
+    	point="org.eclipse.help.toc">
+		<toc
+        	file="toc.xml"
+         	primary="false"/>
+	</extension>
  
  <extension
        point="net.bioclipse.decisionsupport">
        <consensus
-             id="net.bioclipse.ds.consensus.majority"
+             id="net.bioclipse.ds.consensus.majority.emptyinconclusive"
              name="Majority Voting"
              class="net.bioclipse.ds.cons.MajorityVote"
              description="A majority voting algorithm. Inconclusive if no results">
@@ -20,9 +26,10 @@
              id="net.bioclipse.ds.consensus.conservative"
              name="Conservative Consensus"
              class="net.bioclipse.ds.cons.ConsensusConservative"
-             description="A conservative consensus calculation. At least one negative means consensus is negative.">
+             description="A conservative consensus calculation. At least one positive means consensus is positive.">
        </consensus>
-         <endpoint
+       
+       <endpoint
                id="net.bioclipse.ds.uncategorized"
                icon="icons/test_container.gif"
                description="Tests that are not categorized"
