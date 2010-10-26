@@ -18,14 +18,14 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.api.BioclipseException;
+import net.bioclipse.core.api.domain.IMolecule;
+import net.bioclipse.core.api.jobs.IReturner;
+import net.bioclipse.core.api.managers.IBioclipseManager;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.SimpleResult;
-import net.bioclipse.jobs.IReturner;
-import net.bioclipse.managers.business.IBioclipseManager;
 
 /**
  * A Bioclipse Manager Decision Support

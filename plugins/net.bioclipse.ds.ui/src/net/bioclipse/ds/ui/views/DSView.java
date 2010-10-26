@@ -22,7 +22,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
-import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.api.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.business.IDSManager;

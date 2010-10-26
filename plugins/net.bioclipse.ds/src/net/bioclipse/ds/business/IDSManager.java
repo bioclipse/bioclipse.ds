@@ -13,20 +13,20 @@ package net.bioclipse.ds.business;
 import java.util.List;
 import java.util.Map;
 
-import net.bioclipse.core.PublishedClass;
-import net.bioclipse.core.PublishedMethod;
-import net.bioclipse.core.Recorded;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.api.BioclipseException;
+import net.bioclipse.core.api.Recorded;
+import net.bioclipse.core.api.domain.IMolecule;
+import net.bioclipse.core.api.jobs.IBioclipseJob;
+import net.bioclipse.core.api.managers.IBioclipseManager;
+import net.bioclipse.core.api.managers.IBioclipseUIJob;
+import net.bioclipse.core.api.managers.PublishedClass;
+import net.bioclipse.core.api.managers.PublishedMethod;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
-import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.jobs.ExtendedBioclipseJob;
-import net.bioclipse.managers.business.IBioclipseManager;
 
 
 @PublishedClass( "Contains methods for Bioclipse Decision Support")
@@ -68,7 +68,7 @@ public interface IDSManager extends IBioclipseManager {
                                          throws BioclipseException;
 
     public void runTest( String testID, IMolecule mol, 
-                                         BioclipseUIJob<List<ITestResult>> job)
+                                         IBioclipseUIJob<List<ITestResult>> job)
                                          throws BioclipseException;
 
 
@@ -90,10 +90,10 @@ public interface IDSManager extends IBioclipseManager {
     public void runEndpoint(
                    String testID, 
                    IMolecule mol, 
-                   BioclipseUIJob<Map<String, List<? extends ITestResult>>> job)
+                   IBioclipseUIJob<Map<String, List<? extends ITestResult>>> job)
                    throws BioclipseException;
 
-    public BioclipseJob<Map<String, List<? extends ITestResult>>> runEndpoint(
+    public IBioclipseJob<Map<String, List<? extends ITestResult>>> runEndpoint(
                    String testID, 
                    IMolecule mol, 
                    BioclipseJobUpdateHook<Map<String, List<? extends ITestResult>>> h)

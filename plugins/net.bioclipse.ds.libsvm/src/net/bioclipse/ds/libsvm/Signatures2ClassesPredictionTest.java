@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.interfaces.IAtom;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.api.BioclipseException;
+import net.bioclipse.core.api.domain.IMolecule;
 import net.bioclipse.ds.libsvm.SignaturesLibSVMTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;

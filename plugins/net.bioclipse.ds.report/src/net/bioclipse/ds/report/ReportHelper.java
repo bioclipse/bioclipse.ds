@@ -29,8 +29,8 @@ import org.openscience.cdk.qsar.result.IntegerResult;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule.Property;
+import net.bioclipse.core.api.BioclipseException;
+import net.bioclipse.core.api.domain.IMolecule.Property;
 import net.bioclipse.ds.cons.MajorityVote;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;

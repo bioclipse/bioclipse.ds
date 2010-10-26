@@ -14,7 +14,7 @@ import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.api.BioclipseException;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.DSException;

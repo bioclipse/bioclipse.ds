@@ -10,8 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.ds.signatures.tests;
 
+import net.bioclipse.core.api.managers.IBioclipseManager;
 import net.bioclipse.core.tests.AbstractManagerTest;
-import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 import net.bioclipse.ds.signatures.business.SignaturesManager;
 

@@ -13,7 +13,7 @@ package net.bioclipse.ds.model.result;
 import java.text.DecimalFormat;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.api.domain.IMolecule;
 
 /**
  * 

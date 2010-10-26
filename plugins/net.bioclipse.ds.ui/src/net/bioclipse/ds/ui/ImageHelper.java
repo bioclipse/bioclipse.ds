@@ -24,7 +24,7 @@ import java.util.Map;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
-import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.api.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
 import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
@@ -59,7 +59,7 @@ public class ImageHelper {
 
     private static final Logger logger = Logger.getLogger(ImageHelper.class);
 
-    public static Image createImage( net.bioclipse.core.domain.IMolecule bcmol,
+    public static Image createImage( net.bioclipse.core.api.domain.IMolecule bcmol,
                                       ITestResult match ) 
                                       throws BioclipseException {
 
@@ -72,7 +72,7 @@ public class ImageHelper {
     }
     
     @SuppressWarnings("unchecked")
-	public static Image createImage( net.bioclipse.core.domain.IMolecule bcmol,
+	public static Image createImage( net.bioclipse.core.api.domain.IMolecule bcmol,
                         ITestResult match, int WIDTH, int HEIGHT, double zoom)
                                                      throws BioclipseException {
 

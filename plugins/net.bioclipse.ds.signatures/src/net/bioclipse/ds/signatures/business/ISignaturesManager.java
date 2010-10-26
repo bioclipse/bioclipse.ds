@@ -18,13 +18,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.PublishedClass;
-import net.bioclipse.core.PublishedMethod;
-import net.bioclipse.core.Recorded;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.api.BioclipseException;
+import net.bioclipse.core.api.Recorded;
+import net.bioclipse.core.api.domain.IMolecule;
+import net.bioclipse.core.api.managers.IBioclipseManager;
+import net.bioclipse.core.api.managers.PublishedClass;
+import net.bioclipse.core.api.managers.PublishedMethod;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
-import net.bioclipse.managers.business.IBioclipseManager;
 
 /**
  * Signatures manager for generating signatures according to Faulon et al. 1934.

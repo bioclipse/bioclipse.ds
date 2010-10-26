@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 
-import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.api.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.ImageUtils;
 import net.bioclipse.core.util.LogUtils;

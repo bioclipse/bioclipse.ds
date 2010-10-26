@@ -16,9 +16,9 @@ import java.util.List;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.core.domain.SMILESMolecule;
+import net.bioclipse.core.api.BioclipseException;
+import net.bioclipse.core.api.domain.IMolecule;
+import net.bioclipse.core.api.domain.SMILESMolecule;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.Endpoint;

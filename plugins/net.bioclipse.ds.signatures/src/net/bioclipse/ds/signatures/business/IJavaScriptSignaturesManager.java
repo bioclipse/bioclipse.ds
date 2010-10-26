@@ -10,7 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.signatures.business;
 
-import net.bioclipse.managers.business.IBioclipseJSManager;
+import net.bioclipse.core.api.managers.IBioclipseJSManager;
 
 public interface IJavaScriptSignaturesManager
        extends ISignaturesManager, IBioclipseJSManager {

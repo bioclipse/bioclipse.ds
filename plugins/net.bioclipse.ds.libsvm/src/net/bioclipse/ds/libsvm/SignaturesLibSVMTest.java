@@ -23,7 +23,7 @@ import libsvm.svm_model;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.api.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;

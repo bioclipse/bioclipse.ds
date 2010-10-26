@@ -18,7 +18,7 @@ import org.eclipse.help.IContext2;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.api.domain.IMolecule;
 
 
 /**
