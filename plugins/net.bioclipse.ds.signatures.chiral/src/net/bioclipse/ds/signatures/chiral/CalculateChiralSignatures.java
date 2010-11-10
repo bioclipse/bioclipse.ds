@@ -1,10 +1,13 @@
 package net.bioclipse.ds.signatures.chiral;
 
+
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.openscience.cdk.*;
+import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.cip.*;
@@ -14,9 +17,13 @@ import org.openscience.cdk.io.*;
 import org.openscience.cdk.signature.*;
 import org.openscience.cdk.stereo.*;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 
 public class CalculateChiralSignatures {
+
+    private static final Logger logger = Logger.getLogger(
+    		CalculateChiralSignatures.class);
 
 	public void calculate(String height, String filename) throws Exception {
 		File file = new File(filename);
@@ -74,7 +81,7 @@ CIPTool.getCIPChirality(mol, tetraStereo)
 	public static void main(String[] args) throws Exception {
 		CalculateChiralSignatures calculator = new CalculateChiralSignatures();
 		if (args.length < 2) {
-			System.out.println("java CalculateChiralSignatures height [FILE.mol]");
+			logger.error("java CalculateChiralSignatures height [FILE.mol]");
 			System.exit(0);
 		}
 
@@ -84,11 +91,13 @@ CIPTool.getCIPChirality(mol, tetraStereo)
 
 	public static List<String> generate(String mdl, int height) throws CDKException {
 
+
 		//We need to read with MDL reader as it is the only to support chiralty for now
 		MDLV2000Reader reader = new MDLV2000Reader(
 				new StringReader(mdl)
 		);
 		IMolecule mol = reader.read(new Molecule());
+
 		Map<IAtom, CIP_CHIRALITY> chiralities = new HashMap<IAtom, CIP_CHIRALITY>();
 
 		//Perceive aromaticity and add implicit hydrogens
@@ -99,17 +108,47 @@ CIPTool.getCIPChirality(mol, tetraStereo)
 
 		while (natoms.hasNext()) {
 			IAtom atom = natoms.next();
-			IAtomType type = matcher.findMatchingAtomType(mol, atom);
-			AtomTypeManipulator.configure(atom, type);
+			IAtomType atomType = matcher.findMatchingAtomType(mol, atom);
+			
+			if (atomType == null) {
+				// try + charge
+				atom.setFormalCharge(+1);
+				atomType = matcher.findMatchingAtomType(mol, atom);
+				if (atomType == null){
+					// try - charge
+					atom.setFormalCharge(-1);			
+					atomType = matcher.findMatchingAtomType(mol, atom);
+				}
+			}
+
+			if (atomType==null){
+				System.out.println("Could not find type for atom: " + atom 
+						+ " in mol " + mol);
+			}else{
+				AtomTypeManipulator.configure(atom, atomType);
+			}
 		}
 		CDKHydrogenAdder hAdder
 		= CDKHydrogenAdder.getInstance(mol.getBuilder());
 		hAdder.addImplicitHydrogens(mol);
 
+//		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+		CDKHueckelAromaticityDetector.detectAromaticity(mol);
+
+		boolean isAromatic=false;
+		for (IBond bond : mol.bonds()) {
+			if (bond.getFlag(CDKConstants.ISAROMATIC))
+				isAromatic=true;
+		}
+		if (isAromatic)
+			System.out.println("** This molecule is aromatic");
+		
 
 		// for MDL molfile with 3D coordinates
 		for (IAtom atom : mol.atoms()) {
-			//			if (atom.getProperty(MDLV2000Reader.MDL_ATOM_STEREO_PARITY) != null) {
+			
+			System.out.println(" Atom: " + mol.getAtomNumber(atom) + " - AT: " + atom.getAtomTypeName());
+			
 			List<IAtom> atoms = mol.getConnectedAtomsList(atom);
 			if (atoms.size() != 4) {
 				// OK, something unexpected
@@ -131,7 +170,7 @@ CIPTool.getCIPChirality(mol, tetraStereo)
 							CIPTool.getCIPChirality(mol, tetraStereo)
 					);
 				}catch(Exception e){
-					System.out.println("ERROR in atom " + atom + " - " + e.getMessage());
+					logger.error("ERROR in atom " + atom + " - " + e.getMessage());
 				}
 			}
 			//			}

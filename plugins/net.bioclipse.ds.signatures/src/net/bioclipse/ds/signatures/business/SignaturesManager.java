@@ -206,7 +206,8 @@ public class SignaturesManager implements IBioclipseManager {
         	molecule = ballon.generate3Dcoordinates(molecule);
     	}
     	
-    	List<String> signatures = CalculateChiralSignatures.generate(cdk.getMDLMolfileString(molecule), height);
+    	List<String> signatures = CalculateChiralSignatures.generate(
+    			cdk.getMDLMolfileString(molecule), height);
     	System.out.println("Chiral signs: " + signatures.toString());
     	
     	return new AtomSignatures(signatures);

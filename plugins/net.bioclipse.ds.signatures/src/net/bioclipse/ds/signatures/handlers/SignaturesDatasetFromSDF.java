@@ -109,8 +109,8 @@ public class SignaturesDatasetFromSDF extends AbstractHandler{
 					AtomSignatures molsigns = signatures.generateChiral(mol,1);
 					List<Integer> row = new ArrayList<Integer>();
 					dataset.add(row);
-					names.add("nr: " + i + ": ");
 					i++;
+					names.add("Compound " + i + ",");
 					
 					//Loop over all already stored signatures
 					for (String sign : allSignaturesList){
@@ -151,7 +151,7 @@ public class SignaturesDatasetFromSDF extends AbstractHandler{
 				//debug it out
 				System.out.println("== ds ==");
 				
-				System.out.println(allSignaturesList.toString());
+				System.out.println("Compound, " + allSignaturesList.toString());
 				int c=0;
 				for (List<Integer> row : dataset){
 					System.out.println(names.get(c) + " " + row.toString().substring(1,row.toString().length()-1));
