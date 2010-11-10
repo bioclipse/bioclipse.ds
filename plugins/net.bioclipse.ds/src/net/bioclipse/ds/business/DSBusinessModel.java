@@ -13,11 +13,13 @@ package net.bioclipse.ds.business;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.model.ITestDiscovery;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
@@ -53,10 +55,12 @@ public class DSBusinessModel {
     public void initialize() {
         readEndpointsFromEP();
         readTestsFromEP();
+        addTestsFromDiscovery();
     }
 
 
-    public void readEndpointsFromEP(){
+
+	public void readEndpointsFromEP(){
 
         endpoints = new ArrayList<Endpoint>();
 
@@ -104,7 +108,8 @@ public class DSBusinessModel {
 
     public void readTestsFromEP(){
 
-        tests = new ArrayList<IDSTest>();
+    	if (tests==null)
+    		tests = new ArrayList<IDSTest>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -233,8 +238,76 @@ public class DSBusinessModel {
             }
         }
     }
+    
+    /**
+     * Delegate test discovery to plugins via extension 'testdiscovery'
+     */
+    private void addTestsFromDiscovery() {
+    	
+    	if (tests==null)
+    		tests = new ArrayList<IDSTest>();
 
-    private IConsensusCalculator createNewConsCalc( String pconsid ) {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+        if ( registry == null ) 
+            throw new UnsupportedOperationException("Extension registry is null. " +
+            "Cannot read tests from EP.");
+        // it likely means that the Eclipse workbench has not
+        // started, for example when running tests
+
+        IExtensionPoint serviceObjectExtensionPoint = registry
+        .getExtensionPoint("net.bioclipse.decisionsupport");
+
+        IExtension[] serviceObjectExtensions
+        = serviceObjectExtensionPoint.getExtensions();
+
+        for(IExtension extension : serviceObjectExtensions) {
+            for( IConfigurationElement element
+                    : extension.getConfigurationElements() ) {
+
+                //Read all testdiscovery classes from EP
+                //======================
+                if (element.getName().equals("testdiscovery")){
+
+//                    String pid=element.getAttribute("id");
+//                    String pep=element.getAttribute("endpoint");
+
+                    try {
+						ITestDiscovery discovery = (ITestDiscovery) 
+									 element.createExecutableExtension("class");
+						
+						List<IDSTest> newTests = discovery.discoverTests();
+						if (newTests!=null){
+							logger.debug("Discovered " + newTests.size() 
+									+ " new tests");
+						}else{
+							logger.debug("Discovery returned null ");
+						}
+						
+						tests.addAll(newTests);
+						
+						
+					} catch (CoreException e) {
+						LogUtils.debugTrace(logger, e);
+					} catch (BioclipseException e) {
+						LogUtils.debugTrace(logger, e);
+					}
+                        
+                }
+            }
+        }
+        
+    			
+	}
+
+
+    public static IConsensusCalculator createNewConsCalc( String pconsid ) {
+
+    	//If null provided, use default
+    	if (pconsid==null){
+    		logger.debug("using default consensus calculator");
+    		pconsid=DEFAULT_CONSENSUS_CALCULATOR;
+    	}
 
         IConsensusCalculator conscalc=null;
         
