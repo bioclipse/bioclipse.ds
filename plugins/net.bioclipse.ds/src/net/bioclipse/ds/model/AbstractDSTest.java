@@ -28,6 +28,7 @@ import net.bioclipse.ds.model.result.SimpleResult;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.help.IHelpResource;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -165,10 +166,12 @@ public abstract class AbstractDSTest implements IDSTest{
             icon=Activator.imageDescriptorFromPlugin( 
                                     net.bioclipse.ds.Activator.PLUGIN_ID, 
                                     DEFAULT_TEST_ICON ).createImage();
-        else if (icon==null && pluginID!=null && iconpath!=null)
-            icon=Activator.imageDescriptorFromPlugin( 
-                      pluginID, iconpath ).createImage();
-        
+        else if (icon==null && pluginID!=null && iconpath!=null){
+        	ImageDescriptor ide = Activator.imageDescriptorFromPlugin( 
+        			pluginID, iconpath );
+        	if (ide!=null)
+        		icon=ide.createImage();
+        }        
         return icon;
     }
     
