@@ -218,6 +218,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
             int numneg=0;
             int numinc=0;
             int numerr=0;
+            int numinf=0;
             for (ITestResult res : results){
                 if (res.getClassification()==ITestResult.POSITIVE)
                     numpos++;
@@ -227,6 +228,8 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
                     numinc++;
                 else if (res.getClassification()==ITestResult.ERROR)
                     numerr++;
+                else if (res.getClassification()==ITestResult.INFORMATIVE)
+                    numinf++;
             }
 
             String pospart="";
@@ -260,6 +263,8 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
             
             if (numpos>0 || numneg>0 || numinc>0 || numerr>0)
                 return " [" + pospart + negpart + incpart + errpart +"]";
+            else if (numinf>0)
+            	return "";
             else return " [no hits]";
             
         }
