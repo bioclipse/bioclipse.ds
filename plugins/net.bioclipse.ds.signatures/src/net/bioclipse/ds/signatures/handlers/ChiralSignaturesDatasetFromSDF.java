@@ -55,10 +55,10 @@ import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
  * 
  * @author ola
  */
-public class SignaturesDatasetFromSDF extends AbstractHandler{
+public class ChiralSignaturesDatasetFromSDF extends AbstractHandler{
 
 	private static final Logger logger =
-		Logger.getLogger(SignaturesDatasetFromSDF.class);
+		Logger.getLogger(ChiralSignaturesDatasetFromSDF.class);
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -106,7 +106,7 @@ public class SignaturesDatasetFromSDF extends AbstractHandler{
 				int i=0;
 				//Process the mols
 				for (IMolecule mol : mols){
-					AtomSignatures molsigns = signatures.generate(mol,1);
+					AtomSignatures molsigns = signatures.generateChiral(mol,1);
 					List<Float> row = new ArrayList<Float>();
 					dataset.add(row);
 					i++;
