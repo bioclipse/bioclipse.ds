@@ -1,23 +1,34 @@
 package net.bioclipse.ds.signatures.chiral;
 
 
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.openscience.cdk.*;
+import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.Molecule;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.geometry.cip.*;
+import org.openscience.cdk.geometry.cip.CIPTool;
 import org.openscience.cdk.geometry.cip.CIPTool.CIP_CHIRALITY;
-import org.openscience.cdk.interfaces.*;
-import org.openscience.cdk.io.*;
-import org.openscience.cdk.signature.*;
-import org.openscience.cdk.stereo.*;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomType;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.interfaces.ITetrahedralChirality;
+import org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo;
+import org.openscience.cdk.io.MDLV2000Reader;
+import org.openscience.cdk.signature.ChiralAtomSignature;
+import org.openscience.cdk.stereo.StereoTool;
+import org.openscience.cdk.stereo.TetrahedralChirality;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 
 public class CalculateChiralSignatures {
@@ -158,16 +169,18 @@ CIPTool.getCIPChirality(mol, tetraStereo)
 				ligandAtoms[1] = atoms.get(1);
 				ligandAtoms[2] = atoms.get(2);
 				ligandAtoms[3] = atoms.get(3);
-				ITetrahedralChirality tetraStereo = new TetrahedralChirality(
-						atom, ligandAtoms,
-						StereoTool.getStereo(
-								ligandAtoms[0], ligandAtoms[1], ligandAtoms[2], ligandAtoms[3]
-						)
+				Stereo stereo = StereoTool.getStereo(
+					ligandAtoms[0], ligandAtoms[1], ligandAtoms[2], ligandAtoms[3]
 				);
-				try{
+				System.out.println(" stereo: " + stereo);
+				ITetrahedralChirality tetraStereo = new TetrahedralChirality(
+						atom, ligandAtoms, stereo
+				);
+				try {
+					CIP_CHIRALITY chirality = CIPTool.getCIPChirality(mol, tetraStereo);
+					System.out.println(" chirality: " + chirality);
 					chiralities.put(
-							atom,
-							CIPTool.getCIPChirality(mol, tetraStereo)
+						atom, chirality
 					);
 				}catch(Exception e){
 					logger.error("ERROR in atom " + atom + " - " + e.getMessage());
