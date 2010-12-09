@@ -95,12 +95,12 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 
-				monitor.beginTask("Signatures creation", 10);
+				monitor.beginTask("Signatures creation", 11);
 				monitor.subTask("Reading SD-file..");
 				ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
 				List<ICDKMolecule> mols;
 				try {
-					mols = cdk.loadMolecules(file, new SubProgressMonitor(monitor, 1));
+					mols = cdk.loadMolecules(file, new SubProgressMonitor(monitor, 5));
 
 				if (mols==null || mols.size()<=0)
 					return new Status(IStatus.ERROR, 
@@ -110,6 +110,9 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 				List<String> allSignaturesList=new ArrayList<String>();
 				List<List<Float>> dataset=new ArrayList<List<Float>>();
 				List<String> names = new ArrayList<String>();
+				
+				SubProgressMonitor molmonitor = new SubProgressMonitor(monitor, 5);
+				molmonitor.beginTask("Calculating signatures", mols.size());
 
 				int i=0;
 				//Process the mols
@@ -147,8 +150,12 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 						row.add((float)nohits);
 						allSignaturesList.add(sign);
 					}
-					
+
+					//get next molecule
+					molmonitor.worked(1);
 				}
+				
+				molmonitor.done();
 				
 				//Fill up with zeros to length
 				for (List<Float> row : dataset){
@@ -170,11 +177,12 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 				//Create output file, replace extension with csv
 				String filename= file.getName();
 				IPath sdpath = file.getFullPath().removeLastSegments(1);
-				IPath outpath = sdpath.append(filename).removeFileExtension().addFileExtension("csv");
+				String apx=getImplSpecificAppendix();
+				IPath outpath = new Path(sdpath.append(filename).removeFileExtension().toOSString()+apx).addFileExtension("csv");
 
 				for (int j=1; j<10; j++){
 					if (j>1)
-						outpath = new Path(sdpath.append(filename).removeFileExtension().toOSString()+"("+j+")").addFileExtension("csv");
+						outpath = new Path(sdpath.append(filename).removeFileExtension().toOSString()+apx+" ("+j+")").addFileExtension("csv");
 					if (writeFile(outpath, buf.toString().getBytes())){
 						break;
 					}
@@ -231,6 +239,8 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 
 		return null;
 	}		
+
+	protected abstract String getImplSpecificAppendix();
 
 	protected abstract AtomSignatures generateSignatures(IMolecule mol)
 			throws BioclipseException;

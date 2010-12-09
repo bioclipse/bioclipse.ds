@@ -37,5 +37,10 @@ public class SignaturesDatasetFromSDF extends AbstractSignaturesDatasetFromSDF{
 		return molsigns;
 	}
 
+	@Override
+	protected String getImplSpecificAppendix() {
+		return "-sig";
+	}
+
 
 }

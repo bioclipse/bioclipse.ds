@@ -36,4 +36,9 @@ public class ChiralSignaturesDatasetFromSDF extends AbstractSignaturesDatasetFro
 
 		return molsigns;
 	}
+
+	@Override
+	protected String getImplSpecificAppendix() {
+		return "-chiralSig";
+	}
 }
