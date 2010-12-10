@@ -16,6 +16,9 @@ public class GeneratorHelper {
     	//Switch off all other DS-generators!
     	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
 
+    	if (jcp==null) return;
+    	if (jcp.getWidget()==null) return;
+    	
     	RendererModel model = jcp.getWidget().getRenderer2DModel();
 
     	for(IGenerator generator: generators) {

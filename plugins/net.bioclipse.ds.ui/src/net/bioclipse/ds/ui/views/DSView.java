@@ -19,6 +19,7 @@ import java.util.Map;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.cdk.jchempaint.business.IJChemPaintManager;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
 import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
@@ -748,6 +749,14 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             showError("The current editor is not supported to run DS tests on.");
             return;
         }
+        
+        //We need to remove explicit hydrogens
+        IJChemPaintManager jcpmanager=net.bioclipse.cdk.jchempaint.Activator
+        .getDefault().getJavaManager();
+        
+        jcpmanager.removeExplicitHydrogens();
+ 
+        //Get the molecule from JCP
         final ICDKMolecule mol=jcp.getCDKMolecule();
         
         //Cancel all running tests
@@ -1300,10 +1309,18 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 		 IEditorPart editor = getSupportedEditor(partRef);
 		 JChemPaintEditor jcp=getJCPfromEditor(editor);
+		 
+
 
 		 //We are currently unable to unregister listeners for ICDKMolecules in MolTable
 		 //TODO: Unregister last mol in moltable (get last JCP page)
 		 if (jcp!=null){
+
+	         //Turn off all ext generators who has a boolean parameter
+	         //Not the best, but nothing else to do currently
+	         //TODO: Improve on this!
+	         GeneratorHelper.turnOffAllExternalGenerators(jcp);
+
 			 jcp.removePropertyChangedListener(this);
 			 logger.debug("Removed prop-listener from JCP");
 
