@@ -38,7 +38,6 @@ import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.signatures.Activator;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
@@ -56,6 +55,8 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
     private static final Logger logger = Logger.getLogger(SignatureAlertsMatcher.class);
 
     private static final String FILE_PROPERTY_PARAM="file";
+
+	private static final double P_VALUE_CUTOFF = 0.05;
 
     //Model, from height to list of significant signatures
 	Map<Integer, List<SignificantSignature>> significantSignatures;
@@ -165,12 +166,14 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 					}
 
 					//Create and add signatures to list
-					SignificantSignature signsign=new SignificantSignature(
-  					  sign, nrpos, nrtot, pvalue, accuracy, activeCall, height);
-					signsignlist.add(signsign);
-					signsignStringlist.add(sign);
-//					logger.debug("  Added SignSignature: " + signsign);
-					signCount++;
+					if (pvalue<=P_VALUE_CUTOFF){
+						SignificantSignature signsign=new SignificantSignature(
+								sign, nrpos, nrtot, pvalue, accuracy, activeCall, height);
+						signsignlist.add(signsign);
+						signsignStringlist.add(sign);
+						//					logger.debug("  Added SignSignature: " + signsign);
+						signCount++;
+					}
 				}
 				else{
 					throw new DSException("File: " + filepath + " line " 
@@ -212,7 +215,7 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
         .getJavaSignaturesManager();
 
 		logger.debug("Generating AtomSignatures and comparing with stored.");
-		Map<Integer, List<String>> matches=new HashMap<Integer, List<String>>();
+//		Map<Integer, List<String>> matches=new HashMap<Integer, List<String>>();
 		
         try {
         	
