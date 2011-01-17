@@ -16,7 +16,9 @@ import java.util.Map;
 import net.bioclipse.core.api.BioclipseException;
 import net.bioclipse.core.api.Recorded;
 import net.bioclipse.core.api.domain.IMolecule;
+import net.bioclipse.core.api.jobs.BioclipseJobUpdateHook;
 import net.bioclipse.core.api.jobs.IBioclipseJob;
+import net.bioclipse.core.api.jobs.IExtendedBioclipseJob;
 import net.bioclipse.core.api.managers.IBioclipseManager;
 import net.bioclipse.core.api.managers.IBioclipseUIJob;
 import net.bioclipse.core.api.managers.PublishedClass;
@@ -25,8 +27,6 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.jobs.BioclipseJobUpdateHook;
-import net.bioclipse.jobs.ExtendedBioclipseJob;
 
 
 @PublishedClass( "Contains methods for Bioclipse Decision Support")
@@ -72,7 +72,7 @@ public interface IDSManager extends IBioclipseManager {
                                          throws BioclipseException;
 
 
-    public ExtendedBioclipseJob<List<ITestResult>> runTest(
+    public IExtendedBioclipseJob<List<ITestResult>> runTest(
                    String testID, 
                    IMolecule mol, 
                    BioclipseJobUpdateHook<List<ITestResult>> h)
