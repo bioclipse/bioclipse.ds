@@ -146,7 +146,7 @@ public class ImageHelper {
         
         // the paint method also needs a toolkit-specific renderer
         Double bounds = new Rectangle2D.Double(0, 0, WIDTH, HEIGHT);
-        renderer.paintMolecule(mol, new AWTDrawVisitor(g2), bounds, true);
+        renderer.paint(mol, new AWTDrawVisitor(g2), bounds, true);
 //        renderer.paint(mol, new AWTDrawVisitor(g2));
         
         return image;
