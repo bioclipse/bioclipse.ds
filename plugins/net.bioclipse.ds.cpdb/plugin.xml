@@ -56,6 +56,7 @@
             name="CPDB Signature Significance"
             class="net.bioclipse.ds.cpdb.calc.CPDBSIgnaturesSignificanceModel"
             endpoint="net.bioclipse.ds.carcinogenicity"
+            informative="true"
             propertycalculator="CPDB Signature Significance">
             <resource name="modelfile" path="models/cpdb.train.model" />
             <resource name="rangefile" path="models/cpdb.train.range" />

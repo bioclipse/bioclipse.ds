@@ -45,23 +45,51 @@ public class ColorHelper {
     	
         if (blueRedScale!=null)
             return blueRedScale.get( resValue );
-
-        double red = Math.round(resValue*255);
-        if (red<0) red=0;
-
-        double green=0;
-        if (resValue<0)
-        	green=Math.round(resValue*255+255);
-        else
-        	green=Math.round(-resValue*255+255);
-
-        double blue = Math.round(-resValue*255);
-        if (blue<0) blue=0;
         
+        double red = 0;
+        double green = 0;
+        double blue = 0;
+        
+        if (resValue<0){
+        	red=0;
+        	if (resValue<(-0.5)){
+        		blue=255;
+        		green=(255*2*(resValue+1));
+        	}
+        	else {
+        		green=255;
+        		blue=255-2*255*(resValue+0.5);
+        	}
+        }else{
+        	blue=0;
+        	if (resValue<0.5){
+        		green=255;
+        		red=(255*2*resValue);
+        	}
+        	else {
+        		red=255;
+        		green=2*255*(1-resValue);
+        	}
+
+        }
+          
+
+//        double red = Math.round(resValue*255);
+//        if (red<0) red=0;
+//
+//        double green=0;
+//        if (resValue<0)
+//        	green=Math.round(resValue*255+255);
+//        else
+//        	green=Math.round(-resValue*255+255);
+//
+//        double blue = Math.round(-resValue*255);
+//        if (blue<0) blue=0;
+//        
         Color color = new Color( (int)red, (int)green, (int)blue, 
         		DSConstants.OVAL_ALPHA );
 
-//        System.out.println("Value=" + resValue + " genrated color: " + color);
+        System.out.println("Value=" + resValue + " genrated color: " + color);
 
         return color;
 

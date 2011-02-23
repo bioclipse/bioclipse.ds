@@ -28,6 +28,8 @@ import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.elements.ElementGroup;
 import org.openscience.cdk.renderer.elements.IRenderingElement;
 import org.openscience.cdk.renderer.elements.OvalElement;
+import org.openscience.cdk.renderer.elements.WedgeLineElement;
+import org.openscience.cdk.renderer.elements.WedgeLineElement.Direction;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator.CompactAtom;
@@ -115,6 +117,7 @@ public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
 			}
 
 			//Get rainbow color, green from default value 0
+			System.out.print("Atom " + i  + " ");
 			drawColor=ColorHelper.getRainbowColor( resValue );
 
 			if(drawColor != null){
@@ -123,6 +126,17 @@ public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
 						circleRadius,true, drawColor ));
 
 			}
+			
+			//Get neighbours
+//			for (IAtom catom : ac.getConnectedAtomsList(atom)){
+//				catom.getPoint2d();  //Coordinate for neighbour atom
+//				
+//				//Create a vertex centered on atom with 
+//				group.add( new WedgeLineElement( atom.getPoint2d().x,
+//						atom.getPoint2d().y, catom.getPoint2d().x,
+//						catom.getPoint2d().y, 8, true, Direction.toFirst, Color.red ));
+//			}
+
 		}
 
 
