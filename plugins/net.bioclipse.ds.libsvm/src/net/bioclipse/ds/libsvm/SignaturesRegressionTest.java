@@ -41,10 +41,16 @@ import net.bioclipse.ds.signatures.business.ISignaturesManager;
  * @author Ola Spjuth, Lars Carlsson, Martin Eklund
  *
  */
-public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest implements IDSTest{
+public class SignaturesRegressionTest extends SignaturesLibSVMTest implements IDSTest{
 
     //The logger of the class
     private static final Logger logger = Logger.getLogger(SignaturesRegressionTest.class);
+
+	private static final String HIGH_PERCENTILE = "highPercentile";
+	private static final String LOW_PERCENTILE = "lowPercentile";
+	
+	protected double lowPercentile;
+	protected double highPercentile;
     
     private svm_node[] xScaled;
     private double[] x;
@@ -70,6 +76,22 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
         super();
     }
 
+    @Override
+    public List<String> getRequiredParameters() {
+        List<String> ret=super.getRequiredParameters();
+        ret.add( HIGH_PERCENTILE );
+        ret.add( LOW_PERCENTILE );
+        return ret;
+    }
+    
+    @Override
+    public void initialize(IProgressMonitor monitor) throws DSException {
+    	super.initialize(monitor);
+
+    	highPercentile=Double.parseDouble( getParameters().get( HIGH_PERCENTILE ));
+    	lowPercentile=Double.parseDouble( getParameters().get( LOW_PERCENTILE ));
+
+    }
 
 
 
@@ -310,21 +332,18 @@ public abstract class SignaturesRegressionTest extends SignaturesLibSVMTest impl
 
 		//We have a fixed boundary on a low and high percentile
 		//so cut away anything below or above this
-		if (currentDeriv<=getLowPercentileDeriv())
+		if (currentDeriv<=lowPercentile)
 			return -1;
-		else if (currentDeriv>=getHighPercentileDeriv())
+		else if (currentDeriv>=highPercentile)
 			return 1;
 		else if (currentDeriv==0)
 			return 0;
 
 		//Since not symmetric around 0, scale pos and neg intervals individually
 		if (currentDeriv<0)
-			return currentDeriv/(-getLowPercentileDeriv());
+			return currentDeriv/(-lowPercentile);
 		else
-			return currentDeriv/getHighPercentileDeriv();
+			return currentDeriv/highPercentile;
 	}
 
-	//Below are model-specific
-	public abstract Double getHighPercentileDeriv();
-	public abstract Double getLowPercentileDeriv();
 }

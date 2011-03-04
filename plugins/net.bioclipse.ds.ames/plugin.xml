@@ -81,7 +81,7 @@
             </resource>
       </test-->
       
-            <test
+     <test
             id="ames.signatures"
             name="Ames Signature Significance"
             class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
