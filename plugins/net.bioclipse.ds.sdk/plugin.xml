@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.pde.ui.pluginContent">
+      <wizard
+            class="net.bioclipse.ds.sdk.pdewizard.NewDSPluginsWizard"
+            icon="icons/bulb.png"
+            id="net.bioclipse.sdk.template.wizard"
+            java="true"
+            name="Bioclipse DS feature from data"
+            pureOSGi="false"
+            rcp="false"
+            requiresActivator="false"
+            ui-content="true">
+            <description>
+               Creates a Decision Support feature from a set of chemical structures.
+            </description>
+      </wizard>
+
+   </extension>
+   <extension
+         point="org.eclipse.pde.ui.templates">
+      <template
+            class="net.bioclipse.ds.sdk.pdewizard.NewDSPluginsWizard"
+            contributingId="net.bioclipse.ds.template"
+            icon="icons/bulb.png"
+            id="net.bioclipse.ds.sdk.template"
+            name="Bioclipse DS template">
+      </template>
+   </extension>
+
+
+</plugin>
