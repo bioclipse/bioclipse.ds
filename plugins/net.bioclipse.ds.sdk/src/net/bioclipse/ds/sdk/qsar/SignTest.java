@@ -1,14 +1,17 @@
 package net.bioclipse.ds.sdk.qsar;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import libsvm.svm;
 import libsvm.svm_model;
@@ -25,31 +28,31 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 public class SignTest {
 
-	//Default values
 	private static int nrFolds = 5, startHeight = 0, endHeight = 3;
-	
+	//private static int cStart = 0, cEnd = 5, gammaStart = 3, gammaEnd = 10;
+	private static int cStart = 0, cEnd = 3, gammaStart = 3, gammaEnd = 7;
 	private static String positiveActivity = "mutagen"; 
+	private static String svmModelName = "/tmp/svmModel.txt";
+	private static String signaturesFilename = "/tmp/signatures.txt";
 
 	
 	//Path to SDF
-	//private static String pathToSDFile = "/home/lc/molsWithAct.sdf";
-	private static String pathToSDFile = "/home/lc/bursi_nosalts_molsign.sdf";
+//	private static String pathToSDFile = "/home/lc/molsWithAct.sdf";
+	private static String pathToSDFile = "/Users/ola/repos/bioclipse.ds/plugins/net.bioclipse.ds.ames/data/bursi_nosalts_molsign.sdf";
 	private static String ACTIVITY_PROPERTY = "Ames test categorisation";
+	private static boolean classification = true;
 
-	private static boolean classification = true;  //Else, regression
-
-	//private static String pathToSDFile = "/home/lc/Downloads/chang.sdf";
-	//private static String ACTIVITY_PROPERTY = "BIO";
-	//private static boolean classification = false;
+//	private static String pathToSDFile = "/Users/ola/Downloads/chang.sdf";
+//	private static String ACTIVITY_PROPERTY = "BIO";
+//	private static boolean classification = false;
 	
 	//The property in the SDF to read, e. g. as activity
 	
 	
 	
-	
 	private static void gridSearch(svm_parameter svmParameter, svm_problem svmProblem, double optimumValue, double optimumC, double optimumGamma){
-		for (int cExponent = 0; cExponent < 7; cExponent++){
-			for (int gammaExponent = 3; gammaExponent < 11; gammaExponent++){
+		for (int cExponent = cStart; cExponent <= cEnd; cExponent++){
+			for (int gammaExponent = gammaStart; gammaExponent <= gammaEnd; gammaExponent++){
 				double[] target = new double[svmProblem.l];
 				svmParameter.C = Math.pow(10.0,(cExponent/2));
 				svmParameter.gamma = Math.pow(2.0, -gammaExponent);
@@ -69,6 +72,7 @@ public class SignTest {
 						optimumC = svmParameter.C;
 						optimumGamma = svmParameter.gamma;
 					}
+					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
 				}
 				else{
 					double sumSquareError = 0.0;
@@ -81,10 +85,11 @@ public class SignTest {
 						optimumC = svmParameter.C;
 						optimumGamma = svmParameter.gamma;
 					}
+					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
 				}
-				System.out.println("Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma);
 			}
 		}
+		System.out.println("Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma);
 
 	}
 	
@@ -123,7 +128,7 @@ public class SignTest {
 				activityList.add(activityValue);
 
 				// Create the signatures for a molecule and add them to the signatures map
-				HashMap moleculeSignatures = new HashMap<String, Double>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer. libsvm wants a double.
+				Map<String, Double> moleculeSignatures = new HashMap<String, Double>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer. libsvm wants a double.
 				for (int height = startHeight; height <= endHeight; height++){
 					List<String> signs = SignTools.calculateSignatures(mol, height);
 					Iterator<String> signsIter = signs.iterator();
@@ -160,9 +165,20 @@ public class SignTest {
 				//System.out.println("Molecule " + cnt + " (Activity=" + activity + "): " +  signs);
 				cnt++;
 			}
-			
-			//This is the list of signatures for inclusion in model - should go in model file
-			System.out.println(signatures);
+			// Write the signatures to a file, One per line.
+            try {
+				BufferedWriter signaturesWriter = new BufferedWriter(new FileWriter(signaturesFilename));
+				Iterator<String> signaturesIter = signatures.iterator();
+				while (signaturesIter.hasNext()){
+					signaturesWriter.write(signaturesIter.next());
+					signaturesWriter.newLine();
+				}
+				signaturesWriter.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 			
 			// Add values to the SVM problem.
 			svmProblem.l = cnt - 1;
@@ -190,7 +206,7 @@ public class SignTest {
 				optimumValue = 1000.0;
 			}
 			
-			System.out.println(svm.svm_check_parameter(svmProblem, svmParameter)); //null if OK
+			System.out.println(svm.svm_check_parameter(svmProblem, svmParameter));
 			
 			gridSearch(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
 			
@@ -198,7 +214,6 @@ public class SignTest {
 			svmParameter.gamma = optimumGamma;
 			svm_model svmModel = new svm_model();
 			svmModel = svm.svm_train(svmProblem, svmParameter);
-			String svmModelName = "/tmp/svmModel.txt";			
 			try {
 				svm.svm_save_model(svmModelName , svmModel);
 			} catch (IOException e) {
