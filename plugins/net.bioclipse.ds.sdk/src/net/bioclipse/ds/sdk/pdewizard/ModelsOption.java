@@ -241,7 +241,7 @@ public class ModelsOption extends TemplateOption {
 		//2 classes
 		String[][] classificationModels = new String[3][2];
 		classificationModels[0][0] = "net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures";
-		classificationModels[0][1] = "Exact Match (atom signatures)";
+		classificationModels[0][1] = "Exact Match (molecular signature)";
 
 		classificationModels[1][0] = "net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP";
 		classificationModels[1][1] = "Nearest neighbour (CDK fingerprint)";
