@@ -10,10 +10,21 @@
  ******************************************************************************/
 package net.bioclipse.ds.sdk.pdewizard;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,10 +35,16 @@ import java.util.ResourceBundle;
 
 import net.bioclipse.ds.sdk.Activator;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.pde.core.plugin.IPluginBase;
@@ -47,6 +64,16 @@ import org.eclipse.pde.ui.templates.OptionTemplateSection;
 import org.eclipse.pde.ui.templates.PluginReference;
 import org.eclipse.pde.ui.templates.StringOption;
 import org.eclipse.pde.ui.templates.TemplateOption;
+import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.fingerprint.Fingerprinter;
+import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.io.iterator.IteratingMDLReader;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.signature.MoleculeSignature;
+import org.openscience.cdk.smsd.algorithm.vflib.interfaces.IState;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class DSTemplate extends OptionTemplateSection {
 
@@ -78,7 +105,7 @@ public class DSTemplate extends OptionTemplateSection {
 	public static final String QSAR_SIGNATURE_HEIGHT = "signagure_height";
 	private static final String QSAR_MODEL_TYPE = "QSAR_MODEL_TYPE";
 
-	
+
 	//And things we need here..
 	private Wizard wizard;
 	private Map<Integer,List<TemplateOption>> optionControl;
@@ -342,7 +369,9 @@ public class DSTemplate extends OptionTemplateSection {
 			child = factory.createElement(element);
 			child.setName("parameter");
 			child.setAttribute("name", "responseProperty");
-			child.setAttribute("value", getOptionByName(EXACT_RESPONSE_PROPERTY_NAME).getValue().toString());
+			if (getOptionByName(EXACT_RESPONSE_PROPERTY_NAME)!=null)
+				if (getOptionByName(EXACT_RESPONSE_PROPERTY_NAME).getValue()!=null)
+					child.setAttribute("value", getOptionByName(EXACT_RESPONSE_PROPERTY_NAME).getValue().toString());
 			element.add(child);
 
 			child = factory.createElement(element);
@@ -449,10 +478,107 @@ public class DSTemplate extends OptionTemplateSection {
                 model.getPluginBase().getId()
             );
         }
+        
+        //Create required directories
+        IFolder dataFolder = project.getFolder("data");
+        if (!dataFolder.exists())
+        	dataFolder.create(true, false, monitor);
+        IFolder modelsFolder = project.getFolder("models");
+        if (!modelsFolder.exists())
+        	modelsFolder.create(true, false, monitor);
+
+        //PROCESS FILES
+        //==============
+        
+        //Start with datafile
+        String dfile="/Users/ola/data/molsWithAct.sdf";
+
+        //Preprocess file according to the models
+        String tempFile="";
+        //TODO add FP, signatures, InChI etc
+        try {
+			tempFile=preprocessDataFile(dfile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 
+					"unable to process data file: " + dfile + " - Exception: " + e1.getMessage()));
+		}
+        
+
+        //Copy the file into the project as datafile
+        //TODO: update name
+        //TODO: use file with calculated properties
+		IFile dstFile = dataFolder.getFile(new Path("datafile.sdf"));
+		try {
+			InputStream stream = new BufferedInputStream(new FileInputStream(tempFile));
+			if (dstFile.exists()) {
+				dstFile.setContents(stream, true, true, monitor);
+			} else {
+				dstFile.create(stream, true, monitor);
+			}
+			stream.close();
+
+		} catch (IOException e) {
+		}
+        
         super.execute(project, model, monitor);
     }
 
     
+	private String preprocessDataFile(String datafile) throws IOException {
+
+		//SDF reader
+		BufferedReader br = new BufferedReader(new FileReader(new File(datafile)));
+		IteratingMDLReader reader = new IteratingMDLReader(br, NoNotificationChemObjectBuilder.getInstance());
+
+		//Temp file writer
+		File tempFile = File.createTempFile("ds-data-", ".sdf");
+		BufferedOutputStream outsream = new BufferedOutputStream(new FileOutputStream(tempFile));
+		SDFWriter writer = new SDFWriter(outsream);
+
+		//Initialize calculators
+		Fingerprinter fingerprinter = new Fingerprinter(1024);
+		
+
+		while (reader.hasNext()){
+			IMolecule mol = (IMolecule) reader.next();
+
+			//Maybe detect aromaticity and atom types?
+			try {
+				CDKHueckelAromaticityDetector.detectAromaticity(mol);
+				AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+			} catch (CDKException e1) {
+				e1.printStackTrace();
+				continue;
+			}
+
+			//FINGERPRINT
+			try {
+				BitSet fp = fingerprinter.getFingerprint(mol);
+				mol.setProperty("cdk.fingerprint", fp);
+			} catch (CDKException e) {
+				e.printStackTrace();
+			}
+			
+			//MOL SIGNATURE
+			MoleculeSignature ms = new MoleculeSignature(mol);
+			mol.setProperty("molecule.signature", ms.toCanonicalSignatureString(mol.getAtomCount()));
+
+			//Write the new molecule to temp file
+			try {
+				writer.write(mol);
+			} catch (CDKException e) {
+				e.printStackTrace();
+			}
+			
+		}
+
+		//Finish up
+		writer.close();
+		reader.close();
+		
+		return tempFile.getAbsolutePath();
+	}
 	/**
 	 * Validate options given a template option
 	 */
@@ -463,10 +589,12 @@ public class DSTemplate extends OptionTemplateSection {
 		}
 		super.validateOptions(source);
 	}
-	public void getSelectedModels() {
-		// TODO Auto-generated method stub
-		
-	}
+	
+	/*
+	 * ===============================
+	 * BELOW ARE FOR OUR TEMPLATE ONLY
+	 * ===============================
+	 */
 
 	public List<Integer> getPagesForSelectedOptions() {
 		
@@ -496,6 +624,7 @@ public class DSTemplate extends OptionTemplateSection {
 	public List<String> getAvailProps() {
 		return availProps;
 	}
+	
 	public void setAvailProps(List<String> availProps) {
 		this.availProps = availProps;
 
