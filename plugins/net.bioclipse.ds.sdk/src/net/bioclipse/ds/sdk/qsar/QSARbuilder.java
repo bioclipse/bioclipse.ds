@@ -67,6 +67,86 @@ public class QSARbuilder {
 	
 	
 	
+	public boolean isClassification() {
+		return isClassification;
+	}
+
+
+	public void setClassification(boolean isClassification) {
+		this.isClassification = isClassification;
+	}
+
+
+	public int getNrFolds() {
+		return nrFolds;
+	}
+
+
+	public void setNrFolds(int nrFolds) {
+		this.nrFolds = nrFolds;
+	}
+
+
+	public int getcStart() {
+		return cStart;
+	}
+
+
+	public void setcStart(int cStart) {
+		this.cStart = cStart;
+	}
+
+
+	public int getcEnd() {
+		return cEnd;
+	}
+
+
+	public void setcEnd(int cEnd) {
+		this.cEnd = cEnd;
+	}
+
+
+	public int getGammaStart() {
+		return gammaStart;
+	}
+
+
+	public void setGammaStart(int gammaStart) {
+		this.gammaStart = gammaStart;
+	}
+
+
+	public int getGammaEnd() {
+		return gammaEnd;
+	}
+
+
+	public void setGammaEnd(int gammaEnd) {
+		this.gammaEnd = gammaEnd;
+	}
+
+
+	public int getStartHeight() {
+		return startHeight;
+	}
+
+
+	public void setStartHeight(int startHeight) {
+		this.startHeight = startHeight;
+	}
+
+
+	public int getEndHeight() {
+		return endHeight;
+	}
+
+
+	public void setEndHeight(int endHeight) {
+		this.endHeight = endHeight;
+	}
+
+
 	public QSARbuilder(boolean isClassification) {
 		super();
 		this.isClassification = isClassification;
