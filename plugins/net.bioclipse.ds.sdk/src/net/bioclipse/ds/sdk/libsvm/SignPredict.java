@@ -1,4 +1,4 @@
-package net.bioclipse.ds.sdk.qsar;
+package net.bioclipse.ds.sdk.libsvm;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import net.bioclipse.ds.sdk.cdk.CDKHelper;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IMolecule;
@@ -29,8 +31,8 @@ public class SignPredict {
 	private static String svmModelName = "/tmp/svmModel.txt";
 	private static String signaturesFilename = "/tmp/signatures.txt";
 	//private static String pathToSDFile = "/home/lc/molsWithAct.sdf";
-	//private static String pathToSDFile = "/home/lc/bursi_nosalts_molsign.sdf";
-	private static String pathToSDFile = "/Users/ola/Downloads/chang.sdf";
+	private static String pathToSDFile = "/Users/ola/repos/bioclipse.ds/plugins/net.bioclipse.ds.ames/data/bursi_nosalts_molsign.sdf";
+//	private static String pathToSDFile = "/Users/ola/Downloads/chang.sdf";
 
 	public static void main(String[] args) throws IOException, CDKException {
 		// Predict and create other info related to a prediction.
@@ -70,7 +72,7 @@ public class SignPredict {
 			Map<String, Integer> moleculeSignaturesHeight = new HashMap<String, Integer>(); //Contains the height for a specific signature.
 			Map<String, Integer> moleculeSignaturesAtomNr = new HashMap<String, Integer>(); //Contains the atomNr for a specific signature.
 			for (int height = startHeight; height <= endHeight; height++){
-				List<String> signs = SignTools.calculateSignatures(mol, height);
+				List<String> signs = CDKHelper.calculateSignatures(mol, height);
 				Iterator<String> signsIter = signs.iterator();
 				while (signsIter.hasNext()){
 					String currentSignature = signsIter.next();

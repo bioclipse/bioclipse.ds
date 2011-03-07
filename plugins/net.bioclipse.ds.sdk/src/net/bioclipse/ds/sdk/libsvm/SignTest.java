@@ -1,4 +1,4 @@
-package net.bioclipse.ds.sdk.qsar;
+package net.bioclipse.ds.sdk.libsvm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,6 +18,8 @@ import libsvm.svm_model;
 import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
+
+import net.bioclipse.ds.sdk.cdk.CDKHelper;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -130,7 +132,7 @@ public class SignTest {
 				// Create the signatures for a molecule and add them to the signatures map
 				Map<String, Double> moleculeSignatures = new HashMap<String, Double>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer. libsvm wants a double.
 				for (int height = startHeight; height <= endHeight; height++){
-					List<String> signs = SignTools.calculateSignatures(mol, height);
+					List<String> signs = CDKHelper.calculateSignatures(mol, height);
 					Iterator<String> signsIter = signs.iterator();
 					while (signsIter.hasNext()){
 						String currentSignature = signsIter.next();

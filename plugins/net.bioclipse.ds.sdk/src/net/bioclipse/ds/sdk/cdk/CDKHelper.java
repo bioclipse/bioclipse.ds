@@ -11,10 +11,14 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.signature.AtomSignature;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class CDKHelper {
 	
@@ -102,5 +106,22 @@ public class CDKHelper {
 		return props;
 	}
 
+	
+	public static List<String> calculateSignatures(IAtomContainer mol, int height) throws CDKException{
+
+		CDKHueckelAromaticityDetector.detectAromaticity(mol);
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+
+		List<String> ret = new ArrayList<String>();
+		
+		for (int i=0; i<mol.getAtomCount(); i++){
+			AtomSignature as = new AtomSignature(i, height, mol);
+			ret.add(as.toCanonicalString());
+		}
+		
+		return ret;
+		
+	}
+	
 
 }
