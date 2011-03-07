@@ -480,10 +480,10 @@ public class DSTemplate extends OptionTemplateSection {
 			element.setAttribute("endpoint", getStringOption(KEY_NEW_ENDPOINT_ID));
 			element.setAttribute("id", getStringOption(KEY_NEW_ENDPOINT_ID) + ".qsar.sign.libsvm");
 			element.setAttribute("name", getStringOption(KEY_NEW_ENDPOINT_NAME) + " Signature Significance");
+			element.setAttribute("class", "net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction");
 			
+			//Regression model has extra parameters
 			if (getOptionByName(QSAR_MODEL_TYPE).getValue().equals("Regression model")){
-				//Regression	
-				element.setAttribute("class", "net.bioclipse.ds.libsvm.SignaturesRegressionTest");
 				
 				IPluginElement child3 = factory.createElement(element);
 				child3.setName("parameter");
@@ -496,15 +496,12 @@ public class DSTemplate extends OptionTemplateSection {
 				child4.setAttribute("name", "highPercentile");
 				child4.setAttribute("value", "" + 1.4);
 				element.add(child4);
-
 				
-			}else{
-				//Classification 2 classes
-				element.setAttribute("class", "net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest");
 			}
 			
 			extension.add(element);
 
+			
 			//Parameters
 			IPluginElement child = factory.createElement(element);
 			child.setName("resource");
