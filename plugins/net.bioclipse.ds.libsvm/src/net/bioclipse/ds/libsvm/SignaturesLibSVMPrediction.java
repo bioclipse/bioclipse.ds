@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.interfaces.IAtom;
 
-public class SignaturesLibSVMPrediction extends SignaturesLibSVMTest{
+public class SignaturesLibSVMPrediction extends SignaturesLibSVMBase{
 
     //The logger of the class
     private static final Logger logger = Logger.getLogger(SignaturesLibSVMPrediction.class);
@@ -41,7 +41,11 @@ public class SignaturesLibSVMPrediction extends SignaturesLibSVMTest{
     @Override
     public List<String> getRequiredParameters() {
         List<String> ret=super.getRequiredParameters();
-        ret.add( HIGH_PERCENTILE );
+		if (svmModel.param.svm_type == 0) // This is a classification model.
+			return ret;
+
+		//Else regression, we need these parameters
+		ret.add( HIGH_PERCENTILE );
         ret.add( LOW_PERCENTILE );
         return ret;
     }
@@ -50,6 +54,9 @@ public class SignaturesLibSVMPrediction extends SignaturesLibSVMTest{
     public void initialize(IProgressMonitor monitor) throws DSException {
     	super.initialize(monitor);
 
+		if (svmModel.param.svm_type == 0) // This is a classification model.
+			return;
+		
     	highPercentile=Double.parseDouble( getParameters().get( HIGH_PERCENTILE ));
     	lowPercentile=Double.parseDouble( getParameters().get( LOW_PERCENTILE ));
 

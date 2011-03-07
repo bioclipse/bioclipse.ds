@@ -37,10 +37,10 @@ import net.bioclipse.ds.model.IDSTest;
  * @author Ola Spjuth
  *
  */
-public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDSTest{
+public abstract class SignaturesLibSVMBase extends AbstractDSTest implements IDSTest{
     
     //The logger of the class
-    private static final Logger logger = Logger.getLogger(SignaturesLibSVMTest.class);
+    private static final Logger logger = Logger.getLogger(SignaturesLibSVMBase.class);
 
     //The model file
     private String model_file;
@@ -64,7 +64,7 @@ public abstract class SignaturesLibSVMTest extends AbstractDSTest implements IDS
     /**
      * Default constructor
      */
-    public SignaturesLibSVMTest(){
+    public SignaturesLibSVMBase(){
         super();
     }
 
