@@ -98,6 +98,8 @@ public class DSTemplate extends OptionTemplateSection {
 	public static final String QSAR_LIBSVM_GRID = "GRID SEARCH";
 	public static final String QSAR_SIGNATURE_HEIGHT = "signagure_height";
 	private static final String QSAR_MODEL_TYPE = "QSAR_MODEL_TYPE";
+    private final String SIGNATURES_MIN_HEIGHT="signatures.min.height";
+    private final String SIGNATURES_MAX_HEIGHT="signatures.max.height";
 
 	
 	//Generated files
@@ -107,6 +109,7 @@ public class DSTemplate extends OptionTemplateSection {
 	private static final String FILE_DATA_QSAR_SIGNATURES = "qsar.signatures";
 	private static final String FILE_DATA_QSAR_MODEL = "qsar.model";
 
+	
 	//And things we need here..
 	private Wizard wizard;
 	private Map<Integer,List<TemplateOption>> optionControl;
@@ -248,9 +251,19 @@ public class DSTemplate extends OptionTemplateSection {
 		ComboChoiceOption p5o2 = new ComboChoiceOption(this, QSAR_MODEL_TYPE, "Model type", qsarType);
 		registerOption(p5o2, "Classification", 4);
 		p5o2.setRequired(false);
+		
+		TemplateOption p5o3 = addOption(SIGNATURES_MIN_HEIGHT, "Signatures min height", null, 4);
+		p5o3.setRequired(false);
+		validateOptions(p5o3);
+		TemplateOption p5o4 = addOption(SIGNATURES_MAX_HEIGHT, "Signatures max height", null, 4);
+		p5o4.setRequired(false);
+		validateOptions(p5o4);
 
 		List<TemplateOption> page5Templates= new ArrayList<TemplateOption>();
+		page5Templates.add(p5o);
 		page5Templates.add(p5o2);
+		page5Templates.add(p5o3);
+		page5Templates.add(p5o4);
 		optionControl.put(4,page5Templates);
 
 		
@@ -473,15 +486,15 @@ public class DSTemplate extends OptionTemplateSection {
 				element.setAttribute("class", "net.bioclipse.ds.libsvm.SignaturesRegressionTest");
 				
 				IPluginElement child3 = factory.createElement(element);
-				child3.setName("resource");
+				child3.setName("parameter");
 				child3.setAttribute("name", "lowPercentile");
-				child3.setAttribute("path", "" + 0);
+				child3.setAttribute("value", "" + 0);
 				element.add(child3);
 
 				IPluginElement child4 = factory.createElement(element);
-				child4.setName("resource");
+				child4.setName("parameter");
 				child4.setAttribute("name", "highPercentile");
-				child4.setAttribute("path", "" + 1.4);
+				child4.setAttribute("value", "" + 1.4);
 				element.add(child4);
 
 				
@@ -504,6 +517,18 @@ public class DSTemplate extends OptionTemplateSection {
 			child2.setAttribute("name", "signaturesfile");
 			child2.setAttribute("path", "models/" + FILE_DATA_QSAR_SIGNATURES);
 			element.add(child2);
+
+			IPluginElement child5 = factory.createElement(element);
+			child5.setName("parameter");
+			child5.setAttribute("name", SIGNATURES_MIN_HEIGHT);
+			child5.setAttribute("value", getStringOption(SIGNATURES_MIN_HEIGHT));
+			element.add(child5);
+
+			IPluginElement child6 = factory.createElement(element);
+			child6.setName("parameter");
+			child6.setAttribute("name", SIGNATURES_MAX_HEIGHT);
+			child6.setAttribute("value", getStringOption(SIGNATURES_MAX_HEIGHT));
+			element.add(child6);
 
 		}
 	
@@ -641,6 +666,8 @@ public class DSTemplate extends OptionTemplateSection {
 			}
 			
 			QSARbuilder builder = new QSARbuilder(classification);
+			builder.setStartHeight(Integer.parseInt(SIGNATURES_MIN_HEIGHT));
+			builder.setEndHeight(Integer.parseInt(SIGNATURES_MAX_HEIGHT));
 			
 			System.out.println(getOptionByName(QSAR_MODEL_TYPE).getValue());
 			System.out.println(getStringOption("qsar grid: "+ QSAR_LIBSVM_GRID));		//problem
