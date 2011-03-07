@@ -84,12 +84,20 @@
      <test
             id="ames.signatures"
             name="Ames Signature Significance"
-            class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
+            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
             endpoint="net.bioclipse.ds.mutagenicity"
             propertycalculator="Ames Signature Significance">
-            <resource name="modelfile" path="models/ames.model" />
-            <resource name="rangefile" path="models/ames.range" />
-            <resource name="signaturesfile" path="models/ames.signatures" />
+            <resource name="modelfile" path="models/ames.model2" />
+            <resource name="signaturesfile" path="models/ames.signatures2" />
+         <parameter
+               name="signatures.min.height"
+               value="0">
+         </parameter>
+         <parameter
+               name="signatures.max.height"
+               value="3">
+         </parameter>
+            
       </test>
 
       <test
