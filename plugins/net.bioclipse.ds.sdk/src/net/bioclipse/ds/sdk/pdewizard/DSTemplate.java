@@ -15,18 +15,15 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,17 +31,18 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import net.bioclipse.ds.sdk.Activator;
+import net.bioclipse.ds.sdk.qsar.QSARbuilder;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.pde.core.plugin.IPluginBase;
@@ -55,14 +53,10 @@ import org.eclipse.pde.core.plugin.IPluginModelFactory;
 import org.eclipse.pde.core.plugin.IPluginReference;
 import org.eclipse.pde.internal.core.bundle.BundlePluginBase;
 import org.eclipse.pde.internal.core.ibundle.IBundle;
-import org.eclipse.pde.internal.core.text.plugin.PluginNode;
-import org.eclipse.pde.internal.core.text.plugin.PluginObjectNode;
-import org.eclipse.pde.internal.ui.IHelpContextIds;
 import org.eclipse.pde.ui.IFieldData;
 import org.eclipse.pde.ui.templates.ComboChoiceOption;
 import org.eclipse.pde.ui.templates.OptionTemplateSection;
 import org.eclipse.pde.ui.templates.PluginReference;
-import org.eclipse.pde.ui.templates.StringOption;
 import org.eclipse.pde.ui.templates.TemplateOption;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.exception.CDKException;
@@ -72,7 +66,6 @@ import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.signature.MoleculeSignature;
-import org.openscience.cdk.smsd.algorithm.vflib.interfaces.IState;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class DSTemplate extends OptionTemplateSection {
@@ -101,10 +94,18 @@ public class DSTemplate extends OptionTemplateSection {
 
 	//qsar
 	private static final String QSAR_RESPONSE_PROPERTY_NAME = "responseProperty";
+	private static final String QSAR_RESPONSE_POSITIVE_VALUE = "qsar_positive_value";
 	public static final String QSAR_LIBSVM_GRID = "GRID SEARCH";
 	public static final String QSAR_SIGNATURE_HEIGHT = "signagure_height";
 	private static final String QSAR_MODEL_TYPE = "QSAR_MODEL_TYPE";
 
+	
+	//Generated files
+	private static final String FILE_DATA_EXACT_MATCH = "data.exact.sdf";
+	private static final String FILE_DATA_NEAREST_MATCH = "data.nearest.sdf";
+
+	private static final String FILE_DATA_QSAR_SIGNATURES = "qsar.signatures";
+	private static final String FILE_DATA_QSAR_MODEL = "qsar.model";
 
 	//And things we need here..
 	private Wizard wizard;
@@ -363,7 +364,7 @@ public class DSTemplate extends OptionTemplateSection {
 			IPluginElement child = factory.createElement(element);
 			child.setName("resource");
 			child.setAttribute("name", "file");
-			child.setAttribute("path", getOptionByName(KEY_DATA_FILE).getValue().toString());
+			child.setAttribute("path", "data/" + FILE_DATA_EXACT_MATCH);
 			element.add(child);
 
 			child = factory.createElement(element);
@@ -389,15 +390,123 @@ public class DSTemplate extends OptionTemplateSection {
 		}
 
 		if (selectedModels.contains("net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP")){
-			 //TODO
+			
+			element = factory.createElement(extension);
+			element.setName("test");
+			element.setAttribute("endpoint", getStringOption(KEY_NEW_ENDPOINT_ID));
+			element.setAttribute("id", getStringOption(KEY_NEW_ENDPOINT_ID) + ".nearest.signatures");
+			element.setAttribute("name", getStringOption(KEY_NEW_ENDPOINT_NAME) + " nearest matches");
+			element.setAttribute("class", "net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP");
+			extension.add(element);
+
+			
+			IPluginElement child = factory.createElement(element);
+			child.setName("resource");
+			child.setAttribute("name", "file");
+			child.setAttribute("path", "data/" + FILE_DATA_NEAREST_MATCH);
+			element.add(child);
+
+			child = factory.createElement(element);
+			child.setName("parameter");
+			child.setAttribute("name", "responseProperty");
+			if (getOptionByName(NEAREST_RESPONSE_PROPERTY_NAME)!=null)
+				if (getOptionByName(NEAREST_RESPONSE_PROPERTY_NAME).getValue()!=null)
+					child.setAttribute("value", getOptionByName(NEAREST_RESPONSE_PROPERTY_NAME).getValue().toString());
+			element.add(child);
+
+			child = factory.createElement(element);
+			child.setName("parameter");
+			child.setAttribute("name", "positiveValue");
+			child.setAttribute("value", getStringOption(NEAREST_RESPONSE_POSITIVE_VALUE));
+			element.add(child);
+
+			child = factory.createElement(element);
+			child.setName("parameter");
+			child.setAttribute("name", "negativeValue");
+			child.setAttribute("value", getStringOption(NEAREST_RESPONSE_NEGATIVE_VALUE));
+			element.add(child);
+
+			child = factory.createElement(element);
+			child.setName("parameter");
+			child.setAttribute("name", "distance.tanimoto");
+			child.setAttribute("value", getStringOption(NEAREST_TANIMOTO));
+			element.add(child);
+
 		}
 
 		if (selectedModels.contains("qsar.libsvm.atomsign")){
-			 //TODO
+			
+//			 <test
+//	            id="ames.signatures"
+//	            name="Ames Signature Significance"
+//	            class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
+//	            endpoint="net.bioclipse.ds.mutagenicity"
+//	            propertycalculator="Ames Signature Significance">
+//	            <resource name="modelfile" path="models/ames.model" />
+//	            <resource name="rangefile" path="models/ames.range" />
+//	            <resource name="signaturesfile" path="models/ames.signatures" />
+//	      </test>
+			
+//		     <test
+//	            id="cpdb.signatures"
+//	            name="CPDB Signature Significance"
+//	            class="net.bioclipse.ds.libsvm.SignaturesRegressionTest"
+//	            endpoint="net.bioclipse.ds.carcinogenicity"
+//	            informative="true"
+//	            propertycalculator="CPDB Signature Significance">
+//	            <resource name="modelfile" path="models/cpdb.train.model" />
+//	            <resource name="rangefile" path="models/cpdb.train.range" />
+//	            <resource name="signaturesfile" path="models/cpdb.train.signatures" />
+//	            <parameter name="lowPercentile" value="0.1" />
+//	            <parameter name="highPercentile" value="1.365681" />
+//	      </test>
+
+
+			element = factory.createElement(extension);
+			element.setName("test");
+			element.setAttribute("endpoint", getStringOption(KEY_NEW_ENDPOINT_ID));
+			element.setAttribute("id", getStringOption(KEY_NEW_ENDPOINT_ID) + ".qsar.sign.libsvm");
+			element.setAttribute("name", getStringOption(KEY_NEW_ENDPOINT_NAME) + " Signature Significance");
+			
+			if (getOptionByName(QSAR_MODEL_TYPE).getValue().equals("Regression model")){
+				//Regression	
+				element.setAttribute("class", "net.bioclipse.ds.libsvm.SignaturesRegressionTest");
+				
+				IPluginElement child3 = factory.createElement(element);
+				child3.setName("resource");
+				child3.setAttribute("name", "lowPercentile");
+				child3.setAttribute("path", "" + 0);
+				element.add(child3);
+
+				IPluginElement child4 = factory.createElement(element);
+				child4.setName("resource");
+				child4.setAttribute("name", "highPercentile");
+				child4.setAttribute("path", "" + 1.4);
+				element.add(child4);
+
+				
+			}else{
+				//Classification 2 classes
+				element.setAttribute("class", "net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest");
+			}
+			
+			extension.add(element);
+
+			//Parameters
+			IPluginElement child = factory.createElement(element);
+			child.setName("resource");
+			child.setAttribute("name", "modelfile");
+			child.setAttribute("path", "models/" + FILE_DATA_QSAR_MODEL);
+			element.add(child);
+
+			IPluginElement child2 = factory.createElement(element);
+			child2.setName("resource");
+			child2.setAttribute("name", "signaturesfile");
+			child2.setAttribute("path", "models/" + FILE_DATA_QSAR_SIGNATURES);
+			element.add(child2);
+
 		}
-		 
-
-
+	
 
 		plugin.add(extension);
 
@@ -421,8 +530,7 @@ public class DSTemplate extends OptionTemplateSection {
 	public String[] getNewFiles() {
 		
 		//TODO: UPDATE HERE SO BUILD.PROPS is ok
-		
-		return new String[0];
+		return new String[]{"data/","models/"};
 	}
 
 	public String getUsedExtensionPoint() {
@@ -469,6 +577,9 @@ public class DSTemplate extends OptionTemplateSection {
     @Override
     public void execute(IProject project, IPluginModelBase model,
             IProgressMonitor monitor) throws CoreException {
+    	
+    	monitor.beginTask("Preparing data and models...", 50);
+    	
         IPluginBase pluginBase = model.createPluginBase();
         if (pluginBase instanceof BundlePluginBase) {
             IBundle bundle = ((BundlePluginBase) pluginBase).getBundle();
@@ -487,28 +598,119 @@ public class DSTemplate extends OptionTemplateSection {
         if (!modelsFolder.exists())
         	modelsFolder.create(true, false, monitor);
 
+        //==============
         //PROCESS FILES
         //==============
-        
-        //Start with datafile
-        String dfile="/Users/ola/data/molsWithAct.sdf";
+		@SuppressWarnings("unchecked")
+		List<String> selectedModels=(List<String>) getOptionByName(KEY_SELECTED_MODELS).getValue();
 
-        //Preprocess file according to the models
+		String datafile = getOptionByName(KEY_DATA_FILE).getValue().toString();
+
+		if (selectedModels.contains("net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures")){
+			
+			monitor.subTask("Setting up data file for exact matches.");
+			
+			//Create the data file and fill with preprocessed contents
+			IFile dstFile = dataFolder.getFile(new Path(FILE_DATA_EXACT_MATCH));
+			preProcessAndCopyFile(datafile, dstFile, new SubProgressMonitor(monitor, 5));
+		}
+
+		if (selectedModels.contains("net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP")){
+			
+			monitor.subTask("Setting up data file for nearest matches.");
+
+			//Create the data file and fill with preprocessed contents
+			IFile dstFile = dataFolder.getFile(new Path(FILE_DATA_NEAREST_MATCH));
+			preProcessAndCopyFile(datafile, dstFile, new SubProgressMonitor(monitor, 5));
+		}
+
+		
+
+		//If we have a qsar model...
+		if (selectedModels.contains("qsar.libsvm.atomsign")){
+
+			boolean classification=true;
+			String qsar_resp = (String) getOptionByName(QSAR_RESPONSE_PROPERTY_NAME).getValue();
+			String qsar_resp_val = null;
+			
+			
+			if (getOptionByName(QSAR_MODEL_TYPE).getValue().equals("Regression model")){
+				classification=false;
+			}else{
+				qsar_resp_val = (String) getOptionByName(QSAR_RESPONSE_POSITIVE_VALUE).getValue();
+			}
+			
+			QSARbuilder builder = new QSARbuilder(classification);
+			
+			System.out.println(getOptionByName(QSAR_MODEL_TYPE).getValue());
+			System.out.println(getStringOption("qsar grid: "+ QSAR_LIBSVM_GRID));		//problem
+			System.out.println(getStringOption("qsar height: "+ QSAR_SIGNATURE_HEIGHT));		//problem
+
+
+			try {
+				
+				File tmpModelFile = File.createTempFile("qsar.model_", ".txt");
+				File tmpSignFile = File.createTempFile("qsar.sign_", ".txt");
+				
+				builder.buildModel(datafile, qsar_resp, qsar_resp_val,
+						tmpSignFile.getAbsolutePath(), 
+						tmpModelFile.getAbsolutePath(), 
+						new SubProgressMonitor(monitor, 40));
+				
+				//Copy files in place
+				IFile dstFile = modelsFolder.getFile(new Path(FILE_DATA_QSAR_MODEL));
+				copyFileToProject(tmpModelFile,dstFile, new SubProgressMonitor(monitor, 1));
+				dstFile = modelsFolder.getFile(new Path(FILE_DATA_QSAR_SIGNATURES));
+				copyFileToProject(tmpSignFile,dstFile, new SubProgressMonitor(monitor, 1));
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+
+		}
+
+		monitor.done();
+        
+        super.execute(project, model, monitor);
+    }
+
+    
+	private void copyFileToProject(File sourceFile, IFile dstFile, IProgressMonitor monitor) throws CoreException {
+		
+		try {
+			InputStream stream = new BufferedInputStream(new FileInputStream(sourceFile));
+			if (dstFile.exists()) {
+				dstFile.setContents(stream, true, true, monitor);
+			} else {
+				dstFile.create(stream, true, monitor);
+			}
+			stream.close();
+
+		} catch (IOException e) {
+		}
+
+	}
+	private void preProcessAndCopyFile(String sdfile, IFile dstFile, IProgressMonitor monitor) throws CoreException {
+		
+        //Start with datafile
+//        String dfile="/Users/ola/data/molsWithAct.sdf";
+
+        //Preprocess file according to the models, now always do FP and molsign
         String tempFile="";
-        //TODO add FP, signatures, InChI etc
         try {
-			tempFile=preprocessDataFile(dfile);
+			tempFile=preprocessDataFile(sdfile);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 
-					"unable to process data file: " + dfile + " - Exception: " + e1.getMessage()));
+					"unable to process data file: " + sdfile + " - Exception: " + e1.getMessage()));
 		}
         
 
         //Copy the file into the project as datafile
-        //TODO: update name
-        //TODO: use file with calculated properties
-		IFile dstFile = dataFolder.getFile(new Path("datafile.sdf"));
+        //TODO: update name?
 		try {
 			InputStream stream = new BufferedInputStream(new FileInputStream(tempFile));
 			if (dstFile.exists()) {
@@ -520,11 +722,12 @@ public class DSTemplate extends OptionTemplateSection {
 
 		} catch (IOException e) {
 		}
-        
-        super.execute(project, model, monitor);
-    }
-
-    
+		
+		monitor.done();
+		
+	}
+	
+	
 	private String preprocessDataFile(String datafile) throws IOException {
 
 		//SDF reader
