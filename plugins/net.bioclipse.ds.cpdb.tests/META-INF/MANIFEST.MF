@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CPDB Tests
 Bundle-SymbolicName: net.bioclipse.ds.cpdb.tests
-Bundle-Version: 0.1.1
+Bundle-Version: 2.5.0.qualifier
 Bundle-Activator: net.bioclipse.ds.cpdb.tests.Activator
 Bundle-Vendor: Ola Spjuth
 Require-Bundle: org.eclipse.ui,
