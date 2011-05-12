@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rm:rmap xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
   <rm:locator pattern="^net\.bioclipse\.ds\.product$" searchPathRef="ds.product"/>
+  <rm:locator pattern="^net\.bioclipse\.libsvm$" searchPathRef="ds"/>
   <rm:locator pattern="^net\.bioclipse\.ds.*" searchPathRef="ds"/>
   <rm:redirect href="http://pele.farmbio.uu.se/buckminster-web/hudson/bioclipse.core.rmap"/>
   <rm:searchPath name="ds">
