@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rm:rmap xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
   <rm:locator pattern="^net\.bioclipse\.ds\.product$" searchPathRef="ds.product"/>
+  <rm:locator pattern="^net\.bioclipse\.platform_feature$" searchPathRef="core.repo"/>
   <rm:locator pattern="^net\.bioclipse\.libsvm$" searchPathRef="ds"/>
   <rm:locator pattern="^net\.bioclipse\.ds.*" searchPathRef="ds"/>
   <rm:redirect href="http://pele.farmbio.uu.se/buckminster-web/hudson/bioclipse.core.rmap"/>
@@ -15,6 +16,24 @@
         <bc:propertyRef key="workspace.root"/>
         <bc:propertyRef key="buckminster.component"/>
       </rm:uri>
+    </rm:provider>
+  </rm:searchPath>
+  <rm:searchPath name="core.repo">
+    <rm:provider readerType="git" source="true" mutable="true" componentTypes="eclipse.feature">
+        <rm:uri format="{0}/git/core.repo,features/{1}">
+            <bc:propertyRef key="workspace.root"/>
+            <bc:propertyRef key="buckminster.component"/>
+        </rm:uri>
+        <rm:property key="git.remote.uri" value="git://github.com/bioclipse/bioclipse.core.git"/>
+        <rm:property key="git.remote.name" value="upstream"/>
+    </rm:provider>
+    <rm:provider readerType="git" source="true" mutable="true" componentTypes="osgi.bundle">
+        <rm:uri format="{0}/git/core.repo,plugins/{1}">
+            <bc:propertyRef key="workspace.root"/>
+            <bc:propertyRef key="buckminster.component"/>
+        </rm:uri>
+        <rm:property key="git.remote.uri" value="git://github.com/bioclipse/bioclipse.core.git"/>
+        <rm:property key="git.remote.name" value="upstream"/>
     </rm:provider>
   </rm:searchPath>
 </rm:rmap>
