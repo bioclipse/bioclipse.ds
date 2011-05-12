@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rm:rmap xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
+  <rm:locator pattern="^net\.bioclipse\.ds\.product$" searchPathRef="ds.product"/>
   <rm:locator pattern="^net\.bioclipse\.ds.*" searchPathRef="ds"/>
   <rm:redirect href="http://pele.farmbio.uu.se/buckminster-web/hudson/bioclipse.core.rmap"/>
   <rm:searchPath name="ds">
     <rm:provider componentTypes="eclipse.feature,osgi.bundle" readerType="p2">
       <rm:uri format="http://pele.farmbio.uu.se/jenkins/job/Bioclipse.ds/lastSuccessfulBuild/artifact/buckminster.output/net.bioclipse.ds_feature_2.5.0-eclipse.feature/site.p2/"/>
     </rm:provider>
+  </rm:searchPath>
+  <rm:searchPath name="ds.product">
     <rm:provider componentTypes="eclipse.feature" readerType="local">
       <rm:uri format="file:{0}/{1}">
         <bc:propertyRef key="workspace.root"/>
