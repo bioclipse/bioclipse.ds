@@ -64,7 +64,7 @@
         <test
             id="ahr.signatures"
             name="AHR Signature Significance"
-            class="net.bioclipse.ds.libsvm.Signatures2ClassesPredictionTest"
+            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
             propertycalculator="AHR Signature Significance"
             endpoint="net.bioclipse.ds.ahr">
             <resource name="modelfile" path="models/ahr.train.model" />
