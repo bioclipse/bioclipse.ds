@@ -54,56 +54,15 @@
      <!--test
             id="cpdb.signatures"
             name="CPDB Signature Significance"
-            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
+            class="net.bioclipse.ds.libsvm.SignaturesRegressionTest"
             endpoint="net.bioclipse.ds.carcinogenicity"
             informative="true"
             propertycalculator="CPDB Signature Significance">
-
-            <resource name="file" path="data/cpdb_inchi.sdf" />
-            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
-
-            <resource name="trainFile" path="models/cpdb.train.model" />
-
-            <resource name="modelfile" path="models/cpdb.svm.model" />
-            <resource name="signaturesfile" path="models/cpdb.signatures.txt" />
+            <resource name="modelfile" path="models/cpdb.train.model" />
+            <resource name="rangefile" path="models/cpdb.train.range" />
+            <resource name="signaturesfile" path="models/cpdb.train.signatures" />
             <parameter name="lowPercentile" value="0.1" />
-        <parameter name="highPercentile" value="1.365681" />
-                     <parameter
-               name="signatures.min.height"
-               value="0">
-         </parameter>
-         <parameter
-               name="signatures.max.height"
-               value="3">
-         </parameter>
-            
-      </test-->
-      
-     <test
-            id="cpdb.signatures.regression"
-            name="CPDB regression"
-            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
-            endpoint="net.bioclipse.ds.carcinogenicity"
-            informative="true"
-            propertycalculator="CPDB Signature Significance">
-
-            <resource name="file" path="data/cpdbForRegression.sdf" />
-            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
-            <resource name="trainFile" path="models/cpdb.regression.train" />
-
-            <resource name="modelfile" path="models/cpdb.regression.model" />
-            <resource name="signaturesfile" path="models/cpdb.regression.signatures" />
-            <parameter name="lowPercentile" value="-0.05" />
-        <parameter name="highPercentile" value="0.05" />
-                     <parameter
-               name="signatures.min.height"
-               value="0">
-         </parameter>
-         <parameter
-               name="signatures.max.height"
-               value="3">
-         </parameter>
-            
+            <parameter name="highPercentile" value="1.365681" />
       </test>
       
       
