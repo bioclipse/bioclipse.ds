@@ -775,8 +775,9 @@ public class SignModel {
 
 	/**
 	 * Generate script, dividing up grid search over multiple model builders
+	 * @throws IOException 
 	 */
-	private void generateParallelExecution() {
+	private void generateParallelExecution() throws IOException {
 
 		// Compute dimensions. Number of models: c * gamma
 		int cSize=(cEnd-cStart+1);
@@ -893,29 +894,51 @@ public class SignModel {
 
 	}
 
-	private void generateSLURMfiles(List<List<Point>> jobs) {
+	private void generateSLURMfiles(List<List<Point>> jobs) throws IOException {
 
-		System.out.println("Generating parameter calls:");
+		System.out.println("Generating parameter calls for " + jobs.size() + " files");
 		
-		String params="-i " + pathToSDFile;
-		params=params+" -o " + outputDir+"$NO$";
-		params=params+" -ap \'" + activityProperty+"\'";
-		params=params+" -c " + classification;
-		if (positiveActivity!=null && !positiveActivity.isEmpty())
-			params=params+" -pa " + positiveActivity;
 
-		params=params+" -c " + classification;
-		params=params+" -optarray " + "$ARRAY$";
-		System.out.println(params);
-
+		int cnt=1;
 		for (List<Point> job : jobs){
+			
+			String template="#! /bin/bash -l\n\n" +
+			"#SBATCH -J sign-" + cnt + "\n" +
+			"#SBATCH -A p2010009\n" +
+			"#SBATCH -p core -n 1\n" +
+			"#SBATCH -t 3:00:00\n\n" +
+			"module load java\n\n";
 
+			String sdfile_without_path=pathToSDFile.substring(pathToSDFile.lastIndexOf("/")+1);
+			
+			String params="java -jar signmodel-withdeps.jar";
+			
+			params=params + " -i " + sdfile_without_path;
+			params=params + " -ap \'" + activityProperty+"\'";
+			params=params + " -c " + classification;
+			if (positiveActivity!=null && !positiveActivity.isEmpty())
+				params=params+" -pa " + positiveActivity;
+
+			params=params+" -o output"+cnt;
+			params=params+" -optimize array";
+			
+			params=params+" -optarray ";
 			String points="";
 			for (Point p : job){
 				points=points+p.x+","+p.y+";";
 			}
+			String filename=outputDir+"/runjob" + cnt + ".sh";
+			
+			BufferedWriter optwriter = new BufferedWriter(new FileWriter(filename));
+			optwriter.write(template);
+			optwriter.write(params + "\'" + points.substring(0,points.length()-1)+"\'\n");
+			optwriter.close();
+			
+//			System.out.println(params + points.substring(0,points.length()-1));
+			
+			System.out.println("Wrote file " + filename);
 
-			System.out.println(points.substring(0,points.length()-1));
+			cnt++;
 		}
 
 	}
