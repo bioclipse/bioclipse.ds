@@ -61,6 +61,7 @@ public class SignModel {
 	private double gammafinal;
 	private double cfinal;
 	private boolean echoTime=true;
+	private String jarpath;
 
 	
 
@@ -94,6 +95,14 @@ public class SignModel {
 	
 	public int getNrFolds() {
 		return nrFolds;
+	}
+
+	public String getJarpath() {
+		return jarpath;
+	}
+
+	public void setJarpath(String jarpath) {
+		this.jarpath = jarpath;
 	}
 
 	public boolean isEchoTime() {
@@ -283,7 +292,7 @@ public class SignModel {
 
 	}
 
-	public OptimizationResult doOptimizationAndBuildModel() throws IOException{
+	public OptimizationResult BuildModel() throws IOException{
 		assertParameters();
 
 		//Assert input file
@@ -752,6 +761,9 @@ public class SignModel {
 			if ("-time".equals(arg)) {
 				echoTime= Boolean.parseBoolean(it.next());
 			}
+			if ("-jarpath".equals(arg)) {
+				jarpath= it.next();
+			}
 
 
 		}
@@ -804,6 +816,7 @@ public class SignModel {
 		System.out.println("-c                       if classification, set to 'true' (DEFAULT='false')");
 		System.out.println("-pa                      positive activity (REQUIRED if classification model)");
 		System.out.println("-time                    should elapsed time be echoed (DEFAULT='true')");
+		System.out.println("-jarpath                 path to SignModel executable (for running in paralell)");
 
 		//For optimization
 		System.out.println("-optimize                perform optimization [grid | array | none] (DEFAULT='grid')");
@@ -855,7 +868,7 @@ public class SignModel {
 			stopwatch.start();
 
 			//Optimize and build
-			modelBuilder.doOptimizationAndBuildModel();
+			modelBuilder.BuildModel();
 
 			stopwatch.stop();
 			if (modelBuilder.echoTime)
@@ -966,9 +979,15 @@ public class SignModel {
 			
 //			String sdfile_without_path=pathToSDFile.substring(pathToSDFile.lastIndexOf("/")+1);
 			
-			String params="java -jar signmodel-withdeps.jar";
 			
 //			params=params + " -i " + sdfile_without_path;
+			if (jarpath==null)
+				jarpath="";
+			if (!(jarpath.endsWith(File.separator)))
+				jarpath=jarpath+File.separator;
+
+			String params="java -jar " + jarpath + "signmodel-withdeps.jar";
+
 			params=params + " -i " + pathToSDFile;
 			params=params + " -ap \'" + activityProperty+"\'";
 			params=params + " -c " + classification;
