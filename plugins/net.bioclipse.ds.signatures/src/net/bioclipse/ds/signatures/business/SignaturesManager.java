@@ -29,7 +29,7 @@ import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.ds.signatures.CDKMoleculeSignatureAdapter;
-import net.bioclipse.ds.signatures.chiral.CalculateChiralSignatures;
+//import net.bioclipse.ds.signatures.chiral.CalculateChiralSignatures;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -195,7 +195,7 @@ public class SignaturesManager implements IBioclipseManager {
 
     }
     
-    
+/*    
     public AtomSignatures generateChiral(IMolecule molecule, int height) 
     throws BioclipseException, CDKException{
     	
@@ -212,5 +212,6 @@ public class SignaturesManager implements IBioclipseManager {
     	
     	return new AtomSignatures(signatures);
     }
-
+*/
+    
 }

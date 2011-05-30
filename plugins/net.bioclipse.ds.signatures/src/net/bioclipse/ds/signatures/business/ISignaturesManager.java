@@ -130,17 +130,17 @@ public interface ISignaturesManager extends IBioclipseManager {
     public String generateMoleculeSignature( IMolecule mol );
 
     
-    /**
-     * Generate Chiral Signatures from a molecule.
-     * @param mol IMolecule
-     * @return list of Signatures
-     * @exception BioclipseException
-     */
-    @Recorded
-    @PublishedMethod( 
-        params = "IMolecule molecule, int height",
-        methodSummary ="Generate Chiral Signatures with a given height for a molecule")
-    public AtomSignatures generateChiral(IMolecule molecule, int height) 
-    throws BioclipseException;
+//    /**
+//     * Generate Chiral Signatures from a molecule.
+//     * @param mol IMolecule
+//     * @return list of Signatures
+//     * @exception BioclipseException
+//     */
+//    @Recorded
+//    @PublishedMethod( 
+//        params = "IMolecule molecule, int height",
+//        methodSummary ="Generate Chiral Signatures with a given height for a molecule")
+//    public AtomSignatures generateChiral(IMolecule molecule, int height) 
+//    throws BioclipseException;
 
 }

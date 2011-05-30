@@ -31,10 +31,12 @@ public class ChiralSignaturesDatasetFromSDF extends AbstractSignaturesDatasetFro
 	throws BioclipseException {
 	
 		ISignaturesManager signatures=net.bioclipse.ds.signatures.Activator.getDefault().getJavaSignaturesManager();
-
-		AtomSignatures molsigns = signatures.generateChiral(mol, 1);
-
-		return molsigns;
+		
+		//FIXME: REPLACE when chiral is included
+		return null;
+		
+//		AtomSignatures molsigns = signatures.generateChiral(mol, 1);
+//		return molsigns;
 	}
 
 	@Override

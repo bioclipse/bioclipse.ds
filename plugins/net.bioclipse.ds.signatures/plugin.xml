@@ -112,7 +112,7 @@
 			   		</iterate>
 		        </visibleWhen>
 	       </command>
-	       		    <command
+	       <!--command
 		    	commandId="net.bioclipse.ds.signatures.handlers.ChiralSignaturesDatasetFromSDF"
 		    	label="Calculate Chiral Signatures Dataset">
 		        
@@ -132,7 +132,7 @@
 			      		</adapt>
 			   		</iterate>
 		        </visibleWhen>
-	       </command>
+	       </command-->
 		</menuContribution>		    
 
  </extension>   

@@ -26,7 +26,6 @@ Require-Bundle: org.eclipse.ui,
  org.openscience.cdk.interfaces,
  org.openscience.cdk.nonotify,
  org.openscience.cdk.standard,
- net.bioclipse.ds.signatures.chiral;bundle-version="0.1.1",
  net.bioclipse.balloon.business;bundle-version="2.4.0",
  net.bioclipse.ui.business;bundle-version="2.4.0"
 Import-Package: org.apache.log4j
