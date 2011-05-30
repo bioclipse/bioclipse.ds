@@ -43,6 +43,9 @@ import org.openscience.cdk.interfaces.IAtom;
 
 public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 
+	private static final boolean SKIP_CONFIDENCE_AND_NEIGHBOURS = true;
+
+	
     //The logger of the class
     private static final Logger logger = Logger.getLogger(SignaturesLibSVMPrediction.class);
 
@@ -51,6 +54,7 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 	private static final String TRAIN_PARAMETER = "trainFile";
 
 	private static final int NR_NEAR_NEIGHBOURS = 3;
+
 	
 	protected double lowPercentile;
 	protected double highPercentile;
@@ -468,6 +472,8 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 	        
 		}
 		
+		if (SKIP_CONFIDENCE_AND_NEIGHBOURS)
+			return results;
 		
 		// Retrieve near neighbors.
 		List<Tuple> nearMolecules = retrieveNearestNeighbors(svmModel,nearNeighborData,moleculeArray,NR_NEAR_NEIGHBOURS);
