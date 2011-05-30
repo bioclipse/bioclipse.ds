@@ -58,7 +58,11 @@ public class SignModel {
 	private List<Point> arrayOptimizationParams;
 	private boolean trainFinal = true;
 	private String parallelType;
+	private double gammafinal;
+	private double cfinal;
+	private boolean echoTime=true;
 
+	
 
 	//Path to SDF
 	//private static String pathToSDFile = "molsWithAct.sdf";
@@ -87,9 +91,172 @@ public class SignModel {
 
 
 
-	public SignModel(String pathToSDFile, String activityProperty, String outputDir, boolean classification, String positiveActivity) {
-		this();
+	
+	public int getNrFolds() {
+		return nrFolds;
+	}
+
+	public boolean isEchoTime() {
+		return echoTime;
+	}
+
+	public void setEchoTime(boolean echoTime) {
+		this.echoTime = echoTime;
+	}
+
+	public double getGammafinal() {
+		return gammafinal;
+	}
+
+	public void setGammafinal(double gammafinal) {
+		this.gammafinal = gammafinal;
+	}
+
+	public double getCfinal() {
+		return cfinal;
+	}
+
+	public void setCfinal(double cfinal) {
+		this.cfinal = cfinal;
+	}
+
+	public void setNrFolds(int nrFolds) {
+		this.nrFolds = nrFolds;
+	}
+
+	public int getStartHeight() {
+		return startHeight;
+	}
+
+	public void setStartHeight(int startHeight) {
+		this.startHeight = startHeight;
+	}
+
+	public int getEndHeight() {
+		return endHeight;
+	}
+
+	public void setEndHeight(int endHeight) {
+		this.endHeight = endHeight;
+	}
+
+	public int getcStart() {
+		return cStart;
+	}
+
+	public void setcStart(int cStart) {
+		this.cStart = cStart;
+	}
+
+	public int getcEnd() {
+		return cEnd;
+	}
+
+	public void setcEnd(int cEnd) {
+		this.cEnd = cEnd;
+	}
+
+	public int getGammaStart() {
+		return gammaStart;
+	}
+
+	public void setGammaStart(int gammaStart) {
+		this.gammaStart = gammaStart;
+	}
+
+	public int getGammaEnd() {
+		return gammaEnd;
+	}
+
+	public void setGammaEnd(int gammaEnd) {
+		this.gammaEnd = gammaEnd;
+	}
+
+	public int getNoParallelJobs() {
+		return noParallelJobs;
+	}
+
+	public void setNoParallelJobs(int noParallelJobs) {
+		this.noParallelJobs = noParallelJobs;
+	}
+
+	public String getPositiveActivity() {
+		return positiveActivity;
+	}
+
+	public void setPositiveActivity(String positiveActivity) {
 		this.positiveActivity = positiveActivity;
+	}
+
+	public String getPathToSDFile() {
+		return pathToSDFile;
+	}
+
+	public void setPathToSDFile(String pathToSDFile) {
+		this.pathToSDFile = pathToSDFile;
+	}
+
+	public boolean isClassification() {
+		return classification;
+	}
+
+	public void setClassification(boolean classification) {
+		this.classification = classification;
+	}
+
+	public String getActivityProperty() {
+		return activityProperty;
+	}
+
+	public void setActivityProperty(String activityProperty) {
+		this.activityProperty = activityProperty;
+	}
+
+	public String getOutputDir() {
+		return outputDir;
+	}
+
+	public void setOutputDir(String outputDir) {
+		this.outputDir = outputDir;
+	}
+
+	public String getOptimizationType() {
+		return optimizationType;
+	}
+
+	public void setOptimizationType(String optimizationType) {
+		this.optimizationType = optimizationType;
+	}
+
+	public List<Point> getArrayOptimizationParams() {
+		return arrayOptimizationParams;
+	}
+
+	public void setArrayOptimizationParams(List<Point> arrayOptimizationParams) {
+		this.arrayOptimizationParams = arrayOptimizationParams;
+	}
+
+	public boolean isTrainFinal() {
+		return trainFinal;
+	}
+
+	public void setTrainFinal(boolean trainFinal) {
+		this.trainFinal = trainFinal;
+	}
+
+	public String getParallelType() {
+		return parallelType;
+	}
+
+	public void setParallelType(String parallelType) {
+		this.parallelType = parallelType;
+	}
+
+
+
+	public SignModel(String pathToSDFile, String activityProperty, String outputDir, boolean classification) {
+		this();
+//		this.positiveActivity = positiveActivity;
 		this.pathToSDFile = pathToSDFile;
 		this.activityProperty = activityProperty;
 		this.classification = classification;
@@ -304,8 +471,17 @@ public class SignModel {
 				optRes=gridSearchNew(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
 			else if ("array".equals(optimizationType))
 				optRes=arraySearchNew(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
+			else if ("none".equals(optimizationType)){
+				
+				if (gammafinal<0)
+					throw new IllegalArgumentException("gammafinal not set or negative");
+				if (cfinal<0)
+					throw new IllegalArgumentException("gammafinal not set or negative");
+				
+				optRes=new OptimizationResult(Double.NaN, gammafinal, cfinal);
+			}
 			else
-				throw new IllegalArgumentException("optimization type neither 'grid' nor 'array'");
+				throw new IllegalArgumentException("optimization type neither 'grid', 'array', nor 'none'");
 
 			if (trainFinal){
 				System.out.println("Training final model on parameters: c=" + optRes.getOptimumC() + "; gamma=" + optRes.getOptimumGamma() + "...");
@@ -450,89 +626,6 @@ public class SignModel {
 	}
 
 
-	//	@Deprecated
-	//	private void gridSearch(svm_parameter svmParameter, svm_problem svmProblem, double optimumValue, double optimumC, double optimumGamma){
-	//		for (int cExponent = cStart; cExponent <= cEnd; cExponent++){
-	//			for (int gammaExponent = gammaStart; gammaExponent <= gammaEnd; gammaExponent++){
-	//				double[] target = new double[svmProblem.l];
-	//				svmParameter.C = Math.pow(10.0,(cExponent/2));
-	//				svmParameter.gamma = Math.pow(2.0, -gammaExponent);
-	//				System.out.println("Predicting for c:gamma = " + svmParameter.C+" : " + svmParameter.gamma);
-	//				svm.svm_cross_validation(svmProblem, svmParameter, nrFolds, target);
-	//
-	//				if (classification){
-	//					int nrCorrect = 0;
-	//					for (int i = 0; i < svmProblem.l; i++){
-	//						if (target[i] == svmProblem.y[i]){ // Can you compare doubles like this in java or should it be abs(target-y) < eps?
-	//							nrCorrect = nrCorrect + 1;
-	//						}
-	//					}
-	//					double objectiveValue = 1.0*nrCorrect/svmProblem.l;
-	//					if (objectiveValue > optimumValue){
-	//						optimumValue = objectiveValue;
-	//						optimumC = svmParameter.C;
-	//						optimumGamma = svmParameter.gamma;
-	//					}
-	//					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-	//				}
-	//				else{
-	//					double sumSquareError = 0.0;
-	//					for (int i = 0; i < svmProblem.l; i++){
-	//						sumSquareError = sumSquareError + (target[i] - svmProblem.y[i]) * (target[i] - svmProblem.y[i]);
-	//					}
-	//					double objectiveValue = sumSquareError/svmProblem.l;
-	//					if (objectiveValue < optimumValue){
-	//						optimumValue = objectiveValue;
-	//						optimumC = svmParameter.C;
-	//						optimumGamma = svmParameter.gamma;
-	//					}
-	//					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-	//				}
-	//			}
-	//		}
-	//		System.out.println("Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma);
-	//
-	//	}
-
-	/**
-	 * Do a CV for a given c and gamma, return objectiveValue
-	 */
-	private double doSVM_CV(svm_parameter svmParameter, svm_problem svmProblem, int cExponent, int gammaExponent){
-
-		double[] target = new double[svmProblem.l];
-		svmParameter.C = Math.pow(10.0,(cExponent/2));
-		svmParameter.gamma = Math.pow(2.0, -gammaExponent);
-		System.out.println(svmParameter.C+" : " + svmParameter.gamma);
-		svm.svm_cross_validation(svmProblem, svmParameter, nrFolds, target);
-
-		double objectiveValue;
-
-		if (classification){
-			int nrCorrect = 0;
-			for (int i = 0; i < svmProblem.l; i++){
-				if (target[i] == svmProblem.y[i]){ // Can you compare doubles like this in java or should it be abs(target-y) < eps?
-					nrCorrect = nrCorrect + 1;
-				}
-			}
-			objectiveValue = 1.0*nrCorrect/svmProblem.l;
-			//			System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-		}
-		else{
-			double sumSquareError = 0.0;
-			for (int i = 0; i < svmProblem.l; i++){
-				sumSquareError = sumSquareError + (target[i] - svmProblem.y[i]) * (target[i] - svmProblem.y[i]);
-			}
-			objectiveValue = sumSquareError/svmProblem.l;
-			//			System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-		}
-
-		//		System.out.println("Objective value:C:gamma: "+objectiveValue+":"+cExponent+":"+gammaExponent);
-		return objectiveValue;
-	}
-
-
-
-
 	private void outputSettings() {
 
 		System.out.println("Path to SDF: " + pathToSDFile);
@@ -649,6 +742,17 @@ public class SignModel {
 				parallelType= it.next();
 			}
 
+			if ("-cfinal".equals(arg)) {
+				cfinal= Double.parseDouble(it.next());
+			}
+			if ("-gammafinal".equals(arg)) {
+				gammafinal= Double.parseDouble(it.next());
+			}
+
+			if ("-time".equals(arg)) {
+				echoTime= Boolean.parseBoolean(it.next());
+			}
+
 
 		}
 
@@ -699,15 +803,19 @@ public class SignModel {
 		System.out.println("-ap                      activity property in SDFile [REQUIRED]");
 		System.out.println("-c                       if classification, set to 'true' (DEFAULT='false')");
 		System.out.println("-pa                      positive activity (REQUIRED if classification model)");
+		System.out.println("-time                    should elapsed time be echoed (DEFAULT='true')");
 
 		//For optimization
-		System.out.println("-optimize                perform optimization [grid | array | false] (DEFAULT='grid')");
+		System.out.println("-optimize                perform optimization [grid | array | none] (DEFAULT='grid')");
 		System.out.println("-cstart     	         cStart for grid-search (DEFAULT=0)");
 		System.out.println("-cend                    cEnd for grid-search (DEFAULT=5)");
 		System.out.println("-gammastart              gammaStart for grid-search (DEFAULT=3)");
 		System.out.println("-gammaend                gammaEnd for grid-search (DEFAULT=10)");
 		System.out.println("-optarray                array of c,gamma combinations for array search (e.g. 4,6;4,7;4,8)");
+
 		System.out.println("-trainfinal              if model on all data should be built and saved (DEFAULT='true')");
+		System.out.println("-cfinal                  final c for model building");
+		System.out.println("-gammafinal              final gamma for model building");
 
 		//For model building
 		System.out.println("-hstart                  signature start height (DEFAULT=0)");
@@ -750,7 +858,8 @@ public class SignModel {
 			modelBuilder.doOptimizationAndBuildModel();
 
 			stopwatch.stop();
-			System.out.println("Model building finsihed. Elapsed time: " + stopwatch.toString());
+			if (modelBuilder.echoTime)
+				System.out.println("Model building finsihed. Elapsed time: " + stopwatch.toString());
 
 		}catch (IllegalArgumentException e){
 			System.err.println("Error: " + e.getMessage());
@@ -779,6 +888,22 @@ public class SignModel {
 	 */
 	private void generateParallelExecution() throws IOException {
 
+		List<List<Point>> jobs = setUpJobs();
+
+		if ("slurm".equals(parallelType))
+			generateSLURMfiles(jobs);
+		if ("shell".equals(parallelType))
+			generateShellCommands(jobs);
+		else if ("threads".equals(parallelType))
+			throw new UnsupportedOperationException("Parallel type THREADS not implemented");
+		else if ("cloud".equals(parallelType))
+			throw new UnsupportedOperationException("Parallel type CLOUD not implemented");
+		else
+			throw new UnsupportedOperationException("Unknown parallel type: " + parallelType);
+
+	}
+
+	public List<List<Point>> setUpJobs() {
 		// Compute dimensions. Number of models: c * gamma
 		int cSize=(cEnd-cStart+1);
 		int gammaSize=(gammaEnd-gammaStart + 1);
@@ -829,70 +954,53 @@ public class SignModel {
 			System.out.println("Job " + cnt + ": " + job.toString());
 			cnt++;
 		}
-
-		if ("slurm".equals(parallelType))
-			generateSLURMfiles(jobs);
-		else if ("threads".equals(parallelType))
-			runInThreads(jobs);
-		else if ("cloud".equals(parallelType))
-			throw new UnsupportedOperationException("Parallel type CLOUD not implemented");
-
+		return jobs;
 	}
 
-	private void runInThreads(List<List<Point>> jobs) {
-
-		final int cnt=1;
-		Map<Thread, Worker> workmap = new HashMap<Thread, Worker>();
-
-		for (final List<Point> job: jobs){
-			//Start a thread
-
-			Worker worker = new Worker(job){
-				@Override
-				public void run() {
-					pathToSDFile.toString();
-					SignModel mbuilder = new SignModel(pathToSDFile, activityProperty, outputDir, classification, positiveActivity);
-					mbuilder.optimizationType="array";
-					mbuilder.arrayOptimizationParams=job;
-					mbuilder.outputDir=outputDir+cnt;
-					mbuilder.nrFolds=nrFolds;
-
-					try {
-						//Set result
-						setOptres(mbuilder.doOptimizationAndBuildModel());
-
-					} catch (IOException e) {
-						e.printStackTrace();
-						return;
-					}
-				}
-			};
-
-			Thread thread = new Thread(worker, "job");
-			thread.start();
-			workmap.put(thread, worker);
-		}
+	public List<String> generateShellCommands(List<List<Point>> jobs) {
 		
-		System.out.println("Waiting for threads to finish...");
+		List<String> commands = new ArrayList<String>();
+		
+		int cnt=1;
+		for (List<Point> job : jobs){
+			
+//			String sdfile_without_path=pathToSDFile.substring(pathToSDFile.lastIndexOf("/")+1);
+			
+			String params="java -jar signmodel-withdeps.jar";
+			
+//			params=params + " -i " + sdfile_without_path;
+			params=params + " -i " + pathToSDFile;
+			params=params + " -ap \'" + activityProperty+"\'";
+			params=params + " -c " + classification;
+			params=params + " -trainfinal false"; 
+			
+			if (positiveActivity!=null && !positiveActivity.isEmpty())
+				params=params+" -pa " + positiveActivity;
 
-		for (Thread th : workmap.keySet()){
-			try {
-				th.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			params=params+" -o output"+cnt;
+			params=params+" -optimize " + getOptimizationType();
+			params=params+" -time " + echoTime;
+			
+			params=params+" -optarray ";
+			String points="";
+			for (Point p : job){
+				points=points+p.x+","+p.y+";";
 			}
-		}	
 
-		System.out.println("All threads finished");
+			String cmd =  params + "\'" + points.substring(0,points.length()-1)+"\'\n";
+			System.out.print(cmd);
+			commands.add(cmd);
 
-		for (Thread th : workmap.keySet()){
-			Worker worker = workmap.get(th);
-			System.out.println("Thread " + th.getName() + " result = " + worker.getOptres().toString());
+			cnt++;
 		}
 
 		
-
+		return commands;
+		
+		
 	}
+
+
 
 	private void generateSLURMfiles(List<List<Point>> jobs) throws IOException {
 
