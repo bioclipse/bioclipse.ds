@@ -27,7 +27,7 @@ public class SignatureSignificanceCalculator extends BaseDSPropertyCalculator{
 
     @Override
     public String getTestID() {
-        return "cpdb.signatures";
+        return "cpdb.signatures.regression";
     }
     
 }
