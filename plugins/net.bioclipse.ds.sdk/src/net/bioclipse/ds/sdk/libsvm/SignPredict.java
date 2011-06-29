@@ -22,6 +22,14 @@ import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
 
+/**
+ * PLEASE NOTE: This class is deprecated and for standalone use, an integrated class 
+ * is available at net.bioclipse.ds.libsvm/SignaturesLibSVMPrediction.java
+ * 
+ * @author ola
+ *
+ */
+@Deprecated
 public class SignPredict {
 
 	/**

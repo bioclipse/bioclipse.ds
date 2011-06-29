@@ -1,7 +1,6 @@
 package net.bioclipse.ds.sdk.cdk;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,11 +12,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.signature.AtomSignature;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class CDKHelper {
@@ -106,11 +106,32 @@ public class CDKHelper {
 		return props;
 	}
 
-	
-	public static List<String> calculateSignatures(IAtomContainer mol, int height) throws CDKException{
+	public static IAtomContainer standardizeMolecule(IAtomContainer mol) throws CDKException{
+
+		 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+		 CDKHueckelAromaticityDetector.detectAromaticity(mol);
+
+		//Remove explicit hydrogens
+		for (int i=mol.getAtomCount()-1; i>=0; i--) {
+			IAtom atom = mol.getAtom(i);
+			if ("H".equals(atom.getSymbol())) {
+				mol.removeAtomAndConnectedElectronContainers(atom);
+			}
+		}
 
 		CDKHueckelAromaticityDetector.detectAromaticity(mol);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+
+		CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(mol.getBuilder());
+		hAdder.addImplicitHydrogens(mol);
+
+		return mol;
+
+	}
+	
+	public static List<String> calculateSignatures(IAtomContainer mol, int height) throws CDKException{
+
+		mol=standardizeMolecule(mol);
 
 		List<String> ret = new ArrayList<String>();
 		

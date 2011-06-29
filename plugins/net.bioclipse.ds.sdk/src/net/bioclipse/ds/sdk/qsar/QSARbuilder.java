@@ -234,15 +234,20 @@ public class QSARbuilder {
 							String positiveActivity, 
 							String signaturesFilename,	     //Filename to write 
 							String svmModelName,			//Filename to write
+							String trainFilename,			//Filename to write
 							IProgressMonitor monitor
-							) throws FileNotFoundException {
+							) throws IOException {
 
 		
 		System.out.println("Model building starting...");
 		monitor.beginTask("Building QSAR model", 100);
 
+		//Set up readers for molecules
 		BufferedReader br = new BufferedReader(new FileReader(new File(pathToSDFile)));
 		IteratingMDLReader reader = new IteratingMDLReader(br, NoNotificationChemObjectBuilder.getInstance());
+		
+		//We need to write the train file
+		BufferedWriter trainWriter = new BufferedWriter(new FileWriter(trainFilename));
 
 		try {
 			List<String> signatures = new ArrayList<String>(); // Contains signatures. We use the indexOf to retrieve the order of specific signatures in descriptor array.
@@ -286,7 +291,11 @@ public class QSARbuilder {
 						}
 					}
 				}
+				
 				// Add the values of the current molecule's signatures as svm data.
+				// Write the output as it reads in the sdf.
+				trainWriter.write(activity);
+
 				svm_node[] moleculeArray = new svm_node[moleculeSignatures.size()];
 				Iterator<String> signaturesIter = signatures.iterator();
 				int i = 0;
@@ -296,27 +305,32 @@ public class QSARbuilder {
 						moleculeArray[i] = new svm_node();
 						moleculeArray[i].index = signatures.indexOf(currentSignature)+1; // libsvm assumes that the index starts at one.
 						moleculeArray[i].value = (Double) moleculeSignatures.get(currentSignature);
+
+						// The train file output
+						trainWriter.write(" " + moleculeArray[i].index + ":" + moleculeArray[i].value);
+
 						i = i + 1;
 					}
 				}
+				trainWriter.newLine();
+
 				descriptorList.add(moleculeArray);
 				
 				//System.out.println("Molecule " + cnt + " (Activity=" + activity + "): " +  signs);
 				cnt++;
 			}
+
+			//Finished writing train file
+			trainWriter.close();
+			
 			// Write the signatures to a file, One per line.
-            try {
-				BufferedWriter signaturesWriter = new BufferedWriter(new FileWriter(signaturesFilename));
-				Iterator<String> signaturesIter = signatures.iterator();
-				while (signaturesIter.hasNext()){
-					signaturesWriter.write(signaturesIter.next());
-					signaturesWriter.newLine();
-				}
-				signaturesWriter.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			BufferedWriter signaturesWriter = new BufferedWriter(new FileWriter(signaturesFilename));
+			Iterator<String> signaturesIter = signatures.iterator();
+			while (signaturesIter.hasNext()){
+				signaturesWriter.write(signaturesIter.next());
+				signaturesWriter.newLine();
 			}
+			signaturesWriter.close();
 
 			
 			// Add values to the SVM problem.
@@ -374,7 +388,7 @@ public class QSARbuilder {
 	}
 
 	
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException {
 		
 		System.out.println("start");
 		
@@ -384,7 +398,8 @@ public class QSARbuilder {
 		builder.buildModel("/Users/ola/Downloads/chang.sdf", "BIO", 
 				null,
 				"/tmp/signatures.chang.txt", 
-				"/tmp/signatures.chang.txt", 
+				"/tmp/model.chang.txt", 
+				"/tmp/train.chang.txt", 
 				new ConsoleProgressMonitor());
 		
 		System.out.println("end");

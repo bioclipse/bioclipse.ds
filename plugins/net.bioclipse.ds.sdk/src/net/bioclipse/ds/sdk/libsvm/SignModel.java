@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,10 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.sound.midi.SysexMessage;
-import javax.vecmath.Tuple2d;
-import javax.vecmath.Vector2d;
 
 import libsvm.svm;
 import libsvm.svm_model;
@@ -31,7 +26,6 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
-import org.openscience.cdk.modeling.builder3d.ModelBuilder3D;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 

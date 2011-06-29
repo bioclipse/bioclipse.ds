@@ -31,8 +31,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import net.bioclipse.ds.sdk.Activator;
+import net.bioclipse.ds.sdk.cdk.CDKHelper;
 import net.bioclipse.ds.sdk.qsar.QSARbuilder;
 
+import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -61,14 +63,21 @@ import org.eclipse.pde.ui.templates.TemplateOption;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.fingerprint.Fingerprinter;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.signature.MoleculeSignature;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class DSTemplate extends OptionTemplateSection {
+
+	//SDF properties written, to be read by DS predictors
+	private static final Object CDK_FP_PROPERTY = "CDK Fingerprint";
+	private static final Object MOLECULAR_SIGNATURE_PROPERTY = "Molecular Signature";
 
 	//Endpoints
 	private static final String KEY_NEW_ENDPOINT_ID = "newEndpointID";
@@ -108,8 +117,8 @@ public class DSTemplate extends OptionTemplateSection {
 
 	private static final String FILE_DATA_QSAR_SIGNATURES = "qsar.signatures";
 	private static final String FILE_DATA_QSAR_MODEL = "qsar.model";
+	private static final String FILE_DATA_QSAR_TRAIN = "qsar.train";
 
-	
 	//And things we need here..
 	private Wizard wizard;
 	private Map<Integer,List<TemplateOption>> optionControl;
@@ -254,16 +263,27 @@ public class DSTemplate extends OptionTemplateSection {
 		
 		TemplateOption p5o3 = addOption(SIGNATURES_MIN_HEIGHT, "Signatures min height", null, 4);
 		p5o3.setRequired(false);
+		p5o3.setValue("1");
 		validateOptions(p5o3);
+
 		TemplateOption p5o4 = addOption(SIGNATURES_MAX_HEIGHT, "Signatures max height", null, 4);
 		p5o4.setRequired(false);
 		validateOptions(p5o4);
+		p5o4.setValue("3");
+
+		TemplateOption p5o5 = addOption(QSAR_RESPONSE_POSITIVE_VALUE, "Positive property value", null, 4);
+		p5o5.setRequired(false);
+		validateOptions(p5o5);
+		p5o5.setValue("mutagen");
+
+		
 
 		List<TemplateOption> page5Templates= new ArrayList<TemplateOption>();
 		page5Templates.add(p5o);
 		page5Templates.add(p5o2);
 		page5Templates.add(p5o3);
 		page5Templates.add(p5o4);
+		page5Templates.add(p5o5);
 		optionControl.put(4,page5Templates);
 
 		
@@ -501,9 +521,31 @@ public class DSTemplate extends OptionTemplateSection {
 			
 			extension.add(element);
 
-			
+
+
 			//Parameters
+
 			IPluginElement child = factory.createElement(element);
+			child.setName("resource");
+			child.setAttribute("name", "file");
+			child.setAttribute("path", "data/" + FILE_DATA_NEAREST_MATCH);
+			element.add(child);
+
+			child = factory.createElement(element);
+			child.setName("parameter");
+			child.setAttribute("name", "responseProperty");
+			if (getOptionByName(QSAR_RESPONSE_PROPERTY_NAME)!=null)
+				if (getOptionByName(QSAR_RESPONSE_PROPERTY_NAME).getValue()!=null)
+					child.setAttribute("value", getOptionByName(QSAR_RESPONSE_PROPERTY_NAME).getValue().toString());
+			element.add(child);
+
+			child = factory.createElement(element);
+			child.setName("parameter");
+			child.setAttribute("name", "positiveValue");
+			child.setAttribute("value", getStringOption(QSAR_RESPONSE_POSITIVE_VALUE));
+			element.add(child);
+			
+			child = factory.createElement(element);
 			child.setName("resource");
 			child.setAttribute("name", "modelfile");
 			child.setAttribute("path", "models/" + FILE_DATA_QSAR_MODEL);
@@ -515,6 +557,12 @@ public class DSTemplate extends OptionTemplateSection {
 			child2.setAttribute("path", "models/" + FILE_DATA_QSAR_SIGNATURES);
 			element.add(child2);
 
+			child2 = factory.createElement(element);
+			child2.setName("resource");
+			child2.setAttribute("name", "trainFile");
+			child2.setAttribute("path", "models/" + FILE_DATA_QSAR_TRAIN);
+			element.add(child2);
+			
 			IPluginElement child5 = factory.createElement(element);
 			child5.setName("parameter");
 			child5.setAttribute("name", SIGNATURES_MIN_HEIGHT);
@@ -630,7 +678,7 @@ public class DSTemplate extends OptionTemplateSection {
 
 		if (selectedModels.contains("net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures")){
 			
-			monitor.subTask("Setting up data file for exact matches.");
+			monitor.subTask("Setting up data file for exact matches");
 			
 			//Create the data file and fill with preprocessed contents
 			IFile dstFile = dataFolder.getFile(new Path(FILE_DATA_EXACT_MATCH));
@@ -639,7 +687,7 @@ public class DSTemplate extends OptionTemplateSection {
 
 		if (selectedModels.contains("net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP")){
 			
-			monitor.subTask("Setting up data file for nearest matches.");
+			monitor.subTask("Setting up data file for nearest matches");
 
 			//Create the data file and fill with preprocessed contents
 			IFile dstFile = dataFolder.getFile(new Path(FILE_DATA_NEAREST_MATCH));
@@ -650,6 +698,8 @@ public class DSTemplate extends OptionTemplateSection {
 
 		//If we have a qsar model...
 		if (selectedModels.contains("qsar.libsvm.atomsign")){
+
+			monitor.subTask("Building QSAR model");
 
 			boolean classification=true;
 			String qsar_resp = (String) getOptionByName(QSAR_RESPONSE_PROPERTY_NAME).getValue();
@@ -663,8 +713,9 @@ public class DSTemplate extends OptionTemplateSection {
 			}
 			
 			QSARbuilder builder = new QSARbuilder(classification);
-			builder.setStartHeight(Integer.parseInt(SIGNATURES_MIN_HEIGHT));
-			builder.setEndHeight(Integer.parseInt(SIGNATURES_MAX_HEIGHT));
+			builder.setStartHeight(Integer.parseInt((String)(getOptionByName(SIGNATURES_MIN_HEIGHT).getValue())));
+			builder.setEndHeight(Integer.parseInt((String)(getOptionByName(SIGNATURES_MAX_HEIGHT).getValue())));
+//			builder.setEndHeight(Integer.parseInt(SIGNATURES_MAX_HEIGHT));
 			
 			System.out.println(getOptionByName(QSAR_MODEL_TYPE).getValue());
 			System.out.println(getStringOption("qsar grid: "+ QSAR_LIBSVM_GRID));		//problem
@@ -675,17 +726,27 @@ public class DSTemplate extends OptionTemplateSection {
 				
 				File tmpModelFile = File.createTempFile("qsar.model_", ".txt");
 				File tmpSignFile = File.createTempFile("qsar.sign_", ".txt");
+				File tmpTrainFile = File.createTempFile("qsar.train_", ".txt");
 				
 				builder.buildModel(datafile, qsar_resp, qsar_resp_val,
 						tmpSignFile.getAbsolutePath(), 
 						tmpModelFile.getAbsolutePath(), 
+						tmpTrainFile.getAbsolutePath(), 
 						new SubProgressMonitor(monitor, 40));
 				
-				//Copy files in place
+				//Copy model files in place
 				IFile dstFile = modelsFolder.getFile(new Path(FILE_DATA_QSAR_MODEL));
-				copyFileToProject(tmpModelFile,dstFile, new SubProgressMonitor(monitor, 1));
+				copyFileToProject(tmpModelFile, dstFile, new SubProgressMonitor(monitor, 1));
 				dstFile = modelsFolder.getFile(new Path(FILE_DATA_QSAR_SIGNATURES));
-				copyFileToProject(tmpSignFile,dstFile, new SubProgressMonitor(monitor, 1));
+				copyFileToProject(tmpSignFile, dstFile, new SubProgressMonitor(monitor, 1));
+				dstFile = modelsFolder.getFile(new Path(FILE_DATA_QSAR_TRAIN));
+				copyFileToProject(tmpTrainFile, dstFile, new SubProgressMonitor(monitor, 1));
+				
+				//QSAR also needs the SDF file so it can be used to look up near neighbours for hits
+				dstFile = dataFolder.getFile(new Path(FILE_DATA_NEAREST_MATCH));
+				preProcessAndCopyFile(datafile, dstFile, new SubProgressMonitor(monitor, 5));
+				
+
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -770,10 +831,11 @@ public class DSTemplate extends OptionTemplateSection {
 		while (reader.hasNext()){
 			IMolecule mol = (IMolecule) reader.next();
 
-			//Maybe detect aromaticity and atom types?
+			//Preprocess molecule same as DS does
 			try {
-				CDKHueckelAromaticityDetector.detectAromaticity(mol);
-				AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+
+				mol = (IMolecule) CDKHelper.standardizeMolecule(mol);
+
 			} catch (CDKException e1) {
 				e1.printStackTrace();
 				continue;
@@ -782,14 +844,17 @@ public class DSTemplate extends OptionTemplateSection {
 			//FINGERPRINT
 			try {
 				BitSet fp = fingerprinter.getFingerprint(mol);
-				mol.setProperty("cdk.fingerprint", fp);
+				mol.setProperty(CDK_FP_PROPERTY, encodeFPBase64(fp));
 			} catch (CDKException e) {
 				e.printStackTrace();
 			}
 			
 			//MOL SIGNATURE
 			MoleculeSignature ms = new MoleculeSignature(mol);
-			mol.setProperty("molecule.signature", ms.toCanonicalSignatureString(mol.getAtomCount()));
+			mol.setProperty(MOLECULAR_SIGNATURE_PROPERTY, ms.toCanonicalString());
+			
+			debugMol(mol, ms.toCanonicalString());
+
 
 			//Write the new molecule to temp file
 			try {
@@ -806,6 +871,35 @@ public class DSTemplate extends OptionTemplateSection {
 		
 		return tempFile.getAbsolutePath();
 	}
+
+	private void debugMol(IMolecule mol, String canonicalString) {
+
+		System.out.println("mol with sign: " + canonicalString);
+		for (IAtom a : mol.atoms()){
+//			System.out.println(a);
+		}
+		
+	}
+	
+	
+	/**
+	 * This method duplicates the encoding in the CDKFingerPrintPropertyCalculator. 
+	 * This is required to read it back into 1024 bits.
+	 * @param value
+	 * @return
+	 */
+    public String encodeFPBase64( Object value ) {
+        if(value instanceof String) return (String)value;
+         BitSet val = (BitSet)value;
+         byte[] bytes = new byte[val.length()/8+1];
+         for(int i=0;i<val.length();i++) {
+             if(val.get( i )) {
+                 bytes[bytes.length-i/8-1] |= 1 <<(i%8);
+             }
+         }
+        return new String(new Base64().encode( bytes ));
+    }
+	
 	/**
 	 * Validate options given a template option
 	 */
