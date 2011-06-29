@@ -23,6 +23,8 @@ import net.bioclipse.ds.signatures.business.ISignaturesManager;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IMolecule;
 
 
 /**
@@ -48,7 +50,7 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
         ret.add(SIGNATURES_PROPERTY_KEY);
         return ret;    
     }
-
+    
     /**
      * InChI implementation for finding exact matches in an SDFModel
      */
@@ -65,6 +67,8 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
         String querySignature=null;
         try {
             querySignature = signatures.generateMoleculeSignature( cdkmol );
+            
+            
         } catch ( Exception e ) {
             logger.error( "Failed to calculate Signatures for mol: " + cdkmol);
             return returnError( "Error generating Signatures", e.getMessage() );

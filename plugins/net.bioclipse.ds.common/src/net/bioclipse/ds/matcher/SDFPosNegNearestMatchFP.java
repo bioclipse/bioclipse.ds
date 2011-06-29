@@ -121,11 +121,11 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
                 //Null check not required since verified in initialize()
 
                 if (dbFP==null){
-                    logger.warn( "Expected property: " + CDK_FP_PROPERTY_KEY + 
+                    logger.error( "Expected property: " + CDK_FP_PROPERTY_KEY + 
                                  " could not be read in SDFModel for " +
                                  "index: " + i);
                 }else if (dbFP.size()!=molFP.size()){
-                    logger.warn( "Index " + i + " in DB has FP size=" 
+                    logger.error( "Index " + i + " in DB has FP size=" 
                                  + dbFP.size() + 
                                  " but molecule searched for has FP size=" 
                                  + molFP.size());
