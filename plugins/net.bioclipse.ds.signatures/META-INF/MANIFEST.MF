@@ -8,11 +8,7 @@ Bundle-Vendor: The Bioclipse Team
 Export-Package: net.bioclipse.ds.signatures,
  net.bioclipse.ds.signatures.business,
  net.bioclipse.ds.signatures.handlers,
- net.bioclipse.ds.signatures.prop.calc,
- signature,
- signature.chemistry,
- signature.display,
- signature.simple
+ net.bioclipse.ds.signatures.prop.calc
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.bioclipse.core,
@@ -26,9 +22,10 @@ Require-Bundle: org.eclipse.ui,
  org.openscience.cdk.interfaces,
  org.openscience.cdk.nonotify,
  org.openscience.cdk.standard,
- net.bioclipse.balloon.business;bundle-version="2.4.0",
- net.bioclipse.ui.business;bundle-version="2.4.0"
+ net.bioclipse.balloon.business,
+ net.bioclipse.ui.business,
+ org.openscience.cdk.signature,
+ signatures;bundle-version="1.0.0"
 Import-Package: org.apache.log4j
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- jars/signatures-1.0-SNAPSHOT.jar
+Bundle-ClassPath: .
