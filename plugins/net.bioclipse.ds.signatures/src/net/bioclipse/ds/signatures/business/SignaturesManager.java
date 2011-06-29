@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010  Ola Spjuth <ola@bioclipse.net>
+ * Copyright (c) 2010-2011  Ola Spjuth <ola@bioclipse.net>
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,37 +10,29 @@
  ******************************************************************************/
 package net.bioclipse.ds.signatures.business;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.bioclipse.balloon.business.BalloonManager;
-import net.bioclipse.balloon.business.IBalloonManager;
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.PublishedMethod;
-import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.ds.signatures.CDKMoleculeSignatureAdapter;
-//import net.bioclipse.ds.signatures.chiral.CalculateChiralSignatures;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.signature.AtomSignature;
+import org.openscience.cdk.signature.MoleculeSignature;
 
-import signature.chemistry.Molecule;
-import signature.chemistry.MoleculeReader;
-import signature.chemistry.MoleculeSignature;
 
 /**
  * 
@@ -71,31 +63,20 @@ public class SignaturesManager implements IBioclipseManager {
         return generate( mol, SIGNATURES_DEFAULT_HEIGHT );
     }
 
-
     public AtomSignatures generate(IMolecule mol, int height) 
     throws BioclipseException{
 
     	//Adapt IMolecule to ICDKMolecule
     	ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
     	ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
-
-    	Molecule signmol = CDKMoleculeSignatureAdapter.convert(cdkmol.getAtomContainer());
+    	
 
     	List<String> signatureString=new ArrayList<String>();
 
-    	MoleculeSignature signature = new MoleculeSignature(signmol);
-    	for ( int atomNr = 0; atomNr < signmol.getAtomCount(); atomNr++){
-    		String gensign=signature.signatureStringForVertex(atomNr, height);
-    		if (gensign==null || gensign.isEmpty()){
-    			logger.error("Produced null or empty " +
-    					"signature for atom: " + atomNr 
-    					+ " in molecule: " + cdkmol);
-    			throw new BioclipseException("Produced null or empty " +
-    					"signature for atom: " + atomNr 
-    					+ " in molecule: " + cdkmol);
-    		}
-
-    		signatureString.add( gensign);
+    	//Create one signature per atom of height h
+    	for ( int atomNr = 0; atomNr < cdkmol.getAtomContainer().getAtomCount(); atomNr++){
+			AtomSignature gensign = new AtomSignature(atomNr, height, cdkmol.getAtomContainer());
+    		signatureString.add( gensign.toCanonicalString());
 //    		logger.debug("Sign for atom " + atomNr + ": " +gensign);
     	}
     	
@@ -110,7 +91,7 @@ public class SignaturesManager implements IBioclipseManager {
     	return new AtomSignatures(signatureString);
 
     }
-
+    
     /**
      * Generate Signatures for a list of molecules.
      * @param mols List of IMoleculs
@@ -188,12 +169,13 @@ public class SignaturesManager implements IBioclipseManager {
 					+ e.getMessage());
 		}
         
-    	Molecule signmol = CDKMoleculeSignatureAdapter.convert(cdkmol.getAtomContainer());
 
-        MoleculeSignature signature = new MoleculeSignature(signmol);
-        return signature.getMolecularSignature();
+        MoleculeSignature signature = new MoleculeSignature(cdkmol.getAtomContainer());
+        return signature.toCanonicalString();
 
     }
+    
+
     
 /*    
     public AtomSignatures generateChiral(IMolecule molecule, int height) 
