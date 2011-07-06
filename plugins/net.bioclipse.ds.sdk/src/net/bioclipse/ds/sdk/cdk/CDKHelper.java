@@ -108,8 +108,8 @@ public class CDKHelper {
 
 	public static IAtomContainer standardizeMolecule(IAtomContainer mol) throws CDKException{
 
-		 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-		 CDKHueckelAromaticityDetector.detectAromaticity(mol);
+//		 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+//		 CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
 		//Remove explicit hydrogens
 		for (int i=mol.getAtomCount()-1; i>=0; i--) {
