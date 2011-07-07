@@ -37,6 +37,7 @@ public class SignModel {
 	//Fields with default values
 	private int nrFolds = 5, startHeight = 0, endHeight = 3;
 	private int cStart = 0, cEnd = 5, gammaStart = 3, gammaEnd = 10;
+//	private int cStart = 2, cEnd = 3, gammaStart = 5, gammaEnd = 7; //FIXME: Remove line!
 	private int noParallelJobs=1;
 
 	//Fields without default values, set by constructor
@@ -356,6 +357,7 @@ public class SignModel {
 		// Parse SDF into an SVM matrix
 		// Also write a train-file of the descriptors in libsvm format
 		//======================
+		System.out.println("=== Parsing input file...");
 		try {
 			processInputFile(trainFile, molReader, signatures,
 					activityList, descriptorList);
@@ -397,9 +399,10 @@ public class SignModel {
 		//========================================
 		//== 1. Split dataset in training and test
 		//========================================
+		System.out.println("=== Setting up trainingset and testset...");
 		int datasetLength=descriptorList.size();
-		int trainingLength=(int) (datasetLength * TEST_SET_PART);
-		int testLength=datasetLength-trainingLength;
+		int testLength = (int) (datasetLength * TEST_SET_PART);
+		int trainingLength=datasetLength-testLength;
 		System.out.println("length of dataset: " + datasetLength);
 		System.out.println("length of trainingset: " + trainingLength);
 		System.out.println("length of testset: " + testLength);
@@ -436,9 +439,93 @@ public class SignModel {
 			System.exit(1);
 		}
 		
+		//====================================
+		// 2. DO GRID SEARCH ON TRAININGSET
+		//====================================
+		System.out.println("=== Starting grid search on trainingset...");
+		svm_problem svmProblem_train = new svm_problem();
+		svm_parameter svmParameter_train = new svm_parameter();
+		OptimizationResult optResTrain = setUpAndRunGridSearch(activityList_train,
+															   descriptorList_train, 
+															   svmProblem_train, 
+															   svmParameter_train);
+
+		//Train a model on the obtained parameter estimates
+		System.out.println("=== Training best model based on trainingset (C=" 
+				+ optResTrain.getOptimumC()
+				+ ", gamma=" + optResTrain.getOptimumGamma() + ", ObjectiveValue=" + optResTrain.getOptimumValue() + ")...");
+		svmParameter_train.C = optResTrain.getOptimumC();
+		svmParameter_train.gamma = optResTrain.getOptimumGamma();
+		svm_model svmModel_train = svm.svm_train(svmProblem_train, svmParameter_train);
+
+		//====================================
+		// 3. PREDICT TESTSET
+		//====================================
+		System.out.println("=== Predicting testset...");
+		//Predict all entries in the testset
+		int noCorrect=0;
+		for (int i=0; i< testLength; i++){
+			svm_node[] testArray = descriptorList_test.get(i);
+			double prediction = svm.svm_predict(svmModel_train, testArray);
+			if (prediction==activityList_test.get(i))
+				noCorrect++;
+		}
+		double externalAccuracy = 1.0*noCorrect/testLength;
+		System.out.println("=== External prediction accuracy: " + externalAccuracy);
+		
+		//====================================
+		// 4. DO GRID SEARCH ON COMPLETE DATASET
+		//====================================
+		System.out.println("=== Starting grid search on complete dataset...");
+		svm_problem svmProblem_complete = new svm_problem();
+		svm_parameter svmParameter_complete = new svm_parameter();
+		OptimizationResult optResComplete = setUpAndRunGridSearch(activityList_train,
+															   descriptorList_train, 
+															   svmProblem_complete, 
+															   svmParameter_complete);
+		
+		//======================
+		// TRAIN FINAL MODEL
+		//
+		// We use the obtained parameter estimates from GRID SEARCH on complete dataset 
+		// and train on the complete training set 
+		//======================
+		if (trainFinal){
+			System.out.println("=== Training FINAL model based on complete dataset (C=" 
+					+ optResComplete.getOptimumC()
+					+ ", gamma=" + optResComplete.getOptimumGamma() + ", ObjectiveValue=" + optResComplete.getOptimumValue() + ")...");
+
+			//We now have the optimum values, train a model for these parameters based on all data
+			svmParameter_complete.C = optResComplete.getOptimumC();
+			svmParameter_complete.gamma = optResComplete.getOptimumGamma();
+			svm_model svmModel_final = svm.svm_train(svmProblem_complete, svmParameter_complete);
+			try {
+				svm.svm_save_model(out_svmModelName , svmModel_final);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//Return the final optimization result. Note that accuracy is not returned for now.
+		System.out.println("++++++ SUMMARY ++++++");
+		System.out.println("Training set parameter estimates: " + optResTrain);
+		System.out.println("External prediction accuracy: " + externalAccuracy);
+		System.out.println("Dataset parameter estimates: " + optResTrain);
+		return optResTrain;
+	}
+
+
+	
+	private OptimizationResult setUpAndRunGridSearch(List<Double> activityList,
+			List<svm_node[]> descriptorList, svm_problem svmProblem, svm_parameter svmParameter) throws IOException {
+
+		//======================
+		// GRID SEARCH
+		// We estimate parameters by CV
+		//======================
 
 		// Add values to the SVM problem.
-		svm_problem svmProblem = new svm_problem();
 		svmProblem.l = descriptorList.size() - 1;
 		svmProblem.x = new svm_node[svmProblem.l][];
 		svmProblem.y = new double[svmProblem.l];
@@ -447,13 +534,8 @@ public class SignModel {
 			svmProblem.y[exampleNr] = activityList.get(exampleNr);
 		}
 
-		//======================
-		// GRID SEARCH
-		// We estimate parameters by CV
-		//======================
 		// Do the grid search to find the best set of gamma for the RBF kernel and C for the cost.
 		double optimumValue, optimumC = 1, optimumGamma = 0.01;
-		svm_parameter svmParameter = new svm_parameter();
 		svmParameter.kernel_type = svm_parameter.RBF;
 		svmParameter.cache_size = 1000.0; // Cache size for training in MB.
 		svmParameter.eps = 0.001;
@@ -488,26 +570,6 @@ public class SignModel {
 		else
 			throw new IllegalArgumentException("optimization type neither 'grid', 'array', nor 'none'");
 
-		//======================
-		// TRAIN FINAL MODEL
-		//
-		// We use the obtained parameter estimates and train on the complete training set 
-		//======================
-		if (trainFinal){
-			System.out.println("Training final model on parameters: c=" + optRes.getOptimumC() + "; gamma=" + optRes.getOptimumGamma() + "...");
-
-			//We now have the optimum values, train a model for these parameters based on all data
-			svmParameter.C = optRes.getOptimumC();
-			svmParameter.gamma = optRes.getOptimumGamma();
-			svm_model svmModel = new svm_model();
-			svmModel = svm.svm_train(svmProblem, svmParameter);
-			try {
-				svm.svm_save_model(out_svmModelName , svmModel);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}		
 		return optRes;
 	}
 
@@ -614,7 +676,11 @@ public class SignModel {
 		trainWriter.close();
 	}
 
-
+	/**
+	 * MUST BE MIGRATED TO NEW GRID SEARCH IMPLEMENTATION!! - FIXME
+	 * 
+	 */
+	@Deprecated
 	private OptimizationResult arraySearchNew(svm_parameter svmParameter, svm_problem svmProblem, double optimumValue, double optimumC, double optimumGamma) throws IOException{
 
 		BufferedWriter optwriter = new BufferedWriter(new FileWriter(out_optmimizationFilename));
