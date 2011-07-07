@@ -74,6 +74,12 @@ public class SignModel {
 	//	private static boolean classification = true;
 	//	private static String positiveActivity = "2"; 
 
+	//CPDB
+	//	private static String pathToSDFile = "cpdbForRegression.sdf";
+	//	private static String ACTIVITY_PROPERTY = "TD50_Rat_mmol";
+	//	private static boolean classification = false;
+
+	//OTHER?
 	//private static String pathToSDFile = "chang.sdf";
 	//private static String ACTIVITY_PROPERTY = "BIO";
 	//private static boolean classification = false;
@@ -424,6 +430,21 @@ public class SignModel {
 				cnt++;
 			}
 			trainWriter.close();
+			
+			//Do a sanity check for classification, we should at least have one active property
+			if (classification){
+				boolean isSane=false;
+				for (Double d : activityList){
+					if (d.doubleValue()==1.0)
+						isSane=true;
+				}
+				if (!isSane){
+					System.out.println("Classification is selected but no positive activity found as property. Misspelled?");
+					System.out.println("Aborted.");
+					System.exit(1);
+				}
+				
+			}
 
 			// Write the signatures to a file, One per line.
 			try {
@@ -463,7 +484,7 @@ public class SignModel {
 			}
 			else {
 				svmParameter.svm_type = svm_parameter.EPSILON_SVR;
-				optimumValue = 1000.0;
+				optimumValue = -1;
 			}
 
 			System.out.println("svm_check_parameter: " + svm.svm_check_parameter(svmProblem, svmParameter));
@@ -486,6 +507,9 @@ public class SignModel {
 			else
 				throw new IllegalArgumentException("optimization type neither 'grid', 'array', nor 'none'");
 
+			//======================
+			//Train the final model
+			//======================
 			if (trainFinal){
 				System.out.println("Training final model on parameters: c=" + optRes.getOptimumC() + "; gamma=" + optRes.getOptimumGamma() + "...");
 
@@ -580,36 +604,46 @@ public class SignModel {
 				System.out.println("Estimating SVM for c:gamma = " + svmParameter.C+" : " + svmParameter.gamma);
 				svm.svm_cross_validation(svmProblem, svmParameter, nrFolds, target);
 
+				double objectiveValue=0.0;
 				if (classification){
+
+					//For regression we calculate accuracy
 					int nrCorrect = 0;
 					for (int i = 0; i < svmProblem.l; i++){
 						if (target[i] == svmProblem.y[i]){ // Can you compare doubles like this in java or should it be abs(target-y) < eps?
 							nrCorrect = nrCorrect + 1;
 						}
 					}
-					double objectiveValue = 1.0*nrCorrect/svmProblem.l;
-					if (objectiveValue > optimumValue){
-						optimumValue = objectiveValue;
-						optimumC = svmParameter.C;
-						optimumGamma = svmParameter.gamma;
-					}
-					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-					optwriter.write("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma+"\n");
+					objectiveValue = 1.0*nrCorrect/svmProblem.l;
 				}
 				else{
-					double sumSquareError = 0.0;
+					
+					//For regression we calculate R^2
+					double meanTarget = 0.0;
+					double sumSquareTot = 0.0;
+					double sumSquareError =0.0;
+					for (int i = 0; i < svmProblem.l; i++){
+						meanTarget = meanTarget + target[i];
+					}
+					meanTarget = meanTarget/svmProblem.l;
+
 					for (int i = 0; i < svmProblem.l; i++){
 						sumSquareError = sumSquareError + (target[i] - svmProblem.y[i]) * (target[i] - svmProblem.y[i]);
+						sumSquareTot = sumSquareTot + (target[i]-meanTarget)*(target[i]-meanTarget);
 					}
-					double objectiveValue = sumSquareError/svmProblem.l;
-					if (objectiveValue < optimumValue){
-						optimumValue = objectiveValue;
-						optimumC = svmParameter.C;
-						optimumGamma = svmParameter.gamma;
-					}
-					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-					optwriter.write("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma+"\n");
+					objectiveValue = 1.0 - sumSquareError/sumSquareTot;
+
 				}
+				
+				//We seek the highest accuracy or highest R^2
+				if (objectiveValue > optimumValue){
+					optimumValue = objectiveValue;
+					optimumC = svmParameter.C;
+					optimumGamma = svmParameter.gamma;
+				}
+				System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
+				optwriter.write("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma+"\n");
+
 
 				//				double objectiveValue = doSVM_CV(svmParameter, svmProblem, cExponent, gammaExponent);
 				//				if (objectiveValue > optimumValue){
@@ -624,7 +658,7 @@ public class SignModel {
 
 		System.out.println("GRID SEARCH FINISHED. Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma);
 		optwriter.write("GRID SEARCH FINISHED. Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma+"\n");
-		return new OptimizationResult(optimumValue, optimumC, optimumGamma);
+		return new OptimizationResult(optimumValue, optimumGamma, optimumC);
 
 	}
 
