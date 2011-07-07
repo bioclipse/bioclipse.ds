@@ -79,7 +79,7 @@
             
       </test-->
       
-     <test
+     <!--test
             id="cpdb.signatures.regression"
             name="CPDB regression"
             class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
@@ -88,7 +88,7 @@
             propertycalculator="CPDB Signature Significance">
 
             <resource name="file" path="data/cpdbForRegression.sdf" />
-            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
+            <parameter name="responseProperty" value="TD50_Rat_mmol" />
             <resource name="trainFile" path="models/cpdb.regression.train" />
 
             <resource name="modelfile" path="models/cpdb.regression.model" />
@@ -104,8 +104,33 @@
                value="3">
          </parameter>
             
-      </test>
+      </test-->
       
+      <test
+            id="cpdb.signatures.classification"
+            name="CPDB classification"
+            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
+            endpoint="net.bioclipse.ds.carcinogenicity"
+            informative="false"
+            propertycalculator="CPDB Signature Significance">
+
+            <resource name="file" path="data/cpdb_molsign.sdf" />
+            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
+            <resource name="trainFile" path="models/cpdb.classification.train" />
+            <resource name="modelfile" path="models/cpdb.classification.model" />
+            <resource name="signaturesfile" path="models/cpdb.classification.signatures" />
+
+            <parameter name="lowPercentile" value="-0.05" />
+	        <parameter name="highPercentile" value="0.05" />
+            <parameter
+               name="signatures.min.height"
+               value="0">
+            </parameter>
+            <parameter
+               name="signatures.max.height"
+               value="3">
+            </parameter>
+      </test>
       
       
       <test
