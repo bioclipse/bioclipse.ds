@@ -511,7 +511,8 @@ public class SignModel {
 		System.out.println("++++++ SUMMARY ++++++");
 		System.out.println("Training set parameter estimates: " + optResTrain);
 		System.out.println("External prediction accuracy: " + externalAccuracy);
-		System.out.println("Dataset parameter estimates: " + optResTrain);
+		System.out.println("Complete dataset parameter estimates: " + optResComplete);
+		System.out.println("++++++ SUMMARY ENDS ++++++");
 		return optResTrain;
 	}
 
