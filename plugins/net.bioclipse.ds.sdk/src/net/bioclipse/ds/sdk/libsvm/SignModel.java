@@ -741,9 +741,15 @@ public class SignModel {
 	private OptimizationResult gridSearchNew(svm_parameter svmParameter, svm_problem svmProblem, double optimumValue, double optimumC, double optimumGamma) throws IOException{
 
 		BufferedWriter optwriter = new BufferedWriter(new FileWriter(out_optmimizationFilename));
+		
+		int problemSize=(cEnd - cStart +1) * (gammaEnd-gammaStart +1);
 
+		int problemIX=0;
 		for (int cExponent = cStart; cExponent <= cEnd; cExponent++){
 			for (int gammaExponent = gammaStart; gammaExponent <= gammaEnd; gammaExponent++){
+
+				problemIX++;
+				System.out.println("GRID search iteration " + problemIX + "/" + problemSize);
 
 				double[] target = new double[svmProblem.l];
 				svmParameter.C = Math.pow(10.0,(cExponent/2));
