@@ -320,4 +320,9 @@ public class SmartsInclExclMatcher extends AbstractDSTest implements IDSTest{
         return results;   
 
     }
+
+	@Override
+	public List<String> getRequiredParameters() {
+		return new ArrayList<String>(){{add(FILE_PROPERTY_PARAM);}};
+	}
 }

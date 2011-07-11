@@ -392,13 +392,14 @@ public abstract class AbstractDSTest implements IDSTest{
      * @throws DSException 
      */
     private void assertRequiredParameters() throws DSException {
-        for (String reqParam : getRequiredParameters()){
-            String param=getParameters().get( reqParam );
-            if (param==null)
-                throw new DSException("Test '" + getName() + "' is missing " +
-                		"required parameter: '" + reqParam + "'"); 
-        }
-        
+    	if (getRequiredParameters()!=null && getRequiredParameters().size()>0){
+    		for (String reqParam : getRequiredParameters()){
+    			String param=getParameters().get( reqParam );
+    			if (param==null)
+    				throw new DSException("Test '" + getName() + "' is missing " +
+    						"required parameter: '" + reqParam + "'"); 
+    		}
+    	}
 		
 	}
     
@@ -407,9 +408,7 @@ public abstract class AbstractDSTest implements IDSTest{
      * Default is empty, Subclasses may override.
      * @return
      */
-    public List<String> getRequiredParameters() {
-        return new ArrayList<String>();
-    }
+    public abstract List<String> getRequiredParameters();
 
 
 	protected abstract List<? extends ITestResult> doRunTest( 
@@ -505,5 +504,6 @@ public abstract class AbstractDSTest implements IDSTest{
     	//The rest should be done by extensions
     	
     }
+
     
 }

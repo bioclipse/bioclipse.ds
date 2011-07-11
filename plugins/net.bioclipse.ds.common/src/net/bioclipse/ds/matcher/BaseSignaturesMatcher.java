@@ -63,7 +63,7 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
 
     @Override
     public List<String> getRequiredParameters() {
-        List<String> ret=super.getRequiredParameters();
+        List<String> ret=new ArrayList<String>();
         ret.add( SIGNATURES_FILE_PARAMETER );
         ret.add( SIGNATURES_MAX_HEIGHT );
         ret.add( SIGNATURES_MIN_HEIGHT );

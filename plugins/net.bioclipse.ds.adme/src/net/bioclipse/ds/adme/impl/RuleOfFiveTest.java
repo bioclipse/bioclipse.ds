@@ -64,4 +64,10 @@ public class RuleOfFiveTest extends AbstractDSTest{
         return results;
     }
 
+
+	@Override
+	public List<String> getRequiredParameters() {
+		return null;
+	}
+
 }

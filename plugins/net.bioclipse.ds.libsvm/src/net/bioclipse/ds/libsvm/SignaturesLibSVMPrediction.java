@@ -94,16 +94,22 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
     public List<String> getRequiredParameters() {
         List<String> ret=super.getRequiredParameters();
 
-        if (svmModel.param.svm_type == 0) // This is a classification model.
-			return ret;
+        if (getParameters().get("isClassification")!=null && 
+        		getParameters().get("isClassification").equals("false")){
+        	//Regression: TODO not handled yet...
+        	
+        }
+        
+//        if (svmModel.param.svm_type == 0) // This is a classification model.
+//			return ret;
 
 		//Else regression, we need these parameters
         ret.add( MODEL_FILE_PARAMETER );
         ret.add( SIGNATURES_FILE_PARAMETER );
         ret.add( SIGNATURES_MAX_HEIGHT );
         ret.add( SIGNATURES_MIN_HEIGHT );
-        ret.add( HIGH_PERCENTILE );
-        ret.add( LOW_PERCENTILE );
+//        ret.add( HIGH_PERCENTILE );
+//        ret.add( LOW_PERCENTILE );
         ret.add( TRAIN_PARAMETER );
         return ret;
     }
