@@ -216,8 +216,8 @@ public class DSBusinessModel {
                                 }
                                 else if ("parameter".equals( subelement.getName() )){
                                     String name=subelement.getAttribute( "name" );
-                                    String path=subelement.getAttribute( "value" );
-                                    test.addParameter(name,path);
+                                    String value=subelement.getAttribute( "value" );
+                                    test.addParameter(name,value);
                                 }
                             }
                             tests.add( test );

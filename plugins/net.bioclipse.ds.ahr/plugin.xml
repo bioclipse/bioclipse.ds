@@ -78,14 +78,20 @@
             
             <resource name="modelfile" path="models/ahr.model" />
             <resource name="signaturesfile" path="models/ahr.signatures" />
-         <parameter
-               name="signatures.min.height"
-               value="0">
-         </parameter>
-         <parameter
-               name="signatures.max.height"
-               value="3">
-         </parameter>
+            <parameter name="signatures.min.height" value="0" />
+            <parameter name="signatures.max.height" value="3" />
+         
+            <parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
+            <parameter name="Model validation" value="Accuracy measued on an external test set" />
+            <parameter name="Model performance" value="0.83" />
+            <parameter name="Learning model" value="SVM" />
+            <parameter name="Learning parameters" value="kernel=RBF, c=10, gamma=0.002" />
+
+            <parameter name="Descriptors" value="Signatures (height 0-3)" />
+            <parameter name="Observations" value="15951" />
+            <parameter name="Variables" value="54257" />
+            <parameter name="URL" value="http://pubchem.ncbi.nlm.nih.gov/assay/assay.cgi?aid=2796" />
+            <parameter name="Dataset name" value="Luminescence-based primary cell-based high throughput screening assay to identify activators of the Aryl Hydrocarbon Receptor (AHR)" />
             
       </test>
       

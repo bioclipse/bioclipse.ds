@@ -114,22 +114,32 @@
             informative="false"
             propertycalculator="CPDB Signature Significance">
 
+            <parameter name="isClassification" value="false" />
             <resource name="file" path="data/cpdb_molsign.sdf" />
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <resource name="trainFile" path="models/cpdb.classification.train" />
             <resource name="modelfile" path="models/cpdb.classification.model" />
             <resource name="signaturesfile" path="models/cpdb.classification.signatures" />
 
-            <parameter name="lowPercentile" value="-0.05" />
-	        <parameter name="highPercentile" value="0.05" />
-            <parameter
-               name="signatures.min.height"
-               value="0">
-            </parameter>
-            <parameter
-               name="signatures.max.height"
-               value="3">
-            </parameter>
+            <!--parameter name="lowPercentile" value="-0.05" />
+	        <parameter name="highPercentile" value="0.05" / -->
+            <parameter name="signatures.min.height" value="0" />
+            <parameter name="signatures.max.height" value="3" />
+            
+            <parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
+            <parameter name="Model validation" value="Accuracy measued on an external test set" />
+            <parameter name="Model performance" value="0.68" />
+            <parameter name="Learning model" value="SVM" />
+            <parameter name="Learning parameters" value="kernel=RBF, c=10, gamma=0.0034" />
+
+            <parameter name="Descriptors" value="Signatures (height 0-3)" />
+            <parameter name="Observations" value="892" />
+            <parameter name="Variables" value="8025" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+            
+            
+            
       </test>
       
       
