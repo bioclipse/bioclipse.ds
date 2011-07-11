@@ -21,6 +21,7 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.ds.Stopwatch;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
@@ -108,6 +109,26 @@ public abstract class AbstractDSTest implements IDSTest{
     public void setParameters( Map<String, String> parameters ) {
         this.parameters = parameters;
     }
+
+    public String getFileFromParameter(String parameter) throws DSException {
+        try {
+            String localPath = getParameters().get( parameter );
+            if (localPath.isEmpty())
+                throw new DSException("Error initializing file parameter " + parameter + " for model "
+                		+ getName() + " due to empty parameter ");
+
+            String path = localPath = FileUtil.getFilePath(localPath, getPluginID());
+            return path;
+
+        } catch (Exception e) {
+            throw new DSException("Error initializing BaseSignaturesModel: '" 
+            		+ getName() + " due to: " + e.getMessage());
+    	} 
+    }
+
+    
+    
+    
     
     public void addParameter( String name, String value ) {
         parameters.put( name, value );
@@ -475,6 +496,14 @@ public abstract class AbstractDSTest implements IDSTest{
     
     public String getTitle() {
         return "mamma mia title";
+    }
+    
+    @Override
+    public void initialize(IProgressMonitor monitor) throws DSException {
+    	
+    	assertRequiredParameters();
+    	//The rest should be done by extensions
+    	
     }
     
 }

@@ -25,7 +25,9 @@ public class CDKDescriptorMatcher extends AbstractDSTest{
 
 	@Override
 	public void initialize(IProgressMonitor monitor) throws DSException {
-        String descriptors=getParameters().get( DESCRIPTOR_PARAM );
+    	super.initialize(monitor);
+
+    	String descriptors=getParameters().get( DESCRIPTOR_PARAM );
         //Validate descriptors
         //TODO
 

@@ -121,33 +121,20 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 
         //Get parameters from extension
         //We know they exist since required parameters
-        model_file=getParameters().get( MODEL_FILE_PARAMETER );
-        signatures_file=getParameters().get( SIGNATURES_FILE_PARAMETER );
+    	String modelPath = getFileFromParameter(MODEL_FILE_PARAMETER );
+    	String signaturesPath = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
         startHeight=Integer.parseInt(getParameters().get( SIGNATURES_MIN_HEIGHT ));
         endHeight=Integer.parseInt(getParameters().get( SIGNATURES_MAX_HEIGHT ));
         
         positiveValue=getParameters().get( "positiveValue" );
         negativeValue=getParameters().get( "negativeValue" );
 
-        //Get model path depending on OS
-        String modelPath="";
-        String signaturesPath = "";
+        logger.debug( "Model file path is: " + modelPath );
+        logger.debug( "Signatures file path is: " + signaturesPath );
 
-        try {
-			modelPath = FileUtil.getFilePath(model_file, getPluginID());
-	        logger.debug( "Model file path is: " + modelPath );
-
-	        signaturesPath = FileUtil.getFilePath(signatures_file, getPluginID());
-	        logger.debug( "Signatures file path is: " + signaturesPath );
-	        
-
-        } catch (Exception e) {
-            throw new DSException("Error initializing libsvm test: '" 
-            		+ getName() + " due to: " + e.getMessage());
-		} 
-
-        //Verify that the signatures file is accessible
+        //Read signatures into memory
         signatures=readSignaturesFile(signaturesPath);
+
         if (signatures==null || signatures.size()<=0)
             throw new DSException("Signatures file: " + signaturesPath 
             		+ " was empty for test " + getName());
