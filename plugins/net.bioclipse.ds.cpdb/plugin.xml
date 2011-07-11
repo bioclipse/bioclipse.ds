@@ -108,7 +108,7 @@
       
       <test
             id="cpdb.signatures.classification"
-            name="CPDB classification"
+            name="CPDB Signature Significance"
             class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
             endpoint="net.bioclipse.ds.carcinogenicity"
             informative="false"
@@ -121,8 +121,6 @@
             <resource name="modelfile" path="models/cpdb.classification.model" />
             <resource name="signaturesfile" path="models/cpdb.classification.signatures" />
 
-            <!--parameter name="lowPercentile" value="-0.05" />
-	        <parameter name="highPercentile" value="0.05" / -->
             <parameter name="signatures.min.height" value="0" />
             <parameter name="signatures.max.height" value="3" />
             
