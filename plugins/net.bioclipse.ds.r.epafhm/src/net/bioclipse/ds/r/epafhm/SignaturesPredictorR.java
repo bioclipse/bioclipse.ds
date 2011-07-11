@@ -19,6 +19,7 @@ import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;
+import net.bioclipse.ds.model.result.PosNegIncMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
 import net.bioclipse.r.business.Activator;
@@ -54,7 +55,7 @@ public class SignaturesPredictorR extends BaseSignaturesMatcher{
         monitor.subTask("Loading model file into R");
         String rmodelFile = getFileFromParameter( R_MODEL_PARAMETER );
         String ret = R.eval("load(\"" + rmodelFile + "\")");
-        if (ret.length()>0 && !(ret.trim().equals("[1] \"epafhm.train.svm\"")))
+        if (ret.length()>0 && !(ret.trim().startsWith("[1] \"epafhm.train.svm\"")))
             throw new DSException("Error initializing R model: " 
             		+ rmodelFile + ". R said: " + ret);
 
@@ -163,12 +164,33 @@ public class SignaturesPredictorR extends BaseSignaturesMatcher{
 		        
         //Parse result and create testresults
         double posProb = Double.parseDouble(ret.substring(4));
-        if (posProb>=0.5){
-        	//Positive prediction
-            results.add(new SimpleResult("p=" + formatter.format(posProb), ITestResult.POSITIVE));
-        }else{
-            results.add(new SimpleResult("p=" + formatter.format(1-posProb), ITestResult.NEGATIVE));
-        }
+        
+		ret = R.eval("getMostImportantSignature.svm(epafhm.train.svm, inpf)");
+		//on form: [1]  191  434 1683
+		String[] parts = ret.trim().substring(4).split(" ");
+		int pos = Integer.parseInt(parts[0]);
+		int neg = Integer.parseInt(parts[1]);
+		int zero = Integer.parseInt(parts[2]);
+		
+		String posSign = signatures.get(pos);
+		String negSign = signatures.get(neg);
+		String zeroSign = signatures.get(zero);
+
+		int overallPrediction;
+        if (posProb>=0.5)
+        	overallPrediction = ITestResult.POSITIVE;
+        else
+        	overallPrediction = ITestResult.NEGATIVE;
+        	
+		DoubleResult accuracy = new DoubleResult("accuracy", posProb, overallPrediction);
+		PosNegIncMatch posMatch = new PosNegIncMatch("pos: " + posSign, overallPrediction);
+		PosNegIncMatch negMatch = new PosNegIncMatch("neg: " + negSign, overallPrediction);
+		PosNegIncMatch zeroMatch = new PosNegIncMatch("zero: " + zeroSign, overallPrediction);
+
+		results.add(accuracy);
+		results.add(posMatch);
+		results.add(negMatch);
+		results.add(zeroMatch);
 
         return results;
 		
@@ -180,8 +202,6 @@ public class SignaturesPredictorR extends BaseSignaturesMatcher{
 		List<String> ret = new ArrayList<String>();
 		ret.add("inpf <- as.data.frame(t(" + input + "))\n");
 		ret.add("colnames(inpf) <- colnames(epafhm.train.svm$SV)\n");
-		
-//		ret.add("colnames(inpf) <- colnames(epafhm.train)[-ncol(epafhm.train)]\n");
         ret.add("epafhm.test.predicted <- predict(epafhm.train.svm, inpf, probability=T)");
         ret.add("attributes(epafhm.test.predicted)$probabilities[1,1]\n");
 //        ret.add("predict(epafhm.train.rf, inpf, type=\"prob\")[1,1]\n");
