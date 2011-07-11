@@ -8,7 +8,7 @@
  * Contributors:
  *     Ola Spjuth - initial API and implementation
  ******************************************************************************/
-package net.bioclipse.ds.libsvm;
+package net.bioclipse.ds.matcher;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,9 +17,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import libsvm.svm;
-import libsvm.svm_model;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,18 +34,16 @@ import net.bioclipse.ds.model.IDSTest;
  * @author Ola Spjuth
  *
  */
-public abstract class SignaturesLibSVMBase extends AbstractDSTest implements IDSTest{
+public abstract class BaseSignaturesMatcher extends AbstractDSTest implements IDSTest{
     
     //The logger of the class
-    private static final Logger logger = Logger.getLogger(SignaturesLibSVMBase.class);
+    private static final Logger logger = Logger.getLogger(BaseSignaturesMatcher.class);
 
     //The model file
-    private String model_file;
     private String signatures_file;
     protected int startHeight;
     protected int endHeight;
 
-    private final String MODEL_FILE_PARAMETER="modelfile";
     private final String SIGNATURES_FILE_PARAMETER="signaturesfile";
 
     private final String SIGNATURES_MIN_HEIGHT="signatures.min.height";
@@ -56,22 +51,19 @@ public abstract class SignaturesLibSVMBase extends AbstractDSTest implements IDS
 
     //This is an array of the signatures used in the model. 
     //Read from signatures file
-    List<String> signatures;
+    protected List<String> signatures;
     
-    //The SVM model.
-    public svm_model svmModel;
     
     /**
      * Default constructor
      */
-    public SignaturesLibSVMBase(){
+    public BaseSignaturesMatcher(){
         super();
     }
 
     @Override
     public List<String> getRequiredParameters() {
         List<String> ret=super.getRequiredParameters();
-        ret.add( MODEL_FILE_PARAMETER );
         ret.add( SIGNATURES_FILE_PARAMETER );
         ret.add( SIGNATURES_MAX_HEIGHT );
         ret.add( SIGNATURES_MIN_HEIGHT );
@@ -90,33 +82,18 @@ public abstract class SignaturesLibSVMBase extends AbstractDSTest implements IDS
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
-    	logger.debug("Initializing libsvm test: " + getName());
+    	logger.debug("Initializing base signatures model: " + getName());
+    	super.initialize(monitor);
 
         //Get parameters from extension
         //We know they exist since required parameters
-        model_file=getParameters().get( MODEL_FILE_PARAMETER );
-        signatures_file=getParameters().get( SIGNATURES_FILE_PARAMETER );
+    	String signaturesPath = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
         startHeight=Integer.parseInt(getParameters().get( SIGNATURES_MIN_HEIGHT ));
         endHeight=Integer.parseInt(getParameters().get( SIGNATURES_MAX_HEIGHT ));
 
-        //Get model path depending on OS
-        String modelPath="";
-        String signaturesPath = "";
-
-        try {
-			modelPath = FileUtil.getFilePath(model_file, getPluginID());
-	        logger.debug( "Model file path is: " + modelPath );
-
-	        signaturesPath = FileUtil.getFilePath(signatures_file, getPluginID());
-	        logger.debug( "Signatures file path is: " + signaturesPath );
-
-        } catch (Exception e) {
-            throw new DSException("Error initializing libsvm test: '" 
-            		+ getName() + " due to: " + e.getMessage());
-		} 
-
-        //Verify that the signatures file is accessible
+        //Read signatures into memory
         signatures=readSignaturesFile(signaturesPath);
+
         if (signatures==null || signatures.size()<=0)
             throw new DSException("Signatures file: " + signaturesPath 
             		+ " was empty for test " + getName());
@@ -124,15 +101,7 @@ public abstract class SignaturesLibSVMBase extends AbstractDSTest implements IDS
         logger.debug("Read signatures file " + signaturesPath + " with size " 
         		+ signatures.size());
 
-        //Load the model file into memory using SVM
-        try {
-            svmModel = svm.svm_load_model(modelPath);
-        } catch (IOException e) {
-            throw new DSException("Could not read model file '" + modelPath 
-                                  + "' due to: " + e.getMessage());
-        }
-
-    	logger.debug("Initializing of libsvm test: " + getName() 
+    	logger.debug("Initializing of base signatures model: " + getName() 
     			+ " completed successfully.");
 
     }
