@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+      <endpoint
+            name="Aquatic toxicity"
+            description="Aquatic toxicity measured by Fathead Minnow Toxicity using the EPAFHM dataset."
+            id="net.bioclipse.ds.r.epafhm.endpoint">
+      </endpoint>
+      <test
+            name="ds.epafhm exact matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
+            endpoint="net.bioclipse.ds.r.epafhm.endpoint"
+            id="net.bioclipse.ds.r.epafhm.endpoint.exact.signatures">
+         <resource
+               name="file"
+               path="data/data.exact.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="name">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="0">
+         </parameter>
+      </test>
+      <test
+            name="ds.epafhm nearest matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            endpoint="net.bioclipse.ds.r.epafhm.endpoint"
+            id="net.bioclipse.ds.r.epafhm.endpoint.nearest.signatures">
+         <resource
+               name="file"
+               path="data/data.nearest.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="name">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="0">
+         </parameter>
+         <parameter
+               name="distance.tanimoto"
+               value="0.7">
+         </parameter>
+      </test>
+      
+      
+    <test
+            id="epafhm.r"
+            name="EPAFHM-R"
+            endpoint="net.bioclipse.ds.r.epafhm.endpoint"
+            class="net.bioclipse.ds.r.epafhm.SignaturesPredictorR"
+            override="false">
+            
+            <parameter name="responseProperty" value="class" />
+            <parameter name="positiveValue" value="1" />
+            <parameter name="negativeValue" value="0" />
+            <resource name="rmodel" path="models/epafhmSvmModel.Rdata" />
+            <resource name="signaturesfile" path="models/epafhm.signatures" />
+            <!--resource name="testset" path="models/epafhmTestSet.Rdata" /-->
+            
+         <parameter
+               name="signatures.min.height"
+               value="0">
+         </parameter>
+         <parameter
+               name="signatures.max.height"
+               value="3">
+         </parameter>
+            
+      </test>
+      
+      
+   </extension>
+
+</plugin>
