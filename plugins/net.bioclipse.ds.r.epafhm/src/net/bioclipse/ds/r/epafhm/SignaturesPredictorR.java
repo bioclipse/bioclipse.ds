@@ -47,17 +47,24 @@ public class SignaturesPredictorR extends BaseSignaturesMatcher{
 
         R = Activator.getDefault().getJavaRBusinessManager();
         
+        monitor.beginTask("Initializing " + getName(), 3);
+        monitor.worked(1);
         
 		//Load R data frames from property on model
+        monitor.subTask("Loading model file into R");
         String rmodelFile = getFileFromParameter( R_MODEL_PARAMETER );
         String ret = R.eval("load(\"" + rmodelFile + "\")");
         if (ret.length()>0 && !(ret.trim().equals("[1] \"epafhm.train.svm\"")))
             throw new DSException("Error initializing R model: " 
             		+ rmodelFile + ". R said: " + ret);
 
+        monitor.worked(1);
+        monitor.subTask("Loading prediction library into R");
         ret=R.eval("library(e1071)");
         if (ret.length()>0 && !(ret.trim().startsWith("[1] \"e1071\"")))
             throw new DSException("Error loading package e1071 (libsvm). R said: " + ret);
+        
+        monitor.done();
         
 //      ret=R.eval("library(randomForest)");
 //        if (ret.length()>0 && !(ret.startsWith("[1] \"randomForest\"")))
