@@ -33,6 +33,8 @@ public class ModelPropertySource extends BasicPropertySource
     protected static final String MODEL_PERFORMANCE = "Model performance";
     protected static final String LEARNING_MODEL = "Learning model";
     protected static final String LEARNING_PARAMETERS = "Learning parameters";
+    protected static final String SIMILARITY_THRESHOLD = "Similarity threshold";
+    protected static final String SIMILARITY_METRIC = "Similarity metric";
 
     //Dataset info
     protected static final String DATASET_NAME = "Dataset name";
@@ -94,6 +96,8 @@ public class ModelPropertySource extends BasicPropertySource
         addParameterProperty(model, MODEL_PERFORMANCE,"Model");
         addParameterProperty(model, LEARNING_MODEL,"Model");
         addParameterProperty(model, LEARNING_PARAMETERS,"Model");
+        addParameterProperty(model, SIMILARITY_METRIC,"Model");
+        addParameterProperty(model, SIMILARITY_THRESHOLD,"Model");
         
         // Dataset properties
         addParameterProperty(model, DATASET_NAME, "Dataset");

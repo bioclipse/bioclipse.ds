@@ -33,6 +33,13 @@
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />
             <parameter name="negativeValue" value="inactive" />
+            
+			<parameter name="Model type" value="Molecular Signature lookup" />
+
+            <parameter name="Observations" value="892" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+            
       </test>
 
       <test
@@ -49,6 +56,15 @@
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />
             <parameter name="negativeValue" value="inactive" />
+            
+            <parameter name="Model type" value="Fingerprint lookup" />
+            <parameter name="Similarity metric" value="Tanimoto" />
+            <parameter name="Similarity threshold" value="0.7" />
+
+            <parameter name="Observations" value="892" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+            
       </test>
       
      <!--test
@@ -124,6 +140,7 @@
             <parameter name="signatures.min.height" value="0" />
             <parameter name="signatures.max.height" value="3" />
             
+			<parameter name="Model type" value="QSAR" />
             <parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
             <parameter name="Model validation" value="Accuracy measued on an external test set" />
             <parameter name="Model performance" value="0.68" />
@@ -135,8 +152,6 @@
             <parameter name="Variables" value="8025" />
             <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
             <parameter name="Dataset name" value="Carcinogenic Potency Database" />
-            
-            
             
       </test>
       
@@ -151,6 +166,14 @@
             <resource name="file"
                   path="models/cpdb_atomsign0_5.sdf_exportedSignatures.txt">
             </resource>
+            
+            <parameter name="Model type" value="Signature Alerts" />
+
+            <parameter name="Observations" value="892" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+ 
+            
       </test>
       
       <test

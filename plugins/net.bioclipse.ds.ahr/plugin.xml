@@ -31,6 +31,13 @@
             <parameter name="responseProperty" value="c#Activity" />
             <parameter name="positiveValue" value="2" />
             <parameter name="negativeValue" value="1" />
+            
+			<parameter name="Model type" value="Molecular Signature lookup" />
+
+            <parameter name="Observations" value="15951" />
+            <parameter name="URL" value="http://pubchem.ncbi.nlm.nih.gov/assay/assay.cgi?aid=2796" />
+            <parameter name="Dataset name" value="Luminescence-based primary cell-based high throughput screening assay to identify activators of the Aryl Hydrocarbon Receptor (AHR)" />
+            
       </test>
 
       <test
@@ -47,6 +54,15 @@
             <parameter name="responseProperty" value="c#Activity" />
             <parameter name="positiveValue" value="2" />
             <parameter name="negativeValue" value="1" />
+            
+            <parameter name="Model type" value="Fingerprint lookup" />
+            <parameter name="Similarity metric" value="Tanimoto" />
+            <parameter name="Similarity threshold" value="0.7" />
+
+            <parameter name="Observations" value="15951" />
+            <parameter name="URL" value="http://pubchem.ncbi.nlm.nih.gov/assay/assay.cgi?aid=2796" />
+            <parameter name="Dataset name" value="Luminescence-based primary cell-based high throughput screening assay to identify activators of the Aryl Hydrocarbon Receptor (AHR)" />
+            
       </test>
       
       <test
@@ -59,6 +75,13 @@
             <resource name="file"
                   path="models/2796_nosalts_as0-5.sdf_exportedSignatures.txt">
             </resource>
+            
+            <parameter name="Model type" value="Signature Alerts" />
+
+            <parameter name="Observations" value="15951" />
+            <parameter name="URL" value="http://pubchem.ncbi.nlm.nih.gov/assay/assay.cgi?aid=2796" />
+            <parameter name="Dataset name" value="Luminescence-based primary cell-based high throughput screening assay to identify activators of the Aryl Hydrocarbon Receptor (AHR)" />
+            
       </test>
 
       
@@ -81,6 +104,7 @@
             <parameter name="signatures.min.height" value="0" />
             <parameter name="signatures.max.height" value="3" />
          
+            <parameter name="Model type" value="QSAR" />
             <parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
             <parameter name="Model validation" value="Accuracy measued on an external test set" />
             <parameter name="Model performance" value="0.83" />
