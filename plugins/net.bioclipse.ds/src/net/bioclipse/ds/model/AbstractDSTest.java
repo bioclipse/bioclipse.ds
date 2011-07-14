@@ -22,6 +22,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.FileUtil;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Stopwatch;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
@@ -121,8 +122,8 @@ public abstract class AbstractDSTest implements IDSTest{
             return path;
 
         } catch (Exception e) {
-            throw new DSException("Error initializing BaseSignaturesModel: '" 
-            		+ getName() + " due to: " + e.getMessage());
+        	LogUtils.debugTrace(logger, e);
+            throw new DSException("Could not get file from parameter: " + parameter);
     	} 
     }
 
