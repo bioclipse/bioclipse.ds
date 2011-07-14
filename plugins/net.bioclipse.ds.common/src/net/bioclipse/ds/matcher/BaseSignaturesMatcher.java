@@ -16,16 +16,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import net.bioclipse.core.util.FileUtil;
+import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
+import net.bioclipse.ds.signatures.business.ISignaturesManager;
 
 
 /**
@@ -42,7 +47,7 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
     //The model file
     private String signatures_file;
     protected int startHeight;
-    protected int endHeight;
+	protected int endHeight;
 
     private final String SIGNATURES_FILE_PARAMETER="signaturesfile";
 
@@ -74,9 +79,23 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
     public String toString() {
         return getName();
     }
+    
+    
 
 
-    /**
+    public int getStartHeight() {
+		return startHeight;
+	}
+
+	public int getEndHeight() {
+		return endHeight;
+	}
+
+	public List<String> getSignatures() {
+		return signatures;
+	}
+
+	/**
      * Initialize all paths and read model files into memory.
      * @throws DSException 
      */
@@ -87,18 +106,18 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
 
         //Get parameters from extension
         //We know they exist since required parameters
-    	String signaturesPath = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
+    	signatures_file = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
         startHeight=Integer.parseInt(getParameters().get( SIGNATURES_MIN_HEIGHT ));
         endHeight=Integer.parseInt(getParameters().get( SIGNATURES_MAX_HEIGHT ));
 
         //Read signatures into memory
-        signatures=readSignaturesFile(signaturesPath);
+        signatures=readSignaturesFile(signatures_file);
 
         if (signatures==null || signatures.size()<=0)
-            throw new DSException("Signatures file: " + signaturesPath 
+            throw new DSException("Signatures file: " + signatures_file 
             		+ " was empty for test " + getName());
 
-        logger.debug("Read signatures file " + signaturesPath + " with size " 
+        logger.debug("Read signatures file " + signatures_file + " with size " 
         		+ signatures.size());
 
     	logger.debug("Initializing of base signatures model: " + getName() 
@@ -107,7 +126,7 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
     }
 
 
-	private List<String> readSignaturesFile(String signaturesPath) throws DSException {
+	public List<String> readSignaturesFile(String signaturesPath) throws DSException {
 
     	logger.debug("Reading signature file: " + signaturesPath);
 
@@ -134,4 +153,43 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
 
     }
 
+	
+	public Map<String, Integer> countSignatureFrequency(ICDKMolecule cdkmol) throws BioclipseException {
+		ISignaturesManager sign=net.bioclipse.ds.signatures.Activator.
+        getDefault().getJavaSignaturesManager();
+
+		Map<String, Integer> moleculeSignatures = new HashMap<String, Integer>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer.
+		Map<String, Integer> moleculeSignaturesHeight = new HashMap<String, Integer>(); //Contains the height for a specific signature.
+		Map<String, List<Integer>> moleculeSignaturesAtomNr = new HashMap<String, List<Integer>>(); //Contains the atomNr for a specific signature.
+		for (int height = startHeight; height <= endHeight; height++){
+			
+			//Use the sign manager to generate signatures
+			List<String> signs = sign.generate( cdkmol, height ).getSignatures();
+			
+			Iterator<String> signsIter = signs.iterator();
+			int signsIndex = 0;
+			while (signsIter.hasNext()){
+				String currentSignature = signsIter.next();
+				if (signatures.contains(currentSignature)){
+					if (!moleculeSignaturesAtomNr.containsKey(currentSignature)){
+						moleculeSignaturesAtomNr.put(currentSignature, new ArrayList<Integer>());
+					}
+					moleculeSignaturesHeight.put(currentSignature, height);
+					List<Integer> tmpList = moleculeSignaturesAtomNr.get(currentSignature);
+					tmpList.add(signsIndex);
+					moleculeSignaturesAtomNr.put(currentSignature, tmpList);
+					if (moleculeSignatures.containsKey(currentSignature)){
+						moleculeSignatures.put(currentSignature, moleculeSignatures.get(currentSignature)+1);
+					}
+					else{
+						moleculeSignatures.put(currentSignature, 1);
+					}
+				}
+				signsIndex++;
+			}
+		}
+		return moleculeSignatures;
+	}
+
+	
 }
