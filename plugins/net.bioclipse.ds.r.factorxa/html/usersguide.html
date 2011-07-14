@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Decision Support Users Guide</title>
+  <link rel="stylesheet" href="../../PRODUCT_PLUGIN/narrow_book.css" type="text/css">
+</head>
+
+<body>
+<h1>Decision Support Users Guide</h1>
+
+<h2>The Decision Support Perspective</h2>
+A Decision Support Perspective is available to arrange the Bioclipse workbench 
+for predicting chemical liabilities. From the main menu, choose <b>Window > Open Perspective </b> 
+and then select the Decision Support option.
+
+
+<h2>Predicting for individual molecules: The Decision Support View</h2>
+Open the view <b>Decision Support</b>, available from the menu 
+<b>Window > Show view > other...</b> and select <b>Decision Support</b>.
+Now, open a chemical structure with 2D coordinates in the chemical editor by 
+double-clicking on e.g. a mol/cml file in the <b>Bioclipse Navigator</b>. 
+Click the <b>Run</b> button in the local toolbar of the <b>Decision Support</b> view. 
+If there are matches, you can select them in the Decision Support view and get 
+more detailed decision support, for example a highlighted substructure or the 
+full structure of an identical hit in an external database. 
+Results may look like the figures below.
+<p>
+You can make changes in the chemical editor and re-run the models to get an updated result. 
+Note the option in the Decision Support View local toolbar to auto-rerun on a chemical edit. 
+This way it is possible to, in real time, make changes and see how 
+these changes are predicted, allowing for trying different hypothesis.
+
+
+<p>
+<img src="dsview-high.png">
+<p>
+Above: Models resulting in substructure matches can be highlighted in the original 
+chemical structure.
+
+<p>
+<img src="dsview-extmatch.png">
+<p>
+Above: Models resulting in external matches can be visualized in the 2D-Structure View.
+
+
+<h2>Predicting for multiple molecules: Using the Molecules Table</h2>
+Open an SD-file in the Bioclipse Molecules Table consisting of the molecules you'd like to evaluate. 
+Now, right-click in the Molecules Table and choose an option from the 
+<b>Decision Support</b> menu. This will start a calculation in the background, 
+note the progress in the status bar or in the <i>Progress View</i>. 
+Results may look like the figure below.
+
+<p>
+<img src="ds-moltable.png">
+<p>
+
+There is also the possibility to right-click on an SD-file in the Bioclipse Navigator 
+and calculate Decision Support properties, without opening it in the Molecules Table. 
+This is faster and the preferred option for larger collections of compounds.
+
+
+</body>
+</html>
