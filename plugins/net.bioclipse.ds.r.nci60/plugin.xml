@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+      <endpoint
+            name="Cancer growth inhibition"
+            description="Ability to inghibit growth in cancer cells"
+            id="net.bioclipse.ds.r.nci60.endpoint">
+      </endpoint>
+      <test
+            name="Cancer growth inhibition exact matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
+            endpoint="net.bioclipse.ds.r.nci60.endpoint"
+            id="net.bioclipse.ds.r.nci60.endpoint.exact.signatures">
+         <resource
+               name="file"
+               path="data/data.exact.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="class">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="-1">
+         </parameter>
+      </test>
+      <test
+            name="Cancer growth inhibition nearest matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            endpoint="net.bioclipse.ds.r.nci60.endpoint"
+            id="net.bioclipse.ds.r.nci60.endpoint.nearest.signatures">
+         <resource
+               name="file"
+               path="data/data.nearest.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="name">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="-1">
+         </parameter>
+         <parameter
+               name="distance.tanimoto"
+               value="0.7">
+         </parameter>
+      </test>
+   </extension>
+
+</plugin>
