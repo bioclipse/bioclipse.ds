@@ -7,13 +7,13 @@
       <endpoint
             name="Cancer growth inhibition"
             description="Ability to inghibit growth in cancer cells"
-            id="net.bioclipse.ds.r.nci60.endpoint">
+            id="net.bioclipse.ds.r.u251.endpoint">
       </endpoint>
       <test
             name="Cancer growth inhibition exact matches"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
-            endpoint="net.bioclipse.ds.r.nci60.endpoint"
-            id="net.bioclipse.ds.r.nci60.endpoint.exact.signatures">
+            endpoint="net.bioclipse.ds.r.u251.endpoint"
+            id="net.bioclipse.ds.r.u251.endpoint.exact.signatures">
          <resource
                name="file"
                path="data/data.exact.sdf">
@@ -34,8 +34,8 @@
       <test
             name="Cancer growth inhibition nearest matches"
             class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
-            endpoint="net.bioclipse.ds.r.nci60.endpoint"
-            id="net.bioclipse.ds.r.nci60.endpoint.nearest.signatures">
+            endpoint="net.bioclipse.ds.r.u251.endpoint"
+            id="net.bioclipse.ds.r.u251.endpoint.nearest.signatures">
          <resource
                name="file"
                path="data/data.nearest.sdf">

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DS NCI60
-Bundle-SymbolicName: net.bioclipse.ds.r.nci60; singleton:=true
+Bundle-Name: DS U251
+Bundle-SymbolicName: net.bioclipse.ds.r.u251;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
