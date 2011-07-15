@@ -23,8 +23,9 @@ import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.Dataset;
+import net.bioclipse.core.domain.DenseDataset;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.SparseDataset;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -155,18 +156,35 @@ public interface ISignaturesManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod( 
         params = "List<? extends IMolecule> mols, int height",
-        methodSummary = "Generate a dataset of signature counts for a list of molecules.")
-	public Dataset generateDataset(List<? extends IMolecule> mols, int height);
-	public Dataset generateDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor);
+        methodSummary = "Generate a dataset of signature counts for a list of molecules with height h.")
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height);
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor);
 
     @Recorded
     @PublishedMethod( 
         params = "List<? extends IMolecule> mols, int height, String nameProperty, String responseProperty",
         methodSummary = "Generate a dataset of signature counts for a list of molecules. " +
         		"Set name of molecules and append response values to last column.")
-	public Dataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
 			String responseProperty);
-	public Dataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty, IProgressMonitor monitor);
+
+    @Recorded
+    @PublishedMethod( 
+        params = "List<? extends IMolecule> mols, int height, ",
+        methodSummary = "Generate a sparse dataset of signature counts for a list of molecules with height h. ")
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height);
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor);
+
+    @Recorded
+    @PublishedMethod( 
+        params = "List<? extends IMolecule> mols, int height, String nameProperty, String responseProperty",
+        methodSummary = "Generate a sparse dataset of signature counts for a list of molecules. " +
+        		"Set name of molecules and append response values to last column.")
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty);
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
 			String responseProperty, IProgressMonitor monitor);
 
 	

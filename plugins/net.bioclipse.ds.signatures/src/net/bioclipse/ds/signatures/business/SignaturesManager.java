@@ -10,20 +10,24 @@
  ******************************************************************************/
 package net.bioclipse.ds.signatures.business;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.Dataset;
+import net.bioclipse.core.domain.DenseDataset;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.SparseDataset;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -214,11 +218,11 @@ public class SignaturesManager implements IBioclipseManager {
     }
 	 */
 
-	public Dataset generateDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor){
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor){
 		return generateDataset(mols, height, null, null, monitor);
 	}
 
-	public Dataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
 								String responseProperty, IProgressMonitor monitor){
 
 		ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
@@ -287,7 +291,7 @@ public class SignaturesManager implements IBioclipseManager {
 					molsigns.getSignatures().remove(sign);
 			}
 			
-			//Hanlde response values
+			//Handle response values
 			if (responseProperty!=null){
 				try {
 					String response = (String) cdk.asCDKMolecule(mol).getProperty(responseProperty, null);
@@ -301,7 +305,7 @@ public class SignaturesManager implements IBioclipseManager {
 		}
 
 		monitor.subTask("Setting up dataset");
-		Dataset ds = new Dataset(allSignaturesList, names, dataset, responseProperty, responseValues);
+		DenseDataset ds = new DenseDataset(allSignaturesList, names, dataset, responseProperty, responseValues);
 		
 		submon.done();
 		monitor.done();
@@ -309,23 +313,131 @@ public class SignaturesManager implements IBioclipseManager {
 		return ds;
 
 	}
+	
+	
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor){
+		return generateSparseDataset(mols, height, null, null, monitor);
+	}
+
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+								String responseProperty, IProgressMonitor monitor){
+
+		ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
+
+		monitor.beginTask("Generating signatures dataset", 2);
+		
+		mols=standardizeMolecules(mols);
+		
+		//Generate all signatures
+		Map<IMolecule, AtomSignatures> signMap = generate(mols, height, new SubProgressMonitor(monitor, 1));
+
+		//Add all atom signatures to a unique list
+		List<String> allSignaturesList=new ArrayList<String>();
+		for (IMolecule mol : signMap.keySet()){
+
+				for (String s : signMap.get(mol).getSignatures()){
+					if (!allSignaturesList.contains(s))
+						allSignaturesList.add(s);
+				}
+
+		}
+
+		//Set up the dataset
+		LinkedHashMap<Point, Integer> values = new LinkedHashMap<Point, Integer>();
+		List<String> names = new ArrayList<String>();
+		List<String> responseValues = new ArrayList<String>();
+		
+		//Process one mol at a time and count frequency for each signature
+		SubProgressMonitor submon = new SubProgressMonitor(monitor, 1);
+		submon.beginTask("Counting signature occurences", signMap.keySet().size());
+		int moleculeNo=1;  //line number = matrix row number, starts on 1
+		for (IMolecule mol : signMap.keySet()){
+
+			AtomSignatures molsigns = signMap.get(mol);
+			
+
+			//Handle name of molecule
+			String name = null;
+			if (nameProperty!=null){
+				try {
+					name = (String) cdk.asCDKMolecule(mol).getProperty(nameProperty, null);
+				} catch (BioclipseException e) {
+					logger.error(e.getMessage());
+				}
+			}
+			if (name==null){
+				name="Compound-" + moleculeNo;
+			}
+			names.add(name);
+
+			//Loop over all already stored signatures and count frequency
+			for (String sign : allSignaturesList){
+				//Count occurrences
+				int nohits=Collections.frequency(molsigns.getSignatures(), sign);
+				
+				//SPARSE, so only store if value > 0
+				if (nohits>0){
+					values.put(new Point(moleculeNo, allSignaturesList.indexOf(sign)+1), nohits);
+				}
+				
+				//remove all occurrences in molsigns - we have now processed this signature
+				//if this is not done, could result in duplicates since same sign could occur
+				//many times in a mol
+				while (molsigns.getSignatures().contains(sign))
+					molsigns.getSignatures().remove(sign);
+			}
+			
+			//Handle response values
+			if (responseProperty!=null){
+				try {
+					String response = (String) cdk.asCDKMolecule(mol).getProperty(responseProperty, null);
+					responseValues.add(response);
+				} catch (BioclipseException e) {
+					logger.error(e.getMessage());
+				}
+			}
+			submon.worked(1);
+			
+			moleculeNo++;
+			if (moleculeNo%100==0){
+				monitor.subTask("Processed " + moleculeNo + "/" + signMap.keySet().size() + " molecules");
+				System.out.println("Processed " + moleculeNo + "/" + signMap.keySet().size() + " molecules");
+			}
+
+
+		}
+
+		monitor.subTask("Setting up dataset");
+		SparseDataset ds = new SparseDataset(allSignaturesList, names, responseProperty, responseValues,values);
+		
+		submon.done();
+		monitor.done();
+
+		return ds;
+
+	}
+	
 
 	public static List<ICDKMolecule> standardizeMolecules(List<? extends IMolecule> mols){
 		
 		ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
-
+		List<ICDKMolecule> standardizedMols=new ArrayList<ICDKMolecule>();
+		
+		int c=0;
 		for (IMolecule mol : mols){
 			try {
 				ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
 				standardizeMolecule(cdkmol.getAtomContainer());
+				standardizedMols.add(cdkmol);
 			} catch (BioclipseException e) {
-				e.printStackTrace();
+				logger.error("Error standardizing molecule: " + c + ": " + e.getMessage());
 			} catch (CDKException e) {
-				e.printStackTrace();
+				logger.error("Error standardizing molecule: " + c + ": " + e.getMessage());
 			}
+			c++;
 		}
 		
-		return null;
+		return standardizedMols;
 		
 	}
 	public static IAtomContainer standardizeMolecule(IAtomContainer mol) throws CDKException{
