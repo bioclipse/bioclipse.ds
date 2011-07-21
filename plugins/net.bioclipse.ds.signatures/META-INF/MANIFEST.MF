@@ -22,7 +22,6 @@ Require-Bundle: org.eclipse.ui,
  org.openscience.cdk.interfaces,
  org.openscience.cdk.nonotify,
  org.openscience.cdk.standard,
- net.bioclipse.balloon.business,
  net.bioclipse.ui.business,
  org.openscience.cdk.signature,
  signatures;bundle-version="1.0.0"
