@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DS Hansen Ames
+Bundle-SymbolicName: net.bioclipse.ds.r.ames; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: The Bioclipse team
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.help,
+ net.bioclipse.core,
+ net.bioclipse.ds,
+ net.bioclipse.cdk.ui.sdfeditor,
+ net.bioclipse.cdk.business,
+ net.bioclipse.ds.common,
+ net.bioclipse.ds.ui,
+ net.bioclipse.ds.libsvm,
+ net.bioclipse.r.business,
+ org.openscience.cdk.interfaces,
+ net.bioclipse.ds.signatures,
+ signatures,
+ org.eclipse.core.resources,
+ net.bioclipse.ds.r
+Import-Package: org.apache.log4j
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
