@@ -24,3 +24,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  net.bioclipse.ds.r
 Export-Package: net.bioclipse.ds.r
+Import-Package: org.apache.log4j
