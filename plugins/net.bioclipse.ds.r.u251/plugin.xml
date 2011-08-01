@@ -16,7 +16,7 @@
             id="net.bioclipse.ds.r.u251.endpoint.exact.signatures">
          <resource
                name="file"
-               path="data/data.exact.sdf">
+               path="data/u251.exact.sdf">
          </resource>
          <parameter
                name="responseProperty"
@@ -38,7 +38,7 @@
             id="net.bioclipse.ds.r.u251.endpoint.nearest.signatures">
          <resource
                name="file"
-               path="data/data.nearest.sdf">
+               path="data/u251.nearest.sdf">
          </resource>
          <parameter
                name="responseProperty"
@@ -57,6 +57,20 @@
                value="0.7">
          </parameter>
       </test>
+
+  <test
+            id="screen.u251"
+            name="U251 growth inhibition"
+            endpoint="net.bioclipse.ds.r.ames.endpoint"
+            class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
+            override="false">
+            
+            <resource name="rdata" path="models/u251RfModel.Rdata" />
+            <parameter name="trainedModel" value="u251.rf" />
+            <parameter name="requiredPackages" value="SparseM,randomForest" />
+            
+      </test>
+
    </extension>
 
 </plugin>
