@@ -9,6 +9,7 @@
             description="Ability to inghibit growth in cancer cells"
             id="net.bioclipse.ds.r.u251.endpoint">
       </endpoint>
+      
       <test
             name="Cancer growth inhibition exact matches"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
@@ -61,7 +62,7 @@
   <test
             id="screen.u251"
             name="U251 growth inhibition"
-            endpoint="net.bioclipse.ds.r.ames.endpoint"
+            endpoint="net.bioclipse.ds.r.u251.endpoint"
             class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
             override="false">
             
@@ -69,6 +70,7 @@
             <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
             <parameter name="trainedModel" value="u251.rf" />
             <parameter name="requiredPackages" value="SparseM,randomForest" />
+            <parameter name="requires3d" value="true" />
 
             <parameter name="Observations" value="3515" />
             <parameter name="Variables" value="210" />

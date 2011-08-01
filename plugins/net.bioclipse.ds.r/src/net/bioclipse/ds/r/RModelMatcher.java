@@ -38,7 +38,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 	private static final String R_TRAINED_MODEL = "trainedModel";
 	private static final String R_REQUIRED_PACKAGES = "requiredPackages";
 
-	private IRBusinessManager R;
+	protected IRBusinessManager R;
 
 	//We need to ensure that '.' is always decimal separator in all locales
     DecimalFormat formatter=new DecimalFormat("0.000");
