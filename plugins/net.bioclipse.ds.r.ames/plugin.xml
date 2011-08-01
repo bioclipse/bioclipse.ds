@@ -72,6 +72,11 @@
             <resource name="rdata" path="models/HansenSvmModel.Rdata" />
             <parameter name="trainedModel" value="cas.svm" />
             <parameter name="requiredPackages" value="SparseM,e1071" />
+
+            <parameter name="Observations" value="6504" />
+            <parameter name="Variables" value="26893" />
+            <parameter name="URL" value="http://dx.doi.org/10.1021/ci900161g" />
+            <parameter name="Dataset name" value="Hansen Mutagenicity Dataset" />
             
       </test>
 
