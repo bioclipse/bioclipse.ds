@@ -63,16 +63,16 @@
             id="epafhm.r"
             name="EPAFHM-R"
             endpoint="net.bioclipse.ds.r.epafhm.endpoint"
-            class="net.bioclipse.ds.r.epafhm.DenseEPAFHMMatcher"
+            class="net.bioclipse.ds.r.SparseSignaturesRModelMatcher"
             override="false">
             
             <resource name="signaturesfile" path="models/epafhm.signatures" />
             <parameter name="signatures.min.height" value="0" />
             <parameter name="signatures.max.height" value="3" />
 
-            <resource name="rmodel" path="models/epafhmSvmModel.Rdata" />
-            <parameter name="assertModels" value="epafhm.train.svm" />
-            <parameter name="requiredPackages" value="e1071" />
+            <resource name="rdata" path="models/epafhmSvmModel.Rdata" />
+            <parameter name="trainedModel" value="epafhm.train.svm" />
+            <parameter name="requiredPackages" value="SparseM,e1071" />
             
       </test>
       
