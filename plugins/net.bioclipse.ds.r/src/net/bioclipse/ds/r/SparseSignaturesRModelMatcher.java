@@ -1,33 +1,26 @@
 package net.bioclipse.ds.r;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.graphics.Point;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
-import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;
 import net.bioclipse.ds.model.result.PosNegIncMatch;
-import net.bioclipse.r.business.Activator;
-import net.bioclipse.r.business.IRBusinessManager;
 
 /**
  * A class building on R and Signatures for prediction with 
- * dense signature representation
+ * sparse signature representation
  * 
  * @author ola
  *
  */
-public abstract class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
+public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 
 
 	@Override
@@ -82,8 +75,6 @@ public abstract class SparseSignaturesRModelMatcher extends SignaturesRModelMatc
 		
 		R.eval("tmp <- " + rCommand);
 		
-		if (true) return null;
-		
 		//Do predictions in R
 		String ret="";
 		for (String rcmd : getPredictionString("tmp")){
@@ -95,11 +86,23 @@ public abstract class SparseSignaturesRModelMatcher extends SignaturesRModelMatc
         //Parse result and create testresults
         double posProb = Double.parseDouble(ret.substring(4));
         
-        
+		int overallPrediction;
+        if (posProb>=0.5)
+        	overallPrediction = ITestResult.POSITIVE;
+        else
+        	overallPrediction = ITestResult.NEGATIVE;
+
+		DoubleResult accuracy = new DoubleResult("accuracy", posProb, overallPrediction);
+		results.add(accuracy);
+
+		//Try to predict important signatures
         String mostImportantRcmd = getMostImportantSignaturesCommand();
 		ret = R.eval(mostImportantRcmd);
+		if (ret.contains("An error occurred") || ret.startsWith("Error")){
+			return results;
+		}
+
 		//Result should be on form: [1]  191  434 1683
-		//TODO: handle errors here...
 
 		//Parse and create TestResults
 		String[] parts = ret.trim().substring(4).split(" ");
@@ -110,19 +113,11 @@ public abstract class SparseSignaturesRModelMatcher extends SignaturesRModelMatc
 		String posSign = signaturesMatcher.getSignatures().get(pos);
 		String negSign = signaturesMatcher.getSignatures().get(neg);
 		String zeroSign = signaturesMatcher.getSignatures().get(zero);
-
-		int overallPrediction;
-        if (posProb>=0.5)
-        	overallPrediction = ITestResult.POSITIVE;
-        else
-        	overallPrediction = ITestResult.NEGATIVE;
         	
-		DoubleResult accuracy = new DoubleResult("accuracy", posProb, overallPrediction);
 		PosNegIncMatch posMatch = new PosNegIncMatch("pos: " + posSign, overallPrediction);
 		PosNegIncMatch negMatch = new PosNegIncMatch("neg: " + negSign, overallPrediction);
 		PosNegIncMatch zeroMatch = new PosNegIncMatch("zero: " + zeroSign, overallPrediction);
 
-		results.add(accuracy);
 		results.add(posMatch);
 		results.add(negMatch);
 		results.add(zeroMatch);
@@ -131,7 +126,21 @@ public abstract class SparseSignaturesRModelMatcher extends SignaturesRModelMatc
 		
 	}
 
-	protected abstract List<String> getPredictionString(String input);
-	protected abstract String getMostImportantSignaturesCommand();
+	
+	/**
+	 * Provide the R commands to deliver the prediction command to R
+	 * from the input String (dense numerical vector with signature frequency).
+	 */
+	protected List<String> getPredictionString(String input){
+		
+		List<String> ret = new ArrayList<String>();
+        ret.add("predicted <- predict(" + rmodel + "," + input + ", probability=T)");
+        ret.add("attributes(predicted)$probabilities[1,1]\n");
+		return ret;
+	}
+
+	protected String getMostImportantSignaturesCommand() {
+		return "getMostImportantSignature.svm(" + rmodel + ", tmp)";
+	}
 
 }

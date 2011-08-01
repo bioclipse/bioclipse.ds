@@ -101,8 +101,8 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
-    	logger.debug("Initializing base signatures model: " + getName());
     	super.initialize(monitor);
+    	logger.debug("Initializing base signatures model: " + getName());
 
         //Get parameters from extension
         //We know they exist since required parameters

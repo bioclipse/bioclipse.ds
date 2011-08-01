@@ -34,21 +34,22 @@ import net.bioclipse.r.business.IRBusinessManager;
  */
 public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 	
-	private static final String R_MODEL_PARAMETER = "rmodel";
-	private static final String R_ASSERT_MODELS = "assertModels";
+	private static final String R_DATA_PARAMETER = "rdata";
+	private static final String R_TRAINED_MODEL = "trainedModel";
 	private static final String R_REQUIRED_PACKAGES = "requiredPackages";
 
 	private IRBusinessManager R;
 
 	//We need to ensure that '.' is always decimal separator in all locales
     DecimalFormat formatter=new DecimalFormat("0.000");
+	protected String rmodel;
 	
     @Override
     public List<String> getRequiredParameters() {
         List<String> ret=new ArrayList<String>();
-        ret.add( R_MODEL_PARAMETER );
+        ret.add( R_DATA_PARAMETER );
         ret.add( R_REQUIRED_PACKAGES );
-        ret.add( R_ASSERT_MODELS );
+        ret.add( R_TRAINED_MODEL );
         return ret;
     }
 
@@ -63,8 +64,8 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         monitor.worked(1);
         
 		//Load R with rdata file
-        monitor.subTask("Loading model file into R");
-        String rmodelFile = getFileFromParameter( R_MODEL_PARAMETER );
+        monitor.subTask("Loading R data into R");
+        String rmodelFile = getFileFromParameter( R_DATA_PARAMETER );
         String loadModelResult = R.eval("load(\"" + rmodelFile + "\")");
     	if (loadModelResult.startsWith("Error"))
             throw new DSException("Error initializing test " + getName() 
@@ -72,19 +73,16 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
             		+ " FAILED.");
 
         monitor.worked(1);
-        monitor.subTask("Loading model data into R");
+        monitor.subTask("Asserting R model");
 
         //Assert R models to ensure loading of rdata is ok
-        String modelsToAssert=getParameters().get( R_ASSERT_MODELS );
-        if ( modelsToAssert != null && modelsToAssert.length()>0){
-            String[] rmodels = modelsToAssert.split(",");
-            for (String rmodel : rmodels){
-                String rres = R.eval("is(" + rmodel + ")");
-            	if (rres.startsWith("Error"))
-                    throw new DSException("Error initializing test " + getName() 
-                    		+ ": Asserting R object " + rmodel 
-                    		+ " FAILED after loading R data file " + rmodelFile);
-            }
+        rmodel=getParameters().get( R_TRAINED_MODEL );
+        if ( rmodel != null && rmodel.length()>0){
+        	String rres = R.eval("is(" + rmodel + ")");
+        	if (rres.startsWith("Error"))
+        		throw new DSException("Error initializing test " + getName() 
+        				+ ": Asserting R object " + rmodel 
+        				+ " FAILED after loading R data file " + rmodelFile);
         }
 
         monitor.worked(1);
