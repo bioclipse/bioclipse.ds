@@ -28,6 +28,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.DenseDataset;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.domain.SparseDataset;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -150,7 +151,7 @@ public class SignaturesManager implements IBioclipseManager {
 			monitor.worked(1);
 			cnt++;
 			if (cnt%100==0){
-				monitor.subTask("Processed " + cnt + "/" + mols.size() + " molecules");
+				monitor.subTask("Generating signatures: " + cnt + "/" + mols.size() + " molecules");
 			}
 		}
 
@@ -354,16 +355,19 @@ public class SignaturesManager implements IBioclipseManager {
 		for (IMolecule mol : signMap.keySet()){
 
 			AtomSignatures molsigns = signMap.get(mol);
+			ICDKMolecule cdkmol =null;
+			try {
+				cdkmol = cdk.asCDKMolecule(mol);
+			} catch (BioclipseException e) {
+				LogUtils.debugTrace(logger, e);
+				continue;
+			}
 			
 
 			//Handle name of molecule
 			String name = null;
 			if (nameProperty!=null){
-				try {
-					name = (String) cdk.asCDKMolecule(mol).getProperty(nameProperty, null);
-				} catch (BioclipseException e) {
-					logger.error(e.getMessage());
-				}
+					name = (String) cdkmol.getProperty(nameProperty, null);
 			}
 			if (name==null){
 				name="Compound-" + moleculeNo;
@@ -389,19 +393,15 @@ public class SignaturesManager implements IBioclipseManager {
 			
 			//Handle response values
 			if (responseProperty!=null){
-				try {
-					String response = (String) cdk.asCDKMolecule(mol).getProperty(responseProperty, null);
-					responseValues.add(response);
-				} catch (BioclipseException e) {
-					logger.error(e.getMessage());
-				}
+				String response = (String) cdkmol.getProperty(responseProperty, null);
+				responseValues.add(response);
 			}
 			submon.worked(1);
 			
 			moleculeNo++;
 			if (moleculeNo%100==0){
-				monitor.subTask("Processed " + moleculeNo + "/" + signMap.keySet().size() + " molecules");
-				System.out.println("Processed " + moleculeNo + "/" + signMap.keySet().size() + " molecules");
+				monitor.subTask("Counting frequency: " + moleculeNo + "/" + signMap.keySet().size() + " molecules");
+//				System.out.println("Processed " + moleculeNo + "/" + signMap.keySet().size() + " molecules");
 			}
 
 
