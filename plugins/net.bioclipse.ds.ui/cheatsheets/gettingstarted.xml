@@ -39,8 +39,8 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
          The Tests can be run by right clicking in the Decision Support tab or by clicking the "Run all tests" button (with a 'play' icon) in the Decision Support View. 
       </description>
     <action
-			pluginId="net.bioclipse.ds"
-			class="net.bioclipse.ds.actions.CheatRunAction"
+			pluginId="net.bioclipse.ds.ui"
+			class="net.bioclipse.ds.ui.actions.CheatRunAction"
 	        required="false"/>
    </item>
    <item
@@ -55,8 +55,8 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
          By right clicking in the Decision Support tab it is possible to generate a Report. Note that it takes over 20 seconds to open the first report, while efter this generating reports is much faster.
       </description>
     <action
-			pluginId="net.bioclipse.ds"
-			class="net.bioclipse.ds.actions.CheatReportAction"
+			pluginId="net.bioclipse.ds.ui"
+			class="net.bioclipse.ds.ui.actions.CheatReportAction"
 	        required="false"/>
    </item>
    
@@ -94,7 +94,7 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
       </description>
           <command
           required="false"
-          serialization="org.eclipse.ui.help.displayHelp(href=/net.bioclipse.ds/html/maintopic.html)"/>
+          serialization="org.eclipse.ui.help.displayHelp(href=/net.bioclipse.ds.ui/html/usersguide.html)"/>
       
    </item>
    
