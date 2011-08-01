@@ -30,9 +30,10 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
     //The logger of the class
     private static final Logger logger = Logger.getLogger(DenseCDKRModelMatcher.class);
 
-	private static final String CDK_DESCRIPTOR_FILE = "qsar.descriptors";
+	private static final String CDK_DESCRIPTOR_FILE = "cdk.descriptors";
 
-	private String descriptorLabels;
+	private String descriptorFile;
+	private List<String> descriptors;
 
 	@Override
 	public List<String> getRequiredParameters() {
@@ -47,7 +48,8 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 		
 		super.initialize(monitor);
 
-		descriptorLabels = getFileFromParameter( CDK_DESCRIPTOR_FILE );
+		descriptorFile = getFileFromParameter( CDK_DESCRIPTOR_FILE );
+		descriptors=readLinesFromFile(descriptorFile);
 
 	}
 	
@@ -74,30 +76,30 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 	}
 
 	
-	public List<String> readSignaturesFile(String descriptorPath) throws DSException {
+	public List<String> readLinesFromFile(String path) throws DSException {
 
-    	logger.debug("Reading descriptor file: " + descriptorPath);
+    	logger.debug("Reading lines from file: " + path);
 
-		List<String> descriptors = new ArrayList<String>();
+		List<String> lines = new ArrayList<String>();
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(descriptorPath)));
-			String desc;
-			while ( (desc = reader.readLine()) != null ) {
-				descriptors.add(desc);
+			BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
+			String line;
+			while ( (line = reader.readLine()) != null ) {
+				lines.add(line);
 			}
 		} catch (FileNotFoundException e) {
     		LogUtils.debugTrace(logger, e);
-    		throw new DSException("Error reading descriptor file " 
-    				+ descriptorPath + ": " + e.getMessage());
+    		throw new DSException("Error reading file " 
+    				+ path + ": " + e.getMessage());
 		} catch (IOException e) {
     		LogUtils.debugTrace(logger, e);
-    		throw new DSException("Error reading descriptor file " 
-    				+ descriptorPath + ": " + e.getMessage());
+    		throw new DSException("Error reading file " 
+    				+ path + ": " + e.getMessage());
 		} 
 
-    	logger.debug("Reading descriptor file: " + descriptorPath + " completed successfully");
+    	logger.debug("Reading Lines from file: " + path + " completed successfully");
 
-    	return descriptors;
+    	return lines;
 
     }
 	

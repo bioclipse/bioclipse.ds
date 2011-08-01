@@ -66,6 +66,7 @@
             override="false">
             
             <resource name="rdata" path="models/u251RfModel.Rdata" />
+            <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
             <parameter name="trainedModel" value="u251.rf" />
             <parameter name="requiredPackages" value="SparseM,randomForest" />
             
