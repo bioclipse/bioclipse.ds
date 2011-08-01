@@ -101,6 +101,10 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
             }
         }
         
+        //Set up dimension of dataset to confirm at runtime for procesed molecules
+    	String rdim = R.eval("dim(" + rmodel + ")");
+    	System.out.println("Dimension for Rdata model " + getName() + " is: " + rdim);
+        
         monitor.done();
         
 	}
