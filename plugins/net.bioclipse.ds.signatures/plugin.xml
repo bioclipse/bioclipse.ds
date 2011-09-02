@@ -90,10 +90,10 @@
      </menuContribution>
      
        		  		<menuContribution
-            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+            locationURI="popup:net.bioclipse.chemoinformatics.popup.dataset?after=additions">
 		    <command
 		    	commandId="net.bioclipse.ds.signatures.handlers.SignaturesDatasetFromSDF"
-		    	label="Calculate Signatures Dataset">
+		    	label="Signatures Dataset (Dense)">
 		        
 		        <visibleWhen>
 			   		<iterate operator="and" ifEmpty="false">
@@ -112,7 +112,28 @@
 			   		</iterate>
 		        </visibleWhen>
 	       </command>
-	       <!--command
+		    <command
+		    	commandId="net.bioclipse.ds.signatures.handlers.SparseSignaturesDatasetFromSDF"
+		    	label="Signatures Dataset (Sparse)">
+		        
+		        <visibleWhen>
+			   		<iterate operator="and" ifEmpty="false">
+		      			<adapt type="org.eclipse.core.resources.IResource">
+			      			<or>
+				                <test property="org.eclipse.core.resources.contentTypeId"
+				           	    	value="net.bioclipse.contenttypes.sdf"/>
+                                <test property="org.eclipse.core.resources.contentTypeId"
+                                    value="net.bioclipse.contenttypes.sdf0d"/>
+                                <test property="org.eclipse.core.resources.contentTypeId"
+                                    value="net.bioclipse.contenttypes.sdf2d"/>
+                                <test property="org.eclipse.core.resources.contentTypeId"
+                                    value="net.bioclipse.contenttypes.sdf3d"/>
+				            </or>
+			      		</adapt>
+			   		</iterate>
+		        </visibleWhen>
+	       </command>
+	       	       <!--command
 		    	commandId="net.bioclipse.ds.signatures.handlers.ChiralSignaturesDatasetFromSDF"
 		    	label="Calculate Chiral Signatures Dataset">
 		        
@@ -142,14 +163,19 @@
         point="org.eclipse.ui.commands">
          <command  
            id="net.bioclipse.ds.signatures.handlers.SignaturesDatasetFromSDF"
-           defaultHandler="net.bioclipse.ds.signatures.handlers.SignaturesDatasetFromSDF"
+           defaultHandler="net.bioclipse.ds.signatures.handlers.DenseSignaturesDatasetFromSDF"
            name="signatureDS">
          </command>
          <command  
+           id="net.bioclipse.ds.signatures.handlers.SparseSignaturesDatasetFromSDF"
+           defaultHandler="net.bioclipse.ds.signatures.handlers.SparseSignaturesDatasetFromSDF"
+           name="signatureDS">
+         </command>
+         <!--command  
            id="net.bioclipse.ds.signatures.handlers.ChiralSignaturesDatasetFromSDF"
            defaultHandler="net.bioclipse.ds.signatures.handlers.ChiralSignaturesDatasetFromSDF"
            name="signatureDS">
-         </command>
+         </command-->
     </extension>
 
 </plugin>

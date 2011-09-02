@@ -26,7 +26,12 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ui.business,
  org.openscience.cdk.signature,
  signatures,
- org.openscience.cdk.valencycheck
+ org.openscience.cdk.valencycheck,
+ org.openscience.cdk.io,
+ org.eclipse.core.databinding,
+ org.eclipse.core.databinding.beans,
+ org.eclipse.core.databinding.property,
+ org.eclipse.jface.databinding
 Import-Package: org.apache.log4j
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
