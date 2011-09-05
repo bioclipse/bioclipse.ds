@@ -41,7 +41,7 @@ public class SignModel {
 	private int noParallelJobs=1;
 
 	//Fields without default values, set by constructor
-	private String positiveActivity; 
+	private String[] orderedActivities; 
 	private String pathToSDFile;
 	private boolean classification;
 	private String activityProperty;
@@ -193,12 +193,12 @@ public class SignModel {
 		this.noParallelJobs = noParallelJobs;
 	}
 
-	public String getPositiveActivity() {
-		return positiveActivity;
+	public String[] getPositiveActivity() {
+		return orderedActivities;
 	}
 
-	public void setPositiveActivity(String positiveActivity) {
-		this.positiveActivity = positiveActivity;
+	public void setPositiveActivity(String[] positiveActivity) {
+		this.orderedActivities = positiveActivity;
 	}
 
 	public String getPathToSDFile() {
@@ -580,6 +580,7 @@ public class SignModel {
 	 * @param activityList
 	 * @return
 	 */
+	@Deprecated //MULTICLASS
 	private boolean isActivityListSane(List<Double> activityList) {
 		//Do a sanity check for classification, we should at least have one active property
 		boolean isSane=false;
@@ -603,25 +604,42 @@ public class SignModel {
 		while (reader.hasNext()){
 			IMolecule mol = (IMolecule) reader.next();
 
+			
 			// Check the activity.
 			String activity = (String) mol.getProperty(activityProperty);
+            double activityValue = 0.0;
+            if (classification){
+                double curActivity = 0.0;
+                for (int i = 0; i < orderedActivities.length; i++){
+                    if (orderedActivities[i].equals(activity)){
+                        activityValue = curActivity;
+                        break;
+                    }
+                    curActivity = curActivity + 1.0;
+                }    
+            }
+            else { // Regression
+                activityValue = Double.valueOf(activity);
+            }
+            activityList.add(activityValue);
+            
 
-			if (activity==null){
-				System.out.println("Activity property: " + activityProperty + " not found in molecule: " + (cnt+1));
-				System.out.println("Exiting.");
-				System.exit(1);
-			}
-
-			double activityValue = 0.0;
-			if (classification){
-				if (positiveActivity.equals(activity)){
-					activityValue = 1.0;
-				}
-			}
-			else { // Regression
-				activityValue = Double.valueOf(activity);
-			}
-			activityList.add(activityValue);
+//			if (activity==null){
+//				System.out.println("Activity property: " + activityProperty + " not found in molecule: " + (cnt+1));
+//				System.out.println("Exiting.");
+//				System.exit(1);
+//			}
+//
+//			double activityValue = 0.0;
+//			if (classification){
+//				if (positiveActivity.equals(activity)){
+//					activityValue = 1.0;
+//				}
+//			}
+//			else { // Regression
+//				activityValue = Double.valueOf(activity);
+//			}
+//			activityList.add(activityValue);
 
 			// Create the signatures for a molecule and add them to the signatures map
 			Map<String, Double> moleculeSignatures = new HashMap<String, Double>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer. libsvm wants a double.
@@ -822,7 +840,7 @@ public class SignModel {
 		System.out.println("Output dir: " + outputDir);
 		System.out.println("Activity property: " + activityProperty);
 		System.out.println("Classification: " + classification);
-		System.out.println("Positive activity: " + positiveActivity);
+		System.out.println("Positive activity: " + orderedActivities);
 
 		System.out.println("\n == Output files ==");
 		System.out.println("Output file for SVM model: " + out_svmModelName);
@@ -886,7 +904,7 @@ public class SignModel {
 			}
 
 			if ("-pa".equals(arg)) {
-				positiveActivity = it.next();
+				orderedActivities = it.next().split(","); //FIXME: Ordered list, separated by ',' (for now)
 			}
 
 			//Optional args
@@ -975,7 +993,7 @@ public class SignModel {
 		if (activityProperty==null || activityProperty.isEmpty()) 
 			throw new IllegalArgumentException("Activity property is not defined");
 
-		if (classification==true && (positiveActivity==null || positiveActivity.isEmpty())){
+		if (classification==true && (orderedActivities==null || orderedActivities.length<=0)){
 			throw new IllegalArgumentException("Missing parameter: POSITIVE ACTIVITY (required for classification)");
 		}
 
@@ -1174,8 +1192,8 @@ public class SignModel {
 			params=params + " -c " + classification;
 			params=params + " -trainfinal false"; 
 			
-			if (positiveActivity!=null && !positiveActivity.isEmpty())
-				params=params+" -pa " + positiveActivity;
+			if (orderedActivities!=null && orderedActivities.length>0)
+				params=params+" -pa " + orderedActivities;
 
 			params=params+" -o output"+cnt;
 			params=params+" -optimize " + getOptimizationType();
@@ -1224,8 +1242,8 @@ public class SignModel {
 			params=params + " -i " + sdfile_without_path;
 			params=params + " -ap \'" + activityProperty+"\'";
 			params=params + " -c " + classification;
-			if (positiveActivity!=null && !positiveActivity.isEmpty())
-				params=params+" -pa " + positiveActivity;
+			if (orderedActivities!=null && orderedActivities.length>0)
+				params=params+" -pa " + orderedActivities;
 
 			params=params+" -o output"+cnt;
 			params=params+" -optimize array";
