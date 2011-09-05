@@ -66,16 +66,18 @@
             class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
             override="false">
             
-            <resource name="rdata" path="models/u251RfModel.Rdata" />
+            <resource name="rdata" path="models/u251.rdata" />
             <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
             <parameter name="trainedModel" value="u251.rf" />
             <parameter name="requiredPackages" value="SparseM,randomForest" />
             <parameter name="requires3d" value="true" />
+            <resource name="Rpredict" path="models/predict.R"/>
 
             <parameter name="Observations" value="3515" />
             <parameter name="Variables" value="210" />
             <parameter name="URL" value="http://genome-www.stanford.edu/nci60/" />
             <parameter name="Dataset name" value="NCI60-U251" />
+
             
       </test>
 
