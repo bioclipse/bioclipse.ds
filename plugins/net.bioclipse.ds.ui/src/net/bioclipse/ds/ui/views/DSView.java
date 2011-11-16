@@ -671,7 +671,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             }
         };
         helpAction.setText("Help");
-        helpAction.setToolTipText("Open help for teh Decision Support");
+        helpAction.setToolTipText("Open help for the Decision Support");
         helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
 
     }
