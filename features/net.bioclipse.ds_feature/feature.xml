@@ -87,49 +87,21 @@ The Eclipse Public License accompanies this distribution, and is available at ht
          version="0.0.0"/>
 
    <plugin
-         id="net.bioclipse.ds.modeling"
+         id="net.bioclipse.ds.ahr"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="net.bioclipse.ds.modeling.qsar"
+         id="net.bioclipse.ds.ames"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="net.bioclipse.ds.modeling.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.models.container"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.r"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.r.ames"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.r.u251"
+         id="net.bioclipse.ds.cpdb"
          download-size="0"
          install-size="0"
          version="0.0.0"
