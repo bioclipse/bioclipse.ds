@@ -10,7 +10,7 @@
             id="net.bioclipse.ds.r.u251.endpoint">
       </endpoint>
       
-      <test
+      <!--test
             name="Cancer growth inhibition exact matches"
             class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
             endpoint="net.bioclipse.ds.r.u251.endpoint"
@@ -57,7 +57,7 @@
                name="distance.tanimoto"
                value="0.7">
          </parameter>
-      </test>
+      </test-->
 
   <test
             id="screen.u251"
@@ -66,18 +66,16 @@
             class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
             override="false">
             
-            <resource name="rdata" path="models/u251.rdata" />
+            <resource name="rdata" path="models/u251randomForestModel.Rdata,models/functions.Rdata" />
             <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
             <parameter name="trainedModel" value="u251.rf" />
-            <parameter name="requiredPackages" value="SparseM,randomForest" />
+            <parameter name="requiredPackages" value="randomForest" />
             <parameter name="requires3d" value="true" />
-            <resource name="Rpredict" path="models/predict.R"/>
 
             <parameter name="Observations" value="3515" />
             <parameter name="Variables" value="210" />
             <parameter name="URL" value="http://genome-www.stanford.edu/nci60/" />
             <parameter name="Dataset name" value="NCI60-U251" />
-
             
       </test>
 

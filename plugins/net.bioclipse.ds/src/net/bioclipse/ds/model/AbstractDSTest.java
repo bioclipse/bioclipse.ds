@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.help.IHelpResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
@@ -237,7 +238,11 @@ public abstract class AbstractDSTest implements IDSTest{
         return java.awt.Color.YELLOW;
     }
     
-    public Object getAdapter( Class adapter ) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Object getAdapter(Class adapter ) {
+        if (adapter.isAssignableFrom(IPropertySource.class)) {
+            return new ModelPropertySource(this);
+        }
         return null;
     }
 

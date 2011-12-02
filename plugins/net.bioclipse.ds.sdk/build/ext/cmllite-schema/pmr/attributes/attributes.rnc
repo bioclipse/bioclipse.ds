@@ -1,0 +1,245 @@
+namespace cml = "http://www.xml-cml.org/schema"
+namespace fpx = "http://www.uszla.me.uk/fpx"
+namespace xsd = "http://www.w3.org/2001/XMLSchema"
+namespace dc = "http://purl.org/dc/elements/1.1/"
+namespace local = ""
+namespace inherit = inherit
+
+include "../types/XMLFP.rnc" inherit = inherit
+include "../types/cmltypes.rnc" inherit = inherit
+
+
+dc:title [
+  "cmlattributes: the CML attributes used in CML Lite."
+]
+dc:description [
+  "RELAX NG schema for the attributes used in CML Lite."
+]
+dc:author [ "Peter Murray-Rust" ]
+dc:author [ "J A Townsend" ]
+dc:rights [ "&#169; Copyright J A Townsend <jat45@cantab.net> 2008." ]
+dc:date ["20081905"]
+
+
+
+## We require that dictRef attributes be a QName
+dictRef = attribute dictRef { xsd:QName }
+
+# A reference to a convention.
+# There is no controlled vocabulary for conventions, but the author must 
+# ensure that the semantics are openly available and that there are mechanisms 
+# for implementation. The convention is inherited by all the subelements, 
+# so that a convention for molecule would by default extend to its bond and 
+# atom children. This can be overwritten if necessary by an explicit convention.
+# It may be useful to create conventions with namespaces (e.g. iupac:name).
+# Use of convention will normally require non-STMML semantics, and should be used with
+# caution. We would expect that conventions prefixed with "ISO" would be useful,
+# such as ISO8601 for dateTimes.
+#
+# perhaps instead of being string context it might be better to have it as
+# qname - in the same way as dictionaries work - so we can define what we mean...
+#
+convention = attribute convention { refType }	
+#convention = attribute convention { xsd:string }	
+
+
+# The count of the object.
+# Typically used for nested complex formulae Na2 S2O4 10H2O or molecules
+count = attribute count { xsd:double { minInclusive='0.0' } }
+
+# We require the formalCharge be integer.
+formalCharge = attribute formalCharge { xsd:integer }
+
+# Normally for a molecule but may be for an atom. 
+# This attribute gives the spin multiplicity of the 
+# molecule and is independent of any atomic information. 
+spinMultiplicity = attribute spinMultiplicity { xsd:positiveInteger }
+
+# A reference to a list of atoms.
+# Although the definition only gives refType dataType, these
+# MUST be atom ids
+atomRefs = attribute atomRefs { list { refType + } }
+
+# A reference to a list of bonds.
+# Although the definition only gives refType dataType, these
+# MUST be bond ids
+bondRefs = attribute bondRefs  { list { refType + } }
+
+## References to two different atoms.
+atomRefs2 = attribute atomRefs2 { list { refType, refType } }	
+
+# A reference to four distinct existing atoms in order.
+# Although the definition only gives refType dataType, these
+# MUST be atom ids
+atomRefs4 = attribute atomRefs4 { list { refType, refType, refType, refType } }	
+
+## The chirality of a system or molecule.
+## This is being actively investigated by a IUPAC committee (2002) 
+## so the convention is likely to change. No formal default.
+chirality = attribute chirality { chiralityType } 
+
+## A concise formula.
+## The string represents an (unstructured) formula i.e. no submolecules.
+## Recommended to use the format "H 2 O 1", etc.
+concise = attribute concise { formulaType }
+
+# The data type of the object.
+# Normally applied to scalar/array objects but may extend to more complex ones.
+#
+dataType = attribute dataType { "xsd:string" | "xsd:boolean" | "xsd:float" |
+ 				"xsd:double" | "xsd:decimal" | "xsd:duration" |
+ 				"xsd:dateTime" | "xsd:time" | "xsd:date" | "xsd:gYearMonth" |
+ 				"xsd:gYear" | "xsd:gMonthDay" | "xsd:gDay" | "xsd:gMonth" |
+ 				"xsd:hexBinary" | "xsd:base64Binary" | "xsd:anyURI" |
+ 				"xsd:QName" | "xsd:NOTATION" | "xsd:normalizedString" |
+ 				"xsd:token" | "xsd:language" | "xsd:IDREFS" | "xsd:ENTITIES" |
+ 				"xsd:NMTOKEN" | "xsd:NMTOKENS" | "xsd:Name" | "xsd:NCName" |
+ 				"xsd:ID" | "xsd:IDREF" | "xsd:ENTITY" | "xsd:integer" |
+ 				"xsd:nonPositiveInteger" | "xsd:negativeInteger" | "xsd:long" |
+ 				"xsd:int" | "xsd:short" | "xsd:byte" | "xsd:nonNegativeInteger" |
+ 				"xsd:unsignedLong" | "xsd:unsignedInt" | "xsd:unsignedShort" |
+ 				"xsd:unsignedByte" | "xsd:positiveInteger" }
+ 				
+ 
+## The identity of a chemical element.
+## The periodic table up to element number 118. 
+## In addition the following strings are allowed:
+## Du - ("dummy") This does not correspond to a "real" atom and can 
+##       support a point in space or within a chemical graph.
+## R - ("R-group") This indicates that an atom or group of atoms 
+##     could be attached at this point.
+elementType = 
+  attribute elementType { elementTypeType } 
+
+## A unique ID for an element.
+## IMPORTANT NOTE. 
+## A CML id is *NOT* an XML id. This is a deliberate policy choice on PMR's part.
+## The id may appear as a QName but is not interpreted as such - any use of this
+## representation is only for human readability (i.e. m1:a1 may refer to atom 1
+## (a1) in the first molcule (m1))
+id = attribute id { refType }
+
+## An inline representation of the object.
+## This can represent a wide range of information from formal serialization
+## as ASCII through to domain-specific textual representations. It will often be used in conjunction
+## with the "convention" attribute. For example it could be used to represent IUPAC formula, 
+## SMILES strings, TeX equations, etc. Characters should conform to the XML character set,
+## and XML markup (lt and amp) should be escaped. IT SHOULD NEVER BE USED FOR INLINE XML
+inline = attribute inline { xsd:string }## 
+
+## The integer number for an isotope
+isotopeNumber = attribute isotopeNumber { xsd:positiveInteger } 
+
+## The maximum value allowed for an element or attribute.
+max = attribute max { xsd:string }
+
+## The minimum INCLUSIVE value allowed for an element or attribute.
+min = attribute min { xsd:string }
+
+## The namespace for a data item.
+\namespace = attribute \namespace { xsd:string { pattern='http://[A-Za-z][A-Za-z0-9_\.\-]*(/[A-Za-z0-9_\.\-]+)+' } }
+
+## The order of the bond.
+order = attribute order { orderType }
+
+## Multiplicity of a peak.
+## === NEEDS WORK, SHOULD BE NAMESPACED IE DICT REF TYPE ? ===
+peakMultiplicity = attribute peakMultiplicity { xsd:string }
+
+## Shape of a peak.
+## Semi-controlled vocabulary such as broad or sharp.
+## === NEEDS WORKS, SHOULD IT BE NAMESPACED IE DICT REF TYPE ? ===
+peakShape = attribute peakShape { xsd:string }
+
+## A reference to an element of given type.
+## ref modifies an element into a reference to an existing element of that type 
+## within the document. This is similar to a pointer and it can be thought of a 
+## strongly typed hyperlink. It may also be used for "subclassing" or "overriding" elements.
+## When referring to an element most of the "data" such as attribute values and element content 
+## will be on the full instantiated element.  Therefore ref (and possibly id) will normally be 
+## the only attributes on the pointing element. However there may be some attributes (title, count,
+## etc.) which have useful semantics, but these are element-specific
+ref = attribute ref { refType } 
+
+## A term in a dictionary.
+## The term should be a noun or nounal phrase, with a separate definition and further description.
+term = attribute term { xsd:string }
+
+## A title on an element.
+## No controlled value.
+title = attribute title { xsd:string }
+
+## Scientific units on an element.
+## These must be taken from a dictionary 
+## of units. There should be some mechanism for validating the type 
+## of the units against the possible values of the element.
+units = attribute units { xsd:QName }
+
+## The version of the element.
+## cml or identifier elements can currently have 
+## versions. They may be dependent on the date of release and this 
+## attribute is highly recommended.
+version =
+  attribute version {
+    xsd:string
+  }
+  
+## x coordinate for an object in 2D (not related to 3D).
+## axis orientation matters as this could change chirality.
+x2 = attribute x2 { realNumberWithExponent }
+  
+## x coordinate for an object in 3D in Angstrom.
+## Objects are always described with a right-handed coordinate system
+x3 = attribute x3 { realNumberWithExponent }
+
+## Maximum xValue.
+## Annotates x-axis data with a maximum 
+## value. This need not be algorithmically deducible from the data 
+## and is typically used for the extent of a _peak_ or _peakGroup_. 
+## It uses xUnits or the same units as the data. There may or may not 
+## be a _xMin_ attribute but if so xMax should be greater than or 
+## equals to it.
+xMax = attribute xMax { realNumberWithExponent }
+
+## Minimum xValue.</h:div>
+## Annotates x-axis data with a minimum 
+## value. This need not be algorithmically deducible from the data 
+## and is typically used for the extent of a _peak_ or _peakGroup_. 
+## It uses xUnits or the same units as the data. There may or may not 
+## be a _xMax_ attribute but if so xMin should be less than or equals 
+## to it.
+xMin = attribute xMin { realNumberWithExponent }
+
+## Units for x axis.
+## All x-axis data must have unambiguous units. 
+xUnits = attribute xUnits { xsd:QName }
+
+## Value along an x axis.
+## Annotates x-axis data with a value. It 
+## is typically used for the location of a _peak_ or _peakGroup_. It 
+## uses xUnits.
+xValue = attribute xValue { realNumberWithExponent }
+
+## y coordinate for an object in 2D (not related to 3D).
+## axis orientation matters as this could change chirality.
+y2 = attribute y2 { realNumberWithExponent }
+  
+## y coordinate for an object in 3D in Angstrom.
+## Objects are always described with a right-handed coordinate system
+y3 = attribute y3 { realNumberWithExponent } 
+
+## Units for y axis.
+## All y-axis data must have unambiguous units. 
+yUnits = attribute yUnits { xsd:QName }
+
+## Value along an y axis.
+## Annotates y-axis data with a value. It 
+## is typically used for the location of a _peak_ or _peakGroup_. It 
+## uses yUnits.
+yValue = attribute yValue { realNumberWithExponent }
+  
+## z coordinate for an object in 3D in Angstrom.
+## Objects are always described with a right-handed coordinate system
+z3 = attribute z3 { realNumberWithExponent } 
+  
+ 				

@@ -148,6 +148,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 	private JChemPaintEditor lastJCP;
 
+	private Action filterOutErrorAction;
+
     private static DSView instance;
     
     /**
@@ -533,6 +535,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(autoRunAction);
         manager.add(runAction);
         manager.add(clearAction);
+        manager.add(filterOutErrorAction);
         manager.add(new Separator());
         manager.add(includeAction);
         manager.add(excludeAction);
@@ -605,6 +608,30 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         autoRunAction.setImageDescriptor(Activator.getImageDecriptor( "icons/fastforward.png" ));
         autoRunAction.setDisabledImageDescriptor( Activator.getImageDecriptor( "icons/fastforward_dis2.png" ));
 
+        filterOutErrorAction = new Action() {
+            public void run() {
+            	
+            	ViewerFilter ef=null;
+            	for (int i = 0; i<viewer.getFilters().length;i++){
+            		if (viewer.getFilters()[i] instanceof HideErrorsFilter) {
+						ef = (HideErrorsFilter) viewer.getFilters()[i];
+					}
+            	}
+            	
+            	if (ef==null){
+            		viewer.addFilter(new HideErrorsFilter());
+            		filterOutErrorAction.setImageDescriptor(Activator.getImageDecriptor( "icons/errorsHidden.png" ));
+            	}else{
+            		viewer.removeFilter(ef);
+            		filterOutErrorAction.setImageDescriptor(Activator.getImageDecriptor( "icons/errorsShown.png" ));
+            	}
+            	
+            }
+        };
+        filterOutErrorAction.setText("Toggle Show Errors");
+        filterOutErrorAction.setToolTipText("Turns on/off if results with errors should be displayed");
+		filterOutErrorAction.setImageDescriptor(Activator.getImageDecriptor( "icons/errorsShown.png" ));
+
         clearAction = new Action() {
             public void run() {
                 doClearAllTests();
@@ -673,6 +700,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         helpAction.setText("Help");
         helpAction.setToolTipText("Open help for teh Decision Support");
         helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+
 
     }
     
@@ -1107,167 +1135,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
     }
     
     
-    /* ================================
-     * Below is for part lifecycle events
-     *====================================  */
-
-//    /**
-//     * 
-//     */
-//    public void partActivated( IWorkbenchPart part ) {
-//      logger.debug("Part:" + part.getTitle() + " activated");
-//        if (!( part instanceof IEditorPart )) return;
-//        
-//        if ( part instanceof IDSViewNoCloseEditor ) {
-//            //Do not react on this; no clear, no new tests
-//            return;
-//        }
-//        
-//        IWorkbenchPart ppart=getSupportedEditor( part );
-//        if (ppart==null){
-//            clearTestRuns();
-//            updateView();
-//            return;
-//        }
-//
-//        if (editorTestMap.keySet().contains( ppart )){
-//            activeTestRuns=editorTestMap.get( ppart );
-//            
-//            try {
-//
-//                //For all endpoints, clear old and add these testruns
-//                IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
-//                for (Endpoint ep : ds.getFullEndpoints()){
-//
-//                    //First remove any old TestRuns
-//                    if (ep.getTestruns()!=null)
-//                        ep.getTestruns().clear();
-//
-//                    if (ep.getTests()!=null){
-//                        //Loop over all tests in this Endpoint
-//                        for (IDSTest epTest : ep.getTests()){
-//                            //For the active testruns, locate those who are of this test
-//                            for (TestRun tr : activeTestRuns){
-//                                if (tr.getTest().getId().equals( epTest.getId() )){
-//                                    ep.addTestRun( tr );
-//                                }
-//                            }
-//
-//                        }
-//                    }                    
-//                }
-//            } catch ( BioclipseException e1 ) {
-//                LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
-//            }
-//
-//        }else {
-//            addNewTestRunsAndListener(ppart);
-//        }
-//        updateView();
-//
-//        if (activeTestRuns!=null){
-//            for (TestRun tr : activeTestRuns){
-//                selectIfStoredSelection( tr );
-//            }
-//        }
-//    }
-//
-//
-//    public void partBroughtToTop( IWorkbenchPart part ) {
-////        logger.debug("Part:" + part.getTitle() + " brought to top");
-//        if (!( part instanceof IEditorPart )) return;
-//
-//        if ( part instanceof IDSViewNoCloseEditor ) {
-//            //Do not react on this; no clear, no new tests
-//            return;
-//        }
-//
-//        IWorkbenchPart ppart=getSupportedEditor( part );
-//        if (ppart==null) return;
-//
-//        if (editorTestMap.keySet().contains( ppart )){
-//            activeTestRuns=editorTestMap.get( ppart );
-//
-//            try {
-//
-//                //For all endpoints, clear old and add these testruns
-//                IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
-//                for (Endpoint ep : ds.getFullEndpoints()){
-//
-//                    //First remove any old TestRuns
-//                    if (ep.getTestruns()!=null)
-//                        ep.getTestruns().clear();
-//
-//                    if (ep.getTests()!=null){
-//                        //Loop over all tests in this Endpoint
-//                        for (IDSTest epTest : ep.getTests()){
-//                            //For the active testruns, locate those who are of this test
-//                            for (TestRun tr : activeTestRuns){
-//                                if (tr.getTest().getId().equals( epTest.getId() )){
-//                                    ep.addTestRun( tr );
-//                                }
-//                            }
-//
-//                        }
-//                    }
-//
-//                    
-//                }
-//            } catch ( BioclipseException e1 ) {
-//                LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
-//            }
-//
-//        }else {
-//            //No existing editor in map, add a new
-//            addNewTestRunsAndListener(ppart);
-//        }
-//        updateView();
-//    }
-//
-//
-//    /**
-//     * If this editor is stored in map, remove the entry to free memory. 
-//     * Also remove any listeners associated with this editor.
-//     * 
-//     * After this, call updateView.
-//     */
-//    public void partClosed( IWorkbenchPart part ) {
-////      logger.debug("Part:" + part.getTitle() + " closed");
-//        if (!( part instanceof IEditorPart )) return;
-//
-//        if (getSite()==null) return;
-//        if (getSite().getWorkbenchWindow()==null) return;
-//        if (getSite().getWorkbenchWindow().getActivePage()==null) return;
-//
-//        
-//        IWorkbenchPart ppart=getSupportedEditor( part );
-//        if (ppart==null) return;
-//
-//        editorListenerMap.remove( part );
-//        if (editorTestMap.keySet().contains( ppart )){
-//            editorTestMap.remove( ppart );
-//            if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor()==null){
-//                clearTestRuns();
-//                updateView();
-//              }
-//        }
-//    }
-//
-//    /**
-//     * Occurs when lost focus. Does not mean it is not topmost editor, but 
-//     * could mean an unsupported editor is topmost. Need to verify this and 
-//     * clean in that case.
-//     */
-//    public void partDeactivated( IWorkbenchPart part ) {
-////        logger.debug("Part:" + part.getTitle() + " deactivated");
-//        storedSelection=(IStructuredSelection) viewer.getSelection();
-//    }
-//
-//    public void partOpened( IWorkbenchPart part ) {
-////        logger.debug("Part:" + part.getTitle() + " opened");
-//    }
-
-
     public void fireExternalRun() {
         doRunAllTests();
     }
@@ -1388,6 +1255,12 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		} catch (BioclipseException e) {
 			e.printStackTrace();
 		}
+		
+		//Also turn off generators
+		if (lastJCP!=null)
+			GeneratorHelper.turnOffAllExternalGenerators(lastJCP);
+		else
+			logger.debug("Could not turn off ext generators: lastJCP is null!");
 		
 		updateView();
 	}
@@ -1545,11 +1418,11 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 						deactivateView();
 						
 						//Also turn off generators
-						if (lastJCP!=null)
-							GeneratorHelper.turnOffAllExternalGenerators(lastJCP);
-						else
-							logger.debug("Could not turn off ext generators: lastJCP is null!");
-							
+//						if (lastJCP!=null)
+//							GeneratorHelper.turnOffAllExternalGenerators(lastJCP);
+//						else
+//							logger.debug("Could not turn off ext generators: lastJCP is null!");
+
 						return;
 					}
 				}
@@ -1720,6 +1593,14 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         updateView();
 		
     }
+
+	public void externalRefresh() throws BioclipseException {
+        IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
+        viewer.setInput(ds.getFullEndpoints().toArray());
+        doClearAllTests();
+        updateView();
+	}
+
 
 
 }

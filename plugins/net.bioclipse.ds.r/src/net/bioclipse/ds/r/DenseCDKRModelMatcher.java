@@ -114,9 +114,19 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 			}
 			
 	        //Set up prediction vector for R
-			String rInput="tmp <- c(" + toRString(dataset.getValues().get(0)) + ")";
-			System.out.println("RINPUT: " + rInput);
-			R.eval(rInput);
+			String rInputValues="tmp <- c(" + toRString(dataset.getValues().get(0)) + ")";
+			R.eval(rInputValues);
+
+			String namesVectorForR="";
+			for (String nam : dataset.getColHeaders()){
+				namesVectorForR = namesVectorForR + "\"" + nam + "\"" + ",";
+			}
+			
+			String rnames="names(tmp) <- names(attr(u251.rf$terms, \"dataClasses\"))[-1]";
+			System.out.println(rnames);
+			R.eval(rnames);
+
+			R.eval("tmp");
 			
 			//Do predictions in R
 			String ret="";
@@ -133,11 +143,11 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 	        
 			int overallPrediction;
 	        if (posProb>=0.5)
-	        	overallPrediction = ITestResult.POSITIVE;
-	        else
 	        	overallPrediction = ITestResult.NEGATIVE;
+	        else
+	        	overallPrediction = ITestResult.POSITIVE;
 
-			DoubleResult accuracy = new DoubleResult("accuracy", posProb, overallPrediction);
+			DoubleResult accuracy = new DoubleResult("Probability", posProb, overallPrediction);
 			results.add(accuracy);
 			
 		} catch (BioclipseException e) {
@@ -194,8 +204,18 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 	protected List<String> getPredictionString(String input){
 		
 		List<String> ret = new ArrayList<String>();
-        ret.add("predictedCDK <- predict(" + rmodel + "," + input + ", type=\"prob\")");
-        ret.add("attributes(predictedCDK)$probabilities[1,1]\n");
+		
+		ret.add("tmp <- predict(u251.naAndStdvTreatment, " + input + ")");
+		ret.add("tmp <- predict(u251.imputed, tmp)");
+		ret.add("names(tmp) <- rownames(u251.rf$importance)");
+		ret.add("predictedCDK <- predict(u251.rf, t(tmp), type=\"prob\")[2]");
+		
+		
+//        ret.add("predictedCDK <- predict(u251.rf,as.data.frame(t(" + input + ")), type=\"prob\")");
+//        ret.add("predictedCDK <- predict(" + rmodel + "," + input + ", type=\"prob\")");
+        
+        
+//        ret.add("attributes(predictedCDK)$probabilities[1,1]\n");
 		return ret;
 	}
 	

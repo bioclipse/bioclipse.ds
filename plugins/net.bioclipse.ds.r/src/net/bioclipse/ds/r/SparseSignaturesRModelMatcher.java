@@ -92,7 +92,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         else
         	overallPrediction = ITestResult.NEGATIVE;
 
-		DoubleResult accuracy = new DoubleResult("accuracy", posProb, overallPrediction);
+		DoubleResult accuracy = new DoubleResult("Probability", posProb, overallPrediction);
 		results.add(accuracy);
 
 		//Try to predict important signatures

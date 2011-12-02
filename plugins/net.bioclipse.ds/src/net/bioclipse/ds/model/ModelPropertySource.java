@@ -42,6 +42,7 @@ public class ModelPropertySource extends BasicPropertySource
     protected static final String DATASET_OBSERVATIONS = "Observations";
     protected static final String DATASET_VARIABLES= "Variables";
     protected static final String DATASET_DESCRIPTORS = "Descriptors";
+    protected static final String DATASET_SIZE = "Size";
 
 	//Results
     protected static final String PREDICTION_STATUS = "Status";
@@ -70,14 +71,8 @@ public class ModelPropertySource extends BasicPropertySource
             { DATASET_DESCRIPTORS, new TextPropertyDescriptor(DATASET_DESCRIPTORS,DATASET_DESCRIPTORS)}
     };
 
-    private Object ResultsPropertiesTable[][] =
-    {
-            { PREDICTION_STATUS, new TextPropertyDescriptor(PREDICTION_STATUS,"Status")},
-            { PREDICTION_CONSENSUS, new TextPropertyDescriptor(PREDICTION_CONSENSUS,PREDICTION_CONSENSUS)},
-            { PREDICTION_TIME, new TextPropertyDescriptor(PREDICTION_TIME,PREDICTION_TIME)},
-    };
 
-    public ModelPropertySource(TestRun model) {
+    public ModelPropertySource(IDSTest model) {
         super( model );
 
         // clean the table
@@ -88,7 +83,7 @@ public class ModelPropertySource extends BasicPropertySource
     	PropertyDescriptor descriptor = new TextPropertyDescriptor(MODEL_NAME,MODEL_NAME);
         descriptor.setCategory("Model");
         getProperties().add((IPropertyDescriptor)descriptor);
-        addToValueMap(MODEL_NAME, model.getTest().getName());
+        addToValueMap(MODEL_NAME, model.getName());
 
         addParameterProperty(model, MODEL_CHOICE,"Model");
         addParameterProperty(model, MODEL_TYPE,"Model");
@@ -105,33 +100,8 @@ public class ModelPropertySource extends BasicPropertySource
         addParameterProperty(model, DATASET_OBSERVATIONS, "Dataset");
         addParameterProperty(model, DATASET_VARIABLES, "Dataset");
         addParameterProperty(model, DATASET_DESCRIPTORS, "Dataset");
+        addParameterProperty(model, DATASET_SIZE, "Dataset");
 
-
-        // Result properties
-        for (int i=0;i<ResultsPropertiesTable.length;i++) {        
-            descriptor = (PropertyDescriptor)ResultsPropertiesTable[i][1];
-            descriptor.setCategory("Result");
-            getProperties().add((IPropertyDescriptor)descriptor);
-        }   
-        
-        //Result values
-        if (model.getStatus()==TestRun.NOT_STARTED)
-            addToValueMap(PREDICTION_STATUS,"NOT STARTED");
-        else if (model.getStatus()==TestRun.RUNNING)
-            addToValueMap(PREDICTION_STATUS,"RUNNING");
-        else if (model.getStatus()==TestRun.FINISHED)
-            addToValueMap(PREDICTION_STATUS,"FINISHED");
-        else if (model.getStatus()==TestRun.ERROR)
-            addToValueMap(PREDICTION_STATUS,"ERROR");
-        else if (model.getStatus()==ITestResult.INFORMATIVE)
-            addToValueMap(PREDICTION_STATUS,"INFORMATIVE");
-        else if (model.getStatus()==TestRun.EXCLUDED)
-            addToValueMap(PREDICTION_STATUS,"EXCLUDED");
-        else
-            addToValueMap(PREDICTION_STATUS,"N/A");
-
-            addToValueMap(PREDICTION_CONSENSUS,model.getConsensusString());
-            addToValueMap(PREDICTION_TIME,"" + model.getTest().getExecutionTimeMilliSeconds() + " ms");
     }
 
 
@@ -143,10 +113,10 @@ public class ModelPropertySource extends BasicPropertySource
      * @param category
      * 
      */
-	private void addParameterProperty(TestRun model,
+	private void addParameterProperty(IDSTest model,
 			String param, String category) {
 
-		Map<String, String> modelParams = model.getTest().getParameters();
+		Map<String, String> modelParams = model.getParameters();
 
 		if (modelParams.containsKey(param)){
         	PropertyDescriptor descriptor = new TextPropertyDescriptor(param,param);

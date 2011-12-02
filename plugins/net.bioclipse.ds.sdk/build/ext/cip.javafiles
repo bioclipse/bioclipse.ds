@@ -1,0 +1,13 @@
+org/openscience/cdk/geometry/cip/VisitedAtoms.java
+org/openscience/cdk/geometry/cip/TerminalLigand.java
+org/openscience/cdk/geometry/cip/rules/MassNumberRule.java
+org/openscience/cdk/geometry/cip/rules/ISequenceSubRule.java
+org/openscience/cdk/geometry/cip/rules/CombinedAtomicMassNumberRule.java
+org/openscience/cdk/geometry/cip/rules/CIPLigandRule.java
+org/openscience/cdk/geometry/cip/rules/AtomicNumberRule.java
+org/openscience/cdk/geometry/cip/Ligand.java
+org/openscience/cdk/geometry/cip/LigancyFourChirality.java
+org/openscience/cdk/geometry/cip/ImplicitHydrogenLigand.java
+org/openscience/cdk/geometry/cip/ImmutableHydrogen.java
+org/openscience/cdk/geometry/cip/ILigand.java
+org/openscience/cdk/geometry/cip/CIPTool.java

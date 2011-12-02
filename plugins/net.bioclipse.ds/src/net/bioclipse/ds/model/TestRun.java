@@ -122,7 +122,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
 	public Object getAdapter( Class adapter ) {
 
         if (adapter.isAssignableFrom(IPropertySource.class)) {
-            return new ModelPropertySource(this);
+            return new TestRunPropertySource(this);
         }
         
         return null;

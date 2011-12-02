@@ -1,0 +1,1015 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cmlns="http://www.xml-cml.org/schema" xmlns:h="http://www.w3.org/1999/xhtml" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href="attributes.rng"/>
+  <dc:creator>Joseph A. Townsend jat45@cantab.net</dc:creator>
+  <dc:contributor>Peter Murray-Rust pm286@cam.ac.uk</dc:contributor>
+  <dc:contributor>Jim Downing ojd20@cam.ac.uk</dc:contributor>
+  <dc:rights>This <h:span href="http://purl.org/dc/dcmitype/Text" rel="dc:type">work</h:span>
+ is licenced under a <h:a rel="license" href="http://creativecommons.org/licenses/by-nd/2.0/uk/">Creative Commons Licence.</h:a>
+  </dc:rights>
+  <dc:title>CMLLite element definitions</dc:title>
+  <dc:description>CMLLite element definitions</dc:description>
+  <define name="any">
+    <a:documentation>the ANY equivalent from DTD</a:documentation>
+    <zeroOrMore>
+      <choice>
+        <element>
+          <anyName>
+            <except>
+              <name>cmlns:label</name>
+              <name>cmlns:name</name>
+              <name>cmlns:atomParity</name>
+              <name>cmlns:bondStereo</name>
+              <name>cmlns:scalar</name>
+              <name>cmlns:entry</name>
+              <name>cmlns:atom</name>
+              <name>cmlns:atomArray</name>
+              <name>cmlns:bond</name>
+              <name>cmlns:bondArray</name>
+              <name>cmlns:dictionary</name>
+              <name>cmlns:formula</name>
+              <name>cmlns:peakStructure</name>
+              <name>cmlns:peak</name>
+              <name>cmlns:peakList</name>
+              <name>cmlns:property</name>
+              <name>cmlns:spectrum</name>
+              <name>cmlns:cml</name>
+              <name>cmlns:molecule</name>
+            </except>
+          </anyName>
+          <zeroOrMore>
+            <attribute>
+              <anyName/>
+            </attribute>
+          </zeroOrMore>
+          <ref name="any"/>
+        </element>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="nonCMLElement">
+    <element>
+      <anyName>
+        <except>
+          <name>cmlns:label</name>
+          <name>cmlns:name</name>
+          <name>cmlns:atomParity</name>
+          <name>cmlns:bondStereo</name>
+          <name>cmlns:scalar</name>
+          <name>cmlns:entry</name>
+          <name>cmlns:atom</name>
+          <name>cmlns:atomArray</name>
+          <name>cmlns:bond</name>
+          <name>cmlns:bondArray</name>
+          <name>cmlns:dictionary</name>
+          <name>cmlns:formula</name>
+          <name>cmlns:peakStructure</name>
+          <name>cmlns:peak</name>
+          <name>cmlns:peakList</name>
+          <name>cmlns:property</name>
+          <name>cmlns:spectrum</name>
+          <name>cmlns:cml</name>
+          <name>cmlns:molecule</name>
+        </except>
+      </anyName>
+      <zeroOrMore>
+        <attribute>
+          <anyName/>
+        </attribute>
+      </zeroOrMore>
+      <ref name="nonCMLElement"/>
+    </element>
+  </define>
+  <define name="anyElement">
+    <choice>
+      <zeroOrMore>
+        <element>
+          <anyName>
+            <except>
+              <name>cmlns:label</name>
+              <name>cmlns:name</name>
+              <name>cmlns:atomParity</name>
+              <name>cmlns:bondStereo</name>
+              <name>cmlns:scalar</name>
+              <name>cmlns:entry</name>
+              <name>cmlns:atom</name>
+              <name>cmlns:atomArray</name>
+              <name>cmlns:bond</name>
+              <name>cmlns:bondArray</name>
+              <name>cmlns:dictionary</name>
+              <name>cmlns:formula</name>
+              <name>cmlns:peakStructure</name>
+              <name>cmlns:peak</name>
+              <name>cmlns:peakList</name>
+              <name>cmlns:property</name>
+              <name>cmlns:spectrum</name>
+              <name>cmlns:cml</name>
+              <name>cmlns:molecule</name>
+            </except>
+          </anyName>
+          <zeroOrMore>
+            <attribute>
+              <anyName/>
+            </attribute>
+          </zeroOrMore>
+          <ref name="anyElement"/>
+        </element>
+      </zeroOrMore>
+      <ref name="label"/>
+      <ref name="name"/>
+      <ref name="atomParity"/>
+      <ref name="bondStereo"/>
+      <ref name="scalar"/>
+      <ref name="entry"/>
+      <ref name="atom"/>
+      <ref name="atomArray"/>
+      <ref name="bond"/>
+      <ref name="bondArray"/>
+      <ref name="dictionary"/>
+      <ref name="formula"/>
+      <ref name="peakStructure"/>
+      <ref name="peak"/>
+      <ref name="peakList"/>
+      <ref name="property"/>
+      <ref name="spectrum"/>
+      <ref name="cml"/>
+      <ref name="molecule"/>
+    </choice>
+  </define>
+  <!-- ELEMENTS THAT HAVE SIMPLE (i.e. NOT ELEMENT) CHILDREN -->
+  <define name="label">
+    <element name="cmlns:label">
+      <xsd:documentation>
+        <h:div class="summary">A text string qualifying an object.</h:div>
+        <h:div class="description">
+          <h:p>A label can be used to identify or distinguish elements, add keywords or classifications and similar processes. It is usually interpretable by domain-aware humans (e.g. C3'-endo, but not a34561). It is usually either built in a semantically rich fashion (e.g. C2'-alpha-H) or belongs to a controlled vocabulary. It is possibly accessed by software in a domain-specific manner. It differs from <h:tt>description</h:tt>
+ which is free text. The distinction between titles, names and labels is fuzzy, but we think this is worth making. Labels may be necesssary to identify objects within programs, while names are more likely to be reserved for database searches. Titles are likely to be freer text and not recommended for precise object retrieval.</h:p>
+        </h:div>
+        <h:div class="note">Labels should not contain whitespace. Punctuation marks are often necessary, but should not be gratuitously used. Punctuation clashing with XML character entities should be avoided; if this is not possible it should be escaped.</h:div>
+      </xsd:documentation>
+      <optional>
+        <ref name="id"/>
+      </optional>
+      <optional>
+        <ref name="dictRef"/>
+      </optional>
+      <optional>
+        <ref name="convention"/>
+      </optional>
+      <zeroOrMore>
+        <!-- should have convention -->
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- element content type -->
+      <group>
+        <data type="string"/>
+      </group>
+    </element>
+  </define>
+  <define name="name">
+    <element name="cmlns:name">
+      <optional>
+        <ref name="id">
+          <xsd:documentation>
+            <h:div class="summary">A string identifying a object.</h:div>
+            <h:div class="description">
+              <h:p>
+                <h:tt>name</h:tt>
+ is used for chemical names (formal and trivial) for molecules and also for identifiers such as CAS registry and RTECS. It can also be used for labelling atoms. It should be used in preference to the <h:tt>title</h:tt>
+ attribute because it is repeatable and can be linked to a dictionary.</h:p>
+              <h:p>Constraining patterns can be described in the dictionary and used to validate <h:tt>name</h:tt>
+s.</h:p>
+            </h:div>
+          </xsd:documentation>
+        </ref>
+      </optional>
+      <optional>
+        <ref name="convention"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- element content type -->
+      <data type="string"/>
+    </element>
+  </define>
+  <define name="atomParity">
+    <element name="cmlns:atomParity">
+      <ref name="atomRefs4">
+        <xsd:documentation>
+          <h:div class="summary">The stereochemistry round an atom centre.</h:div>
+          <h:div class="description">
+            <h:p>It follows the convention of the MIF format, and uses 4 distinct atoms to define the chirality. These can be any atoms (though they are normally bonded to the current atom). There is no default order and the order is defined by the atoms in the atomRefs4 attribute. If there are only 3 ligands, the current atom should be included in the 4 atomRefs.</h:p>
+            <h:p>The value of the parity is a signed number. (It can only be zero if two or more atoms are coincident or the configuration is planar). The sign is the sign of the chiral volume created by the four atoms (a1, a2, a3, a4):<h:pre>|  1  1  1  1 |</h:pre>
+              <h:pre>| x1 x2 x3 x4 |</h:pre>
+              <h:pre>| y1 y2 y3 y4 |</h:pre>
+              <h:pre>| z1 z2 z3 z4 |</h:pre>
+            </h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <optional>
+        <ref name="id"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- element content type -->
+      <ref name="realNumberWithExponent"/>
+    </element>
+  </define>
+  <define name="bondStereo">
+    <a:documentation>A container supporting cis trans wedge hatch and other stereochemistry.
+An explict list of atomRefs4 must be given for cis/trans. There are no implicit conventions such 
+as E/Z. This will be extended to other types of stereochemistry.</a:documentation>
+    <element name="cmlns:bondStereo">
+      <optional>
+        <!-- mandatory attributes -->
+        <ref name="atomRefs4"/>
+      </optional>
+      <!-- not necessary for wedge/hatch -->
+      <ref name="convention"/>
+      <optional>
+        <!-- optional attributes -->
+        <ref name="id"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- element content type -->
+      <data type="string"/>
+    </element>
+  </define>
+  <define name="scalar">
+    <element name="cmlns:scalar">
+      <ref name="dataType">
+        <xsd:documentation>
+          <h:div class="summary">An element to hold scalar data.</h:div>
+          <h:div class="description">
+            <h:p>
+              <h:tt>scalar</h:tt>
+ holds scalar data under a single generic container. The semantics are usually resolved by linking to a dictionary. <h:b>scalar</h:b>
+ defaults to a scalar string but has attributes which affect the type.</h:p>
+            <h:p>
+              <h:tt>scalar</h:tt>
+ does not necessarily reflect a physical object. It may reflect a property of an object such as temperature, size, etc. </h:p>
+            <h:p>Note that normal Schema validation tools cannot validate the data type of <h:b>scalar</h:b>
+ (it is defined as <h:tt>string</h:tt>
+), but that a temporary schema can be constructed from the type and used for validation. Also the type can be contained in a dictionary and software could decide to retrieve this and use it for validation.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <!--
+        mandatory attributes
+        although the content type of the element is string the dataType attribute allows the specification of how this should be interpreted
+      -->
+      <ref name="units"/>
+      <optional>
+        <ref name="id"/>
+      </optional>
+      <optional>
+        <!-- scalar must have one or more of max, min and content (text node) -->
+        <ref name="max"/>
+      </optional>
+      <optional>
+        <ref name="min"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- element content type -->
+      <data type="string"/>
+    </element>
+  </define>
+  <define name="entry">
+    <element name="cmlns:entry">
+      <ref name="id">
+        <xsd:documentation>
+          <h:div class="summary">A dictionary entry.</h:div>
+          <h:div class="description">
+            <h:p>The original design for validation with attribute-based constraints is ponderous and fragile. In future constraints will be added through <h:tt>appinfo</h:tt>
+ in <h:tt>annotation</h:tt>
+.  We shall develop this further in the near future.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <ref name="dataType"/>
+      <ref name="term"/>
+      <ref name="title"/>
+      <optional>
+        <ref name="convention"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!--
+        child elements
+        === might be xhtml, RDF, cml etc. ===
+        the entry might be only human understandable but acts as a 
+        URI for, or may contain machine understandable limitations
+        on the possible values (eg m.p. > 0 K)
+      -->
+      <ref name="any"/>
+    </element>
+  </define>
+  <!-- NOW DEFINE ELEMENTS THAT HAVE COMPLEX (i.e. ELEMENT) CHILDREN -->
+  <define name="atom">
+    <element name="cmlns:atom">
+      <ref name="elementType">
+        <xsd:documentation>
+          <h:div class="summary">An atom.</h:div>
+          <h:div documentation="general">
+            <h:p>Atoms can only be chosen from the periodic table and superatoms such as 'Phe' or 'Tyr' are not allowed. The elementType of an atom is identified by that attribute. There are two additional elementTypes, 'Du' (for an object which does not have an identifiable nucleus but is useful in calculations and definitions (such as a centroid); and 'R' which describes a generic fragment. Although atoms have an elementType, they do not,  by default, support arbitrary atomTypes for which the &lt;atomType&gt; element should be used.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <!-- mandatory attributes -->
+      <ref name="id"/>
+      <optional>
+        <!-- optional attributes -->
+        <ref name="x2"/>
+      </optional>
+      <optional>
+        <ref name="y2"/>
+      </optional>
+      <optional>
+        <ref name="x3"/>
+      </optional>
+      <optional>
+        <ref name="y3"/>
+      </optional>
+      <optional>
+        <ref name="z3"/>
+      </optional>
+      <optional>
+        <ref name="isotopeNumber"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <ref name="formalCharge"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <interleave>
+        <zeroOrMore>
+          <ref name="label"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="name"/>
+        </zeroOrMore>
+        <optional>
+          <ref name="atomParity"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+  <define name="atomArray">
+    <element name="cmlns:atomArray">
+      <optional>
+        <ref name="id">
+          <xsd:documentation>
+            <h:div class="summary">A container for a list of atoms.</h:div>
+            <h:div class="description">
+              <h:p>A child of _molecule_ and contains _atom_ information. There are two strategies:<h:ul>
+                  <h:li>Create individual _atom_ elements under _atomArray_ (in any order). This gives the greatest flexibility but is the most verbose.</h:li>
+                  <h:li>Create <h:tt>*Array</h:tt>
+ attributes (e.g. of<h:tt>elementTypeArrayType</h:tt>
+ under <h:tt>atomArray</h:tt>
+. This requires all arrays to be of identical lengths with explicit values for all atoms in every array. This is NOT suitable for complexType atom children such as atomParity. It also cannot be checked as easily by schema- and schematron validation. The _atomIDArray_ attribute is mandatory. It is allowed (though not yet recommended) to add _*Array_ children such as _floatArray_</h:li>
+                </h:ul>
+The attributes are directly related to the scalar attributes under <h:tt>atom</h:tt>
+ which should be consulted for more info.</h:p>
+            </h:div>
+          </xsd:documentation>
+        </ref>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <oneOrMore>
+        <!-- child elements -->
+        <ref name="atom"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="bond">
+    <element name="cmlns:bond">
+      <ref name="id">
+        <xsd:documentation>
+          <h:div class="summary">A bond between atoms, or between atoms and bonds.</h:div>
+          <h:div class="description">
+            <h:p>_bond_ is a child of _bondArray_ and contains bond information. Bond must refer to at least two atoms (normally using _atomRefs2_) but may also refer to more for multicentre bonds. Bond is often EMPTY but may contain _electron_, _length_ or _bondStereo_ elements.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <ref name="atomRefs2"/>
+      <optional>
+        <!-- optional attributes -->
+        <ref name="order"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <interleave>
+        <zeroOrMore>
+          <ref name="label"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="name"/>
+        </zeroOrMore>
+        <optional>
+          <ref name="bondStereo"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+  <define name="bondArray">
+    <element name="cmlns:bondArray">
+      <optional>
+        <ref name="id">
+          <xsd:documentation>
+            <h:div class="summary">A container for a number of bonds.</h:div>
+            <h:div class="description">
+              <h:p>_bondArray_ is a child of _molecule_ and contains _bond_ information. There are two strategies:<h:ul>
+                  <h:li>Create individual <h:tt>bond</h:tt>
+ elements under <h:tt>bondArray</h:tt>
+ (in any order). This gives the greatest flexibility but is the most verbose.</h:li>
+                  <h:li>Create <h:tt>*Array</h:tt>
+ attributes (e.g. of <h:tt>orderArrayType</h:tt>
+ under <h:tt>bondArray</h:tt>
+. This requires all arrays to be of identical lengths with explicit values for all bonds in every array. This is NOT suitable for complexType bond children such as _bondStereo_ nor can IDs be added to bonds.. It also cannot be checked as easily by schema- and schematron validation. The _atomRef1Array_ and _atomRef2Array_ attributes are then mandatory. It is allowed (though not yet recommended) to add _*Array_ children such as _floatArray_</h:li>
+                </h:ul>
+              </h:p>
+              <h:p>The attributes are directly related to the scalar attributes under _atom_ which should be consulted for more info.</h:p>
+            </h:div>
+          </xsd:documentation>
+        </ref>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <oneOrMore>
+        <!-- child elements -->
+        <ref name="bond"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="dictionary">
+    <element name="cmlns:dictionary">
+      <ref name="convention">
+        <xsd:documentation>
+          <h:div class="name">dictionary</h:div>
+          <h:div class="summary">A dictionary.</h:div>
+          <h:div class="description">
+            <h:p>A dictionary is a container for _entry_ elements.  Dictionaries can also contain unit-related information. The dictRef attribute on a dictionary element sets a namespace-like prefix allowing the dictionary to be referenced from within the document. In general dictionaries are referenced from an element using the __dictRef__ attribute.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <ref name="title"/>
+      <ref name="namespace"/>
+      <optional>
+        <!-- optional attributes -->
+        <ref name="id"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <oneOrMore>
+        <!-- child elements -->
+        <ref name="entry"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="formula">
+    <element name="cmlns:formula">
+      <optional>
+        <ref name="id">
+          <xsd:documentation>
+            <h:div class="summary">A molecular formula.</h:div>
+            <h:div class="description">
+              <h:p>It is defined by <h:tt>atomArray</h:tt>
+s each with a list of elementTypes and their counts. All other information in the <h:tt>atomArray</h:tt>
+ is ignored. <h:tt>formula</h:tt>
+ are nestable so that aggregates (e.g. hydrates, salts, etc.) can be described. CML does not require that formula information is consistent with (say) crystallographic information; this allows for experimental variance.</h:p>
+              <h:p>An alternative briefer representation is also available through the <h:tt>concise</h:tt>
+. This must include whitespace round all elements and their counts, which must be explicit.</h:p>
+            </h:div>
+          </xsd:documentation>
+        </ref>
+        <!-- optional attributes -->
+      </optional>
+      <optional>
+        <ref name="convention"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <ref name="count"/>
+      </optional>
+      <optional>
+        <!-- must have a count if child of formula, otherwise no count -->
+        <ref name="formalCharge"/>
+      </optional>
+      <optional>
+        <ref name="concise"/>
+      </optional>
+      <optional>
+        <!-- should have concise if possible -->
+        <ref name="inline"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <choice>
+        <empty/>
+        <ref name="atomArray"/>
+        <group>
+          <ref name="formula"/>
+          <oneOrMore>
+            <ref name="formula"/>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="peakStructure">
+    <element name="cmlns:peakStructure">
+      <ref name="dictRef">
+        <xsd:documentation>
+          <h:div class="summary">The structure of a peak in a spectrum.</h:div>
+          <h:div class="description">
+            <h:p>Primarily to record couplings and other fine structure. At present we have tested this on HNMR spectra, C13 NMR and simple IR. We believe that other types of spectroscopy (ESR, NQR, etc) can be represented to some extent, but there may be systems beyond the current expressive power.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <optional>
+        <ref name="id"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <ref name="atomRefs"/>
+      </optional>
+      <optional>
+        <ref name="bondRefs"/>
+      </optional>
+      <optional>
+        <ref name="peakShape"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <interleave>
+        <zeroOrMore>
+          <ref name="name"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="label"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="peak">
+    <element name="cmlns:peak">
+      <ref name="id">
+        <xsd:documentation>
+          <h:div class="name">peak</h:div>
+          <h:div class="summary">A peak; annotated by human or machine.</h:div>
+          <h:div class="description">
+            <h:p>A <h:tt>peak</h:tt>
+ can describe:<h:ul>
+                <h:li>A single point in a spectrum. Usually a maximum but could be a shoulder, inflexion or indeed any point of interest.</h:li>
+                <h:li>A continuous range of values within a spectrum, defined by maximum and minimum values on either/both axes.</h:li>
+              </h:ul>
+            </h:p>
+            <h:p>A peak may be described by specifying xValue <h:i>or</h:i>
+ by giving xMax <h:i>and</h:i>
+ xMin. It seems reasonable to also allow xValue and xMax and xMin.</h:p>
+            <h:p>If yValue is given on a peak then it must also be specified for all peaks within the containing peakList.</h:p>
+          </h:div>
+          <h:div class="note">
+            <h:p>The finer structure of the peak can be given with one or more peakStructure children.</h:p>
+          </h:div>
+          <h:div class="question">
+            <h:p>Do we want to support expressions such as 'a carbonyl peak is typically seen over 190 ppm'.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <ref name="atomRefs"/>
+      </optional>
+      <optional>
+        <ref name="bondRefs"/>
+      </optional>
+      <optional>
+        <ref name="yValue"/>
+      </optional>
+      <optional>
+        <ref name="xValue"/>
+      </optional>
+      <optional>
+        <ref name="xMax"/>
+      </optional>
+      <optional>
+        <ref name="xMin"/>
+      </optional>
+      <optional>
+        <ref name="peakMultiplicity"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <interleave>
+        <zeroOrMore>
+          <ref name="label"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="name"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="peakStructure"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="peakList">
+    <a:documentation>A list of peaks.
+Distinguish between peakList (primarily a navigational container) 
+and peakGroup where the peaks (or groups) have some close relation 
+not shared by all peaks. All peaks and peakGroups should use the same 
+units.</a:documentation>
+    <element name="cmlns:peakList">
+      <ref name="xUnits">
+        <xsd:documentation>
+          <h:div class="summary">A list of peaks or peakGroups.</h:div>
+          <h:div class="description">
+            <h:p>Distinguish between <h:tt>peakList</h:tt>
+ (primarily a navigational container) and <h:tt>peakGroup</h:tt>
+ where the peaks (or groups) have some close relation not shared by all peaks. All peaks and peakGroups should use the same units.</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <optional>
+        <ref name="id"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <ref name="yUnits"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <oneOrMore>
+        <!-- child elements -->
+        <ref name="peak"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="property">
+    <a:documentation>A container for a property.
+property can contain one or more children, usually scalar,
+array or matrix. The dictRef attribute is required, even if 
+there is a single scalar child with the same dictRef. The 
+property may have a different dictRef from the child, thus 
+providing an extension mechanism.</a:documentation>
+    <element name="cmlns:property">
+      <ref name="dictRef">
+        <xsd:documentation>
+          <h:div class="summary">A container for a property.</h:div>
+          <h:div class="description">
+            <h:p>
+              <h:tt>property</h:tt>
+ can contain one or more children, usually <h:tt>scalar</h:tt>
+, <h:tt>array</h:tt>
+ or <h:tt>matrix</h:tt>
+. The <h:tt>dictRef</h:tt>
+ attribute is required, even if there is a single scalar child with the same dictRef. The property may have a different dictRef from the child, thus providing an extension mechanism.</h:p>
+            <h:p>Properties may have a <h:tt>state</h:tt>
+ attribute to distinguish the state of matter</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <optional>
+        <ref name="id"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <interleave>
+        <zeroOrMore>
+          <ref name="name"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="label"/>
+        </zeroOrMore>
+        <choice>
+          <optional>
+            <ref name="scalar"/>
+          </optional>
+          <oneOrMore>
+            <ref name="property"/>
+          </oneOrMore>
+        </choice>
+      </interleave>
+    </element>
+  </define>
+  <define name="spectrum">
+    <element name="cmlns:spectrum">
+      <ref name="dictRef">
+        <xsd:documentation>
+          <h:div class="summary">A spectrum and relevant data or metadata.</h:div>
+          <h:div class="description">
+            <h:p>The <h:tt>spectrum</h:tt>
+ construct can hold <h:tt>metadataList</h:tt>
+, <h:tt>sample</h:tt>
+ (which can contain molecule), <h:tt>conditionList</h:tt>
+ (mainly for physical/chemical conditions, not instrumental), <h:tt>spectrumData</h:tt>
+ for the actual data and instrumental settings/procedure and <h:tt>peakList</h:tt>
+ for the assigned peaks. This approach puts the spectrum as the primary object of interest. It could also be possible to make <h:tt>spectrum</h:tt>
+ a child of <h:tt>molecule</h:tt>
+ (although a reference using <h:tt>ref</h:tt>
+ might be preferable).</h:p>
+          </h:div>
+        </xsd:documentation>
+      </ref>
+      <optional>
+        <!-- optional attributes -->
+        <ref name="id"/>
+      </optional>
+      <optional>
+        <ref name="convention"/>
+      </optional>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <interleave>
+        <ref name="peakList"/>
+        <zeroOrMore>
+          <ref name="property"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="cml">
+    <a:documentation>A general container for CML elements.
+Often the root of the CML (sub)document. 
+Has no explicit function but can serve to hold the dictionary and 
+namespace and version information, and is a useful tag to alert 
+CML processors and search/XMLQuery tools that there is chemistry in the document. 
+Can contain any content, but usually a list of molecules and other CML components. </a:documentation>
+    <element name="cmlns:cml">
+      <group>
+        <optional>
+          <!-- optional attributes -->
+          <ref name="id"/>
+        </optional>
+        <optional>
+          <ref name="convention"/>
+        </optional>
+        <optional>
+          <!-- convention is mandatory on the eldest cml element -->
+          <ref name="title"/>
+        </optional>
+        <optional>
+          <ref name="version"/>
+        </optional>
+        <zeroOrMore>
+          <!-- mandatory on the eldest cml element -->
+          <attribute>
+            <anyName>
+              <except>
+                <nsName ns="http://www.xml-cml.org/schema"/>
+                <nsName ns=""/>
+              </except>
+            </anyName>
+          </attribute>
+        </zeroOrMore>
+        <!-- any cml child element is allowed as a child -->
+        <ref name="anyElement"/>
+      </group>
+      <!-- we don't allow mixed content in CML but it may be wrapped by html for example -->
+    </element>
+  </define>
+  <define name="molecule">
+    <a:documentation>A container for atoms, bonds and submolecules.
+molecule is a container for atoms, bonds and submolecules along
+with properties such as crystal and non-built in properties. It should either
+contain molecule or *Array for atoms and bonds. A molecule can be empty (e.g. 
+we just know its name, id, etc.)
+"Molecule" need not represent a chemically meaningful molecule. It
+can contain atoms with bonds (as in the solid-sate) and it could 
+simply carry a name (e.g. "taxol") without formal representation
+of the structure. It can contain "sub molecules", which are often
+discrete subcomponents (e.g. guest-host).</a:documentation>
+    <element name="cmlns:molecule">
+      <!-- mandatory attributes -->
+      <ref name="id"/>
+      <optional>
+        <!-- optional attributes -->
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <!-- must have count if not eldest molecule element -->
+        <ref name="count"/>
+      </optional>
+      <optional>
+        <!-- formalCharge on a molecule takes presidence over formalCharge on any younger elements -->
+        <ref name="formalCharge"/>
+      </optional>
+      <optional>
+        <ref name="spinMultiplicity"/>
+      </optional>
+      <optional>
+        <ref name="ref"/>
+      </optional>
+      <optional>
+        <ref name="chirality"/>
+      </optional>
+      <zeroOrMore>
+        <attribute>
+          <anyName>
+            <except>
+              <nsName ns="http://www.xml-cml.org/schema"/>
+              <nsName ns=""/>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+      <!-- child elements -->
+      <interleave>
+        <optional>
+          <ref name="atomArray"/>
+        </optional>
+        <optional>
+          <ref name="bondArray"/>
+        </optional>
+        <optional>
+          <ref name="formula"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="label"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="molecule"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="name"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="property"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="spectrum"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="cml"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+</grammar>

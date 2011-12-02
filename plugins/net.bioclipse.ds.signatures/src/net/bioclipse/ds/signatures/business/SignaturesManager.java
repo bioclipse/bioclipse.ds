@@ -450,8 +450,8 @@ public class SignaturesManager implements IBioclipseManager {
 			}
 		}
 
-		CDKHueckelAromaticityDetector.detectAromaticity(mol);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+		CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
 		CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(mol.getBuilder());
 		hAdder.addImplicitHydrogens(mol);

@@ -1,5 +1,6 @@
 package net.bioclipse.ds.r;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.util.FileUtil;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
@@ -65,12 +68,33 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         
 		//Load R with rdata file
         monitor.subTask("Loading R data into R");
-        String rmodelFile = getFileFromParameter( R_DATA_PARAMETER );
-        String loadModelResult = R.eval("load(\"" + rmodelFile + "\")");
-    	if (loadModelResult.startsWith("Error"))
-            throw new DSException("Error initializing test " + getName() 
-            		+ ": Loading data file " + rmodelFile 
-            		+ " FAILED.");
+        
+        String rdataparams = getParameters().get( R_DATA_PARAMETER );
+        String[] rmodelFiles = rdataparams.split(",");
+
+        for (String rm : rmodelFiles){
+        	
+        	//Get file for param
+            if (rm.isEmpty())
+                throw new DSException("Error initializing file parameter " + rm + " for model "
+                		+ getName() + " due to empty parameter ");
+
+            try {
+				String path = FileUtil.getFilePath(rm, getPluginID());
+        	
+            String loadModelResult = R.eval("load(\"" + path + "\")");
+
+			if (loadModelResult.startsWith("Error"))
+                throw new DSException("Error initializing test " + getName() 
+                		+ ": Loading data file " + rmodelFiles 
+                		+ " FAILED.");
+		
+            } catch (Exception e) {
+                throw new DSException("Error initializing file parameter " + rm + " for model "
+                		+ getName() + " due to path wrong: " + rm);
+			}
+
+        }
 
         monitor.worked(1);
         monitor.subTask("Asserting R model");
@@ -82,7 +106,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         	if (rres.startsWith("Error"))
         		throw new DSException("Error initializing test " + getName() 
         				+ ": Asserting R object " + rmodel 
-        				+ " FAILED after loading R data file " + rmodelFile);
+        				+ " FAILED after loading R data file " + rmodelFiles);
         }
 
         monitor.worked(1);

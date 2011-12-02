@@ -1,0 +1,847 @@
+namespace cmlns = "http://www.xml-cml.org/schema"
+namespace xsd = "http://www.w3.org/2001/XMLSchema"
+namespace dc = "http://purl.org/dc/elements/1.1/"
+namespace h = "http://www.w3.org/1999/xhtml"
+
+namespace local = ""
+
+namespace inherit = inherit
+
+include "../attributes/attributes.rnc" 
+
+dc:creator [
+  "Joseph A. Townsend jat45@cantab.net"
+]
+
+dc:contributor [
+  "Peter Murray-Rust pm286@cam.ac.uk"
+]
+
+dc:contributor [
+  "Jim Downing ojd20@cam.ac.uk"
+]
+
+dc:rights [
+  "This "
+  h:span [
+    href="http://purl.org/dc/dcmitype/Text" 
+    rel="dc:type"
+    "work"
+  ]
+  " is licenced under a "
+  h:a[ 
+    rel="license" 
+    href="http://creativecommons.org/licenses/by-nd/2.0/uk/"
+    "Creative Commons Licence."
+  ]
+]
+
+dc:title [
+  "CMLLite element definitions"
+]
+
+dc:description [
+  "CMLLite element definitions" 
+]
+  
+## the ANY equivalent from DTD
+any =
+  (element *- ( cmlns:label |cmlns:name | cmlns:atomParity | cmlns:bondStereo | cmlns:scalar | cmlns:entry | cmlns:atom | cmlns:atomArray | cmlns:bond | cmlns:bondArray | cmlns:dictionary | cmlns:formula | cmlns:peakStructure | cmlns:peak | cmlns:peakList | cmlns:property |cmlns:spectrum |cmlns:cml | cmlns:molecule )  {
+     attribute * { text }*,
+     any
+   }
+   | text)*
+   
+nonCMLElement =
+  (element *- ( cmlns:label |cmlns:name | cmlns:atomParity | cmlns:bondStereo | cmlns:scalar | cmlns:entry | cmlns:atom | cmlns:atomArray | cmlns:bond | cmlns:bondArray | cmlns:dictionary | cmlns:formula | cmlns:peakStructure | cmlns:peak | cmlns:peakList | cmlns:property |cmlns:spectrum |cmlns:cml | cmlns:molecule )  { 
+     attribute * { text } *,
+     nonCMLElement
+     } 
+  )   
+   
+anyElement =
+  (element *- ( cmlns:label |cmlns:name | cmlns:atomParity | cmlns:bondStereo | cmlns:scalar | cmlns:entry | cmlns:atom | cmlns:atomArray | cmlns:bond | cmlns:bondArray | cmlns:dictionary | cmlns:formula | cmlns:peakStructure | cmlns:peak | cmlns:peakList | cmlns:property |cmlns:spectrum |cmlns:cml | cmlns:molecule )  { 
+     attribute * { text } *,
+     anyElement
+     } 
+  )* | label | name | atomParity | bondStereo | scalar | entry | atom | atomArray | bond | bondArray | dictionary | formula | peakStructure | peak | peakList | property | spectrum | cml | molecule  
+  
+  
+# ELEMENTS THAT HAVE SIMPLE (i.e. NOT ELEMENT) CHILDREN
+
+label =
+  [ xsd:documentation [
+      h:div [
+        class='summary' 
+        "A text string qualifying an object."
+      ]
+      h:div [
+        class='description'
+        h:p [ 
+          "A label can be used to identify or distinguish elements, add keywords or classifications and similar processes. It is usually interpretable by domain-aware humans (e.g. C3'-endo, but not a34561). It is usually either built in a semantically rich fashion (e.g. C2'-alpha-H) or belongs to a controlled vocabulary. It is possibly accessed by software in a domain-specific manner. It differs from "
+          h:tt [
+            "description"
+          ]
+          " which is free text. The distinction between titles, names and labels is fuzzy, but we think this is worth making. Labels may be necesssary to identify objects within programs, while names are more likely to be reserved for database searches. Titles are likely to be freer text and not recommended for precise object retrieval."
+        ]
+      ]
+      h:div [
+        class='note' 
+          "Labels should not contain whitespace. Punctuation marks are often necessary, but should not be gratuitously used. Punctuation clashing with XML character entities should be avoided; if this is not possible it should be escaped."
+      ]
+  ]]
+  element cmlns:label {
+  id ?,
+  dictRef ?,
+  convention ?, # should have convention
+  attribute *- (cmlns:*|local:*)  { text } *,  
+  # element content type
+  ( xsd:string )
+}
+ 
+name = 
+  element cmlns:name {
+  [ xsd:documentation [  
+      h:div [
+        class='summary' 
+          "A string identifying a object."
+      ]
+      h:div [
+        class='description' 
+        h:p [  
+          h:tt [
+            "name"
+          ]
+          " is used for chemical names (formal and trivial) for molecules and also for identifiers such as CAS registry and RTECS. It can also be used for labelling atoms. It should be used in preference to the "
+          h:tt [
+            "title"
+          ]
+          " attribute because it is repeatable and can be linked to a dictionary." 
+        ]
+        h:p [
+          "Constraining patterns can be described in the dictionary and used to validate "
+          h:tt [
+            "name"
+          ]
+          "s."
+        ]    
+      ]
+  ]]
+  id ?,
+  convention ?, 
+  attribute *- (cmlns:*|local:*)  { text } *,
+ 
+  # element content type
+  xsd:string
+}
+
+atomParity = 
+  element cmlns:atomParity {
+
+[ xsd:documentation [
+    h:div [ 
+      class='summary'
+      "The stereochemistry round an atom centre."
+    ]
+    h:div [
+        class='description'
+        h:p [ 
+          "It follows the convention of the MIF format, and uses 4 distinct atoms to define the chirality. These can be any atoms (though they are normally bonded to the current atom). There is no default order and the order is defined by the atoms in the atomRefs4 attribute. If there are only 3 ligands, the current atom should be included in the 4 atomRefs."
+        ]
+      h:p [
+        "The value of the parity is a signed number. (It can only be " 
+        "zero if two or more atoms are coincident or the configuration is " 
+        "planar). The sign is the sign of the chiral volume created by the "  
+        "four atoms (a1, a2, a3, a4):"
+        
+        h:pre [
+          "|  1  1  1  1 |"
+        ]
+        h:pre [
+          "| x1 x2 x3 x4 |"
+        ]
+        h:pre [
+          "| y1 y2 y3 y4 |"
+        ]
+        h:pre [
+          "| z1 z2 z3 z4 |"
+        ]       
+      ]
+    ]
+  ]]
+
+  atomRefs4,
+  id ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  
+  # element content type
+  realNumberWithExponent
+}  
+
+## A container supporting cis trans wedge hatch and other stereochemistry.
+## An explict list of atomRefs4 must be given for cis/trans. There are no implicit conventions such 
+## as E/Z. This will be extended to other types of stereochemistry.
+bondStereo = 
+  element cmlns:bondStereo {
+ 
+  # mandatory attributes
+  atomRefs4 ?, #not necessary for wedge/hatch 
+  convention,
+
+  # optional attributes
+  id ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+   
+  # element content type
+  xsd:string
+}
+
+scalar = 
+  element cmlns:scalar {
+  [ xsd:documentation [  
+    h:div [
+      class='summary' 
+        "An element to hold scalar data."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        h:tt [
+          "scalar"
+        ]
+        " holds scalar data under a single generic container. The semantics are usually resolved by linking to a dictionary. "
+        h:b [
+          "scalar"
+        ]
+        " defaults to a scalar string but has attributes which affect the type."
+      ]
+      h:p [
+        h:tt [
+          "scalar"
+        ]
+        " does not necessarily reflect a physical object. It may reflect a property of an object"
+        " such as temperature, size, etc. "
+      ]
+      h:p [
+        "Note that normal Schema validation tools cannot validate the data type of "
+        h:b [
+          "scalar"
+        ]
+        " (it is defined as "
+        h:tt [
+          "string"
+        ]
+        "), but that a temporary schema " 
+        "can be constructed from the type and used for validation. Also the type "
+        "can be contained in a dictionary and software could decide to retrieve this "
+        "and use it for validation."
+      ]
+    ]
+  ]]
+  # mandatory attributes
+  # although the content type of the element is string the dataType attribute allows the specification of how this should be interpreted
+  dataType,
+  units,
+  id ?,
+  # scalar must have one or more of max, min and content (text node)
+  max ?,
+  min ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # element content type
+  xsd:string
+}
+
+entry = 
+  element cmlns:entry {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+        "A dictionary entry."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        "The original design for validation with attribute-based constraints is ponderous and fragile. In future constraints will be added through "
+        h:tt [
+          "appinfo"
+        ]
+        " in "
+        h:tt [
+          "annotation"
+        ]
+        ".  We shall develop this further in the near future."
+      ]
+    ]
+  ]] 
+  id,
+  dataType,
+  term,
+  title,
+  convention ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+  # === might be xhtml, RDF, cml etc. ===
+  # the entry might be only human understandable but acts as a 
+  # URI for, or may contain machine understandable limitations
+  # on the possible values (eg m.p. > 0 K)
+  any
+}
+
+
+# NOW DEFINE ELEMENTS THAT HAVE COMPLEX (i.e. ELEMENT) CHILDREN
+
+atom = 
+  element cmlns:atom {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+        "An atom."
+    ]
+    h:div [
+      documentation='general' 
+      h:p [
+        "Atoms can only be chosen from the periodic table and superatoms such as 'Phe' or 'Tyr' are not allowed. The elementType of an atom is identified by that attribute. There are two additional elementTypes, 'Du' (for an object which does not have an identifiable nucleus but is useful in calculations and definitions (such as a centroid); and 'R' which describes a generic fragment. Although atoms have an elementType, they do not,  by default, support arbitrary atomTypes for which the <atomType> element should be used."
+      ]
+    ]
+  ]] 
+  # mandatory attributes
+  elementType, 
+  id,
+  # optional attributes
+  x2 ?,
+  y2 ?,
+  x3 ?,
+  y3 ?,
+  z3 ?,
+  isotopeNumber ?,
+  title ?,
+  formalCharge ?,
+  attribute *- (cmlns:*|local:*)  { text } *,  
+  # child elements
+  ( label* & 
+    name* & 
+    atomParity? 
+  ) 
+  
+}
+
+atomArray = 
+  element cmlns:atomArray {
+  [ xsd:documentation [  
+    h:div [
+      class='summary' 
+        "A container for a list of atoms."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        "A child of _molecule_ and contains _atom_ information. There are two strategies:"
+        h:ul [
+          h:li [
+            "Create individual _atom_ elements under _atomArray_ (in any order). This gives the greatest flexibility but is the most verbose."
+          ]
+          h:li [
+            "Create "
+            h:tt [
+              "*Array"
+            ]
+            " attributes (e.g. of" 
+            h:tt [
+              "elementTypeArrayType" 
+            ]
+            " under "
+            h:tt[ 
+              "atomArray"
+            ]
+            ". This requires all arrays to be of identical lengths with explicit values for all atoms in every array. This is NOT suitable for complexType atom children such as atomParity. It also cannot be checked as easily by schema- and schematron validation. The _atomIDArray_ attribute is mandatory. It is allowed (though not yet recommended) to add _*Array_ children such as _floatArray_"
+          ]
+        ]
+        "The attributes are directly related to the scalar attributes under "
+        h:tt [
+         "atom"
+        ] 
+        " which should be consulted for more info."
+      ]
+    ]
+  ]]
+  id ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+  atom +
+}
+
+bond = 
+  element cmlns:bond {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+      "A bond between atoms, or between atoms and bonds."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        "_bond_ is a child of _bondArray_ and contains bond information. Bond must refer to at least two atoms (normally using _atomRefs2_) but may also refer to more for multicentre bonds. Bond is often EMPTY but may contain _electron_, _length_ or _bondStereo_ elements."
+      ]
+    ]
+  ]]
+  id,
+  atomRefs2, 
+  # optional attributes
+  order ?,
+  title ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+   ( label* & 
+     name* & 
+     bondStereo?  
+   ) 
+}
+
+bondArray = 
+  element cmlns:bondArray {
+  [ xsd:documentation [  
+    h:div [
+      class='summary' 
+      "A container for a number of bonds."
+    ]
+    h:div [
+      class='description' 
+      h:p [
+        "_bondArray_ is a child of _molecule_ and contains _bond_ information. There are two strategies:"
+        h:ul [
+          h:li [
+            "Create individual "
+            h:tt [
+              "bond"
+            ]
+            " elements under "
+            h:tt [
+              "bondArray"
+            ]
+            " (in any order). This gives the greatest flexibility but is the most verbose."
+          ]
+          h:li [
+            "Create "
+            h:tt [
+              "*Array"
+            ]
+            " attributes (e.g. of "
+            h:tt [
+              "orderArrayType"
+            ]
+            " under "
+            h:tt [
+              "bondArray"
+            ]
+            ". This requires all arrays to be of identical lengths with explicit values for all bonds in every array. This is NOT suitable for complexType bond children such as _bondStereo_ nor can IDs be added to bonds.. It also cannot be checked as easily by schema- and schematron validation. The _atomRef1Array_ and _atomRef2Array_ attributes are then mandatory. It is allowed (though not yet recommended) to add _*Array_ children such as _floatArray_"
+          ]
+        ]
+      ]
+      h:p [
+        "The attributes are directly related to the scalar attributes under _atom_ which should be consulted for more info."
+      ]
+    ]
+  ]]  
+  id ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+  bond+  
+}
+
+dictionary = 
+  element cmlns:dictionary {
+  [ xsd:documentation [
+    h:div [
+      class='name'
+      "dictionary"
+    ]
+    h:div [
+      class='summary' 
+      "A dictionary."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        "A dictionary is a container for _entry_ elements.  Dictionaries can also contain unit-related information. The dictRef attribute on a dictionary element sets a namespace-like prefix allowing the dictionary to be referenced from within the document. In general dictionaries are referenced from an element using the __dictRef__ attribute."
+      ]
+    ]
+  ]]  
+  convention,
+  title,
+  \namespace,
+  # optional attributes
+  id ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+  entry +  
+}
+
+formula = 
+  element cmlns:formula {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+      "A molecular formula."
+    ]
+    h:div [
+      class='description' 
+      h:p [
+        "It is defined by "
+        h:tt [
+          "atomArray"
+        ]
+        "s each with a list of elementTypes and their counts. All other information in the "
+        h:tt [
+          "atomArray"
+        ]
+        " is ignored. "
+        h:tt [
+          "formula"
+        ]
+        " are nestable so that aggregates (e.g. hydrates, salts, etc.) can be described. CML does not require that formula information is consistent with (say) crystallographic information; this allows for experimental variance."
+      ]
+      h:p [
+        "An alternative briefer representation is also available through the " 
+        h:tt [
+          "concise"
+        ]
+        ". This must include whitespace round all elements and their counts, which must be explicit."
+      ]     
+    ]
+  ]]
+  # optional attributes
+  id ?,
+  convention ?,
+  title ?,
+  count ?, # must have a count if child of formula, otherwise no count
+  formalCharge ?,   
+  concise ?, # should have concise if possible 
+  inline ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+  ( empty | 
+    atomArray | 
+    ( formula, formula + ) 
+  )
+}
+
+peakStructure = 
+  element cmlns:peakStructure {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+      "The structure of a peak in a spectrum."
+    ]
+    h:div [
+      class='description' 
+      h:p [
+        "Primarily to record couplings and other fine structure. At present we have tested this on HNMR spectra, C13 NMR and simple IR. We believe that other types of spectroscopy (ESR, NQR, etc) can be represented to some extent, but there may be systems beyond the current expressive power."
+      ]
+    ]
+  ]]
+  dictRef,
+  id ?,
+  title ?,
+  atomRefs ?,
+  bondRefs ?,
+  peakShape ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  
+  ( name * &
+    label * 
+  ) 
+}
+
+peak = 
+  element cmlns:peak {
+  [ xsd:documentation [
+    h:div [
+      class='name'
+      "peak"
+    ]
+    h:div [
+      class='summary' 
+      "A peak; annotated by human or machine."
+    ]
+    h:div [
+      class='description' 
+      h:p [
+        "A "
+        h:tt [
+          "peak"
+        ]
+        " can describe:"
+        h:ul [
+          h:li [
+            "A single point in a spectrum. Usually a maximum but could be a shoulder, inflexion or indeed any point of interest."
+          ]
+          h:li [
+            "A continuous range of values within a spectrum, defined by maximum and minimum values on either/both axes."
+          ]
+        ]
+      ]
+      h:p [
+        "A peak may be described by specifying xValue " 
+        h:i [ 
+          "or" 
+        ] 
+        " by giving xMax "
+        h:i [ 
+          "and"
+        ] 
+        " xMin. It seems reasonable to also allow xValue and xMax and xMin."
+      ]
+      h:p [
+        "If yValue is given on a peak then it must also be specified for all peaks within the containing peakList."
+      ]
+    ]
+    h:div [
+      class='note'
+      h:p [
+        "The finer structure of the peak can be given with one or more peakStructure children."
+      ]
+    ]          
+    h:div [
+      class='question'
+      h:p [
+        "Do we want to support expressions such as 'a carbonyl peak is typically seen over 190 ppm'."
+      ]
+    ]          
+  ]]  
+  id,  
+  title ?,
+  atomRefs ?, 
+  bondRefs ?,
+  yValue ?,
+  xValue ?,
+  xMax ?, 
+  xMin ?,
+  peakMultiplicity ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  
+  # child elements
+  ( label * & 
+    name * & 
+    peakStructure *
+  )
+}
+
+## A list of peaks.
+## Distinguish between peakList (primarily a navigational container) 
+## and peakGroup where the peaks (or groups) have some close relation 
+## not shared by all peaks. All peaks and peakGroups should use the same 
+## units.
+peakList = 
+  element cmlns:peakList {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+      "A list of peaks or peakGroups."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        "Distinguish between "
+        h:tt [
+          "peakList"
+        ]
+        " (primarily a navigational container) and "
+        h:tt [
+          "peakGroup"
+        ]
+        " where the peaks (or groups) have some close relation not shared by all peaks. All peaks and peakGroups should use the same units."
+      ]
+    ]
+  ]]
+  xUnits,
+  id ?,
+  title ?,
+  yUnits ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  # child elements
+  peak +
+}
+
+## A container for a property.
+## property can contain one or more children, usually scalar,
+## array or matrix. The dictRef attribute is required, even if 
+## there is a single scalar child with the same dictRef. The 
+## property may have a different dictRef from the child, thus 
+## providing an extension mechanism.
+property = 
+  element cmlns:property {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+      "A container for a property."
+    ]
+    h:div [
+      class='description'
+      h:p [ 
+        h:tt [
+          "property"
+        ]
+        " can contain one or more children, usually "
+        h:tt [
+          "scalar"
+        ]
+        ", "
+        h:tt [
+          "array"
+        ]
+        " or "
+        h:tt [
+          "matrix"
+        ]
+        ". The "
+        h:tt [
+          "dictRef"
+        ]
+        " attribute is required, even if there is a single scalar child with the same dictRef. The property may have a different dictRef from the child, thus providing an extension mechanism."
+      ]
+      h:p [
+        "Properties may have a "
+        h:tt [
+          "state"
+        ]
+        " attribute to distinguish the state of matter"
+      ]    
+    ]
+  ]]  
+  dictRef,
+  id ?,
+  title ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  
+  # child elements
+  ( name * &
+    label * &
+    ( scalar ? | 
+      property +
+    )
+  )
+  
+}
+
+spectrum = 
+  element cmlns:spectrum {
+  [ xsd:documentation [
+    h:div [
+      class='summary' 
+      "A spectrum and relevant data or metadata."
+    ]
+    h:div [
+      class='description' 
+      h:p [
+        "The "
+        h:tt [
+          "spectrum"
+        ]
+        " construct can hold "
+        h:tt [
+          "metadataList"
+        ]
+        ", "
+        h:tt [
+          "sample"
+        ]
+        " (which can contain molecule), "
+        h:tt [
+          "conditionList"
+        ]
+        " (mainly for physical/chemical conditions, not instrumental), "
+        h:tt [
+          "spectrumData"
+        ]
+        " for the actual data and instrumental settings/procedure and "
+        h:tt [
+          "peakList"
+        ]
+        " for the assigned peaks. This approach puts the spectrum as the primary object of interest. It could also be possible to make "
+        h:tt [
+          "spectrum"
+        ]
+        " a child of "
+        h:tt [
+          "molecule"
+        ]
+        " (although a reference using "
+        h:tt [
+          "ref"
+        ]
+        " might be preferable)."
+      ]
+    ]
+  ]]  
+  dictRef,
+    
+  # optional attributes
+  id ?,
+  convention ?,
+  title ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  
+  # child elements
+  ( peakList & 
+    property *
+  )
+}
+
+## A general container for CML elements.
+## Often the root of the CML (sub)document. 
+## Has no explicit function but can serve to hold the dictionary and 
+## namespace and version information, and is a useful tag to alert 
+## CML processors and search/XMLQuery tools that there is chemistry in the document. 
+## Can contain any content, but usually a list of molecules and other CML components. 
+cml = 
+  element cmlns:cml {
+  # optional attributes
+  id ?,
+  convention ?, # convention is mandatory on the eldest cml element
+  title ?,
+  version ?, # mandatory on the eldest cml element
+    
+  attribute *- (cmlns:*|local:*)  { text } *,  
+  # any cml child element is allowed as a child
+  anyElement # we don't allow mixed content in CML but it may be wrapped by html for example
+}
+
+## A container for atoms, bonds and submolecules.
+## molecule is a container for atoms, bonds and submolecules along
+## with properties such as crystal and non-built in properties. It should either
+## contain molecule or *Array for atoms and bonds. A molecule can be empty (e.g. 
+## we just know its name, id, etc.)
+## "Molecule" need not represent a chemically meaningful molecule. It
+## can contain atoms with bonds (as in the solid-sate) and it could 
+## simply carry a name (e.g. "taxol") without formal representation
+## of the structure. It can contain "sub molecules", which are often
+## discrete subcomponents (e.g. guest-host).
+molecule = element cmlns:molecule {
+  # mandatory attributes
+  id,  
+  
+  # optional attributes
+  title ?,
+  # must have count if not eldest molecule element
+  count ?, 
+  # formalCharge on a molecule takes presidence over formalCharge on any younger elements
+  formalCharge ?,
+  spinMultiplicity ?,
+  ref ?,
+  chirality ?,
+  attribute *- (cmlns:*|local:*)  { text } *,
+  
+  # child elements
+  ( atomArray ? & 
+    bondArray ? & 
+    formula ? & 
+    label * & 
+    molecule * & 
+    name * & 
+    property * & 
+    spectrum * &
+    cml*
+  )
+}
+
+

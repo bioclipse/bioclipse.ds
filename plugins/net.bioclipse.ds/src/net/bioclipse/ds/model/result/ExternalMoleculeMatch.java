@@ -11,6 +11,9 @@
 package net.bioclipse.ds.model.result;
 
 import java.text.DecimalFormat;
+import java.util.Map;
+
+import org.eclipse.ui.views.properties.IPropertySource;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.domain.IMolecule;
@@ -25,6 +28,9 @@ public class ExternalMoleculeMatch extends SimpleResult{
     private ICDKMolecule matchedMolecule;
     private float similarity;
     private DecimalFormat twoDForm;
+
+	//Map from property category, then name > value
+    private Map<String, Map<String, String>> properties;
     
     public ExternalMoleculeMatch(String name, ICDKMolecule matchedMolecule, 
                                  float similarity, int status) {
@@ -49,6 +55,10 @@ public class ExternalMoleculeMatch extends SimpleResult{
         if (adapter==IMolecule.class){
             return matchedMolecule;
         }
+
+        if (adapter.isAssignableFrom(IPropertySource.class)) {
+            return new MoleculeResultPropertySource(this);
+        }
     
         return super.getAdapter( adapter );
     }
@@ -64,5 +74,13 @@ public class ExternalMoleculeMatch extends SimpleResult{
             return " [tanimoto=" + twoDForm.format( similarity ) +"]";
         else return "";
     }
+
+	public Map<String, Map<String, String>> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, Map<String, String>> properties) {
+		this.properties = properties;
+	}
     
 }
