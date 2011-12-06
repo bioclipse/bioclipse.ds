@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import libsvm.svm;
 import libsvm.svm_model;
@@ -31,9 +32,12 @@ import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 public class SignModel {
 
+	private static final double TEST_SET_PART = 0.2;
+
 	//Fields with default values
 	private int nrFolds = 5, startHeight = 0, endHeight = 3;
 	private int cStart = 0, cEnd = 5, gammaStart = 3, gammaEnd = 10;
+//	private int cStart = 2, cEnd = 3, gammaStart = 5, gammaEnd = 7; //FIXME: Remove line!
 	private int noParallelJobs=1;
 
 	//Fields without default values, set by constructor
@@ -57,36 +61,6 @@ public class SignModel {
 	private boolean echoTime=true;
 	private String jarpath;
 
-	
-
-	//Path to SDF
-	//private static String pathToSDFile = "molsWithAct.sdf";
-
-	//AMES
-	//	private static String pathToSDFile = "bursi_nosalts_molsign.sdf";
-	//	private static String ACTIVITY_PROPERTY = "Ames test categorisation";
-	//	private static boolean classification = true;
-	//	private static String positiveActivity = "mutagen"; 
-
-	//AHR
-	//	private static String pathToSDFile = "2796_nosalts_molsign.sdf";
-	//	private static String ACTIVITY_PROPERTY = "c#Activity";
-	//	private static boolean classification = true;
-	//	private static String positiveActivity = "2"; 
-
-	//private static String pathToSDFile = "chang.sdf";
-	//private static String ACTIVITY_PROPERTY = "BIO";
-	//private static boolean classification = false;
-
-	//private static String pathToSDFile = "/home/lc/hERG_train.sdf";
-	//private static String ACTIVITY_PROPERTY = "field_1";
-	//private static boolean classification = false;
-
-	//The property in the SDF to read, e. g. as activity
-
-
-
-	
 	public int getNrFolds() {
 		return nrFolds;
 	}
@@ -289,7 +263,9 @@ public class SignModel {
 	public OptimizationResult BuildModel() throws IOException{
 		assertParameters();
 
-		//Assert input file
+		//==============================
+		// Assert input and output files
+		//==============================
 		File sdfile = new File(pathToSDFile);
 		if (!sdfile.canRead()){
 			throw new IllegalArgumentException("Cannot read file: " + sdfile.getAbsolutePath());
@@ -329,188 +305,347 @@ public class SignModel {
 			throw new IllegalArgumentException("Cannot write output file: " + optFile.getAbsolutePath());
 		}
 
-		//Assume we can write the SVM file for now
+		//Assume we can write the SVM file for now.
 
 
-		//================================
-		//== START BUILDING THE MODEL ==
-		//================================
-
+		//Set up values to read from input file with mols
 		BufferedReader br = new BufferedReader(new FileReader(sdfile));
-		IteratingMDLReader reader = new IteratingMDLReader(br, NoNotificationChemObjectBuilder.getInstance());
+		IteratingMDLReader molReader = new IteratingMDLReader(br, NoNotificationChemObjectBuilder.getInstance());
+		List<String> signatures = new ArrayList<String>(); // Contains signatures. We use the indexOf to retrieve the order of specific signatures in descriptor array.
+		List<Double> activityList = new ArrayList<Double>();
+		List<svm_node[]> descriptorList = new ArrayList<svm_node[]>();
 
-		System.out.println("Building SVM model...");
-
+		//======================
+		// READ INPUT FILE
+		// 
+		// Parse SDF into an SVM matrix
+		// Also write a train-file of the descriptors in libsvm format
+		//======================
+		System.out.println("=== Parsing input file...");
 		try {
-			List<String> signatures = new ArrayList<String>(); // Contains signatures. We use the indexOf to retrieve the order of specific signatures in descriptor array.
-			svm_problem svmProblem = new svm_problem();
-			List<Double> activityList = new ArrayList<Double>();
-			List<svm_node[]> descriptorList = new ArrayList<svm_node[]>();
-			// Also, print the descriptors to a libsvm train formatted file.
-			BufferedWriter trainWriter = new BufferedWriter(new FileWriter(trainFile));
-			int cnt=1;
-			while (reader.hasNext()){
-				IMolecule mol = (IMolecule) reader.next();
-
-				// Check the activity.
-				String activity = (String) mol.getProperty(activityProperty);
-
-				if (activity==null){
-					System.out.println("Activity property: " + activityProperty + " not found in molecule: " + cnt);
-					System.out.println("Exiting.");
-					System.exit(1);
-				}
-
-				double activityValue = 0.0;
-				if (classification){
-					if (positiveActivity.equals(activity)){
-						activityValue = 1.0;
-					}
-				}
-				else { // Regression
-					activityValue = Double.valueOf(activity);
-				}
-				activityList.add(activityValue);
-
-				// Create the signatures for a molecule and add them to the signatures map
-				Map<String, Double> moleculeSignatures = new HashMap<String, Double>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer. libsvm wants a double.
-				for (int height = startHeight; height <= endHeight; height++){
-					List<String> signs = SignTools.calculateSignatures(mol, height);
-					Iterator<String> signsIter = signs.iterator();
-					while (signsIter.hasNext()){
-						String currentSignature = signsIter.next();
-						//System.out.println(currentSignature);
-						if (signatures.contains(currentSignature)){
-							if (moleculeSignatures.containsKey(currentSignature)){
-								moleculeSignatures.put(currentSignature, (Double)moleculeSignatures.get(currentSignature)+1.00);
-							}
-							else{
-								moleculeSignatures.put(currentSignature, 1.0);
-							}
-						}
-						else{
-							signatures.add(currentSignature);
-							if (moleculeSignatures.containsKey(currentSignature)){
-								moleculeSignatures.put(currentSignature, (Double)moleculeSignatures.get(currentSignature)+1.00);
-							}
-							else{
-								moleculeSignatures.put(currentSignature, 1.0);
-							}
-						}
-					}
-				}
-				// Add the values of the current molecule's signatures as svm data.
-				// Write the output as it reads in the sdf.
-				trainWriter.write(activity);
-
-				svm_node[] moleculeArray = new svm_node[moleculeSignatures.size()];
-				Iterator<String> signaturesIter = signatures.iterator();
-				int i = 0;
-				while (signaturesIter.hasNext()){
-					String currentSignature = signaturesIter.next();
-					if (moleculeSignatures.containsKey(currentSignature)){
-						moleculeArray[i] = new svm_node();
-						moleculeArray[i].index = signatures.indexOf(currentSignature)+1; // libsvm assumes that the index starts at one.
-						moleculeArray[i].value = (Double) moleculeSignatures.get(currentSignature);
-						// The train file output.
-						trainWriter.write(" " + moleculeArray[i].index + ":" + moleculeArray[i].value);
-						i = i + 1;
-					}
-				}
-				trainWriter.newLine();
-				descriptorList.add(moleculeArray);
-
-				//System.out.println("Molecule " + cnt + " (Activity=" + activity + "): " +  signs);
-				cnt++;
-			}
-			trainWriter.close();
-
-			// Write the signatures to a file, One per line.
-			try {
-				BufferedWriter signaturesWriter = new BufferedWriter(new FileWriter(signFile));
-				Iterator<String> signaturesIter = signatures.iterator();
-				while (signaturesIter.hasNext()){
-					signaturesWriter.write(signaturesIter.next());
-					signaturesWriter.newLine();
-				}
-				signaturesWriter.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-
-			// Add values to the SVM problem.
-			svmProblem.l = cnt - 1;
-			svmProblem.x = new svm_node[svmProblem.l][];
-			svmProblem.y = new double[svmProblem.l];
-			for (int exampleNr = 0; exampleNr < svmProblem.l; exampleNr++){
-				svmProblem.x[exampleNr] = descriptorList.get(exampleNr);
-				svmProblem.y[exampleNr] = activityList.get(exampleNr);
-			}
-
-			// Do the grid search to find the best set of gamma for the RBF kernel and C for the cost.
-			double optimumValue, optimumC = 1, optimumGamma = 0.01;
-			svm_parameter svmParameter = new svm_parameter();
-			svmParameter.kernel_type = svm_parameter.RBF;
-			svmParameter.cache_size = 1000.0; // Cache size for training in MB.
-			svmParameter.eps = 0.001;
-			svmParameter.C = optimumC;
-			svmParameter.gamma = optimumGamma;
-			if (classification){
-				svmParameter.svm_type = svm_parameter.C_SVC;
-				optimumValue = 0.0;
-			}
-			else {
-				svmParameter.svm_type = svm_parameter.EPSILON_SVR;
-				optimumValue = 1000.0;
-			}
-
-			System.out.println("svm_check_parameter: " + svm.svm_check_parameter(svmProblem, svmParameter));
-
-			OptimizationResult optRes=null;
-			//Do grid search to obtain best parameters
-			if ("grid".equals(optimizationType))
-				optRes=gridSearchNew(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
-			else if ("array".equals(optimizationType))
-				optRes=arraySearchNew(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
-			else if ("none".equals(optimizationType)){
-				
-				if (gammafinal<0)
-					throw new IllegalArgumentException("gammafinal not set or negative");
-				if (cfinal<0)
-					throw new IllegalArgumentException("gammafinal not set or negative");
-				
-				optRes=new OptimizationResult(Double.NaN, gammafinal, cfinal);
-			}
-			else
-				throw new IllegalArgumentException("optimization type neither 'grid', 'array', nor 'none'");
-
-			if (trainFinal){
-				System.out.println("Training final model on parameters: c=" + optRes.getOptimumC() + "; gamma=" + optRes.getOptimumGamma() + "...");
-
-				//We now have the optimum values, train a model for these parameters based on all data
-				svmParameter.C = optRes.getOptimumC();
-				svmParameter.gamma = optRes.getOptimumGamma();
-				svm_model svmModel = new svm_model();
-				svmModel = svm.svm_train(svmProblem, svmParameter);
-				try {
-					svm.svm_save_model(out_svmModelName , svmModel);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}		
-			return optRes;
-		} catch (InvalidSmilesException e) {
-			e.printStackTrace();
-		} catch (CDKException e) {
-			e.printStackTrace();
+			processInputFile(trainFile, molReader, signatures,
+					activityList, descriptorList);
+		} catch (CDKException e2) {
+			System.err.println("Error processing input file: " + e2.getMessage());
+			System.err.println("Exiting");
+			System.exit(1);
 		}
-		return null;
+
+		//Check if we have sound values, e.g. all should not be 0
+		if (isActivityListSane(activityList)==false){
+			System.out.println("Classification is selected but no positive activity found as property. Misspelled?");
+			System.out.println("Aborted.");
+			System.exit(1);
+		}
+
+		// Write the signatures to a file, One per line.
+		try {
+			BufferedWriter signaturesWriter = new BufferedWriter(new FileWriter(signFile));
+			Iterator<String> signaturesIter = signatures.iterator();
+			while (signaturesIter.hasNext()){
+				signaturesWriter.write(signaturesIter.next());
+				signaturesWriter.newLine();
+			}
+			signaturesWriter.close();
+		} catch (IOException e1) {
+			System.out.println("Error writing signatures to file: " + e1.getMessage());
+			System.out.println("Aborted.");
+			System.exit(1);
+		}
+
+		//We now do the following approach:
+		// 1. Split dataset in a trainingset and testset
+		// 2. Estimate C and gamma using a grid-search on the trainingset, build model A on best estimates
+		// 3. Predict testset on model A - this produces an external accuracy estimate
+		// 4. Estimate C and gamma using a grid-search on the entire dataset, build model B on best estimates
+		
+		
+		//========================================
+		//== 1. Split dataset in training and test
+		//========================================
+		System.out.println("=== Setting up trainingset and testset...");
+		int datasetLength=descriptorList.size();
+		int testLength = (int) (datasetLength * TEST_SET_PART);
+		int trainingLength=datasetLength-testLength;
+		System.out.println("length of dataset: " + datasetLength);
+		System.out.println("length of trainingset: " + trainingLength);
+		System.out.println("length of testset: " + testLength);
+
+		List<Double> activityList_train = new ArrayList<Double>();
+		List<svm_node[]> descriptorList_train = new ArrayList<svm_node[]>();
+		List<Double> activityList_test = new ArrayList<Double>();
+		List<svm_node[]> descriptorList_test = new ArrayList<svm_node[]>();
+		
+		//Draw randomly entries from dataset into TESTSET
+		//Keep track of what we have drawn
+		Random generator = new Random();
+		List<Integer> drawnIndices=new ArrayList<Integer>();
+		for (int i = 0; i < testLength;i++){
+			int ix = generator.nextInt(datasetLength); //Our next random index to extract
+			while (drawnIndices.contains(ix)) //Draw until we find a non-drawn already
+				ix = generator.nextInt(datasetLength);
+
+			activityList_test.add(activityList.get(ix));
+			descriptorList_test.add(descriptorList.get(ix));
+			drawnIndices.add(ix);
+		}
+		//Put all non-drawn in TRAININGSET
+		for (int i=0; i<descriptorList.size(); i++){
+			if (!drawnIndices.contains(i)){
+				activityList_train.add(activityList.get(i));
+				descriptorList_train.add(descriptorList.get(i));
+			}
+		}
+		//Assert correct dimensions
+		if (activityList_test.size()!=testLength || activityList_train.size()!=trainingLength){
+			System.out.println("Incorrect division into train/test sets!");
+			System.out.println("Aborted.");
+			System.exit(1);
+		}
+		
+		//====================================
+		// 2. DO GRID SEARCH ON TRAININGSET
+		//====================================
+		System.out.println("=== Starting grid search on trainingset...");
+		svm_problem svmProblem_train = new svm_problem();
+		svm_parameter svmParameter_train = new svm_parameter();
+		OptimizationResult optResTrain = setUpAndRunGridSearch(activityList_train,
+															   descriptorList_train, 
+															   svmProblem_train, 
+															   svmParameter_train);
+
+		//Train a model on the obtained parameter estimates
+		System.out.println("=== Training best model based on trainingset (C=" 
+				+ optResTrain.getOptimumC()
+				+ ", gamma=" + optResTrain.getOptimumGamma() + ", ObjectiveValue=" + optResTrain.getOptimumValue() + ")...");
+		svmParameter_train.C = optResTrain.getOptimumC();
+		svmParameter_train.gamma = optResTrain.getOptimumGamma();
+		svm_model svmModel_train = svm.svm_train(svmProblem_train, svmParameter_train);
+
+		//====================================
+		// 3. PREDICT TESTSET
+		//====================================
+		System.out.println("=== Predicting testset...");
+		//Predict all entries in the testset
+		int noCorrect=0;
+		for (int i=0; i< testLength; i++){
+			svm_node[] testArray = descriptorList_test.get(i);
+			double prediction = svm.svm_predict(svmModel_train, testArray);
+			if (prediction==activityList_test.get(i))
+				noCorrect++;
+		}
+		double externalAccuracy = 1.0*noCorrect/testLength;
+		System.out.println("=== External prediction accuracy: " + externalAccuracy);
+		
+		//====================================
+		// 4. DO GRID SEARCH ON COMPLETE DATASET
+		//====================================
+		System.out.println("=== Starting grid search on complete dataset...");
+		svm_problem svmProblem_complete = new svm_problem();
+		svm_parameter svmParameter_complete = new svm_parameter();
+		OptimizationResult optResComplete = setUpAndRunGridSearch(activityList_train,
+															   descriptorList_train, 
+															   svmProblem_complete, 
+															   svmParameter_complete);
+		
+		//======================
+		// TRAIN FINAL MODEL
+		//
+		// We use the obtained parameter estimates from GRID SEARCH on complete dataset 
+		// and train on the complete training set 
+		//======================
+		if (trainFinal){
+			System.out.println("=== Training FINAL model based on complete dataset (C=" 
+					+ optResComplete.getOptimumC()
+					+ ", gamma=" + optResComplete.getOptimumGamma() + ", ObjectiveValue=" + optResComplete.getOptimumValue() + ")...");
+
+			//We now have the optimum values, train a model for these parameters based on all data
+			svmParameter_complete.C = optResComplete.getOptimumC();
+			svmParameter_complete.gamma = optResComplete.getOptimumGamma();
+			svm_model svmModel_final = svm.svm_train(svmProblem_complete, svmParameter_complete);
+			try {
+				svm.svm_save_model(out_svmModelName , svmModel_final);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//Return the final optimization result. Note that accuracy is not returned for now.
+		System.out.println("++++++ SUMMARY ++++++");
+		System.out.println("Training set parameter estimates: " + optResTrain);
+		System.out.println("External prediction accuracy: " + externalAccuracy);
+		System.out.println("Complete dataset parameter estimates: " + optResComplete);
+		System.out.println("++++++ SUMMARY ENDS ++++++");
+		return optResTrain;
 	}
 
 
+	
+	private OptimizationResult setUpAndRunGridSearch(List<Double> activityList,
+			List<svm_node[]> descriptorList, svm_problem svmProblem, svm_parameter svmParameter) throws IOException {
+
+		//======================
+		// GRID SEARCH
+		// We estimate parameters by CV
+		//======================
+
+		// Add values to the SVM problem.
+		svmProblem.l = descriptorList.size() - 1;
+		svmProblem.x = new svm_node[svmProblem.l][];
+		svmProblem.y = new double[svmProblem.l];
+		for (int exampleNr = 0; exampleNr < svmProblem.l; exampleNr++){
+			svmProblem.x[exampleNr] = descriptorList.get(exampleNr);
+			svmProblem.y[exampleNr] = activityList.get(exampleNr);
+		}
+
+		// Do the grid search to find the best set of gamma for the RBF kernel and C for the cost.
+		double optimumValue, optimumC = 1, optimumGamma = 0.01;
+		svmParameter.kernel_type = svm_parameter.RBF;
+		svmParameter.cache_size = 1000.0; // Cache size for training in MB.
+		svmParameter.eps = 0.001;
+		svmParameter.C = optimumC;
+		svmParameter.gamma = optimumGamma;
+		if (classification){
+			svmParameter.svm_type = svm_parameter.C_SVC;
+			optimumValue = 0.0;
+		}
+		else {
+			svmParameter.svm_type = svm_parameter.EPSILON_SVR;
+			optimumValue = -1;
+		}
+
+		System.out.println("svm_check_parameter: " + svm.svm_check_parameter(svmProblem, svmParameter));
+		//TODO: What is the above?
+
+		OptimizationResult optRes=null;
+		if ("grid".equals(optimizationType))
+			optRes=gridSearchNew(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
+		else if ("array".equals(optimizationType))
+			optRes=arraySearchNew(svmParameter, svmProblem, optimumValue, optimumC, optimumGamma);
+		else if ("none".equals(optimizationType)){
+
+			if (gammafinal<0)
+				throw new IllegalArgumentException("gammafinal not set or negative");
+			if (cfinal<0)
+				throw new IllegalArgumentException("gammafinal not set or negative");
+
+			optRes=new OptimizationResult(Double.NaN, gammafinal, cfinal);
+		}
+		else
+			throw new IllegalArgumentException("optimization type neither 'grid', 'array', nor 'none'");
+
+		return optRes;
+	}
+
+	/**
+	 * A simple test to check if we have read in correct values.
+	 * 
+	 * @param activityList
+	 * @return
+	 */
+	private boolean isActivityListSane(List<Double> activityList) {
+		//Do a sanity check for classification, we should at least have one active property
+		boolean isSane=false;
+		for (Double d : activityList){
+			if (classification){
+				if (d.doubleValue()==1.0)	//If we have at least one positive value
+					isSane=true;
+			}else{
+				if (d.doubleValue()>0.0 || d.doubleValue()<0.0)	//If we have at least one non-zero value
+					isSane=true;
+			}
+		}
+		return isSane;
+	}
+
+	private void processInputFile(File trainFile, IteratingMDLReader reader,
+			List<String> signatures, List<Double> activityList,
+			List<svm_node[]> descriptorList) throws IOException, CDKException {
+		BufferedWriter trainWriter = new BufferedWriter(new FileWriter(trainFile));
+		int cnt=0;
+		while (reader.hasNext()){
+			IMolecule mol = (IMolecule) reader.next();
+
+			// Check the activity.
+			String activity = (String) mol.getProperty(activityProperty);
+
+			if (activity==null){
+				System.out.println("Activity property: " + activityProperty + " not found in molecule: " + (cnt+1));
+				System.out.println("Exiting.");
+				System.exit(1);
+			}
+
+			double activityValue = 0.0;
+			if (classification){
+				if (positiveActivity.equals(activity)){
+					activityValue = 1.0;
+				}
+			}
+			else { // Regression
+				activityValue = Double.valueOf(activity);
+			}
+			activityList.add(activityValue);
+
+			// Create the signatures for a molecule and add them to the signatures map
+			Map<String, Double> moleculeSignatures = new HashMap<String, Double>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer. libsvm wants a double.
+			for (int height = startHeight; height <= endHeight; height++){
+				List<String> signs = SignTools.calculateSignatures(mol, height);
+				Iterator<String> signsIter = signs.iterator();
+				while (signsIter.hasNext()){
+					String currentSignature = signsIter.next();
+					//System.out.println(currentSignature);
+					if (signatures.contains(currentSignature)){
+						if (moleculeSignatures.containsKey(currentSignature)){
+							moleculeSignatures.put(currentSignature, (Double)moleculeSignatures.get(currentSignature)+1.00);
+						}
+						else{
+							moleculeSignatures.put(currentSignature, 1.0);
+						}
+					}
+					else{
+						signatures.add(currentSignature);
+						if (moleculeSignatures.containsKey(currentSignature)){
+							moleculeSignatures.put(currentSignature, (Double)moleculeSignatures.get(currentSignature)+1.00);
+						}
+						else{
+							moleculeSignatures.put(currentSignature, 1.0);
+						}
+					}
+				}
+			}
+			// Add the values of the current molecule's signatures as svm data.
+			// Write the output as it reads in the sdf.
+			trainWriter.write(activity);
+
+			svm_node[] moleculeArray = new svm_node[moleculeSignatures.size()];
+			Iterator<String> signaturesIter = signatures.iterator();
+			int i = 0;
+			while (signaturesIter.hasNext()){
+				String currentSignature = signaturesIter.next();
+				if (moleculeSignatures.containsKey(currentSignature)){
+					moleculeArray[i] = new svm_node();
+					moleculeArray[i].index = signatures.indexOf(currentSignature)+1; // libsvm assumes that the index starts at one.
+					moleculeArray[i].value = (Double) moleculeSignatures.get(currentSignature);
+					// The train file output.
+					trainWriter.write(" " + moleculeArray[i].index + ":" + moleculeArray[i].value);
+					i = i + 1;
+				}
+			}
+			trainWriter.newLine();
+			descriptorList.add(moleculeArray);
+
+			//System.out.println("Molecule " + (cnt+1) + " (Activity=" + activity + "): " +  signs);
+			cnt++;
+		}
+		trainWriter.close();
+	}
+
+	/**
+	 * MUST BE MIGRATED TO NEW GRID SEARCH IMPLEMENTATION!! - FIXME
+	 * 
+	 */
+	@Deprecated
 	private OptimizationResult arraySearchNew(svm_parameter svmParameter, svm_problem svmProblem, double optimumValue, double optimumC, double optimumGamma) throws IOException{
 
 		BufferedWriter optwriter = new BufferedWriter(new FileWriter(out_optmimizationFilename));
@@ -570,9 +705,15 @@ public class SignModel {
 	private OptimizationResult gridSearchNew(svm_parameter svmParameter, svm_problem svmProblem, double optimumValue, double optimumC, double optimumGamma) throws IOException{
 
 		BufferedWriter optwriter = new BufferedWriter(new FileWriter(out_optmimizationFilename));
+		
+		int problemSize=(cEnd - cStart +1) * (gammaEnd-gammaStart +1);
 
+		int problemIX=0;
 		for (int cExponent = cStart; cExponent <= cEnd; cExponent++){
 			for (int gammaExponent = gammaStart; gammaExponent <= gammaEnd; gammaExponent++){
+
+				problemIX++;
+				System.out.println("GRID search iteration " + problemIX + "/" + problemSize);
 
 				double[] target = new double[svmProblem.l];
 				svmParameter.C = Math.pow(10.0,(cExponent/2));
@@ -580,36 +721,46 @@ public class SignModel {
 				System.out.println("Estimating SVM for c:gamma = " + svmParameter.C+" : " + svmParameter.gamma);
 				svm.svm_cross_validation(svmProblem, svmParameter, nrFolds, target);
 
+				double objectiveValue=0.0;
 				if (classification){
+
+					//For regression we calculate accuracy
 					int nrCorrect = 0;
 					for (int i = 0; i < svmProblem.l; i++){
 						if (target[i] == svmProblem.y[i]){ // Can you compare doubles like this in java or should it be abs(target-y) < eps?
 							nrCorrect = nrCorrect + 1;
 						}
 					}
-					double objectiveValue = 1.0*nrCorrect/svmProblem.l;
-					if (objectiveValue > optimumValue){
-						optimumValue = objectiveValue;
-						optimumC = svmParameter.C;
-						optimumGamma = svmParameter.gamma;
-					}
-					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-					optwriter.write("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma+"\n");
+					objectiveValue = 1.0*nrCorrect/svmProblem.l;
 				}
 				else{
-					double sumSquareError = 0.0;
+					
+					//For regression we calculate R^2
+					double meanTarget = 0.0;
+					double sumSquareTot = 0.0;
+					double sumSquareError =0.0;
+					for (int i = 0; i < svmProblem.l; i++){
+						meanTarget = meanTarget + target[i];
+					}
+					meanTarget = meanTarget/svmProblem.l;
+
 					for (int i = 0; i < svmProblem.l; i++){
 						sumSquareError = sumSquareError + (target[i] - svmProblem.y[i]) * (target[i] - svmProblem.y[i]);
+						sumSquareTot = sumSquareTot + (target[i]-meanTarget)*(target[i]-meanTarget);
 					}
-					double objectiveValue = sumSquareError/svmProblem.l;
-					if (objectiveValue < optimumValue){
-						optimumValue = objectiveValue;
-						optimumC = svmParameter.C;
-						optimumGamma = svmParameter.gamma;
-					}
-					System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
-					optwriter.write("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma+"\n");
+					objectiveValue = 1.0 - sumSquareError/sumSquareTot;
+
 				}
+				
+				//We seek the highest accuracy or highest R^2
+				if (objectiveValue > optimumValue){
+					optimumValue = objectiveValue;
+					optimumC = svmParameter.C;
+					optimumGamma = svmParameter.gamma;
+				}
+				System.out.println("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma);
+				optwriter.write("Objective Value:C:gamma: "+objectiveValue+":"+svmParameter.C+":"+svmParameter.gamma+"\n");
+
 
 				//				double objectiveValue = doSVM_CV(svmParameter, svmProblem, cExponent, gammaExponent);
 				//				if (objectiveValue > optimumValue){
@@ -624,7 +775,7 @@ public class SignModel {
 
 		System.out.println("GRID SEARCH FINISHED. Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma);
 		optwriter.write("GRID SEARCH FINISHED. Optimum Value:C:gamma: "+optimumValue+":"+optimumC+":"+optimumGamma+"\n");
-		return new OptimizationResult(optimumValue, optimumC, optimumGamma);
+		return new OptimizationResult(optimumValue, optimumGamma, optimumC);
 
 	}
 

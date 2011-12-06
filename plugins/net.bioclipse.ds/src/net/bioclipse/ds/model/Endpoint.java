@@ -1,5 +1,7 @@
 package net.bioclipse.ds.model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,16 @@ public class Endpoint implements IContext2{
     private String iconpath;
     private IConsensusCalculator consensusCalculator;
 
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		changeSupport.addPropertyChangeListener(listener);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		changeSupport.removePropertyChangeListener(listener);
+	}
+    
     public Endpoint(String pid, String pname) {
         id=pid;
         name=pname;
@@ -186,5 +198,18 @@ public class Endpoint implements IContext2{
 		return consensus;
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return "Endpoint [id=" + id + ", name=" + name + ", description="
+				+ description + "]";
+	}
     
 }

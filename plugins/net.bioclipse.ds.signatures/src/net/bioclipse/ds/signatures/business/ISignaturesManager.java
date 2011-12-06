@@ -16,13 +16,16 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.DenseDataset;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.SparseDataset;
 import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -51,6 +54,8 @@ public interface ISignaturesManager extends IBioclipseManager {
     throws BioclipseException, CoreException, IOException;
     public Map<IMolecule, AtomSignatures> generate(IFile file) 
     throws BioclipseException, CoreException, IOException;
+    public Map<IMolecule, AtomSignatures> generate(IFile file, IProgressMonitor monitor) 
+    throws BioclipseException, CoreException, IOException;
 
     /**
      * Generate Signatures from SDFile.
@@ -65,6 +70,8 @@ public interface ISignaturesManager extends IBioclipseManager {
     public Map<IMolecule, AtomSignatures> generate(String path, int height) 
     throws BioclipseException, CoreException, IOException;
     public Map<IMolecule, AtomSignatures> generate(IFile file, int height) 
+    throws BioclipseException, CoreException, IOException;
+    public Map<IMolecule, AtomSignatures> generate(IFile file, int height, IProgressMonitor monitor) 
     throws BioclipseException, CoreException, IOException;
 
     
@@ -104,6 +111,7 @@ public interface ISignaturesManager extends IBioclipseManager {
         params = "List<IMolecule> molecules",
         methodSummary = "Generate Signatures from a list of molecules")
     public Map<IMolecule, AtomSignatures> generate(List<? extends IMolecule> mols);
+    public Map<IMolecule, AtomSignatures> generate(List<? extends IMolecule> mols, IProgressMonitor monitor);
 
     /**
      * Generate Signatures from a list of viles
@@ -117,6 +125,8 @@ public interface ISignaturesManager extends IBioclipseManager {
         		"a given height")
     public Map<IMolecule, AtomSignatures> generate(
     		List<? extends IMolecule> molecules,int height);
+    public Map<IMolecule, AtomSignatures> generate(
+    		List<? extends IMolecule> molecules,int height, IProgressMonitor monitor);
 
     /**
      * Generate MoleculeSignature from a molecule
@@ -143,4 +153,39 @@ public interface ISignaturesManager extends IBioclipseManager {
 //    public AtomSignatures generateChiral(IMolecule molecule, int height) 
 //    throws BioclipseException;
 
+    @Recorded
+    @PublishedMethod( 
+        params = "List<? extends IMolecule> mols, int height",
+        methodSummary = "Generate a dataset of signature counts for a list of molecules with height h.")
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height);
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor);
+
+    @Recorded
+    @PublishedMethod( 
+        params = "List<? extends IMolecule> mols, int height, String nameProperty, String responseProperty",
+        methodSummary = "Generate a dataset of signature counts for a list of molecules. " +
+        		"Set name of molecules and append response values to last column.")
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty);
+	public DenseDataset generateDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty, IProgressMonitor monitor);
+
+    @Recorded
+    @PublishedMethod( 
+        params = "List<? extends IMolecule> mols, int height, ",
+        methodSummary = "Generate a sparse dataset of signature counts for a list of molecules with height h. ")
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height);
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor);
+
+    @Recorded
+    @PublishedMethod( 
+        params = "List<? extends IMolecule> mols, int height, String nameProperty, String responseProperty",
+        methodSummary = "Generate a sparse dataset of signature counts for a list of molecules. " +
+        		"Set name of molecules and append response values to last column.")
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty);
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty, IProgressMonitor monitor);
+
+	
 }

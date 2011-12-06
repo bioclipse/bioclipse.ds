@@ -21,6 +21,8 @@ import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.util.FileUtil;
+import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Stopwatch;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
@@ -30,6 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.help.IHelpResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
@@ -108,6 +111,26 @@ public abstract class AbstractDSTest implements IDSTest{
     public void setParameters( Map<String, String> parameters ) {
         this.parameters = parameters;
     }
+
+    public String getFileFromParameter(String parameter) throws DSException {
+        try {
+            String localPath = getParameters().get( parameter );
+            if (localPath.isEmpty())
+                throw new DSException("Error initializing file parameter " + parameter + " for model "
+                		+ getName() + " due to empty parameter ");
+
+            String path = localPath = FileUtil.getFilePath(localPath, getPluginID());
+            return path;
+
+        } catch (Exception e) {
+        	LogUtils.debugTrace(logger, e);
+            throw new DSException("Could not get file from parameter: " + parameter);
+    	} 
+    }
+
+    
+    
+    
     
     public void addParameter( String name, String value ) {
         parameters.put( name, value );
@@ -215,7 +238,11 @@ public abstract class AbstractDSTest implements IDSTest{
         return java.awt.Color.YELLOW;
     }
     
-    public Object getAdapter( Class adapter ) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Object getAdapter(Class adapter ) {
+        if (adapter.isAssignableFrom(IPropertySource.class)) {
+            return new ModelPropertySource(this);
+        }
         return null;
     }
 
@@ -371,13 +398,14 @@ public abstract class AbstractDSTest implements IDSTest{
      * @throws DSException 
      */
     private void assertRequiredParameters() throws DSException {
-        for (String reqParam : getRequiredParameters()){
-            String param=getParameters().get( reqParam );
-            if (param==null)
-                throw new DSException("Test '" + getName() + "' is missing " +
-                		"required parameter: '" + reqParam + "'"); 
-        }
-        
+    	if (getRequiredParameters()!=null && getRequiredParameters().size()>0){
+    		for (String reqParam : getRequiredParameters()){
+    			String param=getParameters().get( reqParam );
+    			if (param==null)
+    				throw new DSException("Test '" + getName() + "' is missing " +
+    						"required parameter: '" + reqParam + "'"); 
+    		}
+    	}
 		
 	}
     
@@ -386,9 +414,7 @@ public abstract class AbstractDSTest implements IDSTest{
      * Default is empty, Subclasses may override.
      * @return
      */
-    public List<String> getRequiredParameters() {
-        return new ArrayList<String>();
-    }
+    public abstract List<String> getRequiredParameters();
 
 
 	protected abstract List<? extends ITestResult> doRunTest( 
@@ -476,5 +502,14 @@ public abstract class AbstractDSTest implements IDSTest{
     public String getTitle() {
         return "mamma mia title";
     }
+    
+    @Override
+    public void initialize(IProgressMonitor monitor) throws DSException {
+    	
+    	assertRequiredParameters();
+    	//The rest should be done by extensions
+    	
+    }
+
     
 }

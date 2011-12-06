@@ -87,6 +87,9 @@ public class DSBusinessModel {
 
                     String pid=element.getAttribute("id");
                     String pname=element.getAttribute("name");
+                    while(pname.contains("  "))
+                    	pname = pname.replace("  "," ");
+                    
                     String pdesc=element.getAttribute("description");
                     String picon=element.getAttribute("icon");
                     String pluginID=element.getNamespaceIdentifier();
@@ -134,6 +137,8 @@ public class DSBusinessModel {
                 if (element.getName().equals("test")){
 
                     String pname=element.getAttribute("name");
+                    while(pname.contains("  "))
+                    	pname = pname.replace("  "," ");
 
                     IDSTest test=null;
                     Object obj;
@@ -212,12 +217,16 @@ public class DSBusinessModel {
                                 if ("resource".equals( subelement.getName() )){
                                     String name=subelement.getAttribute( "name" );
                                     String path=subelement.getAttribute( "path" );
+                                    while(path.contains("  "))
+                                    	path=path.replace("  ", " ");
                                     test.addParameter(name,path);
                                 }
                                 else if ("parameter".equals( subelement.getName() )){
                                     String name=subelement.getAttribute( "name" );
-                                    String path=subelement.getAttribute( "value" );
-                                    test.addParameter(name,path);
+                                    String value=subelement.getAttribute( "value" );
+                                    while(value.contains("  "))
+                                    	value=value.replace("  ", " ");
+                                    test.addParameter(name,value);
                                 }
                             }
                             tests.add( test );

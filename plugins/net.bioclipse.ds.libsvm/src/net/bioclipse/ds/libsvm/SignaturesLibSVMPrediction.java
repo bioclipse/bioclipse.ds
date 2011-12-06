@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,8 +27,10 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.matcher.BaseSDFMatcher;
+import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.result.ColorHelper;
 import net.bioclipse.ds.model.result.DoubleResult;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.PosNegIncMatch;
@@ -41,7 +44,7 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 
 
-public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
+public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 	private static final boolean SKIP_CONFIDENCE_AND_NEIGHBOURS = true;
 
@@ -86,24 +89,31 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
     public svm_model svmModel;
 
 	private String positiveValue;
-
 	private String negativeValue;
+	private List<String> classLabels;
     
 
 	
     public List<String> getRequiredParameters() {
-        List<String> ret=super.getRequiredParameters();
+        List<String> ret=new ArrayList<String>();
+//        List<String> ret=super.getRequiredParameters();
 
-        if (svmModel.param.svm_type == 0) // This is a classification model.
-			return ret;
+        if (getParameters().get("isClassification")!=null && 
+        		getParameters().get("isClassification").equals("false")){
+        	//Regression: TODO not handled yet...
+        	
+        }
+        
+//        if (svmModel.param.svm_type == 0) // This is a classification model.
+//			return ret;
 
 		//Else regression, we need these parameters
         ret.add( MODEL_FILE_PARAMETER );
         ret.add( SIGNATURES_FILE_PARAMETER );
         ret.add( SIGNATURES_MAX_HEIGHT );
         ret.add( SIGNATURES_MIN_HEIGHT );
-        ret.add( HIGH_PERCENTILE );
-        ret.add( LOW_PERCENTILE );
+//        ret.add( HIGH_PERCENTILE );
+//        ret.add( LOW_PERCENTILE );
         ret.add( TRAIN_PARAMETER );
         return ret;
     }
@@ -121,33 +131,47 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 
         //Get parameters from extension
         //We know they exist since required parameters
-        model_file=getParameters().get( MODEL_FILE_PARAMETER );
-        signatures_file=getParameters().get( SIGNATURES_FILE_PARAMETER );
+    	String modelPath = getFileFromParameter(MODEL_FILE_PARAMETER );
+    	String signaturesPath = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
         startHeight=Integer.parseInt(getParameters().get( SIGNATURES_MIN_HEIGHT ));
         endHeight=Integer.parseInt(getParameters().get( SIGNATURES_MAX_HEIGHT ));
-        
+
+        //These are for regression
+        if ("false".equalsIgnoreCase(getParameters().get( "isClassification" ))){
+        	logger.debug("The model " + getName() + " is a regression model.");
+
+            if (getParameters().get( LOW_PERCENTILE )!=null)
+                lowPercentile = Double.parseDouble(getParameters().get( LOW_PERCENTILE ));
+            else
+            	throw new DSException("Missing LowPercentile parameter");
+            
+            if (getParameters().get( HIGH_PERCENTILE )!=null)
+                highPercentile = Double.parseDouble(getParameters().get( HIGH_PERCENTILE ));
+            else
+            	throw new DSException("Missing HighPercentile parameter");
+            
+            System.out.println("Low percentile is: " + lowPercentile);
+            System.out.println("High percentile is: " + highPercentile);
+        }
+
         positiveValue=getParameters().get( "positiveValue" );
         negativeValue=getParameters().get( "negativeValue" );
+        String classString = getParameters().get( "classLabels" );
+        if (classString!=null){
+        	String[] csplit = classString.split(",");
+        	classLabels=new ArrayList<String>();
+        	for (String l : csplit){
+        		classLabels.add(l.trim());
+        	}
+        }
 
-        //Get model path depending on OS
-        String modelPath="";
-        String signaturesPath = "";
+        logger.debug( "Model file path is: " + modelPath );
+        logger.debug( "Signatures file path is: " + signaturesPath );
+        logger.debug( "Classlabels are: " + classLabels );
 
-        try {
-			modelPath = FileUtil.getFilePath(model_file, getPluginID());
-	        logger.debug( "Model file path is: " + modelPath );
-
-	        signaturesPath = FileUtil.getFilePath(signatures_file, getPluginID());
-	        logger.debug( "Signatures file path is: " + signaturesPath );
-	        
-
-        } catch (Exception e) {
-            throw new DSException("Error initializing libsvm test: '" 
-            		+ getName() + " due to: " + e.getMessage());
-		} 
-
-        //Verify that the signatures file is accessible
+        //Read signatures into memory
         signatures=readSignaturesFile(signaturesPath);
+
         if (signatures==null || signatures.size()<=0)
             throw new DSException("Signatures file: " + signaturesPath 
             		+ " was empty for test " + getName());
@@ -183,11 +207,9 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 		if (svmModel.param.svm_type == 0) // This is a classification model.
 			return;
 		
-    	highPercentile=Double.parseDouble( getParameters().get( HIGH_PERCENTILE ));
-    	lowPercentile=Double.parseDouble( getParameters().get( LOW_PERCENTILE ));
+//    	highPercentile=Double.parseDouble( getParameters().get( HIGH_PERCENTILE ));
+//    	lowPercentile=Double.parseDouble( getParameters().get( LOW_PERCENTILE ));
     	
-
-
 
     	logger.debug("Initializing of libsvm test: " + getName() 
     			+ " completed successfully.");
@@ -290,35 +312,93 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 		prediction = svm.svm_predict(svmModel, moleculeArray);
 		System.out.println("Pred: " + prediction);
 		
+		// Get the most significant signature for classification or the sum of all gradient components for regression.
 		List<Double> gradientComponents = new ArrayList<Double>();
-		// Get the most significant signature.
-		double decValues[] = new double[1];
-		double lowerPointValue = 0.0, higherPointValue = 0.0;
+		int nOverk = fact(svmModel.nr_class)/(fact(2)*fact(svmModel.nr_class-2)); // The number of decision functions for a classification.
+		double decValues[] = new double[nOverk];
+		double lowerPointValue[] = new double[nOverk]; 
+		double higherPointValue[] = new double[nOverk];
 		svm.svm_predict_values(svmModel, moleculeArray, decValues);
-		lowerPointValue = decValues[0];
+		lowerPointValue = decValues.clone();
 		for (int element = 0; element < moleculeArray.length; element++){
 			// Temporarily increase the descriptor value by one to compute the corresponding component of the gradient of the decision function.
 			moleculeArray[element].value = moleculeArray[element].value + 1.00;
 			svm.svm_predict_values(svmModel, moleculeArray, decValues);
-			higherPointValue = decValues[0];
-			if (svmModel.rho[0] > 0.0){ // Check if the decision function is reversed.
-				gradientComponents.add(higherPointValue-lowerPointValue);
+			higherPointValue = decValues.clone();
+			double gradComponentValue = 0.0;
+			if (svmModel.nr_class == 2) { // Two class case.
+				for (int curDecisionFunc = 0; curDecisionFunc < nOverk; curDecisionFunc++) {
+					if (svmModel.rho[curDecisionFunc] > 0.0){ // Check if the decision function is reversed.
+						gradComponentValue = gradComponentValue + higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc];
+					}
+					else{
+						gradComponentValue = gradComponentValue + lowerPointValue[curDecisionFunc]-higherPointValue[curDecisionFunc];						
+					}
+				}
 			}
-			else{
-				gradientComponents.add(lowerPointValue-higherPointValue);						
+			else {// Take the absolute value and sum up contributions for all models in multi-class cases.
+				for (int curDecisionFunc = 0; curDecisionFunc < nOverk; curDecisionFunc++) {
+					gradComponentValue = gradComponentValue + Math.abs(higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc]);
+				}
 			}
+			gradientComponents.add(gradComponentValue);
 			// Set the value back to what it was.
 			moleculeArray[element].value = moleculeArray[element].value - 1.00;
 				
 		}
-		//If Classification
+
+		String significantSignature="";
+		List<Integer> centerAtoms = new ArrayList<Integer>();
+		int height = -1;
+
 		if (svmModel.param.svm_type == 0){ // This is a classification model.
 			
-			String significantSignature="";
-			List<Integer> centerAtoms = new ArrayList<Integer>();
-			int height = -1;
-			
-			if (prediction > 0.0){ // Look for most positive component, we have a positive prediction
+
+			if (svmModel.nr_class == 2) { // Two class case.
+				if (prediction > 1.0*(svmModel.nr_class-1)/2.0){ // Look for most positive component.
+					double maxComponent = -1.0;
+					int elementMaxVal = -1;
+					for (int element = 0; element < moleculeArray.length; element++){
+						if (gradientComponents.get(element) > maxComponent){
+							maxComponent = gradientComponents.get(element);
+							elementMaxVal = element;
+						}
+					}
+					if (maxComponent > 0.0){
+						System.out.println("Max atom: " + moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMaxVal].index-1)) + ", max val: " + gradientComponents.get(elementMaxVal) + ", signature: " + signatures.get(moleculeArray[elementMaxVal].index-1) + ", height: " + moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMaxVal].index-1)));
+
+						significantSignature=signatures.get(moleculeArray[elementMaxVal].index-1);
+						height=moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMaxVal].index-1));
+						centerAtoms=moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMaxVal].index-1));
+
+					}
+					else{
+						System.out.println("No significant signature.");						
+					}
+				}
+				else{
+					double minComponent = 1.0;
+					int elementMinVal = -1;
+					for (int element = 0; element < moleculeArray.length; element++){
+						if (gradientComponents.get(element) < minComponent){
+							minComponent = gradientComponents.get(element);
+							elementMinVal = element;
+						}
+					}
+					if (minComponent < 0.0){
+						System.out.println("Min atom: " + moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMinVal].index-1)) + ", min val: " + gradientComponents.get(elementMinVal) + ", signature: " + signatures.get(moleculeArray[elementMinVal].index-1) + ", height: " + moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMinVal].index-1)));
+					
+						significantSignature=signatures.get(moleculeArray[elementMinVal].index-1);
+						height=moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMinVal].index-1));
+						centerAtoms=moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMinVal].index-1));
+
+					}
+					else{
+						System.out.println("No significant signature.");
+					}
+				}
+			}
+			else { // Multi-class case.
 				double maxComponent = -1.0;
 				int elementMaxVal = -1;
 				for (int element = 0; element < moleculeArray.length; element++){
@@ -327,9 +407,9 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 						elementMaxVal = element;
 					}
 				}
-				if (maxComponent > 0.0){
+				if (maxComponent/svmModel.nr_class > 0.01){ // Two avoid flat regions.
 					System.out.println("Max atom: " + moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMaxVal].index-1)) + ", max val: " + gradientComponents.get(elementMaxVal) + ", signature: " + signatures.get(moleculeArray[elementMaxVal].index-1) + ", height: " + moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMaxVal].index-1)));
-
+					
 					significantSignature=signatures.get(moleculeArray[elementMaxVal].index-1);
 					height=moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMaxVal].index-1));
 					centerAtoms=moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMaxVal].index-1));
@@ -338,82 +418,81 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 				else{
 					System.out.println("No significant signature.");						
 				}
-			}
-			else{ // Look for most negative component, we have a negative prediction
-				double minComponent = 1.0;
-				int elementMinVal = -1;
-				for (int element = 0; element < moleculeArray.length; element++){
-					if (gradientComponents.get(element) < minComponent){
-						minComponent = gradientComponents.get(element);
-						elementMinVal = element;
-					}
-				}
-				if (minComponent < 0.0){
-
-					System.out.println("Min atom: " + moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMinVal].index-1)) + ", min val: " + gradientComponents.get(elementMinVal) + ", signature: " + signatures.get(moleculeArray[elementMinVal].index-1) + ", height: " + moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMinVal].index-1)));
-					significantSignature=signatures.get(moleculeArray[elementMinVal].index-1);
-					height=moleculeSignaturesHeight.get(signatures.get(moleculeArray[elementMinVal].index-1));
-					centerAtoms=moleculeSignaturesAtomNr.get(signatures.get(moleculeArray[elementMinVal].index-1));
-				}
-				else{
-					System.out.println("No significant signature.");
-				}
+				
 			}
 
-			//Create the result
-	        PosNegIncMatch match = new PosNegIncMatch(significantSignature, 
-	        		ITestResult.INCONCLUSIVE);
-	        if (prediction>0)
-	            match.setClassification( ITestResult.POSITIVE );
-	        else
-	            match.setClassification( ITestResult.NEGATIVE );
+		//Create the result for the classification, overwrite name later if we have sign signature
+        PosNegIncMatch match = new PosNegIncMatch("No significant signature", 
+        		ITestResult.INCONCLUSIVE);
+        
+        //Logic for multi-class results here
+        int intPrediction=(int)prediction;
+        if (classLabels==null){
+        	return returnError("No classlabels found in model", "Classlabels are null for model");
+        }
+        String predictedClassLabel = classLabels.get(intPrediction);
+        System.out.println("predictedClassLabel=" + predictedClassLabel);
+        
+        //If this is higher than posVal in list, set POSITIVE color
+        int posIX = classLabels.indexOf(positiveValue);
+        int negIX = classLabels.indexOf(negativeValue);
+        int predIX = classLabels.indexOf(predictedClassLabel);
+        
+        if (predIX<=posIX)
+            match.setClassification( ITestResult.POSITIVE );
+        else if (predIX>=negIX)
+            match.setClassification( ITestResult.NEGATIVE );
+        else
+            match.setClassification( ITestResult.INCONCLUSIVE );
 
-	        
-            if (significantSignature.length()>0){
-				//OK, color atoms
-            	
-            	for (int centerAtom : centerAtoms){
-            		
-                    match.putAtomResult( centerAtom, 
-                    		match.getClassification() );
-                    
-                    int currentHeight=0;
-                    List<Integer> lastNeighbours=new ArrayList<Integer>();
-                    lastNeighbours.add(centerAtom);
-                    
-                    while (currentHeight<height){
-                    	
-                        List<Integer> newNeighbours=new ArrayList<Integer>();
+        
+        if (significantSignature.length()>0){
+			//OK, color atoms
+        	
+        	match.setName(significantSignature);
+        	
+        	for (int centerAtom : centerAtoms){
+        		
+                match.putAtomResult( centerAtom, 
+                		match.getClassification() );
+                
+                int currentHeight=0;
+                List<Integer> lastNeighbours=new ArrayList<Integer>();
+                lastNeighbours.add(centerAtom);
+                
+                while (currentHeight<height){
+                	
+                    List<Integer> newNeighbours=new ArrayList<Integer>();
 
-                        //for all lastNeighbours, get new neighbours
-                    	for (Integer lastneighbour : lastNeighbours){
-                            for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(
-                                 	  cdkmol.getAtomContainer().getAtom( lastneighbour )) ){
-                            	
-                                //Set each neighbour atom to overall match classification
-                            	int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr);
-                            	match.putAtomResult( nbrAtomNr, match.getClassification() );
-                            	
-                            	newNeighbours.add(nbrAtomNr);
-                            	
-                            }
-                    	}
-                    	
-                    	lastNeighbours=newNeighbours;
+                    //for all lastNeighbours, get new neighbours
+                	for (Integer lastneighbour : lastNeighbours){
+                        for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(
+                             	  cdkmol.getAtomContainer().getAtom( lastneighbour )) ){
+                        	
+                            //Set each neighbour atom to overall match classification
+                        	int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr);
+                        	match.putAtomResult( nbrAtomNr, match.getClassification() );
+                        	
+                        	newNeighbours.add(nbrAtomNr);
+                        	
+                        }
+                	}
+                	
+                	lastNeighbours=newNeighbours;
 
-                    	currentHeight++;
-                    }
-                    
-            	}
-            	
-
-    	        //We can have multiple hits...
-    	        //...but here we only have one
-                results.add( match );
-
-			}
+                	currentHeight++;
+                }
+                
+        	}
+        	
 
 		}
+
+        //We can have multiple hits...
+        //...but here we only have one
+        results.add( match );
+
+	}
 
 		//Else we have a regression model
 		//Sum up all atom gradients
@@ -475,45 +554,45 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 		if (SKIP_CONFIDENCE_AND_NEIGHBOURS)
 			return results;
 		
-		// Retrieve near neighbors.
-		List<Tuple> nearMolecules = retrieveNearestNeighbors(svmModel,nearNeighborData,moleculeArray,NR_NEAR_NEIGHBOURS);
-		System.out.println(nearMolecules.toString());
-
-		double mean=0;
-		for (int j=0; j< nearMolecules.size(); j++){
-			int ix = nearMolecules.get(j).getX();
-			mean = mean + nearMolecules.get(j).getY();
-			ICDKMolecule nearMol = getSDFmodel().getMoleculeAt(ix);
-
-            String cdktitle=(String) nearMol
-            .getAtomContainer().getProperty( CDKConstants.TITLE );
-          
-          String molname="Index " + ix;
-          if (cdktitle!=null)
-              molname=cdktitle;
-
-          ExternalMoleculeMatch match = 
-              new ExternalMoleculeMatch(molname, nearMol, 
-                       (float)nearMolecules.get(j).getY(),  ITestResult.INFORMATIVE);
-
-          results.add( match);
-
-		}
-		
-		mean = mean / nearMolecules.size();
-		System.out.println("Mean conf = " + mean);
-		String conf="";
-		if (mean<0.33)
-			conf="Low";
-		if (mean>=0.33 && mean<0.66 )
-			conf="Medium";
-		if (mean>=0.66)
-			conf="High";
-		
-		SimpleResult confRes= new SimpleResult("Confidence: " + conf, ITestResult.INFORMATIVE);
-//		DoubleResult meanresult = new DoubleResult("Confidence", mean, ITestResult.INFORMATIVE);
-        results.add( confRes);
-		
+//		// Retrieve near neighbors.
+//		List<Tuple> nearMolecules = retrieveNearestNeighbors(svmModel,nearNeighborData,moleculeArray,NR_NEAR_NEIGHBOURS);
+//		System.out.println(nearMolecules.toString());
+//
+//		double mean=0;
+//		for (int j=0; j< nearMolecules.size(); j++){
+//			int ix = nearMolecules.get(j).getX();
+//			mean = mean + nearMolecules.get(j).getY();
+//			ICDKMolecule nearMol = getSDFmodel().getMoleculeAt(ix);
+//
+//            String cdktitle=(String) nearMol
+//            .getAtomContainer().getProperty( CDKConstants.TITLE );
+//          
+//          String molname="Index " + ix;
+//          if (cdktitle!=null)
+//              molname=cdktitle;
+//
+//          ExternalMoleculeMatch match = 
+//              new ExternalMoleculeMatch(molname, nearMol, 
+//                       (float)nearMolecules.get(j).getY(),  ITestResult.INFORMATIVE);
+//
+//          results.add( match);
+//
+//		}
+//		
+//		mean = mean / nearMolecules.size();
+//		System.out.println("Mean conf = " + mean);
+//		String conf="";
+//		if (mean<0.33)
+//			conf="Low";
+//		if (mean>=0.33 && mean<0.66 )
+//			conf="Medium";
+//		if (mean>=0.66)
+//			conf="High";
+//		
+//		SimpleResult confRes= new SimpleResult("Confidence: " + conf, ITestResult.INFORMATIVE);
+////		DoubleResult meanresult = new DoubleResult("Confidence", mean, ITestResult.INFORMATIVE);
+//        results.add( confRes);
+//		
 
         return results;
 
@@ -739,4 +818,24 @@ public class SignaturesLibSVMPrediction extends BaseSDFMatcher{
 		
 		return keys;
 	}
+	
+	/**
+	    * Calculate the factorial of n.
+	    *
+	    * @param n the number to calculate the factorial of.
+	    * @return n! - the factorial of n.
+	    */
+	   static int fact(int n) {
+		
+		// Base Case: 
+		//    If n <= 1 then n! = 1.
+		if (n <= 1) {
+		    return 1;
+		}
+		// Recursive Case:  
+		//    If n > 1 then n! = n * (n-1)!
+		else {
+		    return n * fact(n-1);
+		}
+	   }
 }

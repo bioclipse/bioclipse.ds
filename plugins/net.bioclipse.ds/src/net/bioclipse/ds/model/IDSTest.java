@@ -12,6 +12,7 @@ package net.bioclipse.ds.model;
 
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.help.IContext2;
@@ -71,5 +72,6 @@ public interface IDSTest extends ISubStructure, IContext2{
 	public boolean isInitialized();
 	boolean isOverride();
 	void setOverride(boolean override);
+	public Map<String, String> getParameters();
 
 }

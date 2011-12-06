@@ -1,0 +1,10 @@
+org/openscience/cdk/tools/AtomicProperties.java
+org/openscience/cdk/qsar/IMolecularDescriptor.java
+org/openscience/cdk/qsar/IDescriptor.java
+org/openscience/cdk/qsar/IBondDescriptor.java
+org/openscience/cdk/qsar/IAtomPairDescriptor.java
+org/openscience/cdk/qsar/IAtomicDescriptor.java
+org/openscience/cdk/qsar/descriptors/atompair/PiContactDetectionDescriptor.java
+org/openscience/cdk/qsar/DescriptorException.java
+org/openscience/cdk/qsar/AbstractBondDescriptor.java
+org/openscience/cdk/qsar/AbstractAtomicDescriptor.java

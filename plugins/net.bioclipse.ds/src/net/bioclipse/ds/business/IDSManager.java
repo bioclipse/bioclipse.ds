@@ -98,5 +98,10 @@ public interface IDSManager extends IBioclipseManager {
                    IMolecule mol, 
                    BioclipseJobUpdateHook<Map<String, List<? extends ITestResult>>> h)
                    throws BioclipseException;
+
     
+	public void reInitialize() throws BioclipseException;
+
+	public void removeModel(IDSTest model, String pluginID);
+	
 }

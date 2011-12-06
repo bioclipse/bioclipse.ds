@@ -116,6 +116,8 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
+    	super.initialize(monitor);
+
         //Read parameters as defined in extension
         //We have already asserted that they exist
         String filepath=getParameters().get( FILE_PROPERTY_PARAM );

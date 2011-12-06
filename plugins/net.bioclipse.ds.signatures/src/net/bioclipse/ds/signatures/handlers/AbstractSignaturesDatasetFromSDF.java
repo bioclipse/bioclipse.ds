@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * Copyright (c) 2010 Ola Spjuth
+ * Copyright (c) 2011 Ola Spjuth
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,24 +10,19 @@
  ******************************************************************************/
 package net.bioclipse.ds.signatures.handlers;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -42,26 +37,21 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.openscience.cdk.interfaces.IAtom;
-import org.osgi.framework.AllServiceListener;
+import org.openscience.cdk.interfaces.IChemObject;
+import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.io.iterator.IteratingMDLReader;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
-import net.bioclipse.core.util.LogUtils;
-import net.bioclipse.ds.signatures.business.ISignaturesManager;
-import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
-import net.bioclipse.ui.business.IUIManager;
+import net.bioclipse.core.domain.IDataset;
 
 /**
- * A handler that can convert SMILES files into SDFiles.
- * A SMIELS file is expected to have a header line with property names, 
- * and data lines should start with a SMILES string, and have 
- * properties separated by either ',','\t', or ' '. Properties are also 
- * stored in the SDF, with header names as identifiers.
+ * An abstract handler to generate signature datasets from SDF
  * 
  * @author ola
  */
@@ -72,7 +62,7 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
+
 		ISelection sel=HandlerUtil.getCurrentSelection(event);
 		if (!(sel instanceof IStructuredSelection))
 			throw new ExecutionException("Selection is not an SDF file");
@@ -87,8 +77,34 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 
 		final IFile file = (IFile) obj;
 		
-		//Select property for response value
-		//TODO
+		//Read mol 1 into mem and extract properties
+		List<String> availableProperties = new ArrayList<String>();
+		try {
+			IteratingMDLReader reader = new IteratingMDLReader(file.getContents(), NoNotificationChemObjectBuilder.getInstance());
+			IMolecule mol = (IMolecule)reader.next();
+			for (Object p : mol.getProperties().keySet()){
+				availableProperties.add((String) p);
+			}
+			
+		} catch (CoreException e1) {
+			throw new ExecutionException("Could not parse molecules from input file");
+		}
+		
+		SignaturesDatasetParametersDialog dlg = new SignaturesDatasetParametersDialog(
+												HandlerUtil.getActiveShell(event),
+												file.getParent(), getFileExtension(), 
+												availableProperties);
+
+		//Input dialog regarding height, name, and select property for response value
+		int ret = dlg.open();
+		if (ret==Window.CANCEL) return null;
+		final SignaturesDatasetModel datasetModel = dlg.getDatasetModel();
+		
+//		System.out.println("height is " + datasetModel.getHeight());
+//		System.out.println("responseProp is " + datasetModel.getResponseProperty());
+//		System.out.println("nameProp is " + datasetModel.getNameProperty());
+//		System.out.println("File is " + datasetModel.getNewFile());
+
 		
 		Job job=new Job("Calculating Signatures Dataset"){
 
@@ -107,83 +123,18 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 							net.bioclipse.ds.signatures.Activator.PLUGIN_ID, 
 							"Error reading SDfile: no molecules. ");
 				
-				List<String> allSignaturesList=new ArrayList<String>();
-				List<List<Float>> dataset=new ArrayList<List<Float>>();
-				List<String> names = new ArrayList<String>();
+				//Generate the dataset using the signatures manager
+				IDataset ds = generateDataset(mols, datasetModel.getHeight(), datasetModel.getNameProperty(), datasetModel.getResponseProperty(), monitor);
+
+				System.out.println("File: " + datasetModel.getNewFile());
 				
-				SubProgressMonitor molmonitor = new SubProgressMonitor(monitor, 5);
-				molmonitor.beginTask("Calculating signatures", mols.size());
-
-				int i=0;
-				//Process the mols
-				for (IMolecule mol : mols){
-					AtomSignatures molsigns = generateSignatures(mol);
-					List<Float> row = new ArrayList<Float>();
-					dataset.add(row);
-					i++;
-					names.add("Compound " + i + ",");
-					
-					//Loop over all already stored signatures
-					for (String sign : allSignaturesList){
-						//Count occurrences
-						int nohits=Collections.frequency(molsigns.getSignatures(), sign);
-						row.add((float)nohits);
-						
-						//remove all occurrences in molsigns - we have now processed this list of signatures
-						while (molsigns.getSignatures().contains(sign))
-							molsigns.getSignatures().remove(sign);
-					}
-					
-					//process the new signs
-					List<String> duplicateSigns=new ArrayList<String>();
-					for (String sign : molsigns.getSignatures()){
-
-						//If already processed, just take next
-						if (duplicateSigns.contains(sign)) continue;
-
-						//Count occurrences
-						int nohits=Collections.frequency(molsigns.getSignatures(), sign);
-						if (nohits>1)  //If duplicates...
-							duplicateSigns.add(sign);
-
-						//Add the new sign to allSignaturesList
-						row.add((float)nohits);
-						allSignaturesList.add(sign);
-					}
-
-					//get next molecule
-					molmonitor.worked(1);
-				}
-				
-				molmonitor.done();
-				
-				//Fill up with zeros to length
-				for (List<Float> row : dataset){
-					while (row.size()<allSignaturesList.size())
-						row.add(new Float(0));
-				}
-				
-				//debug it out
-				System.out.println("== ds ==");
-				
-				StringBuffer buf = new StringBuffer();
-				buf.append("Compound, " + allSignaturesList.toString() + "\n");
-				int c=0;
-				for (List<Float> row : dataset){
-					buf.append(names.get(c) + " " + row.toString().substring(1,row.toString().length()-1) + "\n");
-					c++;
-				}
-
-				//Create output file, replace extension with csv
-				String filename= file.getName();
-				IPath sdpath = file.getFullPath().removeLastSegments(1);
-				String apx=getImplSpecificAppendix();
-				IPath outpath = new Path(sdpath.append(filename).removeFileExtension().toOSString()+apx).addFileExtension("csv");
-
+				//Create output file, replace extension with dataset-specific
+				IContainer folder = file.getParent();
+				IPath outpath = folder.getFullPath().append(new Path(datasetModel.getNewFile()));
 				for (int j=1; j<10; j++){
 					if (j>1)
-						outpath = new Path(sdpath.append(filename).removeFileExtension().toOSString()+apx+" ("+j+")").addFileExtension("csv");
-					if (writeFile(outpath, buf.toString().getBytes())){
+						outpath = new Path(outpath.removeFileExtension().toOSString()+" ("+j+")").addFileExtension(ds.getFileExtension());
+					if (writeFile(outpath, ds.getFileContents().getBytes())){
 						break;
 					}
 					
@@ -238,11 +189,12 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 		job.schedule();
 
 		return null;
-	}		
+	}
 
-	protected abstract String getImplSpecificAppendix();
+	protected abstract  IDataset generateDataset(List<ICDKMolecule> mols, int height,
+			String nameProperty, String responseProperty,
+			IProgressMonitor monitor);
 
-	protected abstract AtomSignatures generateSignatures(IMolecule mol)
-			throws BioclipseException;
-	
+	protected abstract String getFileExtension();
+
 }

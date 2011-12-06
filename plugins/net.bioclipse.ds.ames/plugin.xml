@@ -33,6 +33,13 @@
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
             <parameter name="negativeValue" value="nonmutagen" />
+            
+			<parameter name="Model type" value="Molecular Signature lookup" />
+
+            <parameter name="Observations" value="4337" />
+            <parameter name="URL" value="http://pubs.acs.org/doi/abs/10.1021/jm040835a" />
+            <parameter name="Dataset name" value="Bursi Mutagenicity Dataset" />
+            
       </test>
 
       <test
@@ -49,17 +56,18 @@
             <parameter name="responseProperty" value="Ames test categorisation" />
             <parameter name="positiveValue" value="mutagen" />
             <parameter name="negativeValue" value="nonmutagen" />
+            
+            <parameter name="Model type" value="Fingerprint lookup" />
+            <parameter name="Similarity metric" value="Tanimoto" />
+            <parameter name="Similarity threshold" value="0.7" />
+
+            <parameter name="Observations" value="4337" />
+            <parameter name="URL" value="http://pubs.acs.org/doi/abs/10.1021/jm040835a" />
+            <parameter name="Dataset name" value="Bursi Mutagenicity Dataset" />
+            
+            
       </test>
       
-      <!--test
-            id="smarts.sample"
-            name="Sample simple SMARTS"
-            icon="icons/form.gif"
-            class="net.bioclipse.ds.smarts.model.impl.SmartsMatchingTest">
-            <resource name="file"
-                  path="data/sample.txt">
-            </resource>
-      </test-->
       <test
             id="ames.smarts"
             name="Ames Structural Alerts"
@@ -70,18 +78,48 @@
             <resource name="file"
                   path="data/bursiApprovedCDKCorrected.txt">
             </resource>
+            
+            <parameter name="Model type" value="SMARTS matching" />
+
+            <parameter name="Observations" value="28" />
+            <parameter name="URL" value="http://pubs.acs.org/doi/abs/10.1021/jm040835a" />
+            <parameter name="Dataset name" value="Bursi Mutagenicity Dataset" />
+            
       </test>
-      <!--test
-            id="smarts.ames.inclexcl"
-            name="Ames inclusive/exclusive toxicophores"
-            icon="icons/form.gif"
-            class="net.bioclipse.ds.smarts.model.impl.SmartsInclusiveExclusiveTest">
-            <resource name="file"
-                  path="data/amesApprovedInclExclCDKCorrected.txt">
-            </resource>
-      </test-->
       
-     <test
+     <test 
+            id="ames.signatures"
+            name="Ames Signature Significance"
+            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
+            endpoint="net.bioclipse.ds.mutagenicity"
+            propertycalculator="Ames Signature Significance">
+        
+            <parameter name="isClassification" value="true"/>
+            <parameter name="positiveValue" value="mutagen"/>
+            <parameter name="negativeValue" value="nonmutagen"/>
+            <parameter name="classLabels" value="mutagen, nonmutagen"/>
+            <parameter name="responseProperty" value="Ames test categorisation"/>
+            <parameter name="signatures.min.height" value="0"/>
+            <parameter name="signatures.max.height" value="3"/>
+            <resource name="trainFile" path="/models/ames.train"/>
+            <resource name="modelfile" path="/models/ames.model"/>
+            <resource name="signaturesfile" path="/models/ames.sign"/>
+            
+            <parameter name="Model type" value="QSAR" />
+			<parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
+            <parameter name="Model validation" value="Accuracy measued on an external test set" />
+            <parameter name="Model performance" value="0.85" />
+            <parameter name="Learning model" value="SVM" />
+            <parameter name="Learning parameters" value="kernel=RBF, c=10, gamma=0.002" />
+
+            <parameter name="Descriptors" value="Signatures (height 0-3)" />
+            <parameter name="Observations" value="4337" />
+            <parameter name="Variables" value="23226" />
+            <parameter name="URL" value="http://pubs.acs.org/doi/abs/10.1021/jm040835a" />
+            <parameter name="Dataset name" value="Bursi Mutagenicity Dataset" />
+        </test>
+      
+     <!--test
             id="ames.signatures"
             name="Ames Signature Significance"
             class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
@@ -94,19 +132,26 @@
 
             <parameter name="positiveValue" value="mutagen" />
             <parameter name="negativeValue" value="nonmutagen" />
-            
-            <resource name="modelfile" path="models/ames.model" />
-            <resource name="signaturesfile" path="models/ames.signatures" />
-         <parameter
-               name="signatures.min.height"
-               value="0">
-         </parameter>
-         <parameter
-               name="signatures.max.height"
-               value="3">
-         </parameter>
-            
-      </test>
+
+            <resource name="modelfile" path="models/ames.model.old" />
+            <resource name="signaturesfile" path="models/ames.signatures.old" />
+            <parameter name="signatures.min.height" value="0" />
+            <parameter name="signatures.max.height" value="3" />
+
+            <parameter name="Model type" value="QSAR" />
+			<parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
+            <parameter name="Model validation" value="Accuracy measued on an external test set" />
+            <parameter name="Model performance" value="0.85" />
+            <parameter name="Learning model" value="SVM" />
+            <parameter name="Learning parameters" value="kernel=RBF, c=10, gamma=0.002" />
+
+            <parameter name="Descriptors" value="Signatures (height 0-3)" />
+            <parameter name="Observations" value="4337" />
+            <parameter name="Variables" value="23226" />
+            <parameter name="URL" value="http://pubs.acs.org/doi/abs/10.1021/jm040835a" />
+            <parameter name="Dataset name" value="Bursi Mutagenicity Dataset" />
+
+      </test-->
 
       <test
             id="ames.consensus"
@@ -196,7 +241,7 @@
      
      <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="Ames Toxicophores Matches"
+           label="Ames Structural Alerts"
             icon="icons/form.gif"
            style="push">
         <parameter

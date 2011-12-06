@@ -64,6 +64,8 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 
     public void initialize(IProgressMonitor monitor) throws DSException {
 
+    	super.initialize(monitor);
+
         if (monitor.isCanceled())
             throw new DSException("Initialization of test " + 
                                   getId() + " cancelled");
@@ -229,22 +231,22 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
                 //For all stored signatures at this height
                 //Compare with calculated and see any overlaps
     			List<String> calclist = as.getSignatures();
-    			logger.debug("Calculated atom signatures for height " + height 
-    					+ ": " + calclist.toString());
+//    			logger.debug("Calculated atom signatures for height " + height 
+//    					+ ": " + calclist.toString());
     			
     			//Get all signatures for this height
     			List<String> currentSignStringlist = 
     				significantSignatureStrings.get(height);
-    			logger.debug("Significant atom signatures for height " + height 
-    					+ ": " + currentSignStringlist.toString());
+//    			logger.debug("Significant atom signatures for height " + height 
+//    					+ ": " + currentSignStringlist.toString());
 
     			//Compute union to identify matches
     			List<String> union=new ArrayList<String>();
     			union.addAll(calclist);
     			union.retainAll(currentSignStringlist);
     			
-    			logger.debug("On height " + height + " there were " + union.size() 
-    					+ " matches.");
+//    			logger.debug("On height " + height + " there were " + union.size() 
+//    					+ " matches.");
     			
     			//If we have matches for this height...
     			if (union.size()>0){
@@ -268,7 +270,7 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
     						}
     						
     						//This is the atom which has produced this signature
-    						logger.debug("Sign: " + psig + " center atom hit: " + centeratom);
+//    						logger.debug("Sign: " + psig + " center atom hit: " + centeratom);
 
 							matchingAtoms.addAll(getAtomIndices(cdkmol, 
 									centeratom, height));
@@ -401,6 +403,14 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 		arlList.addAll(newList);
 	}
 
+
+	@Override
+	public List<String> getRequiredParameters() {
+		// TODO Auto-generated method stub
+    	return new ArrayList<String>(){{
+    	    add(FILE_PROPERTY_PARAM);
+    	}};
+	}
 
 
 

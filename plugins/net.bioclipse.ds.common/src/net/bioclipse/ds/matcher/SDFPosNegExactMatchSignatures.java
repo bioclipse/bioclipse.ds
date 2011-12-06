@@ -11,7 +11,9 @@
 package net.bioclipse.ds.matcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.ds.model.IDSTest;
@@ -108,6 +110,12 @@ public class SDFPosNegExactMatchSignatures extends BaseSDFPosNegMatcher implemen
                 ExternalMoleculeMatch match = 
                     new ExternalMoleculeMatch(molname, matchmol, 
                                               getConclusion(molResponse));
+
+				Map<String, Map<String, String>> categories = new HashMap<String, Map<String,String>>();
+				Map<String,String> props = new HashMap<String, String>();
+                props.put("Observed value" , molResponse);
+                categories.put("Observations", props);
+                match.setProperties(categories);
 
                 results.add( match );
             }

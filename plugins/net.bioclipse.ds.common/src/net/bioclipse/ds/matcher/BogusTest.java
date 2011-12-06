@@ -37,6 +37,11 @@ public class BogusTest extends AbstractDSTest implements IDSTest{
         return null;
     }
 
+	@Override
+	public List<String> getRequiredParameters() {
+		return null;
+	}
+
     
 
 }

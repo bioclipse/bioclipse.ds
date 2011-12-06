@@ -58,7 +58,7 @@
                 <fileset dir="${lib.dir}">
                     <include name="cdk-1.3.8.jar"/>
                     <include name="cdk-jchempaint-16.jar"/>
-                        <include name="libsvm.jar"/>
+                    <include name="libsvm.jar"/>
                 </fileset>
                 <fileset dir="${build.dir}/jar">
                     <include name="signmodel.jar"/>

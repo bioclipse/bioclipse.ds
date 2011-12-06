@@ -12,7 +12,9 @@ package net.bioclipse.ds.matcher;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
@@ -39,9 +41,12 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
 
     private static final String CDK_FP_PROPERTY_KEY="CDK Fingerprint";
     private static final String TANIMOTO_PARAMETER="distance.tanimoto";
+    private static final String INCLUDE_EXACT_PARAMETER="includeExact";
+    
 
     private static final Logger logger = Logger.getLogger(SDFPosNegNearestMatchFP.class);
     private float tanimoto;
+	private boolean includeExact=false;
 
     /**
      * Read tanimoto on initialization
@@ -58,6 +63,16 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
         }else{
             logger.error("Error parsing required parameter: " 
                          + TANIMOTO_PARAMETER + " in test: " + getId());
+        }
+        
+        //Optional field
+        String includeExactStr = getParameters().get( INCLUDE_EXACT_PARAMETER );
+        if (includeExactStr!=null && includeExactStr.length()>0){
+        	try{
+        	includeExact=Boolean.parseBoolean(includeExactStr);
+        	}catch (Exception e){
+        		logger.equals("Could not parse includeExact parameter: " + includeExactStr);
+        	}
         }
 
     }
@@ -133,7 +148,7 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
 
                     float calcTanimoto = cdk.calculateTanimoto( dbFP, molFP );
                     
-                    if (calcTanimoto == 1){
+                    if (calcTanimoto == 1 && includeExact==false){
                         //Skip if one
                         logger.debug("Skipped tanimoto 1 in FP Nearest " +
                         		"Neighbor matcher.");
@@ -154,7 +169,13 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
                         ExternalMoleculeMatch match = 
                             new ExternalMoleculeMatch(molname, matchmol, 
                                      calcTanimoto,  getConclusion(molResponse));
-
+                        
+						Map<String, Map<String, String>> categories = new HashMap<String, Map<String,String>>();
+						Map<String,String> props = new HashMap<String, String>();
+                        props.put("Observed value" , molResponse);
+                        categories.put("Observations", props);
+                        match.setProperties(categories);
+                        
                         results.add( match);
                     }
                 }

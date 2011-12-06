@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+      <endpoint
+            name="Factor XA"
+            description="Inhibition of cell growth"
+            id="net.bioclipse.ds.r.factorxa.endpoint">
+      </endpoint>
+      <test
+            name="Factor XA exact matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
+            endpoint="net.bioclipse.ds.r.factorxa.endpoint"
+            id="net.bioclipse.ds.r.factorxa.endpoint.exact.signatures">
+         <resource
+               name="file"
+               path="data/data.exact.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="class">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="-1">
+         </parameter>
+      </test>
+      <test
+            name="Factor XA nearest matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            endpoint="net.bioclipse.ds.r.factorxa.endpoint"
+            id="net.bioclipse.ds.r.factorxa.endpoint.nearest.signatures">
+         <resource
+               name="file"
+               path="data/data.nearest.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="class">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="-1">
+         </parameter>
+         <parameter
+               name="distance.tanimoto"
+               value="0.7">
+         </parameter>
+      </test>
+   </extension>
+   
+   
+
+ <extension
+       point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+    <category
+          id="net.bioclipse.ds.r"
+          name="Bioclipse-R">
+    </category>
+    <cheatsheet
+          category="net.bioclipse.ds.r"
+          composite="false"
+          contentFile="cheatsheets/factorxa.xml"
+          id="net.bioclipse.ds.r.factorxa.cheat"
+          name="Virtual screening: Factor Xa">
+    </cheatsheet>
+ </extension>
+ 
+ 	<extension
+    	point="org.eclipse.help.toc">
+		<toc
+        	file="toc.xml"
+         	primary="true"/>
+	</extension>
+ 
+
+</plugin>

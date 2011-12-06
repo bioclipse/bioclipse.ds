@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Decision Support R
+Bundle-SymbolicName: net.bioclipse.ds.r
+Bundle-Version: 0.1.1
+Bundle-Activator: net.bioclipse.ds.r.Activator
+Bundle-Vendor: The Bioclipse Team
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.help,
+ net.bioclipse.core,
+ net.bioclipse.ds,
+ net.bioclipse.cdk.ui.sdfeditor,
+ net.bioclipse.cdk.business,
+ net.bioclipse.ds.common,
+ net.bioclipse.ds.ui,
+ net.bioclipse.ds.libsvm,
+ net.bioclipse.r.business,
+ org.openscience.cdk.interfaces,
+ net.bioclipse.ds.signatures,
+ signatures,
+ org.eclipse.core.resources,
+ net.bioclipse.ds.r,
+ net.bioclipse.qsar;bundle-version="2.5.0",
+ net.bioclipse.balloon.business;bundle-version="2.5.0"
+Export-Package: net.bioclipse.ds.r
+Import-Package: org.apache.log4j

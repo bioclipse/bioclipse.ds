@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+      <endpoint
+            name="Cancer growth inhibition"
+            description="Ability to inghibit growth in cancer cells"
+            id="net.bioclipse.ds.r.u251.endpoint">
+      </endpoint>
+      
+      <!--test
+            name="Cancer growth inhibition exact matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
+            endpoint="net.bioclipse.ds.r.u251.endpoint"
+            id="net.bioclipse.ds.r.u251.endpoint.exact.signatures">
+         <resource
+               name="file"
+               path="data/u251.exact.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="class">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="-1">
+         </parameter>
+      </test>
+      <test
+            name="Cancer growth inhibition nearest matches"
+            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            endpoint="net.bioclipse.ds.r.u251.endpoint"
+            id="net.bioclipse.ds.r.u251.endpoint.nearest.signatures">
+         <resource
+               name="file"
+               path="data/u251.nearest.sdf">
+         </resource>
+         <parameter
+               name="responseProperty"
+               value="name">
+         </parameter>
+         <parameter
+               name="positiveValue"
+               value="1">
+         </parameter>
+         <parameter
+               name="negativeValue"
+               value="-1">
+         </parameter>
+         <parameter
+               name="distance.tanimoto"
+               value="0.7">
+         </parameter>
+      </test-->
+
+  <test
+            id="screen.u251"
+            name="U251 growth inhibition"
+            endpoint="net.bioclipse.ds.r.u251.endpoint"
+            class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
+            override="false">
+            
+            <resource name="rdata" path="models/u251randomForestModel.Rdata,models/functions.Rdata" />
+            <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
+            <parameter name="trainedModel" value="u251.rf" />
+            <parameter name="requiredPackages" value="randomForest" />
+            <parameter name="requires3d" value="true" />
+
+            <parameter name="Observations" value="3515" />
+            <parameter name="Variables" value="210" />
+            <parameter name="URL" value="http://genome-www.stanford.edu/nci60/" />
+            <parameter name="Dataset name" value="NCI60-U251" />
+            
+      </test>
+
+   </extension>
+
+</plugin>

@@ -33,6 +33,13 @@
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />
             <parameter name="negativeValue" value="inactive" />
+            
+			<parameter name="Model type" value="Molecular Signature lookup" />
+
+            <parameter name="Observations" value="892" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+            
       </test>
 
       <test
@@ -49,6 +56,15 @@
             <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
             <parameter name="positiveValue" value="active" />
             <parameter name="negativeValue" value="inactive" />
+            
+            <parameter name="Model type" value="Fingerprint lookup" />
+            <parameter name="Similarity metric" value="Tanimoto" />
+            <parameter name="Similarity threshold" value="0.7" />
+
+            <parameter name="Observations" value="892" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+            
       </test>
       
      <!--test
@@ -79,7 +95,7 @@
             
       </test-->
       
-     <test
+     <!--test
             id="cpdb.signatures.regression"
             name="CPDB regression"
             class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
@@ -88,7 +104,7 @@
             propertycalculator="CPDB Signature Significance">
 
             <resource name="file" path="data/cpdbForRegression.sdf" />
-            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
+            <parameter name="responseProperty" value="TD50_Rat_mmol" />
             <resource name="trainFile" path="models/cpdb.regression.train" />
 
             <resource name="modelfile" path="models/cpdb.regression.model" />
@@ -104,8 +120,69 @@
                value="3">
          </parameter>
             
-      </test>
+      </test-->
       
+       <test 
+            id="cpdb.signatures.classification"
+            name="CPDB Signature Significance"
+            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
+            endpoint="net.bioclipse.ds.carcinogenicity"
+            informative="false"
+            propertycalculator="CPDB Signature Significance">
+
+            <parameter name="isClassification" value="true"/>
+            <parameter name="positiveValue" value="active"/>
+            <parameter name="negativeValue" value="inactive"/>
+            <parameter name="classLabels" value="active, inactive"/>
+            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat"/>
+            <parameter name="signatures.min.height" value="0"/>
+            <parameter name="signatures.max.height" value="3"/>
+            <resource name="trainFile" path="/models/cpdb.train"/>
+            <resource name="modelfile" path="/models/cpdb.model"/>
+            <resource name="signaturesfile" path="/models/cpdb.sign"/>
+            <parameter name="Model type" value="QSAR"/>
+            <parameter name="Learning model" value="SVM"/>
+            <parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function"/>
+            <parameter name="Model performance" value="0.6831460674157304"/>
+            <parameter name="Learning parameters" value="kernel=RBF, c=10.0, gamme=0.00390625"/>
+            <parameter name="Descriptors" value="Signatures (height 0-3)"/>
+            <parameter name="Observations" value="8014"/>
+            <parameter name="Variables" value="891"/>
+        </test>
+      
+      
+      <!--test
+            id="cpdb.signatures.classification"
+            name="CPDB Signature Significance"
+            class="net.bioclipse.ds.libsvm.SignaturesLibSVMPrediction"
+            endpoint="net.bioclipse.ds.carcinogenicity"
+            informative="false"
+            propertycalculator="CPDB Signature Significance">
+
+            <parameter name="isClassification" value="false" />
+            <resource name="file" path="data/cpdb_molsign.sdf" />
+            <parameter name="responseProperty" value="ActivityOutcome_CPDBAS_Rat" />
+            <resource name="trainFile" path="models/cpdb.classification.train" />
+            <resource name="modelfile" path="models/cpdb.classification.model" />
+            <resource name="signaturesfile" path="models/cpdb.classification.signatures" />
+
+            <parameter name="signatures.min.height" value="0" />
+            <parameter name="signatures.max.height" value="3" />
+            
+			<parameter name="Model type" value="QSAR" />
+            <parameter name="Model choice" value="Maximal accuracy, with 5-fold cross-validated accuracy as objective function" />
+            <parameter name="Model validation" value="Accuracy measued on an external test set" />
+            <parameter name="Model performance" value="0.68" />
+            <parameter name="Learning model" value="SVM" />
+            <parameter name="Learning parameters" value="kernel=RBF, c=10, gamma=0.0034" />
+
+            <parameter name="Descriptors" value="Signatures (height 0-3)" />
+            <parameter name="Observations" value="892" />
+            <parameter name="Variables" value="8025" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+            
+      </test-->
       
       
       <test
@@ -118,6 +195,14 @@
             <resource name="file"
                   path="models/cpdb_atomsign0_5.sdf_exportedSignatures.txt">
             </resource>
+            
+            <parameter name="Model type" value="Signature Alerts" />
+
+            <parameter name="Observations" value="892" />
+            <parameter name="URL" value="http://www.epa.gov/ncct/dsstox/sdf_cpdbas.html" />
+            <parameter name="Dataset name" value="Carcinogenic Potency Database" />
+ 
+            
       </test>
       
       <test
@@ -146,7 +231,7 @@
     </Calculator>
     
      <Calculator
-          class="net.bioclipse.ds.cpdb.calc.SignaturesMatchCalculator"
+          class="net.bioclipse.ds.cpdb.calc.SignaturesAlertsCalculator"
           id="CPDB Signature Matches">
     </Calculator>
 
@@ -208,12 +293,12 @@
      
      <command
            commandId="net.bioclipse.cdk.ui.sdfeditor.addProperty"
-           label="CPDB Signatures Matches"
+           label="CPDB Signatures Alerts"
             icon="icons/form.gif"
            style="push">
         <parameter
               name="net.bioclipse.cdk.ui.sdfeditor.calculatorId"
-              value="CPDB Signature Matches">
+              value="CPDB Signature Alerts">
         </parameter>
         <visibleWhen
               checkEnabled="false">

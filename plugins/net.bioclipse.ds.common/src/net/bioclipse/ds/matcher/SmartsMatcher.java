@@ -61,6 +61,8 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
+    	super.initialize(monitor);
+
         if (monitor.isCanceled())
             throw new DSException("Initialization of test " + 
                                   getId() + " cancelled");
@@ -258,4 +260,9 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
         return results;
 
     }
+
+	@Override
+	public List<String> getRequiredParameters() {
+		return new ArrayList<String>(){{add(FILE_PROPERTY_PARAM);}};
+	}
 }
