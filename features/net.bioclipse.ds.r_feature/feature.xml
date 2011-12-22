@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.bioclipse.ds.r_feature"
+      label="DS R"
+      version="0.1.1"
+      provider-name="The Bioclipse team"
+      plugin="net.bioclipse.ds.r">
+
+   <description>
+      Support for the R statistical language in Bioclipse Decision Support
+   </description>
+
+   <copyright>
+      (C) 2010-2011 The Bioclipse Project contributors.
+   </copyright>
+
+   <license url="http://www.eclipse.org/org/documents/epl-v10.php">
+      This feature and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 + exception,
+putting no constraints on choice of backend and/or license for
+creating plugins for Bioclipse; it is totally open for both open
+source plugins as well as commercial. The exception allows GPL
+plugins to be written and run in any combination with EPL licensed
+plugins, addressing incompatibility between the EPL and the GPL
+v.2.
+The Eclipse Public License accompanies this distribution, and
+is available at http://www.eclipse.org/legal/epl-v10.html
+   </license>
+
+   <includes
+         id="net.bioclipse.r_feature"
+         version="0.0.0"/>
+
+   <requires>
+      <import feature="net.bioclipse.qsar_feature" version="2.5.0.qualifier"/>
+   </requires>
+
+   <plugin
+         id="net.bioclipse.ds.r"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.r.ames"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.r.u251"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
