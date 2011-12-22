@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openscience.cdk.interfaces.IAtom;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.ds.matcher.SignatureFrequenceyResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;
 import net.bioclipse.ds.model.result.PosNegIncMatch;
@@ -31,9 +33,9 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         List<ITestResult> results=new ArrayList<ITestResult>();
 
         //Calculate the frequency of the signatures
-        Map<String, Integer> moleculeSignatures;
+        SignatureFrequenceyResult signResults;
 		try {
-			moleculeSignatures = signaturesMatcher.countSignatureFrequency(cdkmol);
+			signResults = signaturesMatcher.countSignatureFrequency(cdkmol);
 		} catch (BioclipseException e) {
             return returnError( "Error generating signatures",e.getMessage());
 		}
@@ -48,8 +50,8 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 			String currentSignature = signaturesIter.next();
 			
 			//If we have match, store its index in the signatures array along with its frequency
-			if (moleculeSignatures.containsKey(currentSignature)){
-				values.add(moleculeSignatures.get(currentSignature));
+			if (signResults.getMoleculeSignatures().containsKey(currentSignature)){
+				values.add(signResults.getMoleculeSignatures().get(currentSignature));
 				indices.add(signaturesMatcher.getSignatures().indexOf(currentSignature));
 			}
 
@@ -92,6 +94,85 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         else
         	overallPrediction = ITestResult.NEGATIVE;
 
+        
+		//Create the result for the classification, overwrite name later if we have sign signature
+        PosNegIncMatch match = new PosNegIncMatch("Probability: " + posProb, overallPrediction);
+
+		//Try to predict important signatures
+        String mostImportantRcmd = getMostImportantSignaturesCommand();
+		ret = R.eval("print(tmp)");
+		ret = R.eval(mostImportantRcmd);
+		if (ret.contains("An error occurred") || ret.startsWith("Error")){
+			return results;
+		}
+
+		//Result should be on form: [1]  191  434 1683
+
+		//Parse and create TestResults
+		String[] parts = ret.trim().split("\\s+");
+		int pos = Integer.parseInt(parts[1]);
+		int neg = Integer.parseInt(parts[2]);
+		int zero = Integer.parseInt(parts[3]);
+		
+		String posSign = signaturesMatcher.getSignatures().get(pos);
+//		String negSign = signaturesMatcher.getSignatures().get(neg);
+//		String zeroSign = signaturesMatcher.getSignatures().get(zero);
+         
+        
+        
+        if (posSign.length()>0){
+			//OK, color atoms
+        	
+        	//We need the center atoms for this signature (could be more than one)
+        	List<Integer> centerAtoms = signResults.getMoleculeSignaturesAtomNr().get(posSign);
+        	Integer height = signResults.getMoleculeSignaturesHeight().get(posSign);
+
+        	//Should we do this?
+//        	match.setName(posSign);
+        	
+        	for (int centerAtom : centerAtoms){
+        		
+                match.putAtomResult( centerAtom, match.getClassification() );
+                
+                int currentHeight=0;
+                List<Integer> lastNeighbours=new ArrayList<Integer>();
+                lastNeighbours.add(centerAtom);
+                
+                while (currentHeight < height){
+                	
+                    List<Integer> newNeighbours=new ArrayList<Integer>();
+
+                    //for all lastNeighbours, get new neighbours
+                	for (Integer lastneighbour : lastNeighbours){
+                        for (IAtom nbr : cdkmol.getAtomContainer().getConnectedAtomsList(
+                             	  cdkmol.getAtomContainer().getAtom( lastneighbour )) ){
+                        	
+                            //Set each neighbour atom to overall match classification
+                        	int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr);
+                        	match.putAtomResult( nbrAtomNr, match.getClassification() );
+                        	
+                        	newNeighbours.add(nbrAtomNr);
+                        	
+                        }
+                	}
+                	
+                	lastNeighbours=newNeighbours;
+
+                	currentHeight++;
+                }
+                
+        	}
+        	
+
+		}
+
+        //We can have multiple hits...
+        //...but here we only have one
+        results.add( match );
+        
+        return results;
+
+/*        
 		DoubleResult accuracy = new DoubleResult("Probability", posProb, overallPrediction);
 		results.add(accuracy);
 
@@ -123,7 +204,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 		results.add(zeroMatch);
 
         return results;
-		
+		*/
 	}
 
 	
@@ -140,7 +221,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 	}
 
 	protected String getMostImportantSignaturesCommand() {
-		return "getMostImportantSignature.svm(" + rmodel + ", tmp)";
+		return "getMostImportantSignature.sparse.svm(" + rmodel + ", tmp)";
 	}
 
 }
