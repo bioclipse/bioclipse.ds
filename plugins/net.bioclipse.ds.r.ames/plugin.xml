@@ -65,11 +65,11 @@
             class="net.bioclipse.ds.r.SparseSignaturesRModelMatcher"
             override="false">
             
-            <resource name="signaturesfile" path="models/hansen.signatures" />
+            <resource name="signaturesfile" path="models/cas_N6512-sign.txt" />
             <parameter name="signatures.min.height" value="0" />
             <parameter name="signatures.max.height" value="3" />
 
-            <resource name="rdata" path="models/HansenSvmModel.Rdata" />
+            <resource name="rdata" path="models/hansenModel.sparse.Rdata" />
             <parameter name="trainedModel" value="cas.svm" />
             <parameter name="requiredPackages" value="SparseM,e1071" />
 
