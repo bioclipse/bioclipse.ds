@@ -86,25 +86,4 @@ The Eclipse Public License accompanies this distribution, and is available at ht
          install-size="0"
          version="0.0.0"/>
 
-   <plugin
-         id="net.bioclipse.ds.ahr"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.ames"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.cpdb"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
 </feature>
