@@ -133,7 +133,7 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 			for (String rcmd : getPredictionString("tmp")){
 				System.out.println(rcmd);
 				ret = R.eval(rcmd);
-		        System.out.println("R said: " + ret);
+//		        System.out.println("R said: " + ret);
 			}
 			        
 	        //Parse result and create testresults
