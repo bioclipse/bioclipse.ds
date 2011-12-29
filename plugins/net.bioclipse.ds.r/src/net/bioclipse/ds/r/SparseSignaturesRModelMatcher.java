@@ -1,10 +1,13 @@
 package net.bioclipse.ds.r;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.interfaces.IAtom;
 
@@ -24,6 +27,11 @@ import net.bioclipse.ds.model.result.PosNegIncMatch;
  */
 public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 
+	private static final Logger logger = Logger.getLogger(SparseSignaturesRModelMatcher.class);
+	
+//    DecimalFormatSymbols sym=new DecimalFormatSymbols();
+//    sym.setDecimalSeparator( '.' );
+    DecimalFormat formatter = new DecimalFormat("0.000");
 
 	@Override
 	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
@@ -69,20 +77,23 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 //	     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
 //	[1,]    0    0    1    0    2    0    3    0    0
 
+		
+		String modelSpecificMatrix="tmp."+getName().replace(" ", ".");
+
 		String rCommand= "new(\"matrix.csr\", " +
 				"\"ra\" = c(" + values.toString().substring(1,values.toString().length()-1) + "), " + 
 				"\"ja\" = as.integer(c(" + indices.toString().substring(1,indices.toString().length()-1) + ")), " +
 				"\"ia\" = as.integer(c(1," + (values.size()+1) + "))," +
 				"\"dimension\" = as.integer(c(1," + signaturesMatcher.getSignatures().size() + ")))";				;
 		
-		R.eval("tmp <- " + rCommand);
+		R.eval(modelSpecificMatrix + " <- " + rCommand);
 		
 		//Do predictions in R
 		String ret="";
-		for (String rcmd : getPredictionString("tmp")){
+		for (String rcmd : getPredictionString(modelSpecificMatrix)){
 			System.out.println(rcmd);
 			ret = R.eval(rcmd);
-	        System.out.println("R said: " + ret);
+//	        System.out.println("R said: " + ret);
 		}
 		        
         //Parse result and create testresults
@@ -96,11 +107,10 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 
         
 		//Create the result for the classification, overwrite name later if we have sign signature
-        PosNegIncMatch match = new PosNegIncMatch("Probability: " + posProb, overallPrediction);
+        PosNegIncMatch match = new PosNegIncMatch("Probability: " + formatter.format(posProb), posProb,  overallPrediction);
 
 		//Try to predict important signatures
-        String mostImportantRcmd = getMostImportantSignaturesCommand();
-		ret = R.eval("print(tmp)");
+        String mostImportantRcmd = getMostImportantSignaturesCommand(modelSpecificMatrix);
 		ret = R.eval(mostImportantRcmd);
 		if (ret.contains("An error occurred") || ret.startsWith("Error")){
 			return results;
@@ -110,15 +120,29 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 
 		//Parse and create TestResults
 		String[] parts = ret.trim().split("\\s+");
-		int pos = Integer.parseInt(parts[1]);
-		int neg = Integer.parseInt(parts[2]);
-		int zero = Integer.parseInt(parts[3]);
-		
-		String posSign = signaturesMatcher.getSignatures().get(pos);
-//		String negSign = signaturesMatcher.getSignatures().get(neg);
-//		String zeroSign = signaturesMatcher.getSignatures().get(zero);
-         
-        
+		String posSign = "";
+		String negSign = "";
+		String zeroSign = "";
+		try{
+			int pos = Integer.parseInt(parts[1]);
+			posSign = signaturesMatcher.getSignatures().get(pos);
+		}catch(NumberFormatException e){
+			logger.debug("Could not parse positive significant signature: " + parts[1]);
+		}
+		try{
+			int neg = Integer.parseInt(parts[2]);
+			negSign = signaturesMatcher.getSignatures().get(neg);
+		}catch(NumberFormatException e){
+			logger.debug("Could not parse positive significant signature: " + parts[1]);
+		}
+		try{
+			int zero = Integer.parseInt(parts[3]);
+			zeroSign = signaturesMatcher.getSignatures().get(zero);
+		}catch(NumberFormatException e){
+			logger.debug("Could not parse positive significant signature: " + parts[1]);
+		}
+
+		//TODO: Also include negative and zero significant signatures
         
         if (posSign.length()>0){
 			//OK, color atoms
@@ -165,6 +189,8 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         	
 
 		}
+        
+        
 
         //We can have multiple hits...
         //...but here we only have one
@@ -220,8 +246,8 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 		return ret;
 	}
 
-	protected String getMostImportantSignaturesCommand() {
-		return "getMostImportantSignature.sparse.svm(" + rmodel + ", tmp)";
+	protected String getMostImportantSignaturesCommand(String input) {
+		return "getMostImportantSignature.sparse.svm(" + rmodel + ", " + input + ")";
 	}
 
 }
