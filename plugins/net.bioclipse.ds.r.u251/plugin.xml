@@ -66,8 +66,8 @@
             class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
             override="false">
             
-            <resource name="rdata" path="models/u251randomForestModel.Rdata,models/functions.Rdata" />
             <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
+            <parameter name="rdata" value="models/u251randomForestModel.Rdata,models/functionsForVirtualScreeningApplication.Rdata" />
             <parameter name="trainedModel" value="u251.rf" />
             <parameter name="requiredPackages" value="randomForest" />
             <parameter name="requires3d" value="true" />

@@ -69,7 +69,7 @@
             <parameter name="signatures.min.height" value="0" />
             <parameter name="signatures.max.height" value="3" />
 
-            <resource name="rdata" path="models/hansenModel.sparse.Rdata" />
+            <parameter name="rdata" value="models/casSvmModel.Rdata,models/functionsForVirtualScreeningApplication.Rdata" />
             <parameter name="trainedModel" value="cas.svm" />
             <parameter name="requiredPackages" value="SparseM,e1071" />
 
