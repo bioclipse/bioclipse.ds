@@ -14,6 +14,10 @@ public class PosNegIncMatch extends AtomResultMatch{
     public PosNegIncMatch(String name, int resultStatus) {
 		super(name, resultStatus);
 	}
+    
+	public PosNegIncMatch(String name, double resultvalue, int resultStatus) {
+		super(name, resultvalue, resultStatus);
+	}
 
 	@Override
 	public Class<? extends IGeneratorParameter<Boolean>> getGeneratorVisibility() {

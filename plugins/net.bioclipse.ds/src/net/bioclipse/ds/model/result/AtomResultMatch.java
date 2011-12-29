@@ -7,16 +7,22 @@ import java.util.Map;
  * 
  * @author ola
  */
-public class AtomResultMatch extends SubStructureMatch{
+public class AtomResultMatch extends SubStructureMatch implements IDoubleResult{
 	
     //AtomNumber > Value
-    private Map<Integer, Number> resultMap; 
+    private Map<Integer, Number> resultMap;
+    private double value;
 
     public AtomResultMatch(String name, int resultStatus) {
         super( name, resultStatus );
         resultMap=new HashMap<Integer, Number>();
     }
-    
+
+    public AtomResultMatch(String name, double resultvalue, int resultStatus) {
+        this( name, resultStatus );
+        this.value=resultvalue;
+    }
+
     public void setResultMap( Map<Integer, Number> resulMap ) {
         this.resultMap = resulMap;
     }
@@ -33,5 +39,15 @@ public class AtomResultMatch extends SubStructureMatch{
         }
         
     }
+
+	@Override
+	public double getValue() {
+		return value;
+	}
+
+	@Override
+	public void setValue(double value) {
+		this.value=value;
+	}
 
 }

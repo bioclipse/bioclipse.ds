@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.model.result;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,10 +21,14 @@ import org.openscience.cdk.interfaces.IAtom;
  * @author ola
  *
  */
-public class SubStructureDoubleResult extends SubStructureMatch {
+public class SubStructureDoubleResult extends SubStructureMatch implements IDoubleResult {
 
     
     private Map<IAtom, Double> atomValues; 
+    DecimalFormat formatter;
+    
+    private double value;
+    
 
     /**
      * Constructor. resultStatus is optional.
@@ -46,5 +51,15 @@ public class SubStructureDoubleResult extends SubStructureMatch {
         if (atomValues==null) atomValues=new HashMap<IAtom, Double>();
         atomValues.put( atomToAdd, value );
     }
+
+	@Override
+	public double getValue() {
+		return value;
+	}
+
+	@Override
+	public void setValue(double value) {
+		this.value=value;
+	}
 
 }
