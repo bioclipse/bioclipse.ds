@@ -118,6 +118,14 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
             String[] rpkgs = reqPackages.split(",");
             for (String rpkg : rpkgs){
                 String ret=R.eval("library("+ rpkg + ")");
+            	if (ret.startsWith("Error")){
+            		
+            		//Try to install it
+                    ret=R.eval("install.packages(\"" + rpkg + "\", repos=\"http://cran.r-project.org\")");
+            		
+            	}
+            	//Try again, if still fails then throw exception
+                ret=R.eval("library("+ rpkg + ")");
             	if (ret.startsWith("Error"))
                     throw new DSException("Error initializing test " + getName() 
                     		+ ": Required R package " + rpkg 
