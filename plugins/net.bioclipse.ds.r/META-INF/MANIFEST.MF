@@ -22,8 +22,7 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ds.signatures,
  signatures,
  org.eclipse.core.resources,
- net.bioclipse.ds.r,
- net.bioclipse.qsar;bundle-version="2.5.0",
- net.bioclipse.balloon.business;bundle-version="2.5.0"
+ net.bioclipse.qsar,
+ net.bioclipse.balloon.business
 Export-Package: net.bioclipse.ds.r
 Import-Package: org.apache.log4j
