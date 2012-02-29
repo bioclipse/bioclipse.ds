@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds.r_feature"
       label="DS R"
-      version="0.1.1"
+      version="0.1.1.qualifier"
       provider-name="The Bioclipse team"
       plugin="net.bioclipse.ds.r">
 
