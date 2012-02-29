@@ -191,17 +191,18 @@ public interface ISignaturesManager extends IBioclipseManager {
     @PublishedMethod( 
         params = "List<? extends IMolecule> mols, List<Integer> heights, String nameProperty, String responseProperty",
         methodSummary = "Generate a sparse dataset of signature counts for a list of molecules with a list of signatures heights. ")
-	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<Integer> heights);
-	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<Integer> heights, IProgressMonitor monitor);
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights);
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, IProgressMonitor monitor);
+
 
 	@Recorded
     @PublishedMethod( 
         params = "List<? extends IMolecule> mols, List<Integer> heights, String nameProperty, String responseProperty",
         methodSummary = "Generate a sparse dataset of signature counts for a list of molecules with a list of signatures heights. " +
         		"Set name of molecules and append response values to last column.")
-	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<Integer> heights, String nameProperty, 
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, String nameProperty, 
 			String responseProperty);
-	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<Integer> heights, String nameProperty, 
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, String nameProperty, 
 			String responseProperty, IProgressMonitor monitor);
 
 }
