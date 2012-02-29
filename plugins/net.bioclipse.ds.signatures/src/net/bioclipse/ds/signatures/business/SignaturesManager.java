@@ -133,6 +133,8 @@ public class SignaturesManager implements IBioclipseManager {
 			try {
 
 				AtomSignatures as = generate( mol , height);
+				
+				logger.debug("Mol=" + mol + ", height=" + height + ", SIGNS=" + as.getSignatures());
 
 				if (as.getSignatures() == null || as.getSignatures().size()<=0)
 					logger.error( "No signatures generated for for molecule: " 
@@ -314,13 +316,23 @@ public class SignaturesManager implements IBioclipseManager {
 		return ds;
 
 	}
-	
-	
+
 	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor){
 		return generateSparseDataset(mols, height, null, null, monitor);
 	}
-
+	
 	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty, IProgressMonitor monitor){
+		List<Integer> heights = new ArrayList<Integer>();
+		heights.add(height);
+		return generateSparseDataset(mols, heights, nameProperty, responseProperty, monitor);
+	}
+
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, IProgressMonitor monitor){
+		return generateSparseDataset(mols, heights, null, null, monitor);
+	}
+
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, String nameProperty, 
 								String responseProperty, IProgressMonitor monitor){
 
 		ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
@@ -329,8 +341,20 @@ public class SignaturesManager implements IBioclipseManager {
 		
 		mols=standardizeMolecules(mols);
 		
-		//Generate all signatures
-		Map<IMolecule, AtomSignatures> signMap = generate(mols, height, new SubProgressMonitor(monitor, 1));
+		//Generate all signatures for all heights
+		Map<IMolecule, AtomSignatures> signMap = null; 
+		for (Number height : heights){
+			Map<IMolecule, AtomSignatures> tempMap = generate(mols, height.intValue(), new SubProgressMonitor(monitor, 1));
+			if (signMap==null){
+				signMap=tempMap;
+			}
+			else{
+				//Add all to list
+				for (IMolecule mol : signMap.keySet()){
+					signMap.get(mol).addSignatures(tempMap.get(mol).getSignatures());
+				}
+			}
+		}
 
 		//Add all atom signatures to a unique list
 		List<String> allSignaturesList=new ArrayList<String>();
@@ -342,6 +366,8 @@ public class SignaturesManager implements IBioclipseManager {
 				}
 
 		}
+		
+		logger.debug("SIGNS: " + allSignaturesList);
 
 		//Set up the dataset
 		LinkedHashMap<Point, Integer> values = new LinkedHashMap<Point, Integer>();
