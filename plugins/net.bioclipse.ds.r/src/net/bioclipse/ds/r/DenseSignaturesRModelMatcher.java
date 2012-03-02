@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
-import net.bioclipse.ds.matcher.SignatureFrequenceyResult;
+import net.bioclipse.ds.matcher.model.SignatureFrequenceyResult;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;

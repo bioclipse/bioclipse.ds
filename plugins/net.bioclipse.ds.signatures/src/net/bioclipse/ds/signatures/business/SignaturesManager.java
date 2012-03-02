@@ -189,9 +189,9 @@ public class SignaturesManager implements IBioclipseManager {
 		cdkmol=cdk.perceiveAromaticity(cdkmol);
 		try {
 			cdkmol=cdk.addImplicitHydrogens(cdkmol);
-		} catch (InvocationTargetException e) {
-			throw new BioclipseException("Error adding implicit hydrogens: " 
-					+ e.getMessage());
+		} catch (Exception e) {
+//			throw new BioclipseException("Error adding implicit hydrogens: " 
+//					+ e.getMessage());
 		}
 
 
