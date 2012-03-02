@@ -6,13 +6,11 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.eclipse.help,
  net.bioclipse.core,
- net.bioclipse.ds,
- net.bioclipse.cdk.ui.sdfeditor,
  net.bioclipse.cdk.business,
- net.bioclipse.ds.common,
- net.bioclipse.ds.ui,
- net.bioclipse.ds.libsvm,
+ org.openscience.cdk.interfaces,
+ net.bioclipse.ds,
  net.bioclipse.ds.r
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

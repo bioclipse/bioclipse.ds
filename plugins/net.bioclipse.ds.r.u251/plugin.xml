@@ -63,7 +63,7 @@
             id="screen.u251"
             name="U251 growth inhibition"
             endpoint="net.bioclipse.ds.r.u251.endpoint"
-            class="net.bioclipse.ds.r.DenseCDKRModelMatcher"
+            class="net.bioclipse.ds.r.U251RModelMatcher"
             override="false">
             
             <resource name="cdk.descriptors" path="models/u251.cdk.desc" />
