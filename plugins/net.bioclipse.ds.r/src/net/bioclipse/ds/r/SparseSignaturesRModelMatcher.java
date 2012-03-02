@@ -60,7 +60,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 			//If we have match, store its index in the signatures array along with its frequency
 			if (signResults.getMoleculeSignatures().containsKey(currentSignature)){
 				values.add(signResults.getMoleculeSignatures().get(currentSignature));
-				indices.add(signaturesMatcher.getSignatures().indexOf(currentSignature));
+				indices.add(signaturesMatcher.getSignatures().indexOf(currentSignature)+1);  //We add one to get on bas 1, which is used by R
 			}
 
 		}
@@ -78,26 +78,27 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 //	[1,]    0    0    1    0    2    0    3    0    0
 
 		
-		String modelSpecificMatrix="tmp."+getName().replace(" ", ".");
+		String modelSpecificMatrix="tmp."+getId();
 
+		//Set up the input matrix in sparse format
 		String rCommand= "new(\"matrix.csr\", " +
 				"\"ra\" = c(" + values.toString().substring(1,values.toString().length()-1) + "), " + 
 				"\"ja\" = as.integer(c(" + indices.toString().substring(1,indices.toString().length()-1) + ")), " +
 				"\"ia\" = as.integer(c(1," + (values.size()+1) + "))," +
 				"\"dimension\" = as.integer(c(1," + signaturesMatcher.getSignatures().size() + ")))";				;
 		
-		R.eval(modelSpecificMatrix + " <- " + rCommand);
+		String output = R.eval(modelSpecificMatrix + " <- " + rCommand);
+		if (output.startsWith("Error")) return returnError(output, output);
 		
 		//Do predictions in R
-		String ret="";
 		for (String rcmd : getPredictionString(modelSpecificMatrix)){
 			System.out.println(rcmd);
-			ret = R.eval(rcmd);
+			output = R.eval(rcmd);
 //	        System.out.println("R said: " + ret);
 		}
 		        
         //Parse result and create testresults
-        double posProb = Double.parseDouble(ret.substring(4));
+        double posProb = Double.parseDouble(output.substring(4));
         
 		int overallPrediction;
         if (posProb>=0.5)
@@ -111,32 +112,32 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 
 		//Try to predict important signatures
         String mostImportantRcmd = getMostImportantSignaturesCommand(modelSpecificMatrix);
-		ret = R.eval(mostImportantRcmd);
-		if (ret.contains("An error occurred") || ret.startsWith("Error")){
+		output = R.eval(mostImportantRcmd);
+		if (output.contains("An error occurred") || output.startsWith("Error")){
 			return results;
 		}
 
 		//Result should be on form: [1]  191  434 1683
 
 		//Parse and create TestResults
-		String[] parts = ret.trim().split("\\s+");
+		String[] parts = output.trim().split("\\s+");
 		String posSign = "";
 		String negSign = "";
 		String zeroSign = "";
 		try{
-			int pos = Integer.parseInt(parts[1]);
+			int pos = Integer.parseInt(parts[1])-1;  //We subtract by one to get back into bas 0 used in Java
 			posSign = signaturesMatcher.getSignatures().get(pos);
 		}catch(NumberFormatException e){
 			logger.debug("Could not parse positive significant signature: " + parts[1]);
 		}
 		try{
-			int neg = Integer.parseInt(parts[2]);
+			int neg = Integer.parseInt(parts[2])-1;  //We subtract by one to get back into bas 0 used in Java
 			negSign = signaturesMatcher.getSignatures().get(neg);
 		}catch(NumberFormatException e){
 			logger.debug("Could not parse positive significant signature: " + parts[1]);
 		}
 		try{
-			int zero = Integer.parseInt(parts[3]);
+			int zero = Integer.parseInt(parts[3])-1;  //We subtract by one to get back into bas 0 used in Java
 			zeroSign = signaturesMatcher.getSignatures().get(zero);
 		}catch(NumberFormatException e){
 			logger.debug("Could not parse positive significant signature: " + parts[1]);
@@ -239,10 +240,11 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 	 * from the input String (dense numerical vector with signature frequency).
 	 */
 	protected List<String> getPredictionString(String input){
-		
+
+		String tempvar="tmp.pred."+getId();
 		List<String> ret = new ArrayList<String>();
-        ret.add("predicted <- predict(" + rmodel + "," + input + ", probability=T)");
-        ret.add("attributes(predicted)$probabilities[1,1]\n");
+        ret.add(tempvar + " <- predict(" + rmodel + "," + input + ", probability=T)");
+        ret.add("attributes(" + tempvar + ")$probabilities[1,1]\n");
 		return ret;
 	}
 
