@@ -37,7 +37,8 @@ public class SignificantSignatureMatch extends PosNegIncMatch{
 		return significantSignature.toString();
 	}
 
-    public Object getAdapter( Class adapter ) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Object getAdapter( Class adapter ) {
 
         if (adapter.isAssignableFrom(IPropertySource.class)) {
             return new SignificantSignatureMatchPropertySource(this);

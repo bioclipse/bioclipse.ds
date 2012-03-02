@@ -24,11 +24,12 @@
             endpoint="net.bioclipse.ds.ahr"
             override="true"
             propertycalculator="AHR Exact Match"
-            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures">
+            class="net.bioclipse.ds.matcher.SDFExactMatcherSignatures">
             <resource name="file"
                   path="data/2796_nosalts_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="c#Activity" />
+            <parameter name="isClassification" value="true" />
             <parameter name="positiveValue" value="2" />
             <parameter name="negativeValue" value="1" />
             
@@ -44,7 +45,7 @@
             id="ahr.lookup.nearest"
             name="AHR nearest neighbour"
             endpoint="net.bioclipse.ds.ahr"
-            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            class="net.bioclipse.ds.matcher.SDFNearestMatchFP"
             propertycalculator="AHR Nearest Neighbours"
             consensus="net.bioclipse.ds.consensus.majority.emptyinconclusive">
             <resource name="file"
@@ -52,6 +53,7 @@
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="c#Activity" />
+            <parameter name="isClassification" value="true" />
             <parameter name="positiveValue" value="2" />
             <parameter name="negativeValue" value="1" />
             

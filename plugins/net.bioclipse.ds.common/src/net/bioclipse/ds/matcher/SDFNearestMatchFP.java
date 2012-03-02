@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.ds.matcher;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -37,14 +38,15 @@ import org.openscience.cdk.CDKConstants;
  * @author ola
  *
  */
-public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDSTest{
+public class SDFNearestMatchFP extends BaseSDFMatcher implements IDSTest{
 
     private static final String CDK_FP_PROPERTY_KEY="CDK Fingerprint";
     private static final String TANIMOTO_PARAMETER="distance.tanimoto";
     private static final String INCLUDE_EXACT_PARAMETER="includeExact";
     
+    private static final Logger logger = Logger.getLogger(SDFNearestMatchFP.class);
+    DecimalFormat formatter = new DecimalFormat( "0.00" );
 
-    private static final Logger logger = Logger.getLogger(SDFPosNegNearestMatchFP.class);
     private float tanimoto;
 	private boolean includeExact=false;
 
@@ -166,9 +168,17 @@ public class SDFPosNegNearestMatchFP extends BaseSDFPosNegMatcher implements IDS
                         if (cdktitle!=null)
                             molname=cdktitle;
 
-                        ExternalMoleculeMatch match = 
-                            new ExternalMoleculeMatch(molname, matchmol, 
-                                     calcTanimoto,  getConclusion(molResponse));
+                        ExternalMoleculeMatch match =null;
+
+                        if (isClassification){
+                        	match = new ExternalMoleculeMatch(molname + 
+                        			" (tanimoto=" + formatter.format(calcTanimoto), matchmol, 
+                        			getConclusion(molResponse));
+                        }else{
+                        	match = new ExternalMoleculeMatch(molname + 
+                        			" (tanimoto=" + formatter.format(calcTanimoto) + "), value=" + molResponse, matchmol, 
+                        			getConclusion(molResponse));
+                        }
                         
 						Map<String, Map<String, String>> categories = new HashMap<String, Map<String,String>>();
 						Map<String,String> props = new HashMap<String, String>();

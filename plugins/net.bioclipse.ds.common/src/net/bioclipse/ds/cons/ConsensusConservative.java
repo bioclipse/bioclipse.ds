@@ -12,7 +12,6 @@ package net.bioclipse.ds.cons;
 
 import java.util.List;
 
-import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.ITestResult;
 
 

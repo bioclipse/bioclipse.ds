@@ -1,4 +1,4 @@
-package net.bioclipse.ds.matcher;
+package net.bioclipse.ds.matcher.model;
 
 import java.util.List;
 import java.util.Map;

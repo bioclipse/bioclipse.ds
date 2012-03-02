@@ -24,13 +24,14 @@
             id="ames.lookup.exact"
             name="Ames exact matches"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.matcher.SDFPosNegExactMatchSignatures"
+            class="net.bioclipse.ds.matcher.SDFExactMatcherSignatures"
             propertycalculator="Ames Exact Match"
             override="true">
             <resource name="file"
                   path="data/bursi_nosalts_molsign.sdf">
             </resource>
             <parameter name="responseProperty" value="Ames test categorisation" />
+            <parameter name="isClassification" value="true" />
             <parameter name="positiveValue" value="mutagen" />
             <parameter name="negativeValue" value="nonmutagen" />
             
@@ -46,7 +47,7 @@
             id="ames.lookup.nearest"
             name="Ames nearest neighbour"
             endpoint="net.bioclipse.ds.mutagenicity"
-            class="net.bioclipse.ds.matcher.SDFPosNegNearestMatchFP"
+            class="net.bioclipse.ds.matcher.SDFNearestMatchFP"
             consensus="net.bioclipse.ds.consensus.majority.emptyinconclusive"
             propertycalculator="Ames Nearest Neighbours">
             <resource name="file"
@@ -54,6 +55,7 @@
             </resource>
             <parameter name="distance.tanimoto" value="0.7" />
             <parameter name="responseProperty" value="Ames test categorisation" />
+            <parameter name="isClassification" value="true" />
             <parameter name="positiveValue" value="mutagen" />
             <parameter name="negativeValue" value="nonmutagen" />
             

@@ -321,6 +321,7 @@ public class SmartsInclExclMatcher extends AbstractDSTest implements IDSTest{
 
     }
 
+	@SuppressWarnings("serial")
 	@Override
 	public List<String> getRequiredParameters() {
 		return new ArrayList<String>(){{add(FILE_PROPERTY_PARAM);}};
