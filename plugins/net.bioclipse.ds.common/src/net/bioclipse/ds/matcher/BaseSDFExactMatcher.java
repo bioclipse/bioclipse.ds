@@ -75,8 +75,12 @@ public abstract class BaseSDFExactMatcher extends BaseSDFMatcher implements IDST
 
             Object storedPropObject=getSDFmodel().getPropertyFor( i, 
                                                       getPropertyKey() );
+            if (storedPropObject==null){
+            	logger.warn("Stored prop is null for index: " + i);
+            	continue;
+            }
             
-            String storedProp="";
+            String storedProp=null;
 			try {
 				storedProp = processQueryResult(storedPropObject);
 			} catch (DSException e) {
