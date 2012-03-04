@@ -29,7 +29,10 @@ import net.bioclipse.jobs.ExtendedBioclipseJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 
-@PublishedClass( "Contains methods for Bioclipse Decision Support")
+@PublishedClass(
+    value="Contains methods for Bioclipse Decision Support",
+    doi={"10.1021/ci200242c"}
+)
 /**
  * Contains methods for Bioclipse Decision Support
  * 
