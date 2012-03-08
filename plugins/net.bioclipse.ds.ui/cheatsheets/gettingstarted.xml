@@ -30,7 +30,8 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
 			class="net.bioclipse.scripting.ui.actions.ScriptAction"
 	        required="false"
 			param1="mol=cdk.fromSMILES(&quot;CCCCON=O&quot;)"
-			param2="ui.open(mol)"
+	        param2="mol=cdk.generate2dCoordinates(mol)"		
+			param3="ui.open(mol)"
 			/>
    </item>
    <item
