@@ -5,7 +5,7 @@
          href="/net.bioclipse.ds/html/maintopic.html">
       <description>
          <b>Decision Support</b>
-This tutorial describes the basic steps for using the Decision Support feature of Bioclipse.
+This tutorial describes the basic steps for using the Decision Support feature of Bioclipse. For this tutorial it is good, but not necessary, to have Sample Data installed. 
       </description>
    </intro>
 
@@ -30,7 +30,8 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
 			class="net.bioclipse.scripting.ui.actions.ScriptAction"
 	        required="false"
 			param1="mol=cdk.fromSMILES(&quot;CCCCON=O&quot;)"
-			param2="ui.open(mol)"
+	        param2="mol=cdk.generate2dCoordinates(mol)"		
+			param3="ui.open(mol)"
 			/>
    </item>
    <item
@@ -52,7 +53,7 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
    <item
          title="Step 5: Generate a report">
       <description>
-         By right clicking in the Decision Support tab it is possible to generate a Report. Note that it takes over 20 seconds to open the first report, while efter this generating reports is much faster.
+         By right clicking in the Decision Support tab it is possible to generate a Report. Note that it takes over 20 seconds to open the first report, while after this generating reports is much faster.
       </description>
     <action
 			pluginId="net.bioclipse.ds.ui"
@@ -84,7 +85,7 @@ In the top menu, select option <b>Window &gt; Open Perspective &gt; Other...</b>
       <item 
          title="Step 8: Switch between tabs in the Molecules Table">
       <description>
-         Select one of the structures in the MoleculesTable and then click the tab <b>2D-structure</b> at the bottom of the editor. Here you can run individual tests, make changes to the molecule, and when you switch back to the tab <b>Molecules</b> the updated values are calculated in teh background and the visualization is updated (just wait a few seconds for it to complete).
+         Select one of the structures in the MoleculesTable and then click the tab <b>Single molecule</b> at the bottom of the editor. Here you can run individual tests, make changes to the molecule, and when you switch back to the tab <b>Molecules</b> the updated values are calculated in the background and the visualization is updated (just wait a few seconds for it to complete).
       </description>
    </item>
       <item 
