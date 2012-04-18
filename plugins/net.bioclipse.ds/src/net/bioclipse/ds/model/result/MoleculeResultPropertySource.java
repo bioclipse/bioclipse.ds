@@ -27,9 +27,9 @@ public class MoleculeResultPropertySource extends BasicPropertySource
 
     private Object SimplePropertiesTable[][] =
     {
-            { NAME, new TextPropertyDescriptor(NAME,"Name")},
-            { TEST, new TextPropertyDescriptor(TEST,"Test")},
-            { CLASSIFICATION, new TextPropertyDescriptor(CLASSIFICATION,CLASSIFICATION)},
+            { NAME, new PropertyDescriptor(NAME,"Name")},
+            { TEST, new PropertyDescriptor(TEST,"Test")},
+            { CLASSIFICATION, new PropertyDescriptor(CLASSIFICATION,CLASSIFICATION)},
     };
 
     public MoleculeResultPropertySource(ExternalMoleculeMatch item) {
@@ -70,7 +70,7 @@ public class MoleculeResultPropertySource extends BasicPropertySource
 
         		for (String name : catprops.keySet()){
         			String value = catprops.get(name);
-        			PropertyDescriptor descriptor = new TextPropertyDescriptor(category+"_" + name, name);
+        			PropertyDescriptor descriptor = new PropertyDescriptor(category+"_" + name, name);
         			descriptor.setCategory(category);
         			getProperties().add(descriptor);
         			addToValueMap(category+"_" + name,value);
