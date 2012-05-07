@@ -15,7 +15,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import net.bioclipse.cdk.business.Activator;
+import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IDataset;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.AbstractHandler;
@@ -39,16 +44,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
-
-import net.bioclipse.cdk.business.Activator;
-import net.bioclipse.cdk.business.ICDKManager;
-import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IDataset;
 
 /**
  * An abstract handler to generate signature datasets from SDF
@@ -131,10 +129,23 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 				//Create output file, replace extension with dataset-specific
 				IContainer folder = file.getParent();
 				IPath outpath = folder.getFullPath().append(new Path(datasetModel.getNewFile()));
-				for (int j=1; j<10; j++){
-					if (j>1)
-						outpath = new Path(outpath.removeFileExtension().toOSString()+" ("+j+")").addFileExtension(ds.getFileExtension());
+				String outpathNoExt = outpath.removeFileExtension().toOSString();
+				IPath classesOutpath = new Path(outpathNoExt + "-classes").addFileExtension("txt");
+				IPath signDescOutpath = new Path(outpathNoExt + "-sign").addFileExtension("txt");
+				for (int j=0; j<100; j++){
+					if (j>0) {
+						outpath = new Path(outpathNoExt + "(" + j + ")").addFileExtension(ds.getFileExtension());
+						classesOutpath = new Path(outpathNoExt + "-classes" + "(" + j + ")").addFileExtension("txt");
+						signDescOutpath = new Path(outpathNoExt + "-sign" + "(" + j + ")").addFileExtension("txt");
+					}
 					if (writeFile(outpath, ds.getFileContents().getBytes())){
+						List<String> responseValues = ds.getResponseValues();
+						StringBuilder sb = new StringBuilder();
+						for (int l=0; l< ds.getColHeaders().size(); l++){
+							sb.append(ds.getColHeaders().get(l) + "\n");
+						}
+						writeFile(classesOutpath, getResponseValuesRaw(responseValues).getBytes());
+						writeFile(signDescOutpath, sb.toString().getBytes());
 						break;
 					}
 					
@@ -189,6 +200,10 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 		job.schedule();
 
 		return null;
+	}
+
+	public String getResponseValuesRaw(List<String> responseValues) {
+		return responseValues.toString().substring(1, responseValues.toString().length()-1)+"\n";
 	}
 
 	protected abstract  IDataset generateDataset(List<ICDKMolecule> mols, int height,
