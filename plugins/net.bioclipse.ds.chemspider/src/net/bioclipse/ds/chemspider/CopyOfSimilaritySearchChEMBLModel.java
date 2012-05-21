@@ -25,13 +25,13 @@ import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
  * @author Ola Spjuth
  *
  */
-public class SimilaritySearchModel extends AbstractDSTest{
+public class CopyOfSimilaritySearchChEMBLModel extends AbstractDSTest{
 
 	private static final String TANIMOTO_DISTANCE = "distance.tanimoto";
 	private static final int MAX_NEIGHBORS = 15;
 
 	
-	private static final Logger logger = Logger.getLogger(SimilaritySearchModel.class);
+	private static final Logger logger = Logger.getLogger(CopyOfSimilaritySearchChEMBLModel.class);
 
 	private float tanimoto;
     DecimalFormat formatter = new DecimalFormat( "0.00" );
@@ -117,6 +117,34 @@ public class SimilaritySearchModel extends AbstractDSTest{
             props.put("Nominal mass" , "" + cdkmol.getProperty("chemspider.nominalmass", null));
             categories.put("Chemspider", props);
 
+            //Look up interactions in ChEMBL
+            try {
+				List<ChemblInteraction> chemblInteractions = ChemblLookup.lookupCSID(csid);
+//				List<ChemblInteraction> chemblInteractions = ChemblLookup.lookupCSID(10368587);
+
+				if (chemblInteractions!=null){
+					for (ChemblInteraction ci : chemblInteractions){
+						Map<String,String> ciprops = new HashMap<String, String>();
+						if (ci.getRelation()!=null)
+							ciprops.put("Value" , ci.getRelation() + ci.getValue());
+						else
+							ciprops.put("Value" , ci.getValue());
+						ciprops.put("Unit" , ci.getUnit());
+						ciprops.put("Target type" , ci.getTargetType());
+						ciprops.put("Interaction type" , ci.getInteractionType());
+						ciprops.put("Description" , ci.getDescription());
+
+						categories.put("Target: " + ci.getTitle(), ciprops);
+					}
+				}
+				else{
+					logger.debug("No ChEMBL interactions for CID=" + csid);
+				}
+				
+			} catch (BioclipseException e) {
+				logger.error("Error querying chembl: " + e.getMessage());
+			}
+			
             match.setProperties(categories);
 			results.add(match);
 		}
