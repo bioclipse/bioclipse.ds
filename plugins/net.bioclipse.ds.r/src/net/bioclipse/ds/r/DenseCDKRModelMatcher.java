@@ -121,11 +121,10 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 				namesVectorForR = namesVectorForR + "\"" + nam + "\"" + ",";
 			}
 			
-			String rnames = getRowNames(tempvar);
-			System.out.println(rnames);
-			R.eval(rnames);
-
-			R.eval(tempvar);
+//			String rnames = getRowNames(tempvar);
+//			System.out.println(rnames);
+//			R.eval(rnames);
+//			R.eval(tempvar);
 			
 			//Do predictions in R
 			String ret="";
