@@ -36,6 +36,7 @@ public class U251RModelMatcher extends DenseCDKRModelMatcher{
 		ret.add(tempvar + " <- predict(u251.imputed, " + tempvar + ")");
 		ret.add("names("+ tempvar + ") <- rownames(u251.rf$importance)");
 		ret.add(predictvar + " <- predict(u251.rf, t(" + tempvar + "), type=\"prob\")[2]");
+		ret.add(predictvar);
 		return ret;
 	}
 	
