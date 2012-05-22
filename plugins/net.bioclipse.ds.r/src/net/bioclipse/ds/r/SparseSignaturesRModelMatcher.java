@@ -100,6 +100,15 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         //Parse result and create testresults
         double posProb = Double.parseDouble(output.substring(4));
         
+        //Check what rho is, if negative then invert predictions
+        //FIXME
+		output = R.eval("cas.svm$rho");
+		if (output.substring(4).startsWith("-")){
+			System.out.println("RHO IS NEG - INVERT!");
+			posProb=1-posProb;
+		}
+	
+        
 		int overallPrediction;
         if (posProb>=0.5)
         	overallPrediction = ITestResult.POSITIVE;

@@ -137,7 +137,6 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 	        //Parse result and create testresults
 	        double posProb = Double.parseDouble(ret.substring(4));
 	        System.out.println("Parsed prediction prob: " + posProb);
-
 	        
 			int overallPrediction;
 	        if (posProb>=0.5)

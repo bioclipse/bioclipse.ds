@@ -134,7 +134,7 @@ public class SignaturesManager implements IBioclipseManager {
 
 				AtomSignatures as = generate( mol , height);
 				
-				logger.debug("Mol=" + mol + ", height=" + height + ", SIGNS=" + as.getSignatures());
+//				logger.debug("Mol=" + mol + ", height=" + height + ", SIGNS=" + as.getSignatures());
 
 				if (as.getSignatures() == null || as.getSignatures().size()<=0)
 					logger.error( "No signatures generated for for molecule: " 
@@ -367,7 +367,7 @@ public class SignaturesManager implements IBioclipseManager {
 
 		}
 		
-		logger.debug("SIGNS: " + allSignaturesList);
+//		logger.debug("SIGNS: " + allSignaturesList);
 
 		//Set up the dataset
 		LinkedHashMap<Point, Integer> values = new LinkedHashMap<Point, Integer>();
