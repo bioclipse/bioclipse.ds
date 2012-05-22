@@ -43,14 +43,12 @@ is available at http://www.eclipse.org/legal/epl-v10.html
          id="net.bioclipse.ds.r.ames"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="net.bioclipse.ds.r.u251"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
