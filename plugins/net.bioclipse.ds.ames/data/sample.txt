@@ -1,4 +1,0 @@
-[CH2](*(N)) carbon-nitro
-[a] amino
-[N](*(*(O))) nitro-oxy
-
