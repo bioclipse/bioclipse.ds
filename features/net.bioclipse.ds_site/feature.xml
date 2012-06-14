@@ -17,10 +17,6 @@
    </license>
 
    <includes
-         id="net.bioclipse.ds.r_feature"
-         version="0.0.0"/>
-
-   <includes
          id="net.bioclipse.ds_feature"
          version="0.0.0"/>
 
