@@ -49,7 +49,7 @@ public class PieChartProducer {
 	public static Image generatePieChart(Display display, int greens, int reds, int blues, int radius, int imagesize) {
 		Color red = display.getSystemColor (SWT.COLOR_RED);
 		Color green = display.getSystemColor (SWT.COLOR_GREEN);
-		Color blue = display.getSystemColor (SWT.COLOR_BLUE);
+		Color blue = new Color(display, 255, 126, 	0);
 		Color black = display.getSystemColor (SWT.COLOR_BLACK);
 		Color white = display.getSystemColor (SWT.COLOR_WHITE);
 		Color gray = new Color(display, 150,150,150);
