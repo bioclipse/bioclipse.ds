@@ -106,14 +106,14 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 					inc++;
 			}
 			
-			if ( neg!=0 || pos!=0 || inc!=0){
+//			if ( neg!=0 || pos!=0 || inc!=0){
 				Display display = PlatformUI.getWorkbench().getDisplay();
 				Image img = PieChartProducer.generatePieChart(display, 
 						neg, pos, inc, 12, 16);
 				return img;
-			}
+//			}
 
-			return run.getIcon();
+//			return run.getIcon();
 		}
 
 		return null;

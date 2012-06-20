@@ -34,6 +34,7 @@ public interface ITestResult extends IAdaptable{
     public static final int INCONCLUSIVE=0x3;
     public static final int INFORMATIVE=0x4;
     public static final int ERROR=0x5;
+    public static final int EMPTY=0x6;
 
     
     /**

@@ -39,7 +39,7 @@ public class DSBusinessModel {
     private static final Logger logger = Logger.getLogger(DSBusinessModel.class);
 
     private static final String DEFAULT_CONSENSUS_CALCULATOR = 
-                        "net.bioclipse.ds.consensus.majority.emptyinconclusive";
+                        "net.bioclipse.ds.consensus.majority";
 
     volatile List<IDSTest> tests;
     volatile List<Endpoint> endpoints;

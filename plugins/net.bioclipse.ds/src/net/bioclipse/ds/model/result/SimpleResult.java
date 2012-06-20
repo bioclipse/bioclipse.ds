@@ -34,6 +34,7 @@ public class SimpleResult implements ITestResult{
     private static Image incon_icon;
     private static Image error_icon;
     private static Image inform_icon;
+	private static Image empty_icon;
     
     private TestRun testRun;
     private String name;
@@ -86,8 +87,11 @@ public class SimpleResult implements ITestResult{
             return error_icon;
         if (classification==ITestResult.INFORMATIVE)
             return inform_icon;
-        else
+        if (classification==ITestResult.INCONCLUSIVE)
             return incon_icon;
+        else
+        	//All else are empty
+            return empty_icon;
     }
 
     
@@ -98,9 +102,10 @@ public class SimpleResult implements ITestResult{
 //        neg_icon=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
         pos_icon=Activator.getImageDecriptor( "icons/target-red.gif" ).createImage();
         neg_icon=Activator.getImageDecriptor( "icons/target-green.gif" ).createImage();
-        incon_icon=Activator.getImageDecriptor( "icons/target-gray.gif" ).createImage();
+        incon_icon=Activator.getImageDecriptor( "icons/target-orange.gif" ).createImage();
         error_icon=Activator.getImageDecriptor( "icons/fatalerror.gif" ).createImage();
         inform_icon=Activator.getImageDecriptor( "icons/bulb.png" ).createImage();
+        empty_icon=Activator.getImageDecriptor( "icons/target-gray.gif" ).createImage();
     }
 
     public int getClassification() {
