@@ -109,7 +109,9 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
         if (getParameters().get("isClassification")!=null && 
         		getParameters().get("isClassification").equals("false")){
-        	//Regression: TODO not handled yet...
+
+          ret.add( HIGH_PERCENTILE );
+          ret.add( LOW_PERCENTILE );
         	
         }
         
@@ -456,11 +458,11 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
         int negIX = classLabels.indexOf(negativeValue);
         int predIX = classLabels.indexOf(predictedClassLabel);
         
-        if (predIX<=posIX){
+        if (predIX==posIX){
             match.setClassification( ITestResult.POSITIVE );
         	match.setName("Result: Positive");
         }
-        else if (predIX>=negIX){
+        else if (predIX==negIX){
             match.setClassification( ITestResult.NEGATIVE );
         	match.setName("Result: Negative");
         }
