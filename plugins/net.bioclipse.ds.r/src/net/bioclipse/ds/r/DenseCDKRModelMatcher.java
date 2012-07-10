@@ -79,8 +79,9 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 		
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();
-        
+
         if (requires3d){
+        	logger.debug("Calculating 3D coordinates for " + getName() + " since requires 3D");
         	monitor.subTask("Calculating 3D coordinates");
         	IBalloonManager balloon = net.bioclipse.balloon.business.
         							  Activator.getDefault().getJavaBalloonManager();
@@ -92,7 +93,7 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 				return returnError("Error generating 3D", e.getMessage());
 			}
         }
-
+                
         List<IMolecule> mols = new ArrayList<IMolecule>();
         mols.add(cdkmol);
 
@@ -194,6 +195,7 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 
     }
 	
+
 
 	/**
 	 * Get a list of the row names from the R data model.

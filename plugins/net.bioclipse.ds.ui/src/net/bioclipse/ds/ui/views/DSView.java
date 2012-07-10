@@ -340,6 +340,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 for (String testID : ds.getTests()){
                 	IDSTest test = ds.getTest( testID );
                 	monitor.subTask( "Initializing test: " + testID );
+                	logger.debug( "Initializing test: " + testID );
                 	try {
                 		if (!test.isInitialized()){
                 			test.initialize( monitor );
