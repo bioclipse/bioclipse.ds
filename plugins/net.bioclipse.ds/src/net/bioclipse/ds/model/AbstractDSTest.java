@@ -18,6 +18,7 @@ import java.util.Map;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
+import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
@@ -33,9 +34,13 @@ import org.eclipse.help.IHelpResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * An abstract base class for all test implementations.
@@ -355,7 +360,14 @@ public abstract class AbstractDSTest implements IDSTest{
             return returnError( "Cancelled","");
 
         //Preprocess the molecule: Remove explicit and add implicit hydrogens
-//        try {
+        
+        try {
+        	cdkmol = new CDKMolecule(standardizeMolecule(cdkmol.getAtomContainer()));
+        } catch (CDKException e) {
+        	return returnError("Error standardizing molecule", e.getMessage());
+        }
+        
+        /*
 		try {
 				cdk.removeExplicitHydrogens(cdkmol);
 				cdk.addImplicitHydrogens(cdkmol); 
@@ -375,6 +387,7 @@ public abstract class AbstractDSTest implements IDSTest{
 		            		.getMessage(),ie.getTargetException().getMessage());
 				}
 			}
+			*/
 
 		//Delegate the actual test to the implementation
         List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
@@ -389,6 +402,27 @@ public abstract class AbstractDSTest implements IDSTest{
 
     }
 
+    
+	public static IAtomContainer standardizeMolecule(IAtomContainer mol) throws CDKException{
+
+		//Remove explicit hydrogens
+		for (int i=mol.getAtomCount()-1; i>=0; i--) {
+			IAtom atom = mol.getAtom(i);
+			if ("H".equals(atom.getSymbol())) {
+				mol.removeAtomAndConnectedElectronContainers(atom);
+			}
+		}
+
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+		CDKHueckelAromaticityDetector.detectAromaticity(mol);
+
+		CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(mol.getBuilder());
+		hAdder.addImplicitHydrogens(mol);
+
+		return mol;
+
+	}
+	
 
 
     /**
