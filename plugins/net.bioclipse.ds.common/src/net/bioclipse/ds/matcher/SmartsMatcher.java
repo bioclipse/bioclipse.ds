@@ -60,6 +60,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
+    	logger.debug("Initializing SMARTSMatcher for test: " + getName());
     	super.initialize(monitor);
 
         if (monitor.isCanceled())
