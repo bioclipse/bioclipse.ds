@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +37,7 @@ import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
@@ -235,7 +234,7 @@ public abstract class AbstractDSTest implements IDSTest{
 
     
     public IAtomContainer getAtomContainer() {
-        return NoNotificationChemObjectBuilder.getInstance().
+        return SilentChemObjectBuilder.getInstance().
         newInstance(IAtomContainer.class);
     }
     

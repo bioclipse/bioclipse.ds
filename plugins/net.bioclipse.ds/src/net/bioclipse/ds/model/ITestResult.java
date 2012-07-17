@@ -14,10 +14,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.graphics.Image;
-import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
-
-import net.bioclipse.cdk.domain.ISubStructure;
 
 
 /**
