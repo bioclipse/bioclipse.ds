@@ -31,7 +31,7 @@ public class AtomSignatures {
     public void addSignatures( List<String> signatures_in ) {
     	if (signatures==null) signatures=new ArrayList<String>();
     	for (String sign : signatures_in){
-    		if (!signatures.contains(sign))
+//    		if (!signatures.contains(sign))
     			signatures.add(sign);
     	}
     }
