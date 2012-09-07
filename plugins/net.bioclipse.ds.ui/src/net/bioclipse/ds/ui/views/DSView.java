@@ -826,25 +826,26 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     
                     //Start by cloning the molecule. This is to avoid threading 
                     //issues in CDK.
-                    try {
-                        IAtomContainer clonedAC=(IAtomContainer) mol
-                                                    .getAtomContainer().clone();
-                        
-                        ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
-                        
-                        preprocessClonedMol(clonedMol);
+//                    try {
+//                        IAtomContainer clonedAC=(IAtomContainer) mol
+//                                                    .getAtomContainer().clone();
+//                        
+//                        ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
+//                        
+//                        preprocessClonedMol(clonedMol);
                         
                         logger.debug( "== Testrun: " + tr.getTest().getName() + " started" );
                         tr.setStatus( TestRun.RUNNING );
-                        tr.setMolecule( clonedMol );
+                        tr.setMolecule( mol );
                         viewer.refresh(tr);
                         viewer.setExpandedState( tr, true );
 
-                        runTestAsJobs( clonedMol, ds, tr , mol); 
+                        runTestAsJobs( mol, ds, tr , mol); 
 
-                    } catch ( CloneNotSupportedException e ) {
-                        LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
-                    }
+//                    } 
+//                    catch ( CloneNotSupportedException e ) {
+//                        LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
+//                    }
                     
                 }
             }
