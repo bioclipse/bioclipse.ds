@@ -6,8 +6,8 @@
 	<topic label="Endpoints"> 
 		<anchor id="ContributedEndpoints" />
 	</topic>
-	<topic label="Models"> 
-		<anchor id="ContributedModels" />
+	<topic label="Model implementations"> 
+		<anchor id="ContributedModelImplementations" />
 	</topic>
 	<topic label="Users Guide"  href="html/usersguide.html" /> 
 </toc>
