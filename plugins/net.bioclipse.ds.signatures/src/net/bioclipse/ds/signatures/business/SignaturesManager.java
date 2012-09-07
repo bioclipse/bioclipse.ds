@@ -133,8 +133,9 @@ public class SignaturesManager implements IBioclipseManager {
 			try {
 
 				AtomSignatures as = generate( mol , height);
-				
-//				logger.debug("Mol=" + mol + ", height=" + height + ", SIGNS=" + as.getSignatures());
+
+				logger.debug("Genrated " + as.getSignatures().size() + " for height " + height);
+				logger.debug("Mol=" + mol + ", height=" + height + ", SIGNS=" + as.getSignatures());
 
 				if (as.getSignatures() == null || as.getSignatures().size()<=0)
 					logger.error( "No signatures generated for for molecule: " 
@@ -266,7 +267,7 @@ public class SignaturesManager implements IBioclipseManager {
 			i++;
 			if (i%100==0){
 				monitor.subTask("Processed " + i + "/" + signMap.keySet().size() + " molecules");
-				System.out.println("Processed " + i + "/" + signMap.keySet().size() + " molecules");
+//				System.out.println("Processed " + i + "/" + signMap.keySet().size() + " molecules");
 			}
 
 			//Handle name of molecule
@@ -347,15 +348,20 @@ public class SignaturesManager implements IBioclipseManager {
 			Map<IMolecule, AtomSignatures> tempMap = generate(mols, height.intValue(), new SubProgressMonitor(monitor, 1));
 			if (signMap==null){
 				signMap=tempMap;
+//				System.out.println("Added " + tempMap.get(mols.get(0)).getSignatures().size() + " signatures");
 			}
 			else{
 				//Add all to list
 				for (IMolecule mol : signMap.keySet()){
 					signMap.get(mol).addSignatures(tempMap.get(mol).getSignatures());
+//					System.out.println("Added another " + tempMap.get(mol).getSignatures().size() + " signatures");
 				}
 			}
 		}
 
+//		System.out.println("The total number of generated signatures is: " + signMap.get(mols.get(0)).getSignatures().size() );
+//		System.out.println("The generated signatures are: " + signMap.get(mols.get(0)).getSignatures() );
+		
 		//Add all atom signatures to a unique list
 		List<String> allSignaturesList=new ArrayList<String>();
 		for (IMolecule mol : signMap.keySet()){
