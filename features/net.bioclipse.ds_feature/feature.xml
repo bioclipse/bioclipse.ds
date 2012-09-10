@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.bioclipse.ds_feature"
-      label="Decision Support Feature"
+      label="Bioclipse Decision Support"
       version="2.5.0.qualifier"
-      provider-name="The Bioclipse Team"
+      provider-name="bioclipse.net"
       plugin="net.bioclipse.ds.ui">
 
    <description>
-      Bioclipse DS provides decision support for evaluating chemical structures with respect to several endpoints, for example mutagenicity.
+      Decision support for evaluating chemical structures featureing e.g. predictive models (such as QSAR) and database lookups.
    </description>
 
    <copyright>
