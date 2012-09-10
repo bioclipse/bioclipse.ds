@@ -1224,6 +1224,14 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 			 if (molTestMap.keySet().contains( mol )){
 				 molTestMap.remove( mol );
 			 }
+			 
+			 //Cancel all running tests
+			 for (BioclipseJob<List<ITestResult>> job : runningJobs){
+				 //Ask job to cancel
+				 job.cancel();
+				 logger.debug("Job: " + job.getName() + " asked to cancel.");
+			 }
+			 
 		 }
 		 
 		 //If no more editor, clear all in view
