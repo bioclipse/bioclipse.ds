@@ -149,6 +149,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 	private JChemPaintEditor lastJCP;
 
 	private Action filterOutErrorAction;
+	private Action filterOutEmptyAction;
 
     private static DSView instance;
     
@@ -537,6 +538,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(runAction);
         manager.add(clearAction);
         manager.add(filterOutErrorAction);
+        manager.add(filterOutEmptyAction);
         manager.add(new Separator());
         manager.add(includeAction);
         manager.add(excludeAction);
@@ -632,6 +634,30 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         filterOutErrorAction.setText("Toggle Show Errors");
         filterOutErrorAction.setToolTipText("Turns on/off if results with errors should be displayed");
 		filterOutErrorAction.setImageDescriptor(Activator.getImageDecriptor( "icons/errorsShown.png" ));
+
+        filterOutEmptyAction = new Action() {
+            public void run() {
+            	
+            	ViewerFilter ef=null;
+            	for (int i = 0; i<viewer.getFilters().length;i++){
+            		if (viewer.getFilters()[i] instanceof HideEmptyFilter) {
+						ef = (HideEmptyFilter) viewer.getFilters()[i];
+					}
+            	}
+            	
+            	if (ef==null){
+            		viewer.addFilter(new HideEmptyFilter());
+            		filterOutEmptyAction.setImageDescriptor(Activator.getImageDecriptor( "icons/emptyHidden.png" ));
+            	}else{
+            		viewer.removeFilter(ef);
+            		filterOutEmptyAction.setImageDescriptor(Activator.getImageDecriptor( "icons/emptyShown.png" ));
+            	}
+            	
+            }
+        };
+        filterOutEmptyAction.setText("Toggle Show Empty results");
+        filterOutEmptyAction.setToolTipText("Turns on/off if empty or inclonclusive results should be displayed");
+        filterOutEmptyAction.setImageDescriptor(Activator.getImageDecriptor( "icons/emptyShown.png" ));
 
         clearAction = new Action() {
             public void run() {
