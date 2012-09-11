@@ -13,6 +13,7 @@ package net.bioclipse.ds.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,9 +50,22 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IParameter;
+import org.eclipse.core.commands.IParameterValues;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.ParameterValuesException;
+import org.eclipse.core.commands.Parameterization;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -60,6 +74,9 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.help.IContextProvider;
+import org.eclipse.jface.preference.IPreferenceNode;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -150,7 +167,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 	private Action filterOutErrorAction;
 	private Action filterOutEmptyAction;
-
+	private Action installModelsAction;
+	
     private static DSView instance;
     
     /**
@@ -530,6 +548,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(excludeAction);
         manager.add(new Separator());
         manager.add(refreshAction);
+        manager.add(installModelsAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
@@ -546,6 +565,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(expandAllAction);
         manager.add(collapseAllAction);
         manager.add(new Separator());
+        manager.add(installModelsAction);
         manager.add(helpAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
@@ -727,6 +747,47 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         helpAction.setText("Help");
         helpAction.setToolTipText("Open help for the Decision Support");
         helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+
+        installModelsAction = new Action() {
+            public void run() {
+
+            	ICommandService cmdService = (ICommandService) getSite().getService(
+            		    ICommandService.class);
+            	IHandlerService handlerService = (IHandlerService) getSite().getService(
+            			IHandlerService.class);
+
+            	Command repoCmd = cmdService
+            			.getCommand("net.bioclipse.ui.install.ShowRepositoryCatalog");
+            	
+            	try {
+            		IParameter rparam = repoCmd.getParameter("org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter");
+            		IParameter rsparam = repoCmd.getParameter("net.bioclipse.ui.install.commands.RepositoryStrategyParameter");
+            		Parameterization parm1 = new Parameterization(rparam, "http://pele.farmbio.uu.se/bioclipse/dsmodels");
+            		Parameterization parm2 = new Parameterization(rsparam, "net.bioclipse.ui.install.discovery.DSModelsDiscoveryStrategy");
+
+            		ParameterizedCommand parmCommand = new ParameterizedCommand(
+            				repoCmd, new Parameterization[] { parm1,parm2 });
+
+            		handlerService.executeCommand(parmCommand, null);
+            	} catch (ExecutionException e) {
+            		// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotDefinedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotEnabledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotHandledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}            	
+            	
+            }
+        };
+        installModelsAction.setText("Download models...");
+        installModelsAction.setToolTipText("Download and install models");
+        installModelsAction.setImageDescriptor(Activator.getImageDecriptor( "icons/download-models.png" ));
 
 
     }
