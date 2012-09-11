@@ -338,10 +338,13 @@ public class SignaturesManager implements IBioclipseManager {
 
 		ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
 
-		monitor.beginTask("Generating signatures dataset", 2);
+		monitor.beginTask("Generating signatures dataset", 3);
 		
+		monitor.subTask("Standardizing molecules");
 		mols=standardizeMolecules(mols);
+		monitor.worked(1);
 		
+		monitor.subTask("Generating signatures dataset");
 		//Generate all signatures for all heights
 		Map<IMolecule, AtomSignatures> signMap = null; 
 		for (Number height : heights){
@@ -351,8 +354,8 @@ public class SignaturesManager implements IBioclipseManager {
 //				System.out.println("Added " + tempMap.get(mols.get(0)).getSignatures().size() + " signatures");
 			}
 			else{
-				//Add all to list
-				for (IMolecule mol : signMap.keySet()){
+				//Add all to list, use initial order
+				for (IMolecule mol : mols){
 					signMap.get(mol).addSignatures(tempMap.get(mol).getSignatures());
 //					System.out.println("Added another " + tempMap.get(mol).getSignatures().size() + " signatures");
 				}
@@ -364,7 +367,7 @@ public class SignaturesManager implements IBioclipseManager {
 		
 		//Add all atom signatures to a unique list
 		List<String> allSignaturesList=new ArrayList<String>();
-		for (IMolecule mol : signMap.keySet()){
+		for (IMolecule mol : mols){
 
 				for (String s : signMap.get(mol).getSignatures()){
 					if (!allSignaturesList.contains(s))
@@ -384,7 +387,7 @@ public class SignaturesManager implements IBioclipseManager {
 		SubProgressMonitor submon = new SubProgressMonitor(monitor, 1);
 		submon.beginTask("Counting signature occurences", signMap.keySet().size());
 		int moleculeNo=1;  //line number = matrix row number, starts on 1
-		for (IMolecule mol : signMap.keySet()){
+		for (IMolecule mol : mols){
 
 			AtomSignatures molsigns = signMap.get(mol);
 			ICDKMolecule cdkmol =null;
