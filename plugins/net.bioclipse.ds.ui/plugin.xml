@@ -79,10 +79,10 @@
        point="org.eclipse.ui.menus">
     <menuContribution
           allPopups="false"
-          locationURI="menu:help?after=additions">
+          locationURI="menu:install?after=additions">
        <command
              commandId="net.bioclipse.ui.install.ShowRepositoryCatalog"
-             label="Install DS Models..."
+             label="DS Models..."
              style="push">
           <parameter
                 name="org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter"
