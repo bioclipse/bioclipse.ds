@@ -38,6 +38,7 @@ import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.ui.DSContextProvider;
 import net.bioclipse.ds.ui.GeneratorHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
+import net.bioclipse.ds.ui.utils.PropertyViewHelper;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
@@ -239,6 +240,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 //Not the best, but nothing else to do currently
                 //TODO: Improve on this!
                 GeneratorHelper.turnOffAllExternalGenerators(jcp);
+                PropertyViewHelper.collapseAll();
 
                 Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if ( obj instanceof ITestResult ) {
