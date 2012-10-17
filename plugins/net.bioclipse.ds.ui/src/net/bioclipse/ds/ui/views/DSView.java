@@ -26,6 +26,7 @@ import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.PropertyViewHelper;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.Endpoint;
@@ -38,7 +39,6 @@ import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.ui.DSContextProvider;
 import net.bioclipse.ds.ui.GeneratorHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
-import net.bioclipse.ds.ui.utils.PropertyViewHelper;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 

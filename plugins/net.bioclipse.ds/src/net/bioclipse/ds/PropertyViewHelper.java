@@ -1,4 +1,4 @@
-package net.bioclipse.ds.ui.utils;
+package net.bioclipse.ds;
 
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
