@@ -89,7 +89,7 @@ public class ColorHelper {
         Color color = new Color( (int)red, (int)green, (int)blue, 
         		DSConstants.OVAL_ALPHA );
 
-        System.out.println("Value=" + resValue + " genrated color: " + color);
+//        System.out.println("Value=" + resValue + " genrated color: " + color);
 
         return color;
 

@@ -572,17 +572,18 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 	        	match.setClassification(result);
 	        }
 
-			
+
+	        System.out.println("Scaled results:");
 	        //Color atoms according to accumulated gradient values
 	        for (int currentAtomNr : atomGreadientComponents.keySet()){
 	        	Double currentDeriv = atomGreadientComponents.get(currentAtomNr);
 	        	
     			double scaledDeriv = scaleDerivative(currentDeriv);
-    			match.putAtomResult( currentAtomNr-1, scaledDeriv );
+    			match.putAtomResult( currentAtomNr, scaledDeriv );
+    			System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
 	        	
 	        }
 
-			System.out.println(atomGreadientComponents.toString());					
 			
 	        //We can have multiple hits...
 	        results.add( match );
