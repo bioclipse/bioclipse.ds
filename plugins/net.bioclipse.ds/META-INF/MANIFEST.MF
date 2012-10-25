@@ -17,7 +17,9 @@ Require-Bundle: org.eclipse.ui,
  org.openscience.cdk.renderbasic,
  org.openscience.cdk.standard,
  org.openscience.cdk.silent,
- org.openscience.cdk.valencycheck
+ org.openscience.cdk.valencycheck,
+ org.eclipse.jface.text,
+ net.bioclipse.browser
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.vecmath,
  nu.xom;version="1.1.0",

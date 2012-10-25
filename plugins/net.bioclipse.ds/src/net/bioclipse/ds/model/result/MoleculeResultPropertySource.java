@@ -69,12 +69,27 @@ public class MoleculeResultPropertySource extends BasicPropertySource
         		Map<String, String> catprops = item.getProperties().get(category);
 
         		for (String name : catprops.keySet()){
-        			String value = catprops.get(name);
-        			PropertyDescriptor descriptor = new PropertyDescriptor(category+"_" + name, name);
-        			descriptor.setCategory(category);
-        			getProperties().add(descriptor);
-        			addToValueMap(category+"_" + name,value);
+    				String value = catprops.get(name);
+
+    				//Treat this as a special property
+        			if (name.equals("EXTENDED_IN_BROWSER")){
+        				OpenBrowserPropertyDescriptor descriptor = 
+        						new OpenBrowserPropertyDescriptor(
+        								category+"_EXTENDED", "More information", value);
+        				descriptor.setCategory(category);
+        				getProperties().add(descriptor);
+        				addToValueMap(category+"_EXTENDED", "Click for more information"); //Value is here a local URL
+        			}else{
+        				PropertyDescriptor descriptor = new PropertyDescriptor(
+        						category+"_" + name, name);
+        				descriptor.setCategory(category);
+        				getProperties().add(descriptor);
+        				addToValueMap(category+"_" + name,value);
+        			}
+
         		}
+
+
         	}
         }
         
