@@ -104,6 +104,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
     public static final String VIEW_ID="net.bioclipse.ds.ui.views.DSView";
     
+    //Set to true in order to always collapse properties view after a new 
+    //DSView selection event
+    public static final boolean COLLAPSE_PROPERTIES_VIEW = false;
+       
     private static Image questImg;
     private static Image warnImg;
     private static Image crossImg;
@@ -240,11 +244,20 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 //Not the best, but nothing else to do currently
                 //TODO: Improve on this!
                 GeneratorHelper.turnOffAllExternalGenerators(jcp);
-                PropertyViewHelper.collapseAll();
+
+                //Collapse propertyview after some ms of waiting
+                if (COLLAPSE_PROPERTIES_VIEW){
+                	Display.getDefault().timerExec(500, new Runnable() {
+                		@Override
+                		public void run() {
+                			PropertyViewHelper.collapseAll();
+                		}
+                	});
+                }
 
                 Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if ( obj instanceof ITestResult ) {
-                    ITestResult tr = (ITestResult) obj;
+                	ITestResult tr = (ITestResult) obj;
 
                     Class<? extends IGeneratorParameter<Boolean>> visibilityParam = tr.getGeneratorVisibility();
                     Class<? extends IGeneratorParameter<Map<Integer, Number>>> atomMapParam = tr.getGeneratorAtomMap();
@@ -370,9 +383,15 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 			test.setInitialized(true);
                 		}
                 	} catch (Exception e) {
+                		String ermsg=e.toString();
+                		if (e.getMessage()!=null)
+                			ermsg=e.getMessage();
+                		
                 		logger.error("Failed initializing test " + 
-                				test.getName() + " Reason: " + e.getMessage());
-                		test.setTestErrorMessage("Error: "+e.getMessage());
+                				test.getName() + " Reason: " + ermsg);
+                		test.setTestErrorMessage("Error: "+ermsg);
+                		
+                		LogUtils.debugTrace(logger, e);
                 	}
                 }
 
