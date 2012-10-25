@@ -10,6 +10,9 @@ import org.eclipse.ui.views.properties.PropertySheetPage;
 public class PropertyViewHelper {
 
 	public static void collapseAll(){
+		if (PlatformUI.getWorkbench()==null) return;
+		if (PlatformUI.getWorkbench().getActiveWorkbenchWindow()==null) return;
+		if (PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()==null) return;
 		IViewPart[] views = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getViews();
 		for (IViewPart vp : views){
 			if (vp instanceof PropertySheet) {
