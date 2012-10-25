@@ -75,7 +75,7 @@ public class MoleculeResultPropertySource extends BasicPropertySource
         			if (name.equals("EXTENDED_IN_BROWSER")){
         				OpenBrowserPropertyDescriptor descriptor = 
         						new OpenBrowserPropertyDescriptor(
-        								category+"_EXTENDED", "More information", value);
+        								category+"_EXTENDED", "_More information", value);
         				descriptor.setCategory(category);
         				getProperties().add(descriptor);
         				addToValueMap(category+"_EXTENDED", "Click for more information"); //Value is here a local URL

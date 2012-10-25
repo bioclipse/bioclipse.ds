@@ -45,7 +45,7 @@ public class OpenBrowserPropertyDescriptor extends PropertyDescriptor {
 
 				Image errorIcon = Activator.imageDescriptorFromPlugin( 
 						net.bioclipse.ds.Activator.PLUGIN_ID, 
-						"/icons/fatalerror.gif" ).createImage();
+						"/icons/expand.png" ).createImage();
 
 				return errorIcon;
 			}
