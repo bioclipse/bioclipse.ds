@@ -235,7 +235,18 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
 
             public void selectionChanged( SelectionChangedEvent event ) {
-                updateActionStates();
+
+            	updateActionStates();
+                Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
+
+                //Add the case for clicking a string with link to open models UI 
+                if (obj instanceof String) {
+                	String str = (String)obj;
+                	if (str.startsWith("link:Install models")){
+                		installModelsAction.run();
+                	}
+										
+				}
 
                 JChemPaintEditor jcp=getJCPfromActiveEditor();
                 if (jcp==null) return;
@@ -255,7 +266,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 	});
                 }
 
-                Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if ( obj instanceof ITestResult ) {
                 	ITestResult tr = (ITestResult) obj;
 
@@ -402,8 +412,16 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             //Init viewer with available endpoints
                             IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
                             try {
-                                viewer.setInput(ds.getFullEndpoints().toArray());
-                                viewer.expandAll();
+                            	if (ds.getFullEndpoints().size()>1) //There is always the uncategorized EP...
+                            		viewer.setInput(ds.getFullEndpoints().toArray());
+                            	else{
+                            		String[] msg = new String[2];
+                            		msg[0]="   No models available.";
+                            		msg[1]="link:Install models...";// from menu: 'Install > DS Models...'";
+//                            		viewer.setSorter(null);
+                            		viewer.setInput(msg);
+                            	}
+                                viewer.expandToLevel(2);
                             } catch ( BioclipseException e ) {
                                 LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
                                 viewer.setInput(new String[]{"Error initializing tests"});
@@ -593,10 +611,16 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
     
     private void updateActionStates() {
 
-        if (activeTestRuns!=null && activeTestRuns.size()>0)
+        if (activeTestRuns!=null && activeTestRuns.size()>0){
             runAction.setEnabled( true );
-        else
+            autoRunAction.setEnabled( true );
+            clearAction.setEnabled( true );
+        }
+        else{
             runAction.setEnabled( false );
+            autoRunAction.setEnabled( false );
+            clearAction.setEnabled( false );
+        }
         
         if (isAutorun()){
             autoRunAction.setImageDescriptor( Activator.getImageDecriptor( "icons/fastforward_dis2.png" ));
@@ -762,7 +786,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
                                                             .getHelpSystem();
                 helpSystem.displayHelpResource("/" + Activator.PLUGIN_ID +
-                                               "/html/maintopic.html");
+                                               "/html/usersguide.html");
             }
         };
         helpAction.setText("Help");
