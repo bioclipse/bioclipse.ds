@@ -75,25 +75,4 @@
         	file="toc.xml"
          	primary="true"/>
 	</extension>
- <extension
-       point="org.eclipse.ui.menus">
-    <menuContribution
-          allPopups="false"
-          locationURI="menu:install?after=additions">
-       <command
-             commandId="net.bioclipse.ui.install.ShowRepositoryCatalog"
-             label="DS Models..."
-             style="push">
-          <parameter
-                name="org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter"
-                value="http://pele.farmbio.uu.se/bioclipse/dsmodels">
-          </parameter>
-          <parameter
-                name="net.bioclipse.ui.install.commands.RepositoryStrategyParameter"
-                value="net.bioclipse.ui.install.discovery.DSModelsDiscoveryStrategy">
-          </parameter>
-       </command>
-    </menuContribution>
- </extension>
-
 </plugin>
