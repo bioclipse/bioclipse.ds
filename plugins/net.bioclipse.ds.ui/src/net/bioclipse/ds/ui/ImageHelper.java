@@ -156,18 +156,20 @@ public class ImageHelper {
 	private static void enableSelectedExternalGenerators(ITestResult match,
 			RendererModel model) {
 		
-		//Get all external generators
+		//Get all external generators and filter the ones registered in the model
+    	List<IGeneratorParameter<?>> parameters = model.getRenderingParameters();
     	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
-		
-    	for(IGenerator gen : generators) {
+    	
+    	for(IGenerator<IAtomContainer> gen:generators) {
     		List<IGeneratorParameter<?>> params = gen.getParameters();
-    		if(params.isEmpty()) continue;
-    		for (IGeneratorParameter param : params){
+    		parameters.removeAll(params);
+    	}
+		
+    	for(IGeneratorParameter<?> param : parameters) {
     			if (param.getDefault() instanceof Boolean) {
     				IGeneratorParameter<Boolean> bp= (IGeneratorParameter<Boolean>)param;
     				model.set(bp.getClass(), false);
     			}
-    		}
     	}				
     	
     	//Now, turn on the generator for this match
