@@ -257,7 +257,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 GeneratorHelper.turnOffAllExternalGenerators(jcp);
 
                 //Collapse propertyview after some ms of waiting
-                if (COLLAPSE_PROPERTIES_VIEW){
+                if(System.getProperty("DS_COLLAPSE","false").equalsIgnoreCase("true")){
                 	Display.getDefault().timerExec(500, new Runnable() {
                 		@Override
                 		public void run() {
