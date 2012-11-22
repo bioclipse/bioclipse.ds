@@ -258,7 +258,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
                 //Collapse propertyview after some ms of waiting
                 if(System.getProperty("DS_COLLAPSE","false").equalsIgnoreCase("true")){
-                	Display.getDefault().timerExec(500, new Runnable() {
+                	Display.getDefault().timerExec(900, new Runnable() {
                 		@Override
                 		public void run() {
                 			PropertyViewHelper.collapseAll();
