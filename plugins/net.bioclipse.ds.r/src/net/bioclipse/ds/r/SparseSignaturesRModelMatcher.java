@@ -40,12 +40,12 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();
 
-        //Calculate the frequency of the signatures
+        //Calculate the frequency of the modelSignatures
         SignatureFrequenceyResult signResults;
 		try {
 			signResults = signaturesMatcher.countSignatureFrequency(cdkmol);
 		} catch (BioclipseException e) {
-            return returnError( "Error generating signatures",e.getMessage());
+            return returnError( "Error generating modelSignatures",e.getMessage());
 		}
 
 		//Set up the values for the sparse R-matrix
@@ -57,7 +57,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 			no++;
 			String currentSignature = signaturesIter.next();
 			
-			//If we have match, store its index in the signatures array along with its frequency
+			//If we have match, store its index in the modelSignatures array along with its frequency
 			if (signResults.getMoleculeSignatures().containsKey(currentSignature)){
 				values.add(signResults.getMoleculeSignatures().get(currentSignature));
 				indices.add(signaturesMatcher.getSignatures().indexOf(currentSignature)+1);  //We add one to get on bas 1, which is used by R
@@ -119,7 +119,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 		//Create the result for the classification, overwrite name later if we have sign signature
         PosNegIncMatch match = new PosNegIncMatch("Probability: " + formatter.format(posProb), posProb,  overallPrediction);
 
-		//Try to predict important signatures
+		//Try to predict important modelSignatures
         String mostImportantRcmd = getMostImportantSignaturesCommand(modelSpecificMatrix);
 		output = R.eval(mostImportantRcmd);
 		if (output.contains("An error occurred") || output.startsWith("Error")){
@@ -152,7 +152,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 			logger.debug("Could not parse positive significant signature: " + parts[1]);
 		}
 
-		//TODO: Also include negative and zero significant signatures
+		//TODO: Also include negative and zero significant modelSignatures
         
         if (posSign.length()>0){
 			//OK, color atoms
@@ -212,7 +212,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 		DoubleResult accuracy = new DoubleResult("Probability", posProb, overallPrediction);
 		results.add(accuracy);
 
-		//Try to predict important signatures
+		//Try to predict important modelSignatures
         String mostImportantRcmd = getMostImportantSignaturesCommand();
 		ret = R.eval(mostImportantRcmd);
 		if (ret.contains("An error occurred") || ret.startsWith("Error")){

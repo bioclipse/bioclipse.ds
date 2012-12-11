@@ -37,12 +37,12 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();
 
-        //Calculate the frequency of the signatures
+        //Calculate the frequency of the modelSignatures
         SignatureFrequenceyResult signResults;
 		try {
 			signResults = signaturesMatcher.countSignatureFrequency(cdkmol);
 		} catch (BioclipseException e) {
-            return returnError( "Error generating signatures",e.getMessage());
+            return returnError( "Error generating modelSignatures",e.getMessage());
 		}
 
 		//Construct string to send to R
