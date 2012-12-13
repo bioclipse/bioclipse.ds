@@ -294,7 +294,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		}
 		String predictedClassLabel = classLabels.get(intPrediction);
 
-		logger.debug("PCM Prediction: " + prediction + ", predictedClassLabel=" + predictedClassLabel);
+		logger.debug("Prediction result: " + prediction + ", predictedClassLabel=" + predictedClassLabel);
 
 		//If this is higher than posVal in list, set POSITIVE color
 		int posIX = classLabels.indexOf(positiveValue);
