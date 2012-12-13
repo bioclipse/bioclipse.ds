@@ -250,8 +250,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 				node.index = signSvmModel.getModelSignatures().indexOf(currentSignature)+1; // libsvm assumes that the index starts at one.
 				node.value = (Double) predModel.getMoleculeSignatures().get(currentSignature);
 
-				System.out.println(currentSignature + " ==> " 
-				+ node.index + "=" + node.value);
+//				System.out.println(currentSignature + " ==> " 
+//				+ node.index + "=" + node.value);
 
 			}
 		}
@@ -281,8 +281,6 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			prediction = signSvmModel.predict(svmPredictionArray);
 
 		}
-		System.out.println("--> PREDICTION: " + prediction);
-		
 		
 		//Create the result for the classification, overwrite name later if we have sign signature
 		AtomResultMatch match = new PosNegIncMatch("No significant signature", 
@@ -295,7 +293,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			return returnError("No classlabels found in model", "Classlabels are null for model");
 		}
 		String predictedClassLabel = classLabels.get(intPrediction);
-		System.out.println("predictedClassLabel=" + predictedClassLabel);
+
+		logger.debug("PCM Prediction: " + prediction + ", predictedClassLabel=" + predictedClassLabel);
 
 		//If this is higher than posVal in list, set POSITIVE color
 		int posIX = classLabels.indexOf(positiveValue);

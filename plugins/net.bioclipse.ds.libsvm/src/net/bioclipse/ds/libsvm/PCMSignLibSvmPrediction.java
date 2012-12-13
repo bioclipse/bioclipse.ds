@@ -113,6 +113,8 @@ public class PCMSignLibSvmPrediction extends SignaturesLibSVMPrediction {
 			String protName = protNames.get(ix);
 			List<Double> protDesc = protDescList.get(ix);
 			
+			logger.debug("Predicting PCM for: " + protName);
+
 			//Take proteins one by ones
 			List<svm_node> protSvmNodes = new ArrayList<svm_node>();
 			for (int i=0; i< protDesc.size();i++){
