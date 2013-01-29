@@ -404,9 +404,9 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 	}
 
 
+	@SuppressWarnings("serial")
 	@Override
 	public List<String> getRequiredParameters() {
-		// TODO Auto-generated method stub
     	return new ArrayList<String>(){{
     	    add(FILE_PROPERTY_PARAM);
     	}};

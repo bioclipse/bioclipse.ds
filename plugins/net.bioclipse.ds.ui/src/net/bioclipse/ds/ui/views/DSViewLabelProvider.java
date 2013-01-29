@@ -15,6 +15,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.ui.utils.PieChartProducer;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -106,14 +107,21 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 					inc++;
 			}
 			
-			if ( neg!=0 || pos!=0 || inc!=0){
+//			if ( neg!=0 || pos!=0 || inc!=0){
 				Display display = PlatformUI.getWorkbench().getDisplay();
 				Image img = PieChartProducer.generatePieChart(display, 
 						neg, pos, inc, 12, 16);
 				return img;
-			}
+//			}
 
-			return run.getIcon();
+//			return run.getIcon();
+		}
+		
+		else if ( element instanceof String ) {
+			String msg = (String) element;
+			if (msg.startsWith("link:"))
+				return Activator.getImageDecriptor( "icons/download-models.png" ).createImage();
+
 		}
 
 		return null;
@@ -141,6 +149,11 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 				return dstest.getName() + " [" 
 				                             + dstest.getTestErrorMessage() + "]";
 			}
+		}
+		else if ( element instanceof String ) {
+			String msg = (String) element;
+			if (msg.startsWith("link:"))
+				return msg.replaceFirst("link:", "");
 		}
 
 		return element.toString();
@@ -186,6 +199,11 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 				return Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
 
 			}
+		}
+		else if ( element instanceof String ) {
+			String msg = (String) element;
+			if (msg.startsWith("link:"))
+				return Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
 		}
 
 		return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);

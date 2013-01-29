@@ -13,6 +13,7 @@ package net.bioclipse.ds.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.PropertyViewHelper;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.Endpoint;
@@ -49,9 +51,22 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IParameter;
+import org.eclipse.core.commands.IParameterValues;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.ParameterValuesException;
+import org.eclipse.core.commands.Parameterization;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -60,6 +75,9 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.help.IContextProvider;
+import org.eclipse.jface.preference.IPreferenceNode;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -86,6 +104,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
     public static final String VIEW_ID="net.bioclipse.ds.ui.views.DSView";
     
+    //Set to true in order to always collapse properties view after a new 
+    //DSView selection event
+    public static final boolean COLLAPSE_PROPERTIES_VIEW = false;
+       
     private static Image questImg;
     private static Image warnImg;
     private static Image crossImg;
@@ -149,7 +171,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 	private JChemPaintEditor lastJCP;
 
 	private Action filterOutErrorAction;
-
+	private Action filterOutEmptyAction;
+	private Action installModelsAction;
+	
     private static DSView instance;
     
     /**
@@ -211,7 +235,18 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         viewer.addSelectionChangedListener( new ISelectionChangedListener(){
 
             public void selectionChanged( SelectionChangedEvent event ) {
-                updateActionStates();
+
+            	updateActionStates();
+                Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
+
+                //Add the case for clicking a string with link to open models UI 
+                if (obj instanceof String) {
+                	String str = (String)obj;
+                	if (str.startsWith("link:Install models")){
+                		installModelsAction.run();
+                	}
+										
+				}
 
                 JChemPaintEditor jcp=getJCPfromActiveEditor();
                 if (jcp==null) return;
@@ -221,9 +256,18 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 //TODO: Improve on this!
                 GeneratorHelper.turnOffAllExternalGenerators(jcp);
 
-                Object obj = ((IStructuredSelection)event.getSelection()).getFirstElement();
+                //Collapse propertyview after some ms of waiting
+                if(System.getProperty("DS_COLLAPSE","false").equalsIgnoreCase("true")){
+                	Display.getDefault().timerExec(900, new Runnable() {
+                		@Override
+                		public void run() {
+                			PropertyViewHelper.collapseAll();
+                		}
+                	});
+                }
+
                 if ( obj instanceof ITestResult ) {
-                    ITestResult tr = (ITestResult) obj;
+                	ITestResult tr = (ITestResult) obj;
 
                     Class<? extends IGeneratorParameter<Boolean>> visibilityParam = tr.getGeneratorVisibility();
                     Class<? extends IGeneratorParameter<Map<Integer, Number>>> atomMapParam = tr.getGeneratorAtomMap();
@@ -244,9 +288,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 						if (tr instanceof AtomResultMatch) {
 							AtomResultMatch atomResMatch = (AtomResultMatch) tr;
 		                    model.set(atomMapParam, atomResMatch.getResultMap());
-	    					logger.debug("  ...and AtomMapGeneratorParameter is used with content.");
+	    					logger.debug("  ...and AtomMapGeneratorParameter is used with content. Should now be displayed.");
 						}else{
-	    					logger.debug("  ...however, an AtomMapGeneratorParameter is available but TestResult is not PosNegIncMatch.");
+	    					logger.debug("  ...however, an AtomMapGeneratorParameter is available but TestResult is not AtomResultMatch.");
 						}
 						
 					}
@@ -340,6 +384,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 for (String testID : ds.getTests()){
                 	IDSTest test = ds.getTest( testID );
                 	monitor.subTask( "Initializing test: " + testID );
+                	logger.debug( "Initializing test: " + testID );
                 	try {
                 		if (!test.isInitialized()){
                 			test.initialize( monitor );
@@ -348,9 +393,15 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 			test.setInitialized(true);
                 		}
                 	} catch (Exception e) {
+                		String ermsg=e.toString();
+                		if (e.getMessage()!=null)
+                			ermsg=e.getMessage();
+                		
                 		logger.error("Failed initializing test " + 
-                				test.getName() + " Reason: " + e.getMessage());
-                		test.setTestErrorMessage("Error: "+e.getMessage());
+                				test.getName() + " Reason: " + ermsg);
+                		test.setTestErrorMessage("Error: "+ermsg);
+                		
+                		LogUtils.debugTrace(logger, e);
                 	}
                 }
 
@@ -361,8 +412,16 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             //Init viewer with available endpoints
                             IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
                             try {
-                                viewer.setInput(ds.getFullEndpoints().toArray());
-                                viewer.expandAll();
+                            	if (ds.getFullEndpoints().size()>1) //There is always the uncategorized EP...
+                            		viewer.setInput(ds.getFullEndpoints().toArray());
+                            	else{
+                            		String[] msg = new String[2];
+                            		msg[0]="   No models available.";
+                            		msg[1]="link:Install models...";// from menu: 'Install > DS Models...'";
+//                            		viewer.setSorter(null);
+                            		viewer.setInput(msg);
+                            	}
+                                viewer.expandToLevel(2);
                             } catch ( BioclipseException e ) {
                                 LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
                                 viewer.setInput(new String[]{"Error initializing tests"});
@@ -528,6 +587,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(excludeAction);
         manager.add(new Separator());
         manager.add(refreshAction);
+        manager.add(installModelsAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
@@ -536,6 +596,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(runAction);
         manager.add(clearAction);
         manager.add(filterOutErrorAction);
+        manager.add(filterOutEmptyAction);
         manager.add(new Separator());
         manager.add(includeAction);
         manager.add(excludeAction);
@@ -543,16 +604,23 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(expandAllAction);
         manager.add(collapseAllAction);
         manager.add(new Separator());
+        manager.add(installModelsAction);
         manager.add(helpAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
     
     private void updateActionStates() {
 
-        if (activeTestRuns!=null && activeTestRuns.size()>0)
+        if (activeTestRuns!=null && activeTestRuns.size()>0){
             runAction.setEnabled( true );
-        else
+            autoRunAction.setEnabled( true );
+            clearAction.setEnabled( true );
+        }
+        else{
             runAction.setEnabled( false );
+            autoRunAction.setEnabled( false );
+            clearAction.setEnabled( false );
+        }
         
         if (isAutorun()){
             autoRunAction.setImageDescriptor( Activator.getImageDecriptor( "icons/fastforward_dis2.png" ));
@@ -632,6 +700,30 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         filterOutErrorAction.setToolTipText("Turns on/off if results with errors should be displayed");
 		filterOutErrorAction.setImageDescriptor(Activator.getImageDecriptor( "icons/errorsShown.png" ));
 
+        filterOutEmptyAction = new Action() {
+            public void run() {
+            	
+            	ViewerFilter ef=null;
+            	for (int i = 0; i<viewer.getFilters().length;i++){
+            		if (viewer.getFilters()[i] instanceof HideEmptyFilter) {
+						ef = (HideEmptyFilter) viewer.getFilters()[i];
+					}
+            	}
+            	
+            	if (ef==null){
+            		viewer.addFilter(new HideEmptyFilter());
+            		filterOutEmptyAction.setImageDescriptor(Activator.getImageDecriptor( "icons/emptyHidden.png" ));
+            	}else{
+            		viewer.removeFilter(ef);
+            		filterOutEmptyAction.setImageDescriptor(Activator.getImageDecriptor( "icons/emptyShown.png" ));
+            	}
+            	
+            }
+        };
+        filterOutEmptyAction.setText("Toggle Show Empty results");
+        filterOutEmptyAction.setToolTipText("Turns on/off if empty or inclonclusive results should be displayed");
+        filterOutEmptyAction.setImageDescriptor(Activator.getImageDecriptor( "icons/emptyShown.png" ));
+
         clearAction = new Action() {
             public void run() {
                 doClearAllTests();
@@ -694,12 +786,53 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
                                                             .getHelpSystem();
                 helpSystem.displayHelpResource("/" + Activator.PLUGIN_ID +
-                                               "/html/maintopic.html");
+                                               "/html/usersguide.html");
             }
         };
         helpAction.setText("Help");
         helpAction.setToolTipText("Open help for the Decision Support");
         helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+
+        installModelsAction = new Action() {
+            public void run() {
+
+            	ICommandService cmdService = (ICommandService) getSite().getService(
+            		    ICommandService.class);
+            	IHandlerService handlerService = (IHandlerService) getSite().getService(
+            			IHandlerService.class);
+
+            	Command repoCmd = cmdService
+            			.getCommand("net.bioclipse.ui.install.ShowRepositoryCatalog");
+            	
+            	try {
+            		IParameter rparam = repoCmd.getParameter("org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter");
+            		IParameter rsparam = repoCmd.getParameter("net.bioclipse.ui.install.commands.RepositoryStrategyParameter");
+            		Parameterization parm1 = new Parameterization(rparam, "http://pele.farmbio.uu.se/bioclipse/dsmodels");
+            		Parameterization parm2 = new Parameterization(rsparam, "net.bioclipse.ui.install.discovery.DSModelsDiscoveryStrategy");
+
+            		ParameterizedCommand parmCommand = new ParameterizedCommand(
+            				repoCmd, new Parameterization[] { parm1,parm2 });
+
+            		handlerService.executeCommand(parmCommand, null);
+            	} catch (ExecutionException e) {
+            		// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotDefinedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotEnabledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotHandledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}            	
+            	
+            }
+        };
+        installModelsAction.setText("Download models...");
+        installModelsAction.setToolTipText("Download and install models");
+        installModelsAction.setImageDescriptor(Activator.getImageDecriptor( "icons/download-models.png" ));
 
 
     }
@@ -825,25 +958,26 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     
                     //Start by cloning the molecule. This is to avoid threading 
                     //issues in CDK.
-                    try {
-                        IAtomContainer clonedAC=(IAtomContainer) mol
-                                                    .getAtomContainer().clone();
-                        
-                        ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
-                        
-                        preprocessClonedMol(clonedMol);
+//                    try {
+//                        IAtomContainer clonedAC=(IAtomContainer) mol
+//                                                    .getAtomContainer().clone();
+//                        
+//                        ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
+//                        
+//                        preprocessClonedMol(clonedMol);
                         
                         logger.debug( "== Testrun: " + tr.getTest().getName() + " started" );
                         tr.setStatus( TestRun.RUNNING );
-                        tr.setMolecule( clonedMol );
+                        tr.setMolecule( mol );
                         viewer.refresh(tr);
                         viewer.setExpandedState( tr, true );
 
-                        runTestAsJobs( clonedMol, ds, tr , mol); 
+                        runTestAsJobs( mol, ds, tr , mol); 
 
-                    } catch ( CloneNotSupportedException e ) {
-                        LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
-                    }
+//                    } 
+//                    catch ( CloneNotSupportedException e ) {
+//                        LogUtils.handleException( e, logger, Activator.PLUGIN_ID);
+//                    }
                     
                 }
             }
@@ -1196,6 +1330,14 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 			 if (molTestMap.keySet().contains( mol )){
 				 molTestMap.remove( mol );
 			 }
+			 
+			 //Cancel all running tests
+			 for (BioclipseJob<List<ITestResult>> job : runningJobs){
+				 //Ask job to cancel
+				 job.cancel();
+				 logger.debug("Job: " + job.getName() + " asked to cancel.");
+			 }
+			 
 		 }
 		 
 		 //If no more editor, clear all in view

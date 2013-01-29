@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.matcher.model.SignatureFrequenceyResult;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -154,13 +155,15 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
     }
 
 	
-	public Map<String, Integer> countSignatureFrequency(ICDKMolecule cdkmol) throws BioclipseException {
+	public SignatureFrequenceyResult countSignatureFrequency(ICDKMolecule cdkmol) throws BioclipseException {
+
 		ISignaturesManager sign=net.bioclipse.ds.signatures.Activator.
         getDefault().getJavaSignaturesManager();
-
+		
 		Map<String, Integer> moleculeSignatures = new HashMap<String, Integer>(); // Contains the signatures for a molecule and the count. We store the count as a double although it is an integer.
 		Map<String, Integer> moleculeSignaturesHeight = new HashMap<String, Integer>(); //Contains the height for a specific signature.
 		Map<String, List<Integer>> moleculeSignaturesAtomNr = new HashMap<String, List<Integer>>(); //Contains the atomNr for a specific signature.
+		
 		for (int height = startHeight; height <= endHeight; height++){
 			
 			//Use the sign manager to generate signatures
@@ -188,7 +191,11 @@ public abstract class BaseSignaturesMatcher extends AbstractDSTest implements ID
 				signsIndex++;
 			}
 		}
-		return moleculeSignatures;
+		
+		return new SignatureFrequenceyResult(moleculeSignatures, 
+				   						     moleculeSignaturesHeight, 
+				   						     moleculeSignaturesAtomNr);
+
 	}
 
 	

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Bioclipse Decision Support
 Bundle-SymbolicName: net.bioclipse.ds;singleton:=true
-Bundle-Version: 2.5.0.qualifier
+Bundle-Version: 2.6.0.vqualifier
 Bundle-Activator: net.bioclipse.ds.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
@@ -13,9 +13,13 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.business,
  net.bioclipse.cdk.jchempaint,
  org.openscience.cdk.interfaces,
- org.openscience.cdk.nonotify,
- org.openscience.cdk.render;bundle-version="1.3.5",
- org.openscience.cdk.renderbasic;bundle-version="1.3.5"
+ org.openscience.cdk.render,
+ org.openscience.cdk.renderbasic,
+ org.openscience.cdk.standard,
+ org.openscience.cdk.silent,
+ org.openscience.cdk.valencycheck,
+ org.eclipse.jface.text,
+ net.bioclipse.browser
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.vecmath,
  nu.xom;version="1.1.0",

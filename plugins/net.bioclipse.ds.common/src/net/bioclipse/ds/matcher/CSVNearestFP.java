@@ -2,7 +2,6 @@ package net.bioclipse.ds.matcher;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
@@ -42,7 +40,7 @@ public class CSVNearestFP extends AbstractDSTest implements IDSTest{
     													 "TARGET_NAME", "BIO_SPECIES", 
     													 "BIO_EFFECT", "SWISSP_ID"};
 
-    private static final Logger logger = Logger.getLogger(SDFPosNegNearestMatchFP.class);
+    private static final Logger logger = Logger.getLogger(CSVNearestFP.class);
     private float tanimoto;
 
 	Map<BitSet, List<Integer>> lookup = new HashMap<BitSet, List<Integer>>();

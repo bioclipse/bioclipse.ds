@@ -117,8 +117,8 @@ public class BlueRedColorScaleGenerator implements IGenerator<IAtomContainer> {
 			}
 
 			//Get rainbow color, green from default value 0
-			System.out.print("Atom " + i  + " ");
 			drawColor=ColorHelper.getRainbowColor( resValue );
+			System.out.println("Atom " + i  + " has value " + resValue + " and got color: " + drawColor.toString());
 
 			if(drawColor != null){
 				group.add( new OvalElement( atom.getPoint2d().x,

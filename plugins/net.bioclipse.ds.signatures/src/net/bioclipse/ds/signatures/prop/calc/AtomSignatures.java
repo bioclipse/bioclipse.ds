@@ -1,5 +1,6 @@
 package net.bioclipse.ds.signatures.prop.calc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,14 @@ public class AtomSignatures {
     
     public void setSignatures( List<String> signatures ) {
         this.signatures = signatures;
+    }
+    
+    public void addSignatures( List<String> signatures_in ) {
+    	if (signatures==null) signatures=new ArrayList<String>();
+    	for (String sign : signatures_in){
+//    		if (!signatures.contains(sign))
+    			signatures.add(sign);
+    	}
     }
 
     /**

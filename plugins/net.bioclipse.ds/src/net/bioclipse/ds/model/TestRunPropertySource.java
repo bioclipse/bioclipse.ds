@@ -51,7 +51,8 @@ public class TestRunPropertySource extends BasicPropertySource
 
 
 	
-    private Object ModelPropertiesTable[][] =
+    @SuppressWarnings("unused")
+	private Object ModelPropertiesTable[][] =
     {
             { MODEL_NAME, new TextPropertyDescriptor(MODEL_NAME,MODEL_NAME)},
             { MODEL_TYPE, new TextPropertyDescriptor(MODEL_TYPE,MODEL_TYPE)},
@@ -62,7 +63,8 @@ public class TestRunPropertySource extends BasicPropertySource
             { LEARNING_PARAMETERS, new TextPropertyDescriptor(LEARNING_PARAMETERS,LEARNING_PARAMETERS)}
     };
     
-    private Object DatasetPropertiesTable[][] =
+    @SuppressWarnings("unused")
+	private Object DatasetPropertiesTable[][] =
     {
             { DATASET_NAME, new TextPropertyDescriptor(DATASET_NAME,DATASET_NAME)},
             { DATASET_URL, new TextPropertyDescriptor(DATASET_URL,DATASET_URL)},

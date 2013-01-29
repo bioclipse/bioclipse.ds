@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DS Libsvm
 Bundle-SymbolicName: net.bioclipse.ds.libsvm
-Bundle-Version: 2.5.0.qualifier
+Bundle-Version: 2.6.0.vqualifier
 Bundle-Activator: net.bioclipse.ds.libsvm.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
@@ -15,12 +15,15 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.core,
  net.bioclipse.ds.signatures,
  org.openscience.cdk.interfaces,
- org.openscience.cdk.standard;bundle-version="1.3.5",
- org.openscience.cdk.io;bundle-version="1.3.5",
- org.openscience.cdk.nonotify;bundle-version="1.3.5",
- net.bioclipse.ds.common;bundle-version="2.5.0",
- net.bioclipse.cdk.ui.sdfeditor;bundle-version="2.5.0"
+ org.openscience.cdk.standard,
+ org.openscience.cdk.io,
+ org.openscience.cdk.nonotify,
+ net.bioclipse.ds.common,
+ net.bioclipse.cdk.ui.sdfeditor,
+ signatures,
+ org.openscience.cdk.valencycheck
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j
-Export-Package: net.bioclipse.ds.libsvm
+Export-Package: net.bioclipse.ds.libsvm,
+ net.bioclipse.ds.libsvm.model

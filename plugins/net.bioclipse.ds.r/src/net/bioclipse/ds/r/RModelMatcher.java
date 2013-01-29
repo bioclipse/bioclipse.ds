@@ -70,9 +70,9 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         monitor.subTask("Loading R data into R");
         
         String rdataparams = getParameters().get( R_DATA_PARAMETER );
-        String[] rmodelFiles = rdataparams.split(",");
+        String[] rDataFiles = rdataparams.split(",");
 
-        for (String rm : rmodelFiles){
+        for (String rm : rDataFiles){
         	
         	//Get file for param
             if (rm.isEmpty())
@@ -86,7 +86,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 
 			if (loadModelResult.startsWith("Error"))
                 throw new DSException("Error initializing test " + getName() 
-                		+ ": Loading data file " + rmodelFiles 
+                		+ ": Loading data file " + rDataFiles 
                 		+ " FAILED.");
 		
             } catch (Exception e) {
@@ -106,7 +106,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         	if (rres.startsWith("Error"))
         		throw new DSException("Error initializing test " + getName() 
         				+ ": Asserting R object " + rmodel 
-        				+ " FAILED after loading R data file " + rmodelFiles);
+        				+ " FAILED after loading R data file " + rDataFiles);
         }
 
         monitor.worked(1);
@@ -118,6 +118,14 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
             String[] rpkgs = reqPackages.split(",");
             for (String rpkg : rpkgs){
                 String ret=R.eval("library("+ rpkg + ")");
+            	if (ret.startsWith("Error")){
+            		
+            		//Try to install it
+                    ret=R.eval("install.packages(\"" + rpkg + "\", repos=\"http://cran.r-project.org\")");
+            		
+            	}
+            	//Try again, if still fails then throw exception
+                ret=R.eval("library("+ rpkg + ")");
             	if (ret.startsWith("Error"))
                     throw new DSException("Error initializing test " + getName() 
                     		+ ": Required R package " + rpkg 

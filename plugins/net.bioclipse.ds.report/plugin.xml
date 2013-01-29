@@ -39,6 +39,13 @@
               icon="icons/pie.png">
         </command>
 	</menuContribution>
+	<menuContribution
+           locationURI="toolbar:net.bioclipse.ds.ui.views.DSView?after=additions">
+        <command
+              commandId="net.bioclipse.ds.ui.report"
+              icon="icons/pie.png">
+        </command>
+	</menuContribution>
   </extension>
 
 

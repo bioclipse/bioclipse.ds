@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Decision Support R
 Bundle-SymbolicName: net.bioclipse.ds.r
-Bundle-Version: 0.1.1
+Bundle-Version: 2.6.0.vqualifier
 Bundle-Activator: net.bioclipse.ds.r.Activator
 Bundle-Vendor: The Bioclipse Team
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -22,8 +22,7 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ds.signatures,
  signatures,
  org.eclipse.core.resources,
- net.bioclipse.ds.r,
- net.bioclipse.qsar;bundle-version="2.5.0",
- net.bioclipse.balloon.business;bundle-version="2.5.0"
+ net.bioclipse.qsar,
+ net.bioclipse.balloon.business
 Export-Package: net.bioclipse.ds.r
 Import-Package: org.apache.log4j

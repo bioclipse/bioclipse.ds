@@ -9,5 +9,8 @@
 	<topic label="Models"> 
 		<anchor id="ContributedModels" />
 	</topic>
-	<topic label="Users Guide"  href="html/usersguide.html" /> 
+	<topic label="Model implementations"> 
+		<anchor id="ContributedModelImplementations" />
+	</topic>
+	<topic label="Decision Support Users Guide"  href="html/usersguide.html" /> 
 </toc>

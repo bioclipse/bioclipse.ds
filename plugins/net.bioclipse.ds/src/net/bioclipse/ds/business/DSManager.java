@@ -165,10 +165,28 @@ public class DSManager implements IBioclipseManager {
 			IProgressMonitor monitor) 
 	throws BioclipseException{
 
+		ICDKManager cdk = net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
+
+		
 		IDSTest test = getTest( testID );
 		List<? extends ITestResult> ret=null;
 		try{
-			ret = test.runWarningTest( mol, monitor);
+
+			//Preprocess the molecule
+			ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
+
+			//Clone the mol
+			IAtomContainer clonedAC=null;
+			try {
+				clonedAC = (IAtomContainer) cdkmol.getAtomContainer().clone();
+			} catch (CloneNotSupportedException e) {
+				logger.error("Could not clone mol: " + cdkmol);
+				return;
+			}
+
+			ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
+			ret = test.runWarningTest( clonedMol, monitor);
+
 		}catch (Exception e){
 			//in case of error...
 			LogUtils.debugTrace(logger, e);
@@ -211,38 +229,41 @@ public class DSManager implements IBioclipseManager {
 		//Get manager interface, we want to use the AOP
 		IDSManager ds = Activator.getDefault().getJavaManager();
 		Map<String,BioclipseJob<List<ITestResult>>> jobs = new HashMap<String, BioclipseJob<List<ITestResult>>>();
-		ICDKManager cdk = net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
-		//Preprocess the molecule
-		ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
 
-		try {
-			cdkmol = cdk.removeExplicitHydrogens(cdkmol);
-			cdkmol=cdk.perceiveAromaticity(cdkmol);
-			cdkmol=cdk.addImplicitHydrogens(cdkmol);
-		} catch (InvocationTargetException e1) {
-			throw new BioclipseException("Could not preprocess molecule: " + e1.getMessage());
-		} 
+		//This is done in abstractDSTest + ds.runTest
+		
+//		ICDKManager cdk = net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
+//		//Preprocess the molecule
+//		ICDKMolecule cdkmol = cdk.asCDKMolecule(mol);
+//
+//		try {
+//			cdkmol = cdk.removeExplicitHydrogens(cdkmol);
+//			cdkmol=cdk.perceiveAromaticity(cdkmol);
+//			cdkmol=cdk.addImplicitHydrogens(cdkmol);
+//		} catch (InvocationTargetException e1) {
+//			throw new BioclipseException("Could not preprocess molecule: " + e1.getMessage());
+//		} 
 
 
 		//Loop over all tests in this endpoint and run them
 		for (IDSTest test : getEndpoint( endpointID ).getTests()){
 
-			//Clone the mol
-			IAtomContainer clonedAC=null;
-			try {
-				clonedAC = (IAtomContainer) cdkmol.getAtomContainer().clone();
-			} catch (CloneNotSupportedException e) {
-				//Should not happen
-				logger.error("Could not clone mol: " + cdkmol);
-				continue;
-			}
-			ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
+//			//Clone the mol
+//			IAtomContainer clonedAC=null;
+//			try {
+//				clonedAC = (IAtomContainer) cdkmol.getAtomContainer().clone();
+//			} catch (CloneNotSupportedException e) {
+//				//Should not happen
+//				logger.error("Could not clone mol: " + cdkmol);
+//				continue;
+//			}
+//			ICDKMolecule clonedMol=new CDKMolecule(clonedAC);
 
 
 			//Start up a job with the test
 			BioclipseJob<List<ITestResult>> job = 
-				ds.runTest( test.getId(), clonedMol, 
+				ds.runTest( test.getId(), mol, 
 						new BioclipseJobUpdateHook<List<ITestResult>>(test.getName()));
 			jobs.put(test.getId(),job);
 			job.schedule();

@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
+import net.bioclipse.ds.matcher.model.SignatureFrequenceyResult;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;
@@ -36,11 +37,12 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();
 
-        Map<String, Integer> moleculeSignatures;
+        //Calculate the frequency of the modelSignatures
+        SignatureFrequenceyResult signResults;
 		try {
-			moleculeSignatures = signaturesMatcher.countSignatureFrequency(cdkmol);
+			signResults = signaturesMatcher.countSignatureFrequency(cdkmol);
 		} catch (BioclipseException e) {
-            return returnError( "Error generating signatures",e.getMessage());
+            return returnError( "Error generating modelSignatures",e.getMessage());
 		}
 
 		//Construct string to send to R
@@ -53,8 +55,8 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
 		while (signaturesIter.hasNext()){
 			no++;
 			String currentSignature = signaturesIter.next();
-			if (moleculeSignatures.containsKey(currentSignature))
-				buf.append(moleculeSignatures.get(currentSignature) + ",");
+			if (signResults.getMoleculeSignatures().containsKey(currentSignature))
+				buf.append(signResults.getMoleculeSignatures().get(currentSignature) + ",");
 			else
 				buf.append("0,");
 			if (no%500==0){

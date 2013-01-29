@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.bioclipse.ds_feature"
-      label="Decision Support Feature"
-      version="2.5.0.qualifier"
-      provider-name="The Bioclipse Team"
+      label="Bioclipse Decision Support"
+      version="2.6.0.vqualifier"
+      provider-name="bioclipse.net"
       plugin="net.bioclipse.ds.ui">
 
    <description>
-      Bioclipse DS provides decision support for evaluating chemical structures with respect to several endpoints, for example mutagenicity.
+      Decision support for evaluating chemical structures featureing e.g. predictive models (such as QSAR) and database lookups.
    </description>
 
    <copyright>
-      (C) 2005-2009 The Bioclipse Project contributors.
+      (C) 2005-2012 The Bioclipse Project contributors.
    </copyright>
 
    <license url="http://www.eclipse.org/org/documents/epl-v10.php">
@@ -87,21 +87,7 @@ The Eclipse Public License accompanies this distribution, and is available at ht
          version="0.0.0"/>
 
    <plugin
-         id="net.bioclipse.ds.ahr"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.ames"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.bioclipse.ds.cpdb"
+         id="net.bioclipse.jasper"
          download-size="0"
          install-size="0"
          version="0.0.0"

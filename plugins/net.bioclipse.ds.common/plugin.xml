@@ -11,14 +11,20 @@
  <extension
        point="net.bioclipse.decisionsupport">
        <consensus
-             id="net.bioclipse.ds.consensus.majority.emptyinconclusive"
+             id="net.bioclipse.ds.consensus.majority"
              name="Majority Voting"
              class="net.bioclipse.ds.cons.MajorityVote"
+             description="A majority voting algorithm. Empty if no results">
+       </consensus>
+       <consensus
+             id="net.bioclipse.ds.consensus.majority.emptyinconclusive"
+             name="Majority Voting, inconclusive if no results"
+             class="net.bioclipse.ds.cons.MajorityVoteEmptyInconclusive"
              description="A majority voting algorithm. Inconclusive if no results">
        </consensus>
        <consensus
              id="net.bioclipse.ds.consensus.majority.emptynegative"
-             name="Normal Consensus"
+             name="Majority voting, negative if empty"
              class="net.bioclipse.ds.cons.MajorityVoteEmptyNegative"
              description="A majority voting algorithm. Negative if no results">
        </consensus>

@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
 /**
  * Class to associate an editor with a test
@@ -129,7 +129,7 @@ public class TestRun implements ISubStructure, IColorProvider, IContext2{
     }
 
     public IAtomContainer getAtomContainer() {
-        return NoNotificationChemObjectBuilder.getInstance().
+        return SilentChemObjectBuilder.getInstance().
         newInstance(IAtomContainer.class);
     }
 

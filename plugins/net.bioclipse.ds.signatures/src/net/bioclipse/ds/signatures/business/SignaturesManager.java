@@ -134,6 +134,9 @@ public class SignaturesManager implements IBioclipseManager {
 
 				AtomSignatures as = generate( mol , height);
 
+				logger.debug("Genrated " + as.getSignatures().size() + " for height " + height);
+				logger.debug("Mol=" + mol + ", height=" + height + ", SIGNS=" + as.getSignatures());
+
 				if (as.getSignatures() == null || as.getSignatures().size()<=0)
 					logger.error( "No signatures generated for for molecule: " 
 							+ mol + ".  Skipping this entry." );
@@ -187,9 +190,9 @@ public class SignaturesManager implements IBioclipseManager {
 		cdkmol=cdk.perceiveAromaticity(cdkmol);
 		try {
 			cdkmol=cdk.addImplicitHydrogens(cdkmol);
-		} catch (InvocationTargetException e) {
-			throw new BioclipseException("Error adding implicit hydrogens: " 
-					+ e.getMessage());
+		} catch (Exception e) {
+//			throw new BioclipseException("Error adding implicit hydrogens: " 
+//					+ e.getMessage());
 		}
 
 
@@ -264,7 +267,7 @@ public class SignaturesManager implements IBioclipseManager {
 			i++;
 			if (i%100==0){
 				monitor.subTask("Processed " + i + "/" + signMap.keySet().size() + " molecules");
-				System.out.println("Processed " + i + "/" + signMap.keySet().size() + " molecules");
+//				System.out.println("Processed " + i + "/" + signMap.keySet().size() + " molecules");
 			}
 
 			//Handle name of molecule
@@ -314,27 +317,57 @@ public class SignaturesManager implements IBioclipseManager {
 		return ds;
 
 	}
-	
-	
+
 	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, IProgressMonitor monitor){
 		return generateSparseDataset(mols, height, null, null, monitor);
 	}
-
+	
 	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, int height, String nameProperty, 
+			String responseProperty, IProgressMonitor monitor){
+		List<Integer> heights = new ArrayList<Integer>();
+		heights.add(height);
+		return generateSparseDataset(mols, heights, nameProperty, responseProperty, monitor);
+	}
+
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, IProgressMonitor monitor){
+		return generateSparseDataset(mols, heights, null, null, monitor);
+	}
+
+	public SparseDataset generateSparseDataset(List<? extends IMolecule> mols, List<? extends Number> heights, String nameProperty, 
 								String responseProperty, IProgressMonitor monitor){
 
 		ICDKManager cdk = Activator.getDefault().getJavaCDKManager();
 
-		monitor.beginTask("Generating signatures dataset", 2);
+		monitor.beginTask("Generating signatures dataset", 3);
 		
+		monitor.subTask("Standardizing molecules");
 		mols=standardizeMolecules(mols);
+		monitor.worked(1);
 		
-		//Generate all signatures
-		Map<IMolecule, AtomSignatures> signMap = generate(mols, height, new SubProgressMonitor(monitor, 1));
+		monitor.subTask("Generating signatures dataset");
+		//Generate all signatures for all heights
+		Map<IMolecule, AtomSignatures> signMap = null; 
+		for (Number height : heights){
+			Map<IMolecule, AtomSignatures> tempMap = generate(mols, height.intValue(), new SubProgressMonitor(monitor, 1));
+			if (signMap==null){
+				signMap=tempMap;
+//				System.out.println("Added " + tempMap.get(mols.get(0)).getSignatures().size() + " signatures");
+			}
+			else{
+				//Add all to list, use initial order
+				for (IMolecule mol : mols){
+					signMap.get(mol).addSignatures(tempMap.get(mol).getSignatures());
+//					System.out.println("Added another " + tempMap.get(mol).getSignatures().size() + " signatures");
+				}
+			}
+		}
 
+//		System.out.println("The total number of generated signatures is: " + signMap.get(mols.get(0)).getSignatures().size() );
+//		System.out.println("The generated signatures are: " + signMap.get(mols.get(0)).getSignatures() );
+		
 		//Add all atom signatures to a unique list
 		List<String> allSignaturesList=new ArrayList<String>();
-		for (IMolecule mol : signMap.keySet()){
+		for (IMolecule mol : mols){
 
 				for (String s : signMap.get(mol).getSignatures()){
 					if (!allSignaturesList.contains(s))
@@ -342,6 +375,8 @@ public class SignaturesManager implements IBioclipseManager {
 				}
 
 		}
+		
+//		logger.debug("SIGNS: " + allSignaturesList);
 
 		//Set up the dataset
 		LinkedHashMap<Point, Integer> values = new LinkedHashMap<Point, Integer>();
@@ -352,7 +387,7 @@ public class SignaturesManager implements IBioclipseManager {
 		SubProgressMonitor submon = new SubProgressMonitor(monitor, 1);
 		submon.beginTask("Counting signature occurences", signMap.keySet().size());
 		int moleculeNo=1;  //line number = matrix row number, starts on 1
-		for (IMolecule mol : signMap.keySet()){
+		for (IMolecule mol : mols){
 
 			AtomSignatures molsigns = signMap.get(mol);
 			ICDKMolecule cdkmol =null;

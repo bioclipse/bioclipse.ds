@@ -8,7 +8,7 @@ import java.text.DecimalFormatSymbols;
  * @author ola
  *
  */
-public class DoubleResult extends SimpleResult {
+public class DoubleResult extends SimpleResult implements IDoubleResult {
     
     DecimalFormat formatter;
     

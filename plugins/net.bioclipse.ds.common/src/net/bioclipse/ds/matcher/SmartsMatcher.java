@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
@@ -61,6 +60,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
      */
     public void initialize(IProgressMonitor monitor) throws DSException {
 
+    	logger.debug("Initializing SMARTSMatcher for test: " + getName());
     	super.initialize(monitor);
 
         if (monitor.isCanceled())
@@ -261,6 +261,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
 
     }
 
+	@SuppressWarnings("serial")
 	@Override
 	public List<String> getRequiredParameters() {
 		return new ArrayList<String>(){{add(FILE_PROPERTY_PARAM);}};

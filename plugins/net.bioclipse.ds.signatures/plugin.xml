@@ -92,8 +92,8 @@
        		  		<menuContribution
             locationURI="popup:net.bioclipse.chemoinformatics.popup.dataset?after=additions">
 		    <command
-		    	commandId="net.bioclipse.ds.signatures.handlers.SignaturesDatasetFromSDF"
-		    	label="Signatures Dataset (Dense)">
+		    	commandId="net.bioclipse.ds.signatures.handlers.DenseSignaturesDatasetFromSDF"
+		    	label="Signatures (Dense)">
 		        
 		        <visibleWhen>
 			   		<iterate operator="and" ifEmpty="false">
@@ -114,7 +114,7 @@
 	       </command>
 		    <command
 		    	commandId="net.bioclipse.ds.signatures.handlers.SparseSignaturesDatasetFromSDF"
-		    	label="Signatures Dataset (Sparse)">
+		    	label="Signatures (Sparse)">
 		        
 		        <visibleWhen>
 			   		<iterate operator="and" ifEmpty="false">
@@ -162,7 +162,7 @@
   <extension
         point="org.eclipse.ui.commands">
          <command  
-           id="net.bioclipse.ds.signatures.handlers.SignaturesDatasetFromSDF"
+           id="net.bioclipse.ds.signatures.handlers.DenseSignaturesDatasetFromSDF"
            defaultHandler="net.bioclipse.ds.signatures.handlers.DenseSignaturesDatasetFromSDF"
            name="signatureDS">
          </command>

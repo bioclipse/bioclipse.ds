@@ -14,10 +14,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.graphics.Image;
-import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
-
-import net.bioclipse.cdk.domain.ISubStructure;
 
 
 /**
@@ -34,6 +31,7 @@ public interface ITestResult extends IAdaptable{
     public static final int INCONCLUSIVE=0x3;
     public static final int INFORMATIVE=0x4;
     public static final int ERROR=0x5;
+    public static final int EMPTY=0x6;
 
     
     /**

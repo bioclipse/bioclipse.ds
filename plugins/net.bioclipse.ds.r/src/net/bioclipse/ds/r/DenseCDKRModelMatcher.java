@@ -17,12 +17,9 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.DenseDataset;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
-import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;
-import net.bioclipse.ds.model.result.PosNegIncMatch;
-import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.qsar.business.IQsarManager;
 import net.bioclipse.qsar.init.Activator;
 
@@ -33,7 +30,7 @@ import net.bioclipse.qsar.init.Activator;
  * @author ola
  *
  */
-public class DenseCDKRModelMatcher extends RModelMatcher{
+public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 
     //The logger of the class
     private static final Logger logger = Logger.getLogger(DenseCDKRModelMatcher.class);
@@ -82,8 +79,9 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 		
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();
-        
+
         if (requires3d){
+        	logger.debug("Calculating 3D coordinates for " + getName() + " since requires 3D");
         	monitor.subTask("Calculating 3D coordinates");
         	IBalloonManager balloon = net.bioclipse.balloon.business.
         							  Activator.getDefault().getJavaBalloonManager();
@@ -95,7 +93,7 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 				return returnError("Error generating 3D", e.getMessage());
 			}
         }
-
+                
         List<IMolecule> mols = new ArrayList<IMolecule>();
         mols.add(cdkmol);
 
@@ -114,7 +112,9 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 			}
 			
 	        //Set up prediction vector for R
-			String rInputValues="tmp <- c(" + toRString(dataset.getValues().get(0)) + ")";
+			String tempvar = "tmp."+getId();
+			
+			String rInputValues=tempvar + " <- c(" + toRString(dataset.getValues().get(0)) + ")";
 			R.eval(rInputValues);
 
 			String namesVectorForR="";
@@ -122,24 +122,22 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 				namesVectorForR = namesVectorForR + "\"" + nam + "\"" + ",";
 			}
 			
-			String rnames="names(tmp) <- names(attr(u251.rf$terms, \"dataClasses\"))[-1]";
-			System.out.println(rnames);
-			R.eval(rnames);
-
-			R.eval("tmp");
+//			String rnames = getRowNames(tempvar);
+//			System.out.println(rnames);
+//			R.eval(rnames);
+//			R.eval(tempvar);
 			
 			//Do predictions in R
 			String ret="";
-			for (String rcmd : getPredictionString("tmp")){
+			for (String rcmd : getPredictionString(tempvar)){
 				System.out.println(rcmd);
 				ret = R.eval(rcmd);
-		        System.out.println("R said: " + ret);
+//		        System.out.println("R said: " + ret);
 			}
 			        
 	        //Parse result and create testresults
 	        double posProb = Double.parseDouble(ret.substring(4));
 	        System.out.println("Parsed prediction prob: " + posProb);
-
 	        
 			int overallPrediction;
 	        if (posProb>=0.5)
@@ -197,26 +195,23 @@ public class DenseCDKRModelMatcher extends RModelMatcher{
 
     }
 	
+
+
+	/**
+	 * Get a list of the row names from the R data model.
+	 * @param tempvar
+	 * @return
+	 */
+	protected abstract String getRowNames(String input);
+
+
+	
 	/**
 	 * Provide the R commands to deliver the prediction command to R
 	 * from the input String (dense numerical vector with signature frequency).
+	 * 
+	 * 
 	 */
-	protected List<String> getPredictionString(String input){
-		
-		List<String> ret = new ArrayList<String>();
-		
-		ret.add("tmp <- predict(u251.naAndStdvTreatment, " + input + ")");
-		ret.add("tmp <- predict(u251.imputed, tmp)");
-		ret.add("names(tmp) <- rownames(u251.rf$importance)");
-		ret.add("predictedCDK <- predict(u251.rf, t(tmp), type=\"prob\")[2]");
-		
-		
-//        ret.add("predictedCDK <- predict(u251.rf,as.data.frame(t(" + input + ")), type=\"prob\")");
-//        ret.add("predictedCDK <- predict(" + rmodel + "," + input + ", type=\"prob\")");
-        
-        
-//        ret.add("attributes(predictedCDK)$probabilities[1,1]\n");
-		return ret;
-	}
+	protected abstract List<String> getPredictionString(String input);
 	
 }
