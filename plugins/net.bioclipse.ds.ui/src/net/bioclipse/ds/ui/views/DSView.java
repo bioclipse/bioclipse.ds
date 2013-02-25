@@ -1205,6 +1205,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
     private void updateView() {
                 
+    	if (viewer.getControl().isDisposed()) return;
         viewer.refresh();
 //        viewer.expandToLevel( 1 );
         viewer.expandAll();
