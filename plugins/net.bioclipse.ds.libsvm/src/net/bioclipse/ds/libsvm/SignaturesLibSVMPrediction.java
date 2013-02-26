@@ -288,7 +288,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		results.add(match);
 
 		//Logic for multi-class results here
-		if (getParameters().get("isClassification").equals(true)){
+		if (getParameters().get("isClassification").equalsIgnoreCase("true")){
 
 			int intPrediction=(int)prediction;
 			if (classLabels==null){
