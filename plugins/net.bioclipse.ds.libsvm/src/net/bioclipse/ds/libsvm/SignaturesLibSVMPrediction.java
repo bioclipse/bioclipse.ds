@@ -124,6 +124,10 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		String signaturesPath = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
 		startHeight=Integer.parseInt(getParameters().get( SIGNATURES_MIN_HEIGHT ));
 		endHeight=Integer.parseInt(getParameters().get( SIGNATURES_MAX_HEIGHT ));
+		String infoma = getParameters().get( "isInformative" );
+		if (infoma!=null)
+			setInformative(Boolean.parseBoolean(getParameters().get( "isInformative" )));
+		
 
 		//These are for regression
 		if ("false".equalsIgnoreCase(getParameters().get( "isClassification" ))){
@@ -318,18 +322,22 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 		}else{
 			//Regression
-			if (prediction>regrUpperThreshold && lowIsNegative)
-				match.setClassification( ITestResult.POSITIVE );
-			else if (prediction>regrUpperThreshold && !lowIsNegative)
-				match.setClassification( ITestResult.NEGATIVE );
-			else if (prediction<regrLowerThreshold && lowIsNegative)
-				match.setClassification( ITestResult.NEGATIVE );
-			else if (prediction<regrLowerThreshold && !lowIsNegative)
-				match.setClassification( ITestResult.POSITIVE);
+			if (isInformative())
+				match.setClassification( ITestResult.INFORMATIVE );
+			else{
+				if (prediction>regrUpperThreshold && lowIsNegative)
+					match.setClassification( ITestResult.POSITIVE );
+				else if (prediction>regrUpperThreshold && !lowIsNegative)
+					match.setClassification( ITestResult.NEGATIVE );
+				else if (prediction<regrLowerThreshold && lowIsNegative)
+					match.setClassification( ITestResult.NEGATIVE );
+				else if (prediction<regrLowerThreshold && !lowIsNegative)
+					match.setClassification( ITestResult.POSITIVE);
+			}
 
 			//Else, between the two, keep inconclusive
 			match.setName("Result: " + formatter.format(prediction));
-			return results;
+//			return results;
 		}
 
 
@@ -529,6 +537,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			match = new ScaledResultMatch("Result: " 
 					+ formatter.format( prediction ), 
 					ITestResult.INFORMATIVE);
+			results.clear();
+			results.add(match);
 
 			int result=ITestResult.INCONCLUSIVE;
 			if (regrLowerThreshold!=null && regrUpperThreshold!=null){
