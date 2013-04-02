@@ -124,6 +124,10 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		String signaturesPath = getFileFromParameter(SIGNATURES_FILE_PARAMETER );
 		startHeight=Integer.parseInt(getParameters().get( SIGNATURES_MIN_HEIGHT ));
 		endHeight=Integer.parseInt(getParameters().get( SIGNATURES_MAX_HEIGHT ));
+		String infoma = getParameters().get( "isInformative" );
+		if (infoma!=null)
+			setInformative(Boolean.parseBoolean(getParameters().get( "isInformative" )));
+		
 
 		//These are for regression
 		if ("false".equalsIgnoreCase(getParameters().get( "isClassification" ))){
@@ -288,30 +292,52 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		results.add(match);
 
 		//Logic for multi-class results here
-		int intPrediction=(int)prediction;
-		if (classLabels==null){
-			return returnError("No classlabels found in model", "Classlabels are null for model");
-		}
-		String predictedClassLabel = classLabels.get(intPrediction);
+		if (getParameters().get("isClassification").equalsIgnoreCase("true")){
 
-		logger.debug("Prediction result: " + prediction + ", predictedClassLabel=" + predictedClassLabel);
+			int intPrediction=(int)prediction;
+			if (classLabels==null){
+				return returnError("No classlabels found in model", "Classlabels are null for model");
+			}
+			String predictedClassLabel = classLabels.get(intPrediction);
 
-		//If this is higher than posVal in list, set POSITIVE color
-		int posIX = classLabels.indexOf(positiveValue);
-		int negIX = classLabels.indexOf(negativeValue);
-		int predIX = classLabels.indexOf(predictedClassLabel);
+			logger.debug("Prediction result: " + prediction + ", predictedClassLabel=" + predictedClassLabel);
 
-		if (predIX==posIX){
-			match.setClassification( ITestResult.POSITIVE );
-			match.setName("Result: Positive");
-		}
-		else if (predIX==negIX){
-			match.setClassification( ITestResult.NEGATIVE );
-			match.setName("Result: Negative");
-		}
-		else{
-			match.setClassification( ITestResult.INCONCLUSIVE );
-			match.setName("Result: Inconclusive");
+			//If this is higher than posVal in list, set POSITIVE color
+			int posIX = classLabels.indexOf(positiveValue);
+			int negIX = classLabels.indexOf(negativeValue);
+			int predIX = classLabels.indexOf(predictedClassLabel);
+
+			if (predIX==posIX){
+				match.setClassification( ITestResult.POSITIVE );
+				match.setName("Result: Positive");
+			}
+			else if (predIX==negIX){
+				match.setClassification( ITestResult.NEGATIVE );
+				match.setName("Result: Negative");
+			}
+			else{
+				match.setClassification( ITestResult.INCONCLUSIVE );
+				match.setName("Result: Inconclusive");
+			}
+
+		}else{
+			//Regression
+			if (isInformative())
+				match.setClassification( ITestResult.INFORMATIVE );
+			else{
+				if (prediction>regrUpperThreshold && lowIsNegative)
+					match.setClassification( ITestResult.POSITIVE );
+				else if (prediction>regrUpperThreshold && !lowIsNegative)
+					match.setClassification( ITestResult.NEGATIVE );
+				else if (prediction<regrLowerThreshold && lowIsNegative)
+					match.setClassification( ITestResult.NEGATIVE );
+				else if (prediction<regrLowerThreshold && !lowIsNegative)
+					match.setClassification( ITestResult.POSITIVE);
+			}
+
+			//Else, between the two, keep inconclusive
+			match.setName("Result: " + formatter.format(prediction));
+//			return results;
 		}
 
 
@@ -511,6 +537,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			match = new ScaledResultMatch("Result: " 
 					+ formatter.format( prediction ), 
 					ITestResult.INFORMATIVE);
+			results.clear();
+			results.add(match);
 
 			int result=ITestResult.INCONCLUSIVE;
 			if (regrLowerThreshold!=null && regrUpperThreshold!=null){
