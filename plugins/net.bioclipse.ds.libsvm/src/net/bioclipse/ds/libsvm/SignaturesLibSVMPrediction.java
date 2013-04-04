@@ -325,14 +325,21 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			if (isInformative())
 				match.setClassification( ITestResult.INFORMATIVE );
 			else{
-				if (prediction>regrUpperThreshold && lowIsNegative)
-					match.setClassification( ITestResult.POSITIVE );
-				else if (prediction>regrUpperThreshold && !lowIsNegative)
-					match.setClassification( ITestResult.NEGATIVE );
-				else if (prediction<regrLowerThreshold && lowIsNegative)
-					match.setClassification( ITestResult.NEGATIVE );
-				else if (prediction<regrLowerThreshold && !lowIsNegative)
-					match.setClassification( ITestResult.POSITIVE);
+				if (regrUpperThreshold==null || regrLowerThreshold==null){
+					//If no upper/lower thresholds then treat as INFORMATIVE
+					logger.debug("regrUpperThreshold and/or regrLowerThreshold is NULL. Treating results as informative.");
+					match.setClassification( ITestResult.INFORMATIVE );
+				}
+				else{
+					if (prediction>regrUpperThreshold && lowIsNegative)
+						match.setClassification( ITestResult.POSITIVE );
+					else if (prediction>regrUpperThreshold && !lowIsNegative)
+						match.setClassification( ITestResult.NEGATIVE );
+					else if (prediction<regrLowerThreshold && lowIsNegative)
+						match.setClassification( ITestResult.NEGATIVE );
+					else if (prediction<regrLowerThreshold && !lowIsNegative)
+						match.setClassification( ITestResult.POSITIVE);
+				}
 			}
 
 			//Else, between the two, keep inconclusive
