@@ -2,7 +2,7 @@
 <cheatsheet
       title="Getting started with Decision Support">
    <intro
-         href="/net.bioclipse.ds/html/maintopic.html">
+         href="/net.bioclipse.ds.ui/html/aboutDS.html">
       <description>
          <b>Decision Support</b>
 This tutorial describes the basic steps for using the Decision Support feature of Bioclipse. For this tutorial it is good, but not necessary, to have Sample Data installed. 
