@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ds.signatures,
  org.eclipse.ui.views,
  org.apache.commons.codec,
- org.openscience.cdk.smiles
+ org.openscience.cdk.smiles,
+ org.openscience.cdk.silent
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: net.bioclipse.ds.common,
