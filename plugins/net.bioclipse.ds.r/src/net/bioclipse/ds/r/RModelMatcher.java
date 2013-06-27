@@ -87,7 +87,8 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 
 			if (loadModelResult.startsWith("Error"))
                 throw new DSException("Error initializing test " + getName() 
-                		+ ": Loading data file " + rm 
+                                        + ": Loading data file "
+                                        + path
                 		+ " FAILED.");
 		
             } catch (Exception e) {
