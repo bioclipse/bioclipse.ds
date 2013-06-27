@@ -3,6 +3,7 @@ package net.bioclipse.ds.r;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -86,12 +87,12 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 
 			if (loadModelResult.startsWith("Error"))
                 throw new DSException("Error initializing test " + getName() 
-                		+ ": Loading data file " + rDataFiles 
+                		+ ": Loading data file " + rm 
                 		+ " FAILED.");
 		
             } catch (Exception e) {
                 throw new DSException("Error initializing file parameter " + rm + " for model "
-                		+ getName() + " due to path wrong: " + rm);
+                		+ getName() + " due to path wrong: " + rm, e);
 			}
 
         }
