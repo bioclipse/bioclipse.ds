@@ -18,6 +18,7 @@ import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.BufferedImage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -115,10 +116,9 @@ public class ImageHelper {
         generators.add(new BasicSceneGenerator());
         
         //Add all generators, we turn them on/off by a parameter now
-        BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
-        PosNegIncColorGenerator gen2=new PosNegIncColorGenerator();
-        generators.add(generator);
-        generators.add( gen2 );
+        List<IGenerator<IAtomContainer>> extendsionGens = ChoiceGenerator
+                        .getGeneratorsFromExtension();
+        generators.addAll( extendsionGens );
         
         generators.add(new BasicBondGenerator());
         BasicAtomGenerator agen = new BasicAtomGenerator();
@@ -157,13 +157,14 @@ public class ImageHelper {
 			RendererModel model) {
 		
 		//Get all external generators and filter the ones registered in the model
-    	List<IGeneratorParameter<?>> parameters = model.getRenderingParameters();
+    	List<IGeneratorParameter<?>> parameters = new ArrayList<IGeneratorParameter<?>>();
     	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
     	
     	for(IGenerator<IAtomContainer> gen:generators) {
     		List<IGeneratorParameter<?>> params = gen.getParameters();
-    		parameters.removeAll(params);
+    		parameters.addAll( params );
     	}
+        parameters.retainAll( model.getRenderingParameters() );
 		
     	for(IGeneratorParameter<?> param : parameters) {
     			if (param.getDefault() instanceof Boolean) {
