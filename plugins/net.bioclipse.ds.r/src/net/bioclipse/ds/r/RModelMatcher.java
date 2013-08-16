@@ -82,7 +82,10 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 
             try {
 				String path = FileUtil.getFilePath(rm, getPluginID());
-        	
+
+        	if (System.getProperty("os.name").toString().startsWith("Windows")) {
+        		path = path.substring(1);
+        	}
             String loadModelResult = R.eval("load(\"" + path + "\")");
 
 			if (loadModelResult.startsWith("Error"))
