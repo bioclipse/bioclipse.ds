@@ -14,7 +14,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.fingerprint.Fingerprinter;
-import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
@@ -148,7 +147,7 @@ public class CSVNearestFP extends AbstractDSTest implements IDSTest{
 			
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(cdkmol.getAtomContainer());
 			AtomContainerManipulator.convertImplicitToExplicitHydrogens(cdkmol.getAtomContainer());
-			BitSet molFP = fpr.getFingerprint(cdkmol.getAtomContainer());
+			BitSet molFP = fpr.getBitFingerprint(cdkmol.getAtomContainer()).asBitSet();
 
 //			BitSet molFP = cdkmol.getFingerprint( IMolecule.Property.
 //					USE_CALCULATED );

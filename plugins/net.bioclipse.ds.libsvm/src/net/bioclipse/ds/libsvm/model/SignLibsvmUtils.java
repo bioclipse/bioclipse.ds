@@ -2,7 +2,6 @@ package net.bioclipse.ds.libsvm.model;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,23 +9,13 @@ import java.util.List;
 
 import libsvm.svm;
 import libsvm.svm_model;
-
-import org.apache.log4j.Logger;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IMolecule;
-import org.openscience.cdk.tools.CDKHydrogenAdder;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.util.LogUtils;
-import net.bioclipse.ds.libsvm.PCMSignLibSvmPrediction;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.signatures.Activator;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
+
+import org.apache.log4j.Logger;
 
 public class SignLibsvmUtils {
 
