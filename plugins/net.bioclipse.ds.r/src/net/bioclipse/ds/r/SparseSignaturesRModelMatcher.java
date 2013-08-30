@@ -87,13 +87,13 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 				"\"ia\" = as.integer(c(1," + (values.size()+1) + "))," +
 				"\"dimension\" = as.integer(c(1," + signaturesMatcher.getSignatures().size() + ")))";				;
 		
-		String output = R.eval(modelSpecificMatrix + " <- " + rCommand);
+		String output = R.eval(modelSpecificMatrix + " <- " + rCommand, servi);
 		if (output.startsWith("Error")) return returnError(output, output);
 		
 		//Do predictions in R
 		for (String rcmd : getPredictionString(modelSpecificMatrix)){
 			System.out.println(rcmd);
-			output = R.eval(rcmd);
+			output = R.eval(rcmd, servi);
 //	        System.out.println("R said: " + ret);
 		}
 		        
@@ -102,7 +102,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
         
         //Check what rho is, if negative then invert predictions
         //FIXME
-		output = R.eval("cas.svm$rho");
+		output = R.eval("cas.svm$rho", servi);
 		if (output.substring(4).startsWith("-")){
 			System.out.println("RHO IS NEG - INVERT!");
 			posProb=1-posProb;
@@ -121,7 +121,7 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
 
 		//Try to predict important modelSignatures
         String mostImportantRcmd = getMostImportantSignaturesCommand(modelSpecificMatrix);
-		output = R.eval(mostImportantRcmd);
+		output = R.eval(mostImportantRcmd, servi);
 		if (output.contains("An error occurred") || output.startsWith("Error")){
 			return results;
 		}

@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.walware.rj.servi.RServi;
+
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
@@ -47,6 +49,7 @@ public abstract class SignaturesRModelMatcher extends RModelMatcher{
 		super.initialize(monitor);
 		
         R = Activator.getDefault().getJavaRBusinessManager();
+//        RServi servi = R.getInitR("rDS");
 
 		//copy parameters for this model to wrapped sign model
 		signaturesMatcher.setPluginID(getPluginID());

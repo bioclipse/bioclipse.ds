@@ -115,7 +115,7 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 			String tempvar = "tmp."+getId();
 			
 			String rInputValues=tempvar + " <- c(" + toRString(dataset.getValues().get(0)) + ")";
-			R.eval(rInputValues);
+			R.eval(rInputValues, servi);
 
 			String namesVectorForR="";
 			for (String nam : dataset.getColHeaders()){
@@ -131,7 +131,7 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 			String ret="";
 			for (String rcmd : getPredictionString(tempvar)){
 				System.out.println(rcmd);
-				ret = R.eval(rcmd);
+				ret = R.eval(rcmd, servi);
 //		        System.out.println("R said: " + ret);
 			}
 			        

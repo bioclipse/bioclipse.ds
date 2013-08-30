@@ -70,11 +70,11 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
 		
         int cnt = 0;
 		for (String cmdpart : cmdParts){
-	        R.eval("tmp <- " + cmdpart);
+	        R.eval("tmp <- " + cmdpart, servi);
 			if (cnt==0)
-				R.eval("inp <- tmp");
+				R.eval("inp <- tmp", servi);
 			else
-		        R.eval("inp <- c(inp,tmp)");
+		        R.eval("inp <- c(inp,tmp)", servi);
 			cnt++;
 		}
 
@@ -82,7 +82,7 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
 		String ret="";
 		for (String rcmd : getPredictionString("inp")){
 //			System.out.println(rcmd);
-			ret = R.eval(rcmd);
+			ret = R.eval(rcmd, servi);
 //	        System.out.println("R said: " + ret);
 		}
 		        
@@ -91,7 +91,7 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
         
         
         String mostImportantRcmd = getMostImportantSignaturesCommand();
-		ret = R.eval(mostImportantRcmd);
+		ret = R.eval(mostImportantRcmd, servi);
 		//Result should be on form: [1]  191  434 1683
 		//TODO: handle errors here...
 

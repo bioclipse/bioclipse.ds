@@ -25,4 +25,5 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.qsar,
  net.bioclipse.balloon.business
 Export-Package: net.bioclipse.ds.r
-Import-Package: org.apache.log4j
+Import-Package: de.walware.rj.servi,
+ org.apache.log4j
