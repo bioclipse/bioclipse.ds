@@ -16,9 +16,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +26,7 @@ import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
-import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
-import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
-import net.bioclipse.ds.model.result.SubStructureMatch;
 
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -43,11 +38,8 @@ import org.openscience.cdk.renderer.font.AWTFontManager;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator;
 import org.openscience.cdk.renderer.generators.BasicBondGenerator;
 import org.openscience.cdk.renderer.generators.BasicSceneGenerator;
-import org.openscience.cdk.renderer.generators.HighlightAtomGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
-import org.openscience.cdk.renderer.generators.BasicAtomGenerator.AtomColor;
-import org.openscience.cdk.renderer.generators.HighlightAtomGenerator.HighlightAtomDistance;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
