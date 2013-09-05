@@ -2,7 +2,7 @@
 <cspec xmlns="http://www.eclipse.org/buckminster/CSpec-1.0" name="net.bioclipse.ds_releng" componentType="buckminster" version="2.6.1">
     <dependencies>
         <dependency name="net.bioclipse.ds_site" componentType="eclipse.feature" />
-        <dependency name="org.slf4j.api" componentType="osgi.bundle"/>
+        <dependency name="slf4j.api" componentType="osgi.bundle"/>
         <dependency name="log4j.over.slf4j" componentType="osgi.bundle"/>
         <dependency name="org.eclipse.rcp" componentType="eclipse.feature"/>
         <dependency name="com.springsource.nu.xom" componentType="osgi.bundle"/>
