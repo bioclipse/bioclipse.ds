@@ -42,7 +42,6 @@ import net.bioclipse.ds.ui.VotingConsensus;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
-import org.apache.log4j.Logger;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
@@ -93,6 +92,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -101,7 +102,7 @@ import org.openscience.cdk.renderer.generators.IGeneratorParameter;
  */
 public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener {
 
-    private static final Logger logger = Logger.getLogger(DSView.class);
+    private static final Logger logger = LoggerFactory.getLogger(DSView.class);
 
     public static final String VIEW_ID="net.bioclipse.ds.ui.views.DSView";
     
@@ -397,12 +398,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 		String ermsg=e.toString();
                 		if (e.getMessage()!=null)
                 			ermsg=e.getMessage();
-                		
-                		logger.error("Failed initializing test " + 
-                				test.getName() + " Reason: " + ermsg);
+
+                		logger.error("Failed initializing test {} Reason: {}",
+                				test.getName(),ermsg,e);
                 		test.setTestErrorMessage("Error: "+ermsg);
-                		
-                		LogUtils.debugTrace(logger, e);
                 	}
                 }
 
@@ -424,7 +423,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             	}
                                 viewer.expandToLevel(2);
                             } catch ( BioclipseException e ) {
-                                LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
+                                logger.error("Error initializing tests: {}",e.getMessage(),e);
                                 viewer.setInput(new String[]{"Error initializing tests"});
                             }
 
@@ -458,7 +457,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     });
                     
                 } catch (BioclipseException e1) {
-                	LogUtils.handleException( e1, logger, Activator.PLUGIN_ID );
+                    logger.error( "Failed to initialize tests", e1 );
 
                 	Display.getDefault().asyncExec( new Runnable(){
                 		public void run() {
@@ -1099,9 +1098,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             runningJobs.add(job);
             
             } catch ( Exception e ) {
-                logger.error( "Error running test: " + tr.getTest() + 
-                              ": " + e.getMessage());
-                LogUtils.debugTrace( logger, e );
+                logger.error( "Error running test: {}: {}", tr.getTest(),e.getMessage(),e);
                 
                 tr.setStatus( TestRun.ERROR );
                 
@@ -1644,7 +1641,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             }
 
         } catch ( BioclipseException e1 ) {
-            LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
+            logger.error( "Could not initialize ds tests" );// Very unlikely
         }
         
         molTestMap.put( mol, newTestRuns );

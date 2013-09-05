@@ -33,7 +33,6 @@ import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
 import net.bioclipse.ds.model.result.SubStructureMatch;
 
-import org.apache.log4j.Logger;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
@@ -50,6 +49,8 @@ import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator.AtomColor;
 import org.openscience.cdk.renderer.generators.HighlightAtomGenerator.HighlightAtomDistance;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper classes to generate Images of structures with DS-highlighting
@@ -58,7 +59,7 @@ import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
  */
 public class ImageHelper {
 
-    private static final Logger logger = Logger.getLogger(ImageHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger( ImageHelper.class );
 
     public static Image createImage( net.bioclipse.core.domain.IMolecule bcmol,
                                       ITestResult match ) 

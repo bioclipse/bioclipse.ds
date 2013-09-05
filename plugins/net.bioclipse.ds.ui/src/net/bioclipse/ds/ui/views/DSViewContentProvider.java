@@ -15,9 +15,10 @@ import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -26,7 +27,7 @@ import org.eclipse.jface.viewers.Viewer;
  */
 public class DSViewContentProvider implements ITreeContentProvider{
 
-    private static final Logger logger = Logger.getLogger(
+    private static final Logger logger = LoggerFactory.getLogger(
                                                    DSViewContentProvider.class);
 
     public Object[] getChildren( Object parentElement ) {
