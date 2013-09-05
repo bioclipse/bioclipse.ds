@@ -74,6 +74,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.help.IContextProvider;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -1016,13 +1017,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     ds.runTest( tr.getTest().getId(), clonedMol, 
                     new BioclipseJobUpdateHook<List<ITestResult>>(tr.getTest().getName()));
                 
-            job.addJobChangeListener( new IJobChangeListener(){
-
-                public void aboutToRun( IJobChangeEvent event ) {
-                }
-
-                public void awake( IJobChangeEvent event ) {
-                }
+            job.addJobChangeListener( new JobChangeAdapter(){
 
                 @SuppressWarnings("unchecked")
                 public void done( IJobChangeEvent event ) {
@@ -1047,45 +1042,25 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             
                             //Copy properties from result into original molecule
                             //from the cloned
-                            for (Object obj : clonedMol.getAtomContainer()
-                                    .getProperties().keySet()){
-//                                System.out.println("OBJ found: " + obj);
-//                                System.out.println("Existing: " + originalMol.getAtomContainer().getProperties());
-                                if (!originalMol.getAtomContainer()
-                                        .getProperties().containsKey( obj )){
-                                    originalMol.getAtomContainer()
-                                    .getProperties().put( 
-                                               obj, clonedMol.getAtomContainer()
-                                               .getProperties().get( obj ) );
-//                                    System.out.println("DS-RES set on:" + clonedMol.getAtomContainer().hashCode() + "="+ clonedMol.getAtomContainer()
-//                                                       .getProperties().get( obj ));
+                            Map<Object, Object> clonedProps = clonedMol
+                                            .getAtomContainer().getProperties();
+                            Map<Object, Object> originalProps = originalMol
+                                            .getAtomContainer().getProperties();
+
+                            for ( Object obj : clonedProps.keySet() ) {
+                                if ( !originalProps.containsKey( obj ) ) {
+                                    originalProps.put( obj,
+                                                       clonedProps.get( obj ) );
                                 }
                             }
                             
-                            //We also need to clone any ISubStructureMatches Atoms in AC since they are based on a clone
-//                            for (ITestResult result : matches){
-//                                if ( result instanceof SubStructureMatch) {
-//                                    SubStructureMatch ssmatch = (SubStructureMatch) result;
-//                                    IAtomContainer matchAC = ssmatch.getAtomContainer();
-//                                    IAtomContainer newAC=new NNAtomContainer();
-//                                    for (IAtom matchedAtom : matchAC.atoms()){
-//                                        int clonedAtomno=clonedMol.getAtomContainer().getAtomNumber( matchedAtom );
-//                                        IAtom newAtom = originalMol.getAtomContainer().getAtom( clonedAtomno );
-//                                        newAC.addAtom( newAtom );
-//                                    }
-//                                    ssmatch.setAtomContainer( newAC );
-//                                }
-//                            }
-                            
-                            
-
                             for (ITestResult result : matches){
                                     result.setTestRun( tr );
                                     tr.addResult(result);
                             } 
                             tr.setMatches( matches );
 //                            logger.debug( "===== " + tr + " finished" );
-                            if (tr.getTest().getTestErrorMessage()!="")
+                            if ( !tr.getTest().getTestErrorMessage().isEmpty() )
                                 tr.setStatus( TestRun.ERROR );
                             else
                                 tr.setStatus( TestRun.FINISHED );
@@ -1106,8 +1081,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                                 mpe.getMoleculesPage().setUseExtensionGenerators( true );
                                 mpe.getMoleculesPage().refresh();
                             }
-
-
                             
                             //If we previously stored a selection, set it now
                             selectIfStoredSelection(tr);
@@ -1116,29 +1089,14 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             getRunningJobs().remove( job );
 
                             }
-
                     });
-
-
                 }
-
-                public void running( IJobChangeEvent event ) {
-                }
-
-                public void scheduled( IJobChangeEvent event ) {
-                }
-
-                public void sleeping( IJobChangeEvent event ) {
-                }}
-            );
+            } );
             
             job.schedule();
 
             //Store ref to job in list
             runningJobs.add(job);
-
-
-
             
             } catch ( Exception e ) {
                 logger.error( "Error running test: " + tr.getTest() + 
