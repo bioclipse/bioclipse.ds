@@ -86,8 +86,6 @@ import org.eclipse.swt.SWT;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 
-import quicktime.std.movies.AtomContainer;
-
 /**
  * 
  * @author ola
