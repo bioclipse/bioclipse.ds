@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
 import net.bioclipse.ds.matcher.model.SignatureFrequenceyResult;
 import net.bioclipse.ds.model.DSException;
@@ -29,9 +30,12 @@ public abstract class DenseSignaturesRModelMatcher extends SignaturesRModelMatch
 
 
 	@Override
-	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
 			IProgressMonitor monitor) {
 		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 
 		
         //Make room for results

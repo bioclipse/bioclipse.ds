@@ -13,6 +13,7 @@ import org.openscience.cdk.interfaces.IAtom;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.ds.matcher.model.SignatureFrequenceyResult;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.DoubleResult;
@@ -34,8 +35,12 @@ public class SparseSignaturesRModelMatcher extends SignaturesRModelMatcher{
     DecimalFormat formatter = new DecimalFormat("0.000");
 
 	@Override
-	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
 			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 		
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();

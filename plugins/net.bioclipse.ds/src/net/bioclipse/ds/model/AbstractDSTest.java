@@ -16,11 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.cdk.business.Activator;
-import net.bioclipse.cdk.business.ICDKManager;
-import net.bioclipse.cdk.domain.CDKMolecule;
-import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.Stopwatch;
@@ -303,7 +300,7 @@ public abstract class AbstractDSTest implements IDSTest{
     /**
      * Set up input molecule, and call doRunTest(). Also time execution.
      */
-    public List<? extends ITestResult> runWarningTest( IMolecule molecule, IProgressMonitor monitor ){
+    public List<? extends ITestResult> runWarningTest( IBioObject input, IProgressMonitor monitor ){
 
     	//Do not initialize if we have an error message
         if (getTestErrorMessage().length()>1){
@@ -344,52 +341,16 @@ public abstract class AbstractDSTest implements IDSTest{
         if (getTestErrorMessage().length()>1){
             return new ArrayList<ExternalMoleculeMatch>();
         }
-
-        //Create CDKMolecule from the IMolecule to get a clean API
-        ICDKManager cdk=Activator.getDefault().getJavaCDKManager();
-        ICDKMolecule cdkmol=null;
-        try {
-            cdkmol = cdk.asCDKMolecule( molecule );
-        } catch ( BioclipseException e ) {
-            return returnError( "Could not create CDKMolecule", e.getMessage() );
-        }
-
-        //Check for cancellation
-        if (monitor.isCanceled())
-            return returnError( "Cancelled","");
-
-        //Preprocess the molecule: Remove explicit and add implicit hydrogens
         
+        //Add optional input object preprocessing
         try {
-        	cdkmol = new CDKMolecule(standardizeMolecule(cdkmol.getAtomContainer()));
-        } catch (CDKException e) {
-        	return returnError("Error standardizing molecule", e.getMessage());
-        }
-        
-        /*
-		try {
-				cdk.removeExplicitHydrogens(cdkmol);
-				cdk.addImplicitHydrogens(cdkmol); 
-			} catch (BioclipseException e) {
-				logger.error(e.getMessage());
-	            return returnError( "Error: " + e.getMessage(),e.getMessage());
-			} catch (InvocationTargetException e) {
-				logger.error(e.getTargetException().getMessage());
-	            return returnError( "Error: " + e.getTargetException()
-	            		.getMessage(),e.getTargetException().getMessage());
-			} catch (RuntimeException e) {
-				if (e.getCause() instanceof InvocationTargetException) {
-					InvocationTargetException ie = 
-						(InvocationTargetException) e.getCause();
-					logger.error(ie.getTargetException().getMessage());
-		            return returnError( "Error: " + ie.getTargetException()
-		            		.getMessage(),ie.getTargetException().getMessage());
-				}
-			}
-			*/
+			input = preProcessInput(input);
+		} catch (BioclipseException e) {
+			return returnError(e.getMessage(), e.getMessage());
+		}
 
 		//Delegate the actual test to the implementation
-        List<? extends ITestResult> ret = doRunTest( cdkmol, monitor );
+        List<? extends ITestResult> ret = doRunTest( input, monitor );
         
         //Store timing of test
         watch.stop();
@@ -401,7 +362,12 @@ public abstract class AbstractDSTest implements IDSTest{
 
     }
 
-    
+    //Default impl does nothing. Subclasses may override.
+	public IBioObject preProcessInput(IBioObject input) throws BioclipseException{
+		return input;
+	};
+
+	
 	public static IAtomContainer standardizeMolecule(IAtomContainer mol) throws CDKException{
 
 		//Remove explicit hydrogens
@@ -451,7 +417,7 @@ public abstract class AbstractDSTest implements IDSTest{
 
 
 	protected abstract List<? extends ITestResult> doRunTest( 
-                                                  ICDKMolecule cdkmol, 
+                                                  IBioObject input, 
                                                   IProgressMonitor monitor);
 
     public void setVisible( boolean visible ) {

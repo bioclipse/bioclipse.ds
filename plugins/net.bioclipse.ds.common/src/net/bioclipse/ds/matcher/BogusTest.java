@@ -16,13 +16,15 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IBioObject;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 
 
-public class BogusTest extends AbstractDSTest implements IDSTest{
+public class BogusTest extends AbstractDSMolModel implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(BogusTest.class);
 
@@ -30,7 +32,7 @@ public class BogusTest extends AbstractDSTest implements IDSTest{
     }
 
     @Override
-    protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
+    protected List<? extends ITestResult> doRunTest( IBioObject object,
                                                      IProgressMonitor monitor ) {
 
         logger.error("This BOGUStest: " + getId() + " should not be called.");

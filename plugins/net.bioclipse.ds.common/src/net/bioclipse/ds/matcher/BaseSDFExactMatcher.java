@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -50,10 +51,14 @@ public abstract class BaseSDFExactMatcher extends BaseSDFMatcher implements IDST
 	/**
      * InChI implementation for finding exact matches in an SDFModel
      */
-    protected List<? extends ITestResult> doRunTest( 
-                                                     ICDKMolecule cdkmol, 
-                                                     IProgressMonitor monitor) {
-        //Store results here
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
+			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
+
+		//Store results here
         ArrayList<ExternalMoleculeMatch> results=new 
                                              ArrayList<ExternalMoleculeMatch>();
 

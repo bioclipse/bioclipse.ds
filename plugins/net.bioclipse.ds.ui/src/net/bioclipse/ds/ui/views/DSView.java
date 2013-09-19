@@ -11,18 +11,18 @@
 package net.bioclipse.ds.ui.views;
 
 
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList; 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.CDKMolecule;
+import net.bioclipse.cdk.domain.CDKMoleculeUtils;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.business.IJChemPaintManager;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
-import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
@@ -41,17 +41,17 @@ import net.bioclipse.ds.ui.GeneratorHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
+import net.bioclipse.nm.business.INmManager;
+import net.bioclipse.nm.domain.Material;
+import net.bioclipse.nm.ui.editors.NMEditor;
 
 import org.apache.log4j.Logger;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -60,24 +60,19 @@ import org.eclipse.ui.part.*;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IParameter;
-import org.eclipse.core.commands.IParameterValues;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
-import org.eclipse.core.commands.ParameterValuesException;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.help.IContextProvider;
-import org.eclipse.jface.preference.IPreferenceNode;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.*;
@@ -88,10 +83,10 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.renderer.RendererModel;
-import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
+
+import quicktime.std.movies.AtomContainer;
 
 /**
  * 
@@ -906,9 +901,18 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
         //Get the molecule from the editor
         JChemPaintEditor jcp = getJCPfromActiveEditor();
+        NMEditor nme =null;
+        
         if (jcp==null){
-            showError("The current editor is not supported to run DS tests on.");
-            return;
+
+        	IEditorPart ed = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();       	
+        	if (ed instanceof NMEditor) {
+				nme = (NMEditor) ed;
+			}
+        	else{
+        		showError("The current editor is not supported to run DS tests on.");
+        		return;
+        	}
         }
         
         //We need to remove explicit hydrogens
@@ -918,7 +922,27 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         jcpmanager.removeExplicitHydrogens();
  
         //Get the molecule from JCP
-        final ICDKMolecule mol=jcp.getCDKMolecule();
+        ICDKMolecule pmol=null;
+        Material n;
+		if (jcp!=null)
+        	pmol=jcp.getCDKMolecule();
+        else if (nme!=null){
+        	n=nme.getMaterial();
+        	
+        	ICDKManager cdk = net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
+        	pmol = cdk.newMolecule();
+
+        	INmManager nm = net.bioclipse.nm.Activator.getDefault().getJavaNmManager();
+
+        	try {
+        		pmol.setProperty("bc.nm", nm.asNMX(n));
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
+        			
+        }
+
+        final ICDKMolecule mol = pmol;
         
         //Cancel all running tests
         for (BioclipseJob<List<ITestResult>> job : runningJobs){
@@ -1438,6 +1462,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             editor = editorRef.getEditor(false);
 			logger.debug("Handled part is MultiPageMoleculesEditorPart");
         }
+        else if (editorRef.getId().startsWith("net.bioclipse.nm.ui.editors.nmeditor")) {
+			logger.debug("Handled part is NMEditor");
+			editor= editorRef.getEditor(false);
+		}
 		return editor;
 	}
 	
@@ -1571,6 +1599,27 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 				}
 			});
         }
+		else if (editor instanceof NMEditor){
+			NMEditor nmeditor = (NMEditor)editor;
+			
+			Material material = nmeditor.getMaterial();
+			
+			ICDKManager cdk = net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
+			ICDKMolecule mol = cdk.newMolecule();
+			
+			INmManager nm = net.bioclipse.nm.Activator.getDefault().getJavaNmManager();
+			
+			try {
+				mol.setProperty("bc.nm", nm.asNMX(material));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			doClearAndSetUpNewTestRuns(mol);
+			
+			
+			
+		}
 	}
 
     private JChemPaintEditor getJCPfromActiveEditor() {

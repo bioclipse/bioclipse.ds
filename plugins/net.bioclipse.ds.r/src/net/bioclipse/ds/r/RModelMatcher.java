@@ -19,6 +19,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -36,7 +37,7 @@ import net.bioclipse.r.business.IRBusinessManager;
  * @author ola
  *
  */
-public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
+public abstract class RModelMatcher extends AbstractDSMolModel implements IDSTest{
 	
 	private static final String R_DATA_PARAMETER = "rdata";
 	private static final String R_TRAINED_MODEL = "trainedModel";

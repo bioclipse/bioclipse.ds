@@ -28,6 +28,7 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.matcher.model.SignatureFrequenceyResult;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -40,7 +41,7 @@ import net.bioclipse.ds.signatures.business.ISignaturesManager;
  * @author Ola Spjuth
  *
  */
-public abstract class BaseSignaturesMatcher extends AbstractDSTest implements IDSTest{
+public abstract class BaseSignaturesMatcher extends AbstractDSMolModel implements IDSTest{
     
     //The logger of the class
     private static final Logger logger = Logger.getLogger(BaseSignaturesMatcher.class);

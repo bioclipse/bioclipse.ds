@@ -29,7 +29,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -45,7 +47,7 @@ import net.bioclipse.ds.model.result.StructuralAlertsMatch;
  * @author ola
  *
  */
-public class SmartsMatcher extends AbstractDSTest implements IDSTest{
+public class SmartsMatcher extends AbstractDSMolModel implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(SmartsMatcher.class);
 
@@ -186,8 +188,12 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
     }
 
     @Override
-    protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
-                                                     IProgressMonitor monitor ) {
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
+			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 
     	//Task size is number of smarts
 //    	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);

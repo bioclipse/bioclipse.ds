@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import libsvm.svm_node;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
@@ -103,8 +103,12 @@ public class PCMSignLibSvmPrediction extends SignaturesLibSVMPrediction {
 	}
 	
 	@Override
-	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
 			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 		
 		List<ITestResult> allResults = new ArrayList<ITestResult>();
 

@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.ds.matcher.BaseSignaturesMatcher;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
@@ -34,7 +35,7 @@ public abstract class SignaturesRModelMatcher extends RModelMatcher{
 		
 		signaturesMatcher=new BaseSignaturesMatcher() {
 			@Override
-			protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol, IProgressMonitor monitor) {
+			protected List<? extends ITestResult> doRunTest(IBioObject input, IProgressMonitor monitor) {
 				return null;
 			}
 		};

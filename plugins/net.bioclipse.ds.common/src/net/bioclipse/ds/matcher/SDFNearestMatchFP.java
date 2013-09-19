@@ -20,6 +20,7 @@ import java.util.Map;
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.DSException;
@@ -106,9 +107,12 @@ public class SDFNearestMatchFP extends BaseSDFMatcher implements IDSTest{
     /**
      * FP implementation for finding exact matches in an SDFModel
      */
-    protected List<? extends ITestResult> doRunTest( 
-                                                     ICDKMolecule cdkmol, 
-                                                     IProgressMonitor monitor) {
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
+			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
     	
 //    	//We divide in 5 parts
 //    	monitor.beginTask(getName(), 5);

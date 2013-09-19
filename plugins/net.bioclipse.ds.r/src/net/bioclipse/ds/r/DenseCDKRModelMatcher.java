@@ -15,6 +15,7 @@ import net.bioclipse.balloon.business.IBalloonManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.DenseDataset;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.DSException;
@@ -74,8 +75,12 @@ public abstract class DenseCDKRModelMatcher extends RModelMatcher{
 	}
 	
 	@Override
-	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
 			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 		
         //Make room for results
         List<ITestResult> results=new ArrayList<ITestResult>();

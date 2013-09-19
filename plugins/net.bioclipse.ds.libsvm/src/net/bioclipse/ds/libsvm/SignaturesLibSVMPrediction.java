@@ -22,12 +22,13 @@ import java.util.Map;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.ds.libsvm.model.PredictionModel;
 import net.bioclipse.ds.libsvm.model.SignLibsvmModel;
 import net.bioclipse.ds.libsvm.model.SignLibsvmUtils;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
@@ -47,7 +48,7 @@ import org.openscience.cdk.interfaces.IAtom;
  * @author ola
  *
  */
-public class SignaturesLibSVMPrediction extends AbstractDSTest{
+public class SignaturesLibSVMPrediction extends AbstractDSMolModel{
 
 
 	//The logger of the class
@@ -211,8 +212,12 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 
 	@Override
-	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
 			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 
 		return predictLibSVM(cdkmol,null,true,monitor);
 

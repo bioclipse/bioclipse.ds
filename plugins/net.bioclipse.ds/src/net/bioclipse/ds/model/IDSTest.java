@@ -19,6 +19,7 @@ import org.eclipse.help.IContext2;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.cdk.domain.ISubStructure;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.core.domain.IMolecule;
 
 
@@ -55,7 +56,9 @@ public interface IDSTest extends ISubStructure, IContext2{
      * @param molecule IMolecule, input for the test
      * @return List of ITestResults where ITestREsult may be an ErrorResult
      */
-    public List<? extends ITestResult> runWarningTest(IMolecule molecule, IProgressMonitor monitor) ;
+	public List<? extends ITestResult> runWarningTest(IBioObject input,
+			IProgressMonitor monitor);
+
     public void initialize(IProgressMonitor monitor) throws DSException;
     long getExecutionTimeMilliSeconds();
 

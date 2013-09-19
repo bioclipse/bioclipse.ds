@@ -32,8 +32,10 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.domain.IBioObject;
 import net.bioclipse.ds.matcher.model.SignificantSignature;
 import net.bioclipse.ds.matcher.model.SignificantSignatureMatch;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -50,7 +52,7 @@ import net.bioclipse.ds.signatures.prop.calc.AtomSignatures;
  * @author ola
  *
  */
-public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
+public class SignatureAlertsMatcher extends AbstractDSMolModel implements IDSTest{
 
     private static final Logger logger = Logger.getLogger(SignatureAlertsMatcher.class);
 
@@ -200,8 +202,12 @@ public class SignatureAlertsMatcher extends AbstractDSTest implements IDSTest{
 
 
     @Override
-    protected List<? extends ITestResult> doRunTest( ICDKMolecule cdkmol,
-                                                     IProgressMonitor monitor ) {
+	protected List<? extends ITestResult> doRunTest(IBioObject input,
+			IProgressMonitor monitor) {
+		
+		if (!(input instanceof ICDKMolecule))
+			return returnError("Input is not a Molecule", "");
+		ICDKMolecule cdkmol = (ICDKMolecule) input;
 
 //    	//We divide in 6 parts and increment one per height processed
 //    	monitor.beginTask(getName(), 6);

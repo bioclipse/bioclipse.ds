@@ -28,6 +28,7 @@ import net.bioclipse.cdk.ui.sdfeditor.business.IMoleculeTableManager;
 import net.bioclipse.cdk.ui.sdfeditor.business.SDFIndexEditorModel;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.LogUtils;
+import net.bioclipse.ds.model.AbstractDSMolModel;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.IDSTest;
@@ -43,7 +44,7 @@ import net.bioclipse.jobs.BioclipseJobUpdateHook;
  * @author ola
  *
  */
-public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
+public abstract class BaseSDFMatcher extends AbstractDSMolModel implements IDSTest{
 
 	private static final Logger logger = Logger.getLogger(BaseSDFMatcher.class);
 
