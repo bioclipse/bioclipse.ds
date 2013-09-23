@@ -400,8 +400,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 		if (e.getMessage()!=null)
                 			ermsg=e.getMessage();
 
-                		logger.error("Failed initializing test {} Reason: {}",
-                				test.getName(),ermsg,e);
+                		logger.error("Failed initializing test" + test.getName() +"Reason: "+ermsg,e );
                 		test.setTestErrorMessage("Error: "+ermsg);
                 	}
                 }
@@ -424,7 +423,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             	}
                                 viewer.expandToLevel(2);
                             } catch ( BioclipseException e ) {
-                                logger.error("Error initializing tests: {}",e.getMessage(),e);
+                                logger.error("Error initializing tests: "+e.getMessage(),e);
                                 viewer.setInput(new String[]{"Error initializing tests"});
                             }
 
@@ -1099,7 +1098,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             runningJobs.add(job);
             
             } catch ( Exception e ) {
-                logger.error( "Error running test: {}: {}", tr.getTest(),e.getMessage(),e);
+                logger.error( "Error running test: "+tr.getTest()+": "+ e.getMessage(),e);
                 
                 tr.setStatus( TestRun.ERROR );
                 
