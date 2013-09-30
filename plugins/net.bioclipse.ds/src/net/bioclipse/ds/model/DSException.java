@@ -19,4 +19,8 @@ public class DSException extends Exception {
         super(message);
     }
 
+    public DSException(String message, Throwable e) {
+        super( message, e );
+    }
+
 }

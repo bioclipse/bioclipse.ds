@@ -50,7 +50,9 @@ public class MoleculeResultPropertySource extends BasicPropertySource
         }   
 
         addToValueMap(NAME,item.getName());
-        addToValueMap(TEST,item.getTestRun().getTest().getName());
+        if (item.getTestRun()!=null)
+        	addToValueMap(TEST,item.getTestRun().getTest().getName());
+        
         if (item.getClassification()==ITestResult.POSITIVE)
             addToValueMap(CLASSIFICATION,"POSITIVE");
         else if (item.getClassification()==ITestResult.NEGATIVE)

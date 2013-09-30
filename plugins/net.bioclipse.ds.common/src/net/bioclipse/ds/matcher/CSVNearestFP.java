@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openscience.cdk.fingerprint.Fingerprinter;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
@@ -46,7 +47,7 @@ public class CSVNearestFP extends AbstractDSTest implements IDSTest{
 	Map<BitSet, List<Integer>> lookup = new HashMap<BitSet, List<Integer>>();
 	Map<Integer, List<String>> content = new HashMap<Integer, List<String>>();
 
-	SmilesParser sp = new SmilesParser(NoNotificationChemObjectBuilder.getInstance());
+	SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
 	Fingerprinter fpr = new Fingerprinter(1024);
 
 	

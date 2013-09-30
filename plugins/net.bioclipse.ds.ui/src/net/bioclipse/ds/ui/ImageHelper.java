@@ -16,7 +16,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +26,8 @@ import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
-import net.bioclipse.ds.model.result.BlueRedColorScaleGenerator;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
-import net.bioclipse.ds.model.result.PosNegIncColorGenerator;
-import net.bioclipse.ds.model.result.SubStructureMatch;
 
-import org.apache.log4j.Logger;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecule;
@@ -43,12 +38,11 @@ import org.openscience.cdk.renderer.font.AWTFontManager;
 import org.openscience.cdk.renderer.generators.BasicAtomGenerator;
 import org.openscience.cdk.renderer.generators.BasicBondGenerator;
 import org.openscience.cdk.renderer.generators.BasicSceneGenerator;
-import org.openscience.cdk.renderer.generators.HighlightAtomGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
-import org.openscience.cdk.renderer.generators.BasicAtomGenerator.AtomColor;
-import org.openscience.cdk.renderer.generators.HighlightAtomGenerator.HighlightAtomDistance;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper classes to generate Images of structures with DS-highlighting
@@ -57,7 +51,7 @@ import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
  */
 public class ImageHelper {
 
-    private static final Logger logger = Logger.getLogger(ImageHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger( ImageHelper.class );
 
     public static Image createImage( net.bioclipse.core.domain.IMolecule bcmol,
                                       ITestResult match ) 
@@ -115,10 +109,9 @@ public class ImageHelper {
         generators.add(new BasicSceneGenerator());
         
         //Add all generators, we turn them on/off by a parameter now
-        BlueRedColorScaleGenerator generator=new BlueRedColorScaleGenerator();
-        PosNegIncColorGenerator gen2=new PosNegIncColorGenerator();
-        generators.add(generator);
-        generators.add( gen2 );
+        List<IGenerator<IAtomContainer>> extendsionGens = ChoiceGenerator
+                        .getGeneratorsFromExtension();
+        generators.addAll( extendsionGens );
         
         generators.add(new BasicBondGenerator());
         BasicAtomGenerator agen = new BasicAtomGenerator();
@@ -157,13 +150,14 @@ public class ImageHelper {
 			RendererModel model) {
 		
 		//Get all external generators and filter the ones registered in the model
-    	List<IGeneratorParameter<?>> parameters = model.getRenderingParameters();
+    	List<IGeneratorParameter<?>> parameters = new ArrayList<IGeneratorParameter<?>>();
     	List<IGenerator<IAtomContainer>> generators = ChoiceGenerator.getGeneratorsFromExtension();
     	
     	for(IGenerator<IAtomContainer> gen:generators) {
     		List<IGeneratorParameter<?>> params = gen.getParameters();
-    		parameters.removeAll(params);
+    		parameters.addAll( params );
     	}
+        parameters.retainAll( model.getRenderingParameters() );
 		
     	for(IGeneratorParameter<?> param : parameters) {
     			if (param.getDefault() instanceof Boolean) {

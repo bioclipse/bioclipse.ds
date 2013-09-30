@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cspec xmlns="http://www.eclipse.org/buckminster/CSpec-1.0" name="net.bioclipse.ds_releng" componentType="buckminster" version="2.6.1">
+    <dependencies>
+        <dependency name="net.bioclipse.ds_site" componentType="eclipse.feature" />
+        <dependency name="slf4j.api" componentType="osgi.bundle"/>
+        <dependency name="log4j.over.slf4j" componentType="osgi.bundle"/>
+        <dependency name="org.eclipse.rcp" componentType="eclipse.feature"/>
+        <dependency name="com.springsource.nu.xom" componentType="osgi.bundle"/>
+        <!--
+        <dependency name="slf4j.api" componentType="osgi.bundle"/>
+        <dependency name="jcl.over.slf4j" componentType="osgi.bundle"/>
+        <dependency name="log4j.over.slf4j" componentType="osgi.bundle"/>
+        -->
+    </dependencies>
+    <actions>
+      <public name="site.mirror.p2" actor="p2SiteMirror">
+        <prerequisites>
+          <attribute name="site.p2" alias="site"/>
+        </prerequisites>
+        <products base="${bioclipse.mirror}/${bioclipse.mirror.name}" upToDatePolicy="ACTOR" />
+      </public>
+    </actions>
+    <groups>
+        <public name="site.p2">
+            <attribute name="site.p2" component="net.bioclipse.ds_site"/>
+        </public>
+    </groups>
+</cspec>

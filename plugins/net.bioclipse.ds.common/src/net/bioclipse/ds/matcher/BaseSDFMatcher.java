@@ -256,6 +256,9 @@ public abstract class BaseSDFMatcher extends AbstractDSTest implements IDSTest{
 			throw new DSException("Initialization of DB exact match FP cancelled");
 		}
 
+		if (SDFmodel==null){
+			throw new DSException("Could not read SDFModel");
+		}
 		if (SDFmodel.getNumberOfMolecules()<=0){
 			throw new DSException("No molecules could be read in database");
 		}
