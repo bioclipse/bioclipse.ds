@@ -13,21 +13,16 @@ package net.bioclipse.ds.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
-import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.cdk.jchempaint.business.IJChemPaintManager;
 import net.bioclipse.cdk.jchempaint.editor.JChemPaintEditor;
-import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.cdk.ui.sdfeditor.editor.MultiPageMoleculesEditorPart;
 import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.PropertyViewHelper;
-import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.business.IDSManager;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
@@ -36,62 +31,70 @@ import net.bioclipse.ds.model.TestRun;
 import net.bioclipse.ds.model.result.AtomResultMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.report.DSSingleReportModel;
+import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.ui.DSContextProvider;
 import net.bioclipse.ds.ui.GeneratorHelper;
 import net.bioclipse.ds.ui.VotingConsensus;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 
-import org.apache.log4j.Logger;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IParameter;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.Parameterization;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.help.IContextProvider;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
-import org.eclipse.ui.part.*;
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IParameter;
-import org.eclipse.core.commands.IParameterValues;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
-import org.eclipse.core.commands.ParameterValuesException;
-import org.eclipse.core.commands.Parameterization;
-import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.help.IContextProvider;
-import org.eclipse.jface.preference.IPreferenceNode;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.PageChangedEvent;
-import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.SWT;
-import org.openscience.cdk.interfaces.IAtomContainer;
+import org.eclipse.ui.part.ViewPart;
 import org.openscience.cdk.renderer.RendererModel;
-import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -100,7 +103,7 @@ import org.openscience.cdk.renderer.generators.IGeneratorParameter;
  */
 public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener {
 
-    private static final Logger logger = Logger.getLogger(DSView.class);
+    private static final Logger logger = LoggerFactory.getLogger(DSView.class);
 
     public static final String VIEW_ID="net.bioclipse.ds.ui.views.DSView";
     
@@ -396,12 +399,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 		String ermsg=e.toString();
                 		if (e.getMessage()!=null)
                 			ermsg=e.getMessage();
-                		
-                		logger.error("Failed initializing test " + 
-                				test.getName() + " Reason: " + ermsg);
+
+                		logger.error("Failed initializing test" + test.getName() +"Reason: "+ermsg,e );
                 		test.setTestErrorMessage("Error: "+ermsg);
-                		
-                		LogUtils.debugTrace(logger, e);
                 	}
                 }
 
@@ -423,7 +423,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             	}
                                 viewer.expandToLevel(2);
                             } catch ( BioclipseException e ) {
-                                LogUtils.handleException( e, logger, Activator.PLUGIN_ID );
+                                logger.error("Error initializing tests: "+e.getMessage(),e);
                                 viewer.setInput(new String[]{"Error initializing tests"});
                             }
 
@@ -457,7 +457,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     });
                     
                 } catch (BioclipseException e1) {
-                	LogUtils.handleException( e1, logger, Activator.PLUGIN_ID );
+                    logger.error( "Failed to initialize tests", e1 );
 
                 	Display.getDefault().asyncExec( new Runnable(){
                 		public void run() {
@@ -1016,13 +1016,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                     ds.runTest( tr.getTest().getId(), clonedMol, 
                     new BioclipseJobUpdateHook<List<ITestResult>>(tr.getTest().getName()));
                 
-            job.addJobChangeListener( new IJobChangeListener(){
-
-                public void aboutToRun( IJobChangeEvent event ) {
-                }
-
-                public void awake( IJobChangeEvent event ) {
-                }
+            job.addJobChangeListener( new JobChangeAdapter(){
 
                 @SuppressWarnings("unchecked")
                 public void done( IJobChangeEvent event ) {
@@ -1047,45 +1041,25 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             
                             //Copy properties from result into original molecule
                             //from the cloned
-                            for (Object obj : clonedMol.getAtomContainer()
-                                    .getProperties().keySet()){
-//                                System.out.println("OBJ found: " + obj);
-//                                System.out.println("Existing: " + originalMol.getAtomContainer().getProperties());
-                                if (!originalMol.getAtomContainer()
-                                        .getProperties().containsKey( obj )){
-                                    originalMol.getAtomContainer()
-                                    .getProperties().put( 
-                                               obj, clonedMol.getAtomContainer()
-                                               .getProperties().get( obj ) );
-//                                    System.out.println("DS-RES set on:" + clonedMol.getAtomContainer().hashCode() + "="+ clonedMol.getAtomContainer()
-//                                                       .getProperties().get( obj ));
+                            Map<Object, Object> clonedProps = clonedMol
+                                            .getAtomContainer().getProperties();
+                            Map<Object, Object> originalProps = originalMol
+                                            .getAtomContainer().getProperties();
+
+                            for ( Object obj : clonedProps.keySet() ) {
+                                if ( !originalProps.containsKey( obj ) ) {
+                                    originalProps.put( obj,
+                                                       clonedProps.get( obj ) );
                                 }
                             }
                             
-                            //We also need to clone any ISubStructureMatches Atoms in AC since they are based on a clone
-//                            for (ITestResult result : matches){
-//                                if ( result instanceof SubStructureMatch) {
-//                                    SubStructureMatch ssmatch = (SubStructureMatch) result;
-//                                    IAtomContainer matchAC = ssmatch.getAtomContainer();
-//                                    IAtomContainer newAC=new NNAtomContainer();
-//                                    for (IAtom matchedAtom : matchAC.atoms()){
-//                                        int clonedAtomno=clonedMol.getAtomContainer().getAtomNumber( matchedAtom );
-//                                        IAtom newAtom = originalMol.getAtomContainer().getAtom( clonedAtomno );
-//                                        newAC.addAtom( newAtom );
-//                                    }
-//                                    ssmatch.setAtomContainer( newAC );
-//                                }
-//                            }
-                            
-                            
-
                             for (ITestResult result : matches){
                                     result.setTestRun( tr );
                                     tr.addResult(result);
                             } 
                             tr.setMatches( matches );
 //                            logger.debug( "===== " + tr + " finished" );
-                            if (tr.getTest().getTestErrorMessage()!="")
+                            if ( !tr.getTest().getTestErrorMessage().isEmpty() )
                                 tr.setStatus( TestRun.ERROR );
                             else
                                 tr.setStatus( TestRun.FINISHED );
@@ -1106,8 +1080,6 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                                 mpe.getMoleculesPage().setUseExtensionGenerators( true );
                                 mpe.getMoleculesPage().refresh();
                             }
-
-
                             
                             //If we previously stored a selection, set it now
                             selectIfStoredSelection(tr);
@@ -1116,34 +1088,17 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             getRunningJobs().remove( job );
 
                             }
-
                     });
-
-
                 }
-
-                public void running( IJobChangeEvent event ) {
-                }
-
-                public void scheduled( IJobChangeEvent event ) {
-                }
-
-                public void sleeping( IJobChangeEvent event ) {
-                }}
-            );
+            } );
             
             job.schedule();
 
             //Store ref to job in list
             runningJobs.add(job);
-
-
-
             
             } catch ( Exception e ) {
-                logger.error( "Error running test: " + tr.getTest() + 
-                              ": " + e.getMessage());
-                LogUtils.debugTrace( logger, e );
+                logger.error( "Error running test: "+tr.getTest()+": "+ e.getMessage(),e);
                 
                 tr.setStatus( TestRun.ERROR );
                 
@@ -1686,7 +1641,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             }
 
         } catch ( BioclipseException e1 ) {
-            LogUtils.handleException( e1, logger, Activator.PLUGIN_ID);
+            logger.error( "Could not initialize ds tests" );// Very unlikely
         }
         
         molTestMap.put( mol, newTestRuns );

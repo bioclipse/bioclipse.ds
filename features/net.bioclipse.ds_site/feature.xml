@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds_site"
       label="Ds_site"
-      version="2.6.0.qualifier"
+      version="2.6.1.qualifier"
       >
 
    <description url="http://www.example.com/description">

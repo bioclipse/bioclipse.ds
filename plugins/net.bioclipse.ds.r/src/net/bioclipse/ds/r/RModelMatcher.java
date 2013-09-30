@@ -13,6 +13,8 @@ import libsvm.svm_node;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.walware.rj.servi.RServi;
+
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
@@ -41,6 +43,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 	private static final String R_DATA_PARAMETER = "rdata";
 	private static final String R_TRAINED_MODEL = "trainedModel";
 	private static final String R_REQUIRED_PACKAGES = "requiredPackages";
+	RServi servi;
 
 	protected IRBusinessManager R;
 
@@ -63,6 +66,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 		super.initialize(monitor);
 
         R = Activator.getDefault().getJavaRBusinessManager();
+        servi = R.getInitR("rDS");
         
         monitor.beginTask("Initializing " + getName(), 4);
         monitor.worked(1);
@@ -82,8 +86,11 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
 
             try {
 				String path = FileUtil.getFilePath(rm, getPluginID());
-        	
-            String loadModelResult = R.eval("load(\"" + path + "\")");
+
+        	if (System.getProperty("os.name").toString().startsWith("Windows")) {
+        		path = path.substring(1);
+        	}
+            String loadModelResult = R.eval("load(\"" + path + "\")", servi);
 
 			if (loadModelResult.startsWith("Error"))
                 throw new DSException("Error initializing test " + getName() 
@@ -104,7 +111,7 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         //Assert R models to ensure loading of rdata is ok
         rmodel=getParameters().get( R_TRAINED_MODEL );
         if ( rmodel != null && rmodel.length()>0){
-        	String rres = R.eval("is(" + rmodel + ")");
+        	String rres = R.eval("is(" + rmodel + ")", servi);
         	if (rres.startsWith("Error"))
         		throw new DSException("Error initializing test " + getName() 
         				+ ": Asserting R object " + rmodel 
@@ -119,15 +126,15 @@ public abstract class RModelMatcher extends AbstractDSTest implements IDSTest{
         if ( reqPackages != null && reqPackages.length()>0){
             String[] rpkgs = reqPackages.split(",");
             for (String rpkg : rpkgs){
-                String ret=R.eval("library("+ rpkg + ")");
+                String ret=R.eval("library("+ rpkg + ")", servi);
             	if (ret.startsWith("Error")){
             		
             		//Try to install it
-                    ret=R.eval("install.packages(\"" + rpkg + "\", repos=\"http://cran.r-project.org\")");
+                    ret=R.eval("install.packages(\"" + rpkg + "\", repos=\"http://cran.r-project.org\")", servi);
             		
             	}
             	//Try again, if still fails then throw exception
-                ret=R.eval("library("+ rpkg + ")");
+                ret=R.eval("library("+ rpkg + ")", servi);
             	if (ret.startsWith("Error"))
                     throw new DSException("Error initializing test " + getName() 
                     		+ ": Required R package " + rpkg 

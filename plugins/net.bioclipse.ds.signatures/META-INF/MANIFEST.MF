@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Signatures
 Bundle-SymbolicName: net.bioclipse.ds.signatures; singleton:=true
-Bundle-Version: 2.6.0.vqualifier
+Bundle-Version: 2.6.1.qualifier
 Bundle-Activator: net.bioclipse.ds.signatures.Activator
 Bundle-Vendor: The Bioclipse Team
 Export-Package: net.bioclipse.ds.signatures,
