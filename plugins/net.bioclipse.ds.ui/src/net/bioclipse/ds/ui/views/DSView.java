@@ -72,6 +72,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -314,6 +315,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         viewer.getTree().setLayoutData(gridData);
+        viewer.setSorter(new ViewerSorter());
         
         viewer.setInput(new String[]{"Initializing..."});
 
@@ -556,6 +558,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         }
         molListenerMap.clear();
         molListenerMap=null;
+        
+        //terminate any remaining jobs
+        //TODO
         
     }
 
