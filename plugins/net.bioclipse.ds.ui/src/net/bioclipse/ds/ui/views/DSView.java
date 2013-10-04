@@ -86,8 +86,15 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveListener;
+import org.eclipse.ui.IPerspectiveListener2;
+import org.eclipse.ui.IPerspectiveListener3;
+import org.eclipse.ui.IPerspectiveListener4;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -228,6 +235,47 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         
         DSView.instance=this;
         
+        
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().addPerspectiveListener(new IPerspectiveListener3(){
+
+			@Override
+			public void perspectiveChanged(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1, IWorkbenchPartReference arg2,
+					String arg3) {}
+			@Override
+			public void perspectiveActivated(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {}
+			@Override
+			public void perspectiveChanged(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1, String arg2) {}
+
+			@Override
+			public void perspectiveClosed(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {}
+
+			@Override
+			public void perspectiveDeactivated(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {
+
+				if ("net.bioclipse.ds.ui.perspective".equals(arg1.getId())){
+	                JChemPaintEditor jcp=getJCPfromActiveEditor();
+	                if (jcp==null) return;
+
+	                GeneratorHelper.turnOffAllExternalGenerators(jcp);
+				}
+				
+			}
+
+			@Override
+			public void perspectiveOpened(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {}
+
+			@Override
+			public void perspectiveSavedAs(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1, IPerspectiveDescriptor arg2) {}
+        });
+        
+        //Gui component
         GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 1;
         parent.setLayout(gridLayout);
@@ -1752,6 +1800,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 		}
 	}
+
+	
+
 
 
 }
