@@ -34,6 +34,7 @@ import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.TopLevel;
 import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
@@ -141,6 +142,12 @@ public class DSManager implements IBioclipseManager {
 		return dsBusinessModel.getEndpoints();
 	}
 
+	public List<TopLevel> getFullTopLevels() throws BioclipseException{
+		initialize();
+		return dsBusinessModel.getToplevels();
+	}
+	
+	
 	public Endpoint getEndpoint( String endpointID ) throws BioclipseException {
 
 		if (endpointID==null)

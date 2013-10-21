@@ -15,6 +15,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.TopLevel;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.ui.utils.PieChartProducer;
 
@@ -76,6 +77,10 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 			IDSTest test = (IDSTest)element;
 			return test.getIcon();
 		}
+		else if ( element instanceof TopLevel ) {
+			TopLevel tp = (TopLevel)element;
+			return tp.getIcon();
+		}
 		else if ( element instanceof TestRun ) {
 			TestRun run = (TestRun) element;
 
@@ -132,6 +137,11 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 		if ( element instanceof Endpoint ) {
 			Endpoint ep = (Endpoint)element;
 			return ep.getName();
+		}
+
+		if ( element instanceof TopLevel) {
+			TopLevel tp = (TopLevel)element;
+			return tp.getName();
 		}
 
 		else if ( element instanceof ITestResult ) {

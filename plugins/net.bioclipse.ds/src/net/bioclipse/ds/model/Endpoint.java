@@ -29,8 +29,10 @@ public class Endpoint implements IContext2{
     private Image icon;
     private String iconpath;
     private IConsensusCalculator consensusCalculator;
+    private TopLevel toplevel;
 
-    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		changeSupport.addPropertyChangeListener(listener);
@@ -147,6 +149,15 @@ public class Endpoint implements IContext2{
 
         return consensusCalculator;
     }
+    
+    public TopLevel getToplevel() {
+		return toplevel;
+	}
+
+	public void setToplevel(TopLevel toplevel) {
+		this.toplevel = toplevel;
+	}
+
 
     
     /*

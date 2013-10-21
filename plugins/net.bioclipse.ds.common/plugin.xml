@@ -41,6 +41,21 @@
                description="Tests that are not categorized"
                name="Uncategorized">
          </endpoint>
+         <toplevel 
+         	   id="net.bioclipse.ds.toplevel.other"
+               icon="icons/1382400547_folder.png"
+	           name="Other">
+         </toplevel>
+         <toplevel 
+         	   id="net.bioclipse.ds.toplevel.safety"
+               icon="icons/1382400547_folder.png"
+	           name="Safety">
+         </toplevel>
+         <toplevel 
+         	   id="net.bioclipse.ds.toplevel.dmpk"
+               icon="icons/1382400547_folder.png"
+	           name="DMPK">
+         </toplevel>
  </extension>
 
 

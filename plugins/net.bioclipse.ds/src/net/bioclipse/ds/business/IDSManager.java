@@ -22,6 +22,7 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
+import net.bioclipse.ds.model.TopLevel;
 import net.bioclipse.jobs.BioclipseJob;
 import net.bioclipse.jobs.BioclipseJobUpdateHook;
 import net.bioclipse.jobs.BioclipseUIJob;
@@ -54,7 +55,10 @@ public interface IDSManager extends IBioclipseManager {
     public List<String> getEndpoints() throws BioclipseException;
     public List<Endpoint> getFullEndpoints() throws BioclipseException;
     public Endpoint getEndpoint( String endpointID ) throws BioclipseException;
-    
+
+    //Only used in UI
+	public List<TopLevel> getFullTopLevels() throws BioclipseException;
+
     /**
      * Run a test for a molecule, return list of matches
      * @param test

@@ -20,6 +20,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestDiscovery;
+import net.bioclipse.ds.model.TopLevel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
@@ -43,6 +44,7 @@ public class DSBusinessModel {
 
     volatile List<IDSTest> tests;
     volatile List<Endpoint> endpoints;
+    volatile List<TopLevel> toplevels;
 
     public List<IDSTest> getTests() {
         return tests;
@@ -51,8 +53,12 @@ public class DSBusinessModel {
     public List<Endpoint> getEndpoints() {
         return endpoints;
     }
+    public List<TopLevel> getToplevels() {
+        return toplevels;
+    }
 
     public void initialize() {
+        readToplevelsFromEP();
         readEndpointsFromEP();
         readTestsFromEP();
         addTestsFromDiscovery();
@@ -114,8 +120,70 @@ public class DSBusinessModel {
                     IConsensusCalculator conscalc = createNewConsCalc(pconsid);
                     ep.setConsensusCalculator( conscalc );
 
+                    //Add toplevel
+                    String pep=element.getAttribute("toplevel");
+                    //Look up endpoint by id and add to test
+                    for (TopLevel tp : toplevels){
+                        if (tp.getId().equals( pep )){
+                            ep.setToplevel(tp );
+                            tp.addEndpoint(ep);
+                        }
+                    }
+
+                    //If we found no matching toplevel, add to "other" toplevel
+                    if (ep.getToplevel()==null){
+                        for (TopLevel tp : toplevels){
+                            if (tp.getId().equals( "net.bioclipse.ds.toplevel.other" )){
+                                ep.setToplevel(tp );
+                                tp.addEndpoint(ep);
+                            }
+                        }
+                    }
                     
                 }
+            }
+        }
+    }
+
+    public void readToplevelsFromEP(){
+
+        toplevels = new ArrayList<TopLevel>();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+        if ( registry == null ) 
+            throw new UnsupportedOperationException("Extension registry is null. " +
+                    "Cannot read tests from EP.");
+        // it likely means that the Eclipse workbench has not
+        // started, for example when running tests
+
+        IExtensionPoint serviceObjectExtensionPoint = registry
+                .getExtensionPoint("net.bioclipse.decisionsupport");
+
+        IExtension[] serviceObjectExtensions
+        = serviceObjectExtensionPoint.getExtensions();
+
+        for(IExtension extension : serviceObjectExtensions) {
+            for( IConfigurationElement element
+                    : extension.getConfigurationElements() ) {
+
+                //Read all toplevels
+                if (element.getName().equals("toplevel")){
+
+                    String pid=element.getAttribute("id");
+                    String pname=element.getAttribute("name");
+                    while(pname.contains("  "))
+                        pname = pname.replace("  "," ");
+
+                    String pdesc=element.getAttribute("description");
+                    String picon=element.getAttribute("icon");
+                    String pluginID=element.getNamespaceIdentifier();
+
+                    TopLevel tp=new TopLevel(pid, pname, pdesc, picon, pluginID);
+                    toplevels.add( tp );
+
+                }                
+
             }
         }
     }

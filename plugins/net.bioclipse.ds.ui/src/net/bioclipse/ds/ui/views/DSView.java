@@ -148,15 +148,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
     private boolean executed;
 
     private Action clearAction;
-
     private Action excludeAction;
-
     private Action includeAction;
-
     private Action expandAllAction;
-
     private Action collapseAllAction;
-
     private Action refreshAction;
 
     private List<BioclipseJob<List<ITestResult>>> runningJobs;
@@ -188,6 +183,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 	private Action filterOutErrorAction;
 	private Action filterOutEmptyAction;
 	private Action installModelsAction;
+	private Action performanceAction;
+	
+	private boolean performance=true;
 	
     private static DSView instance;
     
@@ -466,8 +464,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             //Init viewer with available endpoints
                             IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
                             try {
-                            	if (ds.getFullEndpoints().size()>1) //There is always the uncategorized EP...
-                            		viewer.setInput(ds.getFullEndpoints().toArray());
+                            	if (ds.getFullTopLevels().size()>0) //There is always the uncategorized...
+                            		viewer.setInput(ds.getFullTopLevels().toArray());
                             	else{
                             		String[] msg = new String[2];
                             		msg[0]="   No models available.";
@@ -652,6 +650,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(autoRunAction);
         manager.add(runAction);
         manager.add(clearAction);
+        manager.add(performanceAction);
         manager.add(filterOutErrorAction);
         manager.add(filterOutEmptyAction);
         manager.add(new Separator());
@@ -850,6 +849,24 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         helpAction.setToolTipText("Open help for the Decision Support");
         helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
 
+        performanceAction = new Action() {
+            public void run() {
+
+            	//If performance mode is on, turn it off
+            	if (performance){
+                    performance=false;
+                    performanceAction.setImageDescriptor(Activator.getImageDecriptor( "icons/snail16.png" ));
+            	}else{
+                    performance=true;
+                    performanceAction.setImageDescriptor(Activator.getImageDecriptor( "icons/snail16-dis.png" ));
+            	}
+            }
+        };
+        performanceAction.setText("Toggle Performance Mode");
+        performanceAction.setToolTipText("Toggle Low Performance Mode. "
+        		+ "Off for using all available processors. On for using only one process. ");
+        performanceAction.setImageDescriptor(Activator.getImageDecriptor( "icons/snail16-dis.png" ));
+        
         installModelsAction = new Action() {
             public void run() {
 
@@ -953,7 +970,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 	private void doRunAllTests() {
 
-        logger.debug("Running tests...");
+        logger.debug("Running tests.... (performance mode is on: " + performance + ")");
 
         if (activeTestRuns==null || activeTestRuns.size()<=0){
             showMessage( "No active testruns to run" );
@@ -1228,8 +1245,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 
     	if (viewer.getControl().isDisposed()) return;
         viewer.refresh();
-//        viewer.expandToLevel( 1 );
-        viewer.expandAll();
+        viewer.expandToLevel( 2 );
+//        viewer.expandAll();
         updateActionStates();
         
         //Also update consensus part
@@ -1763,7 +1780,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 	public void externalRefresh() throws BioclipseException {
         IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
-        viewer.setInput(ds.getFullEndpoints().toArray());
+//        viewer.setInput(ds.getFullEndpoints().toArray());
+        viewer.setInput(ds.getFullTopLevels().toArray());
         doClearAllTests();
         updateView();
 	}

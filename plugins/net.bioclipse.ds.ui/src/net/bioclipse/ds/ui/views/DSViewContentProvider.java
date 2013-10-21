@@ -14,6 +14,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.TopLevel;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -31,6 +32,11 @@ public class DSViewContentProvider implements ITreeContentProvider{
                                                    DSViewContentProvider.class);
 
     public Object[] getChildren( Object parentElement ) {
+        if ( parentElement instanceof TopLevel ) {
+        	TopLevel tp = (TopLevel)parentElement;
+            if (tp.getEndpoints()!=null && tp.getEndpoints().size()>0)
+            	return tp.getEndpoints().toArray();
+        }
         if ( parentElement instanceof Endpoint ) {
             Endpoint ep = (Endpoint)parentElement;
             if (ep.getTestruns()!=null && ep.getTestruns().size()>0){
@@ -48,6 +54,10 @@ public class DSViewContentProvider implements ITreeContentProvider{
     }
 
     public Object getParent( Object element ) {
+        if ( element instanceof Endpoint ) {
+            return ((Endpoint)element).getToplevel();
+        }
+
         if ( element instanceof IDSTest ) {
             return ((IDSTest)element).getEndpoint();
         }
@@ -60,6 +70,12 @@ public class DSViewContentProvider implements ITreeContentProvider{
     }
 
     public boolean hasChildren( Object element ) {
+
+        if ( element instanceof TopLevel ) {
+        	TopLevel tp = (TopLevel)element;
+        	if (tp.getEndpoints()!=null && tp.getEndpoints().size()>0)
+        		return true;
+        }
 
         if ( element instanceof Endpoint ) {
             Endpoint ep = (Endpoint)element;
