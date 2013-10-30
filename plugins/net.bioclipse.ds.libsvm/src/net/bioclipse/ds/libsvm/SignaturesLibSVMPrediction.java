@@ -192,6 +192,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		//Load the model file into memory using SVM
 		try {
 			svm_model svmModel = svm.svm_load_model(modelPath);
+			if (svmModel.nr_class>3)
+				throw new DSException("Max 3 class problems supported, model nr_class is: " + svmModel.nr_class);
 			signSvmModel = new SignLibsvmModel(svmModel, modelSignatures);
 		} catch (IOException e) {
 			throw new DSException("Could not read model file '" + modelPath 
