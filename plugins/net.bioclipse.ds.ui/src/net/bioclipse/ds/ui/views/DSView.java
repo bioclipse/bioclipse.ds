@@ -941,6 +941,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             } catch ( InterruptedException e ) {
             }
             logger.debug("Job: " + job.getName() + " finished.");
+            runningJobs.remove(job);
         }
 
         //We need to clear previous tests if already run
