@@ -34,4 +34,5 @@ Export-Package: net.bioclipse.ds.ui,
  net.bioclipse.ds.ui.utils,
  net.bioclipse.ds.ui.views
 Import-Package: javax.vecmath,
+ org.eclipse.ui.views.properties.tabbed,
  org.slf4j
