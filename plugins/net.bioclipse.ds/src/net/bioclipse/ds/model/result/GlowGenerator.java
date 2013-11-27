@@ -76,9 +76,15 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
         if ( !model.get( Visibility.class ) ) {
             return EMPTY;
         }
+        double radius=20;
+        double scale =3;
 		Map<Integer,Number> atomMap = model.get(AtomMap.class);
 		// for each atom
 		ElementGroup group = new ElementGroup();
+		ElementGroup grayGroup = new ElementGroup();
+		ElementGroup colorGroup = new ElementGroup();
+		group.add(grayGroup);
+		group.add(colorGroup);
 		Color defaultColor = new Color(0xDCDCDC);
 //		Color defaultColor = new Color(0x0CDC0C);
 		
@@ -86,11 +92,11 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 			IAtom atom = ac.getAtom(i);
 			Number value = atomMap.get(i);
 			// generate gray circle
-			group.add(circleElement(atom, model, defaultColor,32));
+			grayGroup.add(circleElement(atom, model, defaultColor,radius*scale));
 			// generate color circle based on value
 			if(value!=null) {
                 Color color = getColoring(model.get(ColoringType.class), value.doubleValue() );
-				group.add(circleElement(atom, model, color,20));
+				colorGroup.add(circleElement(atom, model, color,radius));
 			}
 		}
 		
