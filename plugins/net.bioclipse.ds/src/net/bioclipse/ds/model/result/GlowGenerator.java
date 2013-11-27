@@ -113,17 +113,22 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 	
     Color getColoring( Coloring type, double value ) {
 
-        assert (value <= 1 && value >= 0);
+        assert (value <= 1 && value >= -1);
+        
+        //Transform value to be between 0 and 1, since implementation was written for this
+        double unitValue = (value +1 )/2;
+        
         switch ( type ) {
             case NEAR_NEIGHBOR:
-                return nearNeighborColoring( value );
+                return nearNeighborColoring( unitValue);
             case STARDROP:
-                return stardropColoring( value );
+                return stardropColoring( unitValue );
             case DEFAULT:
             default:
-                return defaultColoring( value );
+                return defaultColoring( unitValue );
         }
     }
+
 
 	// base color (220,220,220) 0xDCDCDC
 	Color nearNeighborColoring(double value) {
