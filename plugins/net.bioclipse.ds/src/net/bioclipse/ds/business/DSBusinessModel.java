@@ -127,15 +127,18 @@ public class DSBusinessModel {
                         if (tp.getId().equals( pep )){
                             ep.setToplevel(tp );
                             tp.addEndpoint(ep);
+                            break;
                         }
                     }
 
                     //If we found no matching toplevel, add to "other" toplevel
                     if (ep.getToplevel()==null){
+                        logger.debug("No toplevel found for endppoint " + ep.getId() + " so assigning to 'other'");
                         for (TopLevel tp : toplevels){
                             if (tp.getId().equals( "net.bioclipse.ds.toplevel.other" )){
                                 ep.setToplevel(tp );
                                 tp.addEndpoint(ep);
+                                break;
                             }
                         }
                     }
@@ -247,6 +250,17 @@ public class DSBusinessModel {
                                 if (ep.getId().equals( pep )){
                                     test.setEndpoint( ep );
                                     ep.addTest(test);
+                                    break;
+                                }
+                            }
+                            //If no endpoint found, add to other
+                            if (test.getEndpoint()==null){
+                                for (Endpoint ep : endpoints){
+                                    if (ep.getId().equals( "net.bioclipse.ds.uncategorized" )){
+                                        test.setEndpoint( ep );
+                                        ep.addTest(test);
+                                        break;
+                                    }
                                 }
                             }
 

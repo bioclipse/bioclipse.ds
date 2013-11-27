@@ -39,6 +39,7 @@
                id="net.bioclipse.ds.uncategorized"
                icon="icons/test_container.gif"
                description="Tests that are not categorized"
+               toplevel="net.bioclipse.ds.topLevel.other"
                name="Uncategorized">
          </endpoint>
          <toplevel 
