@@ -8,24 +8,24 @@ import org.openscience.cdk.renderer.generators.IGeneratorParameter;
  * 
  * @author ola
  */
-public class PosNegIncMatch extends AtomResultMatch{
+public class BlurredAtomColorMatch extends AtomResultMatch{
 	
     
-    public PosNegIncMatch(String name, int resultStatus) {
+    public BlurredAtomColorMatch(String name, int resultStatus) {
 		super(name, resultStatus);
 	}
     
-	public PosNegIncMatch(String name, double resultvalue, int resultStatus) {
+	public BlurredAtomColorMatch(String name, double resultvalue, int resultStatus) {
 		super(name, resultvalue, resultStatus);
 	}
 
 	@Override
 	public Class<? extends IGeneratorParameter<Boolean>> getGeneratorVisibility() {
-    	return (Class<? extends IGeneratorParameter<Boolean>>)PosNegIncColorGenerator.Visibility.class;
+    	return (Class<? extends IGeneratorParameter<Boolean>>)GlowGenerator.Visibility.class;
     }
 
     @Override
     public Class<? extends IGeneratorParameter<Map<Integer, Number>>> getGeneratorAtomMap() {
-    	return (Class<? extends IGeneratorParameter<Map<Integer, Number>>>)PosNegIncColorGenerator.AtomMap.class;
+    	return (Class<? extends IGeneratorParameter<Map<Integer, Number>>>)GlowGenerator.AtomMap.class;
     }
 }

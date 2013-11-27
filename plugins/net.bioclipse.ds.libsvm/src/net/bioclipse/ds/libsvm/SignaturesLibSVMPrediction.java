@@ -11,6 +11,7 @@
 
 package net.bioclipse.ds.libsvm;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.Map;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.libsvm.model.PredictionModel;
@@ -32,6 +32,7 @@ import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
+import net.bioclipse.ds.model.result.BlurredAtomColorMatch;
 import net.bioclipse.ds.model.result.PosNegIncMatch;
 import net.bioclipse.ds.model.result.ScaledResultMatch;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
@@ -289,7 +290,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		}
 		
 		//Create the result for the classification, overwrite name later if we have sign signature
-		AtomResultMatch match = new PosNegIncMatch("No significant signature", 
+		AtomResultMatch match = new BlurredAtomColorMatch("No significant signature", 
 				ITestResult.INCONCLUSIVE);
 		results.add(match);
 
@@ -482,8 +483,10 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 				for (int centerAtom : centerAtoms){
 
-					match.putAtomResult( centerAtom, 
-							match.getClassification() );
+					//Interpret the value as (0 = blue = negative), (0,5 = no color = inconclusive), (1=red=positive) 
+					double classificationValue= getScaledClassificationValues(match.getClassification());
+					
+					match.putAtomResult( centerAtom, classificationValue );
 
 					int currentHeight=0;
 					List<Integer> lastNeighbours=new ArrayList<Integer>();
@@ -500,7 +503,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 								//Set each neighbour atom to overall match classification
 								int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr);
-								match.putAtomResult( nbrAtomNr, match.getClassification() );
+								match.putAtomResult( nbrAtomNr, classificationValue );
 
 								newNeighbours.add(nbrAtomNr);
 
@@ -543,7 +546,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			}
 			System.out.println(atomGreadientComponents.toString());					
 
-			match = new ScaledResultMatch("Result: " 
+			match = new BlurredAtomColorMatch("Result: " 
 					+ formatter.format( prediction ), 
 					ITestResult.INFORMATIVE);
 			results.clear();
@@ -575,13 +578,21 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 				//Obtain a number between -1 and 1
 				double scaledDeriv = scaleDerivative(currentDeriv);
 				match.putAtomResult( currentAtomNr, scaledDeriv );
-				System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
+//				System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
 
 			}
 
 		}
 
 		return results;
+	}
+
+	private double getScaledClassificationValues(int classification) {
+    	if (classification==ITestResult.POSITIVE)
+    		return 1;
+    	else if (classification==ITestResult.NEGATIVE)
+    		return 0;
+		return 0.5;  //No color, inconclusive
 	}
 
 	/**
