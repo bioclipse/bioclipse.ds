@@ -342,6 +342,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 						if (tr instanceof AtomResultMatch) {
 							AtomResultMatch atomResMatch = (AtomResultMatch) tr;
 		                    model.set(atomMapParam, atomResMatch.getResultMap());
+		                    jcp.getWidget().redraw();
 	    					logger.debug("  ...and AtomMapGeneratorParameter is used with content. Should now be displayed.");
 						}else{
 	    					logger.debug("  ...however, an AtomMapGeneratorParameter is available but TestResult is not AtomResultMatch.");
