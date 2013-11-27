@@ -79,6 +79,9 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
         double radius=20;
         double scale =3;
 		Map<Integer,Number> atomMap = model.get(AtomMap.class);
+		if (atomMap==null || atomMap.size()<=0)
+            return EMPTY;
+
 		// for each atom
 		ElementGroup group = new ElementGroup();
 		ElementGroup grayGroup = new ElementGroup();
