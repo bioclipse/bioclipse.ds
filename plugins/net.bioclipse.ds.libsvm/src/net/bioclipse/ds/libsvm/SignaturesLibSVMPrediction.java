@@ -572,7 +572,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			for (int currentAtomNr : atomGreadientComponents.keySet()){
 				Double currentDeriv = atomGreadientComponents.get(currentAtomNr);
 
-				double scaledDeriv = scaleDerivative(currentDeriv);
+				double scaledDeriv = scaleDerivativeUnit(currentDeriv);
 				match.putAtomResult( currentAtomNr, scaledDeriv );
 				System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
 
@@ -651,6 +651,27 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			return currentDeriv/(-lowPercentile);
 		else
 			return currentDeriv/highPercentile;
+	}
+
+	/**
+	 * Return a scaling between 0 and 1
+	 * @param currentDeriv
+	 * @return
+	 */
+	private double scaleDerivativeUnit(Double currentDeriv) {
+
+		//We have a fixed boundary on a low and high percentile
+		//so cut away anything below or above this
+		if (currentDeriv<=lowPercentile)
+			return 0;
+		else if (currentDeriv>=highPercentile)
+			return 1;
+
+		//Since not symmetric around 0, scale pos and neg intervals individually
+		if (currentDeriv<0)
+			return (currentDeriv/(-lowPercentile)+1)/2;
+		else
+			return (currentDeriv/highPercentile+1)/2;
 	}
 
 

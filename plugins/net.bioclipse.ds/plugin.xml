@@ -20,6 +20,9 @@
     <generator
           class="net.bioclipse.ds.model.result.PosNegIncColorGenerator">
     </generator>
+    <generator
+          class="net.bioclipse.ds.model.result.GlowGenerator">
+    </generator>
  </extension>
 
 </plugin>

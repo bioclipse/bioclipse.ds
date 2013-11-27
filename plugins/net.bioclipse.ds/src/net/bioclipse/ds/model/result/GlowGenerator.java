@@ -80,17 +80,17 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 		// for each atom
 		ElementGroup group = new ElementGroup();
 		Color defaultColor = new Color(0xDCDCDC);
+//		Color defaultColor = new Color(0x0CDC0C);
 		
 		for(int i = 0;i< ac.getAtomCount();i++) {
 			IAtom atom = ac.getAtom(i);
 			Number value = atomMap.get(i);
 			// generate gray circle
-			group.add(circleElement(atom, model, defaultColor));
+			group.add(circleElement(atom, model, defaultColor,32));
 			// generate color circle based on value
 			if(value!=null) {
-                double val = value.doubleValue() / 12.0;
-                Color color = nearNeighborColoring( val );
-				group.add(circleElement(atom, model, color));
+                Color color = getColoring(model.get(ColoringType.class), value.doubleValue() );
+				group.add(circleElement(atom, model, color,20));
 			}
 		}
 		
@@ -124,7 +124,11 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 		float red = (float) (((0.0-220.0/255.0)/(0.0-1.0))*(value-1.0)+220.0/255.0);
 		float blue = (float) (((255.0/255.0-220.0/255.0)/(0.0-1.0))*(value-1.0)+220.0/255.0);
 		float green = (float) (((0.0-220.0/255.0)/(0.0-1.0))*(value-1.0)+220.0/255.0);
-		return new Color(red, green, blue);
+		Color c = new Color(red, green, blue);		
+
+		System.out.println("Value: " + value + " > " + c.toString());
+		
+		return c;
 	}
 	
 	// base color (0,255,0) 0x00FF00
@@ -173,12 +177,12 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 	}
 	
 	
-	IRenderingElement circleElement(IAtom atom,RendererModel model,Color color) {
-		final double RADIUS = 20;
+	IRenderingElement circleElement(IAtom atom,RendererModel model,Color color, double radiusIN) {
+//		final double RADIUS = 20;
 		boolean filled = true;
 		Point2d p = atom.getPoint2d();
 		
-		double radius = RADIUS / model.get(Scale.class);
+		double radius = radiusIN / model.get(Scale.class);
 		
 		return new OvalElement(p.x,p.y,radius,filled,color);
 	}

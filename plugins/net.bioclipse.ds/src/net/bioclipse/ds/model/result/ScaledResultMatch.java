@@ -22,12 +22,12 @@ public class ScaledResultMatch extends AtomResultMatch{
 
 	@Override
 	public Class<? extends IGeneratorParameter<Boolean>> getGeneratorVisibility() {
-    	return (Class<? extends IGeneratorParameter<Boolean>>)BlueRedColorScaleGenerator.Visibility.class;
+    	return (Class<? extends IGeneratorParameter<Boolean>>)GlowGenerator.Visibility.class;
     }
 
     @Override
     public Class<? extends IGeneratorParameter<Map<Integer, Number>>> getGeneratorAtomMap() {
-    	return (Class<? extends IGeneratorParameter<Map<Integer, Number>>>)BlueRedColorScaleGenerator.AtomMap.class;
+    	return (Class<? extends IGeneratorParameter<Map<Integer, Number>>>)GlowGenerator.AtomMap.class;
     }
 
 }
