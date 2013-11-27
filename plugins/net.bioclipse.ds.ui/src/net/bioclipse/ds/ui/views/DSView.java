@@ -650,7 +650,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(autoRunAction);
         manager.add(runAction);
         manager.add(clearAction);
-        manager.add(performanceAction);
+//        manager.add(performanceAction);
         manager.add(filterOutErrorAction);
         manager.add(filterOutEmptyAction);
         manager.add(new Separator());
