@@ -483,7 +483,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 				for (int centerAtom : centerAtoms){
 
-					//Interpret the value as (0 = blue = negative), (0,5 = no color = inconclusive), (1=red=positive) 
+					//Interpret the value as (-1 = blue = negative), (0 = no color = inconclusive), (1=red=positive) 
 					double classificationValue= getScaledClassificationValues(match.getClassification());
 					
 					match.putAtomResult( centerAtom, classificationValue );
@@ -591,8 +591,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
     	if (classification==ITestResult.POSITIVE)
     		return 1;
     	else if (classification==ITestResult.NEGATIVE)
-    		return 0;
-		return 0.5;  //No color, inconclusive
+    		return -1;
+		return 0;  //No color, inconclusive
 	}
 
 	/**
