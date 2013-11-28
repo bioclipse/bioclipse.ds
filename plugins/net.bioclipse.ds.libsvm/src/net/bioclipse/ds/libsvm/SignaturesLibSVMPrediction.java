@@ -378,11 +378,16 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			double gradComponentValue = 0.0;
 			if (svmModel.nr_class == 2) { // Two class case.
 				for (int curDecisionFunc = 0; curDecisionFunc < nOverk; curDecisionFunc++) {
-					if (svmModel.rho[curDecisionFunc] > 0.0){ // Check if the decision function is reversed.
+					if (svmModel.param.svm_type==svmModel.param.EPSILON_SVR){
 						gradComponentValue = gradComponentValue + higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc];
 					}
-					else{
-						gradComponentValue = gradComponentValue + lowerPointValue[curDecisionFunc]-higherPointValue[curDecisionFunc];						
+					else { // Binary classification, check also sign of rho.
+						if (svmModel.rho[curDecisionFunc] > 0.0){ // Check if the decision function is reversed.
+							gradComponentValue = gradComponentValue + higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc];
+						}
+						else{
+							gradComponentValue = gradComponentValue + lowerPointValue[curDecisionFunc]-higherPointValue[curDecisionFunc];                                                
+						}
 					}
 				}
 			}
@@ -391,6 +396,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 					gradComponentValue = gradComponentValue + Math.abs(higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc]);
 				}
 			}
+
 			gradientComponents.add(gradComponentValue);
 			// Set the value back to what it was.
 			svmPredictionArray[element].value = svmPredictionArray[element].value - 1.00;
@@ -544,7 +550,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 					}
 				}
 			}
-			System.out.println(atomGreadientComponents.toString());					
+//			System.out.println(atomGreadientComponents.toString());					
 
 			match = new BlurredAtomColorMatch("Result: " 
 					+ formatter.format( prediction ), 
@@ -578,7 +584,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 				//Obtain a number between -1 and 1
 				double scaledDeriv = scaleDerivative(currentDeriv);
 				match.putAtomResult( currentAtomNr, scaledDeriv );
-//				System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
+				System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
 
 			}
 
