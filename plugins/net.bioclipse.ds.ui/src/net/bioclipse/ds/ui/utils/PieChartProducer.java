@@ -49,7 +49,7 @@ public class PieChartProducer {
 	public static Image generatePieChart(Display display, int greens, int reds, int blues, int radius, int imagesize) {
 		Color red = display.getSystemColor (SWT.COLOR_RED);
 		Color green = display.getSystemColor (SWT.COLOR_GREEN);
-		Color blue = new Color(display, 255, 126, 	0);
+		Color blue = display.getSystemColor (SWT.COLOR_BLUE);
 		Color black = display.getSystemColor (SWT.COLOR_BLACK);
 		Color white = display.getSystemColor (SWT.COLOR_WHITE);
 		Color gray = new Color(display, 150,150,150);
@@ -71,7 +71,7 @@ public class PieChartProducer {
 		
 		int currentDeg=90;	//12 o'clock
 		if (blues>0){
-			gc.setBackground (blue);
+			gc.setBackground (gray);
 			gc.fillArc(0,0, radius, radius, currentDeg, blueDeg);
 			currentDeg+=blueDeg;
 			gc.setBackground (lineColor);
@@ -87,7 +87,7 @@ public class PieChartProducer {
 			gc.fillArc(0,0, radius, radius, currentDeg, 1);
 		}
 		if (greens>0){
-			gc.setBackground (green);
+			gc.setBackground (blue);
 			gc.fillArc(0,0, radius, radius, currentDeg, greenDeg);
 			currentDeg+=greenDeg;
 			gc.setBackground (lineColor);
