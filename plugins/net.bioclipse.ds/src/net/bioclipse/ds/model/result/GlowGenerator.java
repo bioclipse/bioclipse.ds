@@ -140,7 +140,7 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 		float green = (float) (((0.0-220.0/255.0)/(0.0-1.0))*(value-1.0)+220.0/255.0);
 		Color c = new Color(red, green, blue);		
 
-		System.out.println("Value: " + value + " > " + c.toString());
+//		System.out.println("Value: " + value + " > " + c.toString());
 		
 		return c;
 	}
