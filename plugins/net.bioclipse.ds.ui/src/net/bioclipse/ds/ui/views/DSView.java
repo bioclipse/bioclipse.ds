@@ -55,6 +55,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.help.IContextProvider;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -66,8 +67,10 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -645,6 +648,48 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(refreshAction);
         manager.add(installModelsAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        
+        ISelection sel = viewer.getSelection();
+    	IStructuredSelection ssel = (IStructuredSelection)sel;
+    	Object selobj = ssel.getFirstElement();
+        IDSTest test=null;
+        
+        if (selobj instanceof TestRun) {
+        	TestRun tr = (TestRun) selobj;
+        	test = tr.getTest();
+        }
+        else if (selobj instanceof IDSTest) {
+        	test = (IDSTest) selobj;
+        }
+        else
+        	return;
+
+        if (test.getParameters()!=null){
+        	
+        	//If model has a heppage, add action here to go directly to it 
+        	final String helpPath = test.getParameters().get("helppage");
+        	if (helpPath==null){
+
+        		final IDSTest mtest = test;
+        		Action modelHelpAction = new Action() {
+        			public void run() {
+        				
+        				String pagePath = "/" + mtest.getPluginID() + "/" + helpPath;
+                		logger.debug("Opening help page: " + pagePath);
+
+        				IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        						.getHelpSystem();
+        				helpSystem.displayHelpResource(pagePath);
+        			}
+        		};
+        		modelHelpAction.setText("Model Description");
+        		modelHelpAction.setToolTipText("Open description for the selected models");
+        		modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        		manager.add(modelHelpAction);
+        		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	}
+        }
+
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
