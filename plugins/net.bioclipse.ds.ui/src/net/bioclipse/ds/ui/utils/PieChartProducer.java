@@ -52,9 +52,9 @@ public class PieChartProducer {
 		Color blue = display.getSystemColor (SWT.COLOR_BLUE);
 		Color black = display.getSystemColor (SWT.COLOR_BLACK);
 		Color white = display.getSystemColor (SWT.COLOR_WHITE);
-		Color gray = new Color(display, 150,150,150);
+		Color gray = new Color(display, 190,190,190);
 		
-		Color lineColor=gray;
+		Color lineColor=black;
 		
 		Image image = new Image (display, imagesize, imagesize);
 		GC gc = new GC (image);
