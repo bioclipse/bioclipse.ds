@@ -28,6 +28,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.TopLevel;
 import net.bioclipse.ds.model.result.AtomResultMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.report.DSSingleReportModel;
@@ -661,18 +662,17 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         else if (selobj instanceof IDSTest) {
         	test = (IDSTest) selobj;
         }
-        else
-        	return;
 
-        //If model has a heppage, add action here to go directly to it 
-        final String helpPath = test.getHelppage();
-        if (helpPath!=null){
+        if (test!=null){
 
-        	final IDSTest mtest = test;
+        	//If model has a heppage, add action here to go directly to it 
+        	final String helpPath = test.getHelppage();
+        	if (helpPath==null) return;
+
+        	final String pagePath = "/" + test.getPluginID() + "/" + helpPath;
         	Action modelHelpAction = new Action() {
         		public void run() {
 
-        			String pagePath = "/" + mtest.getPluginID() + "/" + helpPath;
         			logger.debug("Opening help page: " + pagePath);
 
         			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
@@ -685,8 +685,59 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
         	manager.add(modelHelpAction);
         	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	return;
+        }
+        
+        //If EP
+        if (selobj instanceof Endpoint) {
+        	Endpoint ep = (Endpoint) selobj;
+
+        	//If EP has a heppage, add action here to go directly to it 
+        	final String helpPath = ep.getHelppage();
+        	if (helpPath==null) return;
+
+        	final String pagePath = "/" + ep.getPlugin() + "/" + helpPath;
+        	Action modelHelpAction = new Action() {
+        		public void run() {
+        			logger.debug("Opening help page: " + pagePath);
+        			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        					.getHelpSystem();
+        			helpSystem.displayHelpResource(pagePath);
+        		}
+        	};
+        	modelHelpAction.setText("Endpoint Description");
+        	modelHelpAction.setToolTipText("Open description for the selected endpoint");
+        	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        	manager.add(modelHelpAction);
+        	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	return;
         }
 
+        //If EP
+        if (selobj instanceof TopLevel) {
+        	TopLevel tl = (TopLevel) selobj;
+
+
+        	//If EP has a heppage, add action here to go directly to it 
+        	final String helpPath = tl.getHelppage();
+        	if (helpPath==null) return;
+
+        	final String pagePath = "/" + tl.getPlugin() + "/" + helpPath;
+        	Action modelHelpAction = new Action() {
+        		public void run() {
+        			logger.debug("Opening help page: " + pagePath);
+        			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        					.getHelpSystem();
+        			helpSystem.displayHelpResource(pagePath);
+        		}
+        	};
+        	modelHelpAction.setText("Toplevel Description");
+        	modelHelpAction.setToolTipText("Open description for the selected toplevel");
+        	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        	manager.add(modelHelpAction);
+        	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	return;
+        }
 
     }
 

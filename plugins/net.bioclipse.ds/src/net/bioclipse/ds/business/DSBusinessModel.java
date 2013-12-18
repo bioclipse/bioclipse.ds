@@ -98,6 +98,7 @@ public class DSBusinessModel {
                     
                     String pdesc=element.getAttribute("description");
                     String picon=element.getAttribute("icon");
+                    String phelppage=element.getAttribute("helppage");
                     String pluginID=element.getNamespaceIdentifier();
 
                     boolean exists = false;
@@ -112,6 +113,7 @@ public class DSBusinessModel {
                     }
 
                     Endpoint ep=new Endpoint(pid, pname, pdesc, picon, pluginID);
+                    ep.setHelppage(phelppage);
                     endpoints.add( ep );
                     
                     //Add dedicated consensus calculator, or use default
@@ -180,9 +182,11 @@ public class DSBusinessModel {
 
                     String pdesc=element.getAttribute("description");
                     String picon=element.getAttribute("icon");
+                    String phelppage=element.getAttribute("helppage");
                     String pluginID=element.getNamespaceIdentifier();
 
                     TopLevel tp=new TopLevel(pid, pname, pdesc, picon, pluginID);
+                    tp.setHelppage(phelppage);
                     toplevels.add( tp );
 
                 }                

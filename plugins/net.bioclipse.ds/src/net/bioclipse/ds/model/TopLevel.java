@@ -24,6 +24,7 @@ public class TopLevel implements IContext2{
     private String plugin;
     private Image icon;
     private String iconpath;
+	private String helppage;
 	private List<Endpoint> endpoints;
 
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
@@ -54,7 +55,15 @@ public class TopLevel implements IContext2{
     }
 
     
-    public String getDescription() {
+    public String getHelppage() {
+		return helppage;
+	}
+
+	public void setHelppage(String helppage) {
+		this.helppage = helppage;
+	}
+
+	public String getDescription() {
     
         return description;
     }

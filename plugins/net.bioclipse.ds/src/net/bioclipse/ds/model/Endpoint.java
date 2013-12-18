@@ -31,6 +31,8 @@ public class Endpoint implements IContext2{
     private IConsensusCalculator consensusCalculator;
     private TopLevel toplevel;
 
+	private String helppage;
+
 
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
@@ -60,7 +62,15 @@ public class Endpoint implements IContext2{
     }
 
     
-    public String getDescription() {
+    public String getHelppage() {
+		return helppage;
+	}
+
+	public void setHelppage(String helppage) {
+		this.helppage = helppage;
+	}
+
+	public String getDescription() {
     
         return description;
     }
