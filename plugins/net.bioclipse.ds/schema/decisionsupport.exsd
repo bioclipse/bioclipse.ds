@@ -101,6 +101,16 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="helppage" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -357,6 +367,16 @@ This atribute is deprecated and will be ignored.
             </annotation>
          </attribute>
          <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="helppage" type="string">
             <annotation>
                <documentation>
                   
