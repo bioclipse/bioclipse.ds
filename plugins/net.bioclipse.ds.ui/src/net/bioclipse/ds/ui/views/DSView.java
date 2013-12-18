@@ -664,31 +664,29 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         else
         	return;
 
-        if (test.getParameters()!=null){
-        	
-        	//If model has a heppage, add action here to go directly to it 
-        	final String helpPath = test.getParameters().get("helppage");
-        	if (helpPath==null){
+        //If model has a heppage, add action here to go directly to it 
+        final String helpPath = test.getHelppage();
+        if (helpPath!=null){
 
-        		final IDSTest mtest = test;
-        		Action modelHelpAction = new Action() {
-        			public void run() {
-        				
-        				String pagePath = "/" + mtest.getPluginID() + "/" + helpPath;
-                		logger.debug("Opening help page: " + pagePath);
+        	final IDSTest mtest = test;
+        	Action modelHelpAction = new Action() {
+        		public void run() {
 
-        				IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
-        						.getHelpSystem();
-        				helpSystem.displayHelpResource(pagePath);
-        			}
-        		};
-        		modelHelpAction.setText("Model Description");
-        		modelHelpAction.setToolTipText("Open description for the selected models");
-        		modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
-        		manager.add(modelHelpAction);
-        		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        	}
+        			String pagePath = "/" + mtest.getPluginID() + "/" + helpPath;
+        			logger.debug("Opening help page: " + pagePath);
+
+        			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        					.getHelpSystem();
+        			helpSystem.displayHelpResource(pagePath);
+        		}
+        	};
+        	modelHelpAction.setText("Model Description");
+        	modelHelpAction.setToolTipText("Open description for the selected models");
+        	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        	manager.add(modelHelpAction);
+        	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         }
+
 
     }
 
