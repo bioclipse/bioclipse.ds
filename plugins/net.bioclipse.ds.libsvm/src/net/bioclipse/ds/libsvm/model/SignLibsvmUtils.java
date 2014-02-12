@@ -35,25 +35,33 @@ public class SignLibsvmUtils {
 		return model;
 	}
 
-
-
-
-	/**
-	 * Read a list of signatures from file into an arraylist
-	 * 
-	 * @param signaturesPath
-	 * @return
-	 * @throws IOException 
-	 * @throws DSException
-	 */
+    /**
+     * Read a list of signatures from file into an arraylist
+     * 
+     * @param signaturesPath
+     * @return
+     * @throws IOException
+     * @throws DSException
+     */
 	public static List<String> readSignaturesFile(String signaturesPath) throws IOException {
+	    logger.debug("Reading signature file: " + signaturesPath);
+	    BufferedReader signaturesReader = new BufferedReader( new FileReader( new File( signaturesPath ) ) );
+	    List<String> signatures = readSignaturesFile( signaturesReader );
+	    logger.debug("Reading signature file: " + signaturesPath + " completed successfully");
+	    return signatures;
+	}
 
-		logger.debug("Reading signature file: " + signaturesPath);
+    /**
+     * Reads a list of signatures from a reader into a list.
+     * 
+     * @param reader
+     * @return list of signatures
+     * @throws IOException
+     */
+	public static List<String> readSignaturesFile(BufferedReader signaturesReader) throws IOException {
 
-		List<String> signatures = new ArrayList<String>(); // Contains modelSignatures. We use the indexOf to retrieve the order of specific modelSignatures in descriptor array.
-		BufferedReader signaturesReader=null;
+        List<String> signatures = new ArrayList<String>(); // Contains modelSignatures. We use the indexOf to retrieve the order of specific modelSignatures in descriptor array.
 		try {
-			signaturesReader = new BufferedReader(new FileReader(new File(signaturesPath)));
 			String signature;
 			while ( (signature = signaturesReader.readLine()) != null ) {
 				//				if (modelSignatures.contains(signature))
@@ -64,8 +72,6 @@ public class SignLibsvmUtils {
 				if (signaturesReader!=null)
 					signaturesReader.close();
 		}
-
-		logger.debug("Reading signature file: " + signaturesPath + " completed successfully");
 
 		return signatures;
 

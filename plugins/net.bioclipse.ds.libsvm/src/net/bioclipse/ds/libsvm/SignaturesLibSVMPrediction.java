@@ -76,9 +76,9 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 	protected Float regrLowerThreshold=null;
 	protected boolean lowIsNegative=true;
 
-	private String positiveValue;
-	private String negativeValue;
-	private List<String> classLabels;
+	protected String positiveValue;
+	protected String negativeValue;
+	protected List<String> classLabels;
 
 	//The SVM model, holds the signatures list and native svm_model
 	public SignLibsvmModel signSvmModel;

@@ -7,11 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import libsvm.svm_node;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.util.LogUtils;
 import net.bioclipse.ds.model.DSException;
@@ -28,9 +26,9 @@ public class PCMSignLibSvmPrediction extends SignaturesLibSVMPrediction {
 	private static final String PROTEIN_NAMES = "proteinNames";
 	private static final String PROTEIN_DESCRIPTOR_START_INDEX= "proteinDescriptorStartIndex";
 	
-	List<List<Double>> protDescList;
-	List<String> protNames;
-	int proteinDescriptorStartIndex;
+	protected List<List<Double>> protDescList;
+	protected List<String> protNames;
+	protected int proteinDescriptorStartIndex;
 	
 	//PCM requires a protein descriptor file
 	@Override
@@ -59,10 +57,24 @@ public class PCMSignLibSvmPrediction extends SignaturesLibSVMPrediction {
     	String protDescFile = getFileFromParameter(PROTEIN_DESCRIPTOR_FILE );
 		logger.debug("Reading protein descriptor file: " + protDescFile);
 
-		BufferedReader protDescReader=null;
+		BufferedReader protDescReader;
+        try {
+            protDescReader = new BufferedReader(new FileReader(new File(protDescFile)));
+            protDescList = initializeResource( protDescReader );
+        } catch ( FileNotFoundException e ) {
+            throw new DSException("Error reading protdesc file " 
+                            +protDescFile+  ": " + e.getMessage());
+        }
+
+
+	}
+
+
+    protected List<List<Double>> initializeResource( BufferedReader protDescReader )
+                                                                                    throws DSException {
+
+        List<List<Double>> protDescriptionList = new ArrayList<List<Double>>();
 		try {
-			protDescReader = new BufferedReader(new FileReader(new File(protDescFile)));
-			protDescList=new ArrayList<List<Double>>();
 			String line;
 			while ( (line = protDescReader.readLine()) != null ) {
 				String[] parts = line.split("\t");
@@ -72,35 +84,34 @@ public class PCMSignLibSvmPrediction extends SignaturesLibSVMPrediction {
 					double val = Double.parseDouble(part);
 					currprot.add(val);
 				}
-				protDescList.add(currprot);
+                protDescriptionList.add( currprot );
 			}
 		} catch (FileNotFoundException e) {
 			LogUtils.debugTrace(logger, e);
 			throw new DSException("Error reading protdesc file " 
-					+ protDescFile + ": " + e.getMessage());
+					+  ": " + e.getMessage());
 		} catch (IOException e) {
 			LogUtils.debugTrace(logger, e);
 			throw new DSException("Error reading protdesc file " 
-					+ protDescFile + ": " + e.getMessage());
+					+  ": " + e.getMessage());
 		}finally{
 			try {
 				if (protDescReader!=null)
 					protDescReader.close();
 			} catch (IOException e) {
 				throw new DSException("Error closing file " 
-						+ protDescFile + ": " + e.getMessage());
+						+  ": " + e.getMessage());
 			}
 		}
 
-		logger.debug("Reading protein descriptor file: " + protDescFile + " completed successfully");
+        logger.debug( "Reading protein descriptor file: " + " completed successfully" );
 		logger.debug("Protein names: " + protNames.toString());
-		logger.debug("Protein data size: " + protDescList.size());
-		for (List<Double> r : protDescList){
+        logger.debug( "Protein data size: " + protDescriptionList.size() );
+        for ( List<Double> r : protDescriptionList ) {
 			logger.debug(r.toString());
 		}
-
-
-	}
+        return protDescriptionList;
+    }
 	
 	@Override
 	protected List<? extends ITestResult> doRunTest(ICDKMolecule cdkmol,
