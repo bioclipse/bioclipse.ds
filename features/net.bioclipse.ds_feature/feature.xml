@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds_feature"
       label="Bioclipse Decision Support"
-      version="2.6.1.qualifier"
+      version="2.6.2.qualifier"
       provider-name="bioclipse.net"
       plugin="net.bioclipse.ds.ui">
 
