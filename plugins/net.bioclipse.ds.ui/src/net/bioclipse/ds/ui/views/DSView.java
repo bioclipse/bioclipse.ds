@@ -91,6 +91,9 @@ import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.slf4j.Logger;
@@ -101,7 +104,7 @@ import org.slf4j.LoggerFactory;
  * @author ola
  *
  */
-public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener {
+public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener, ITabbedPropertySheetPageContributor {
 
     private static final Logger logger = LoggerFactory.getLogger(DSView.class);
 
@@ -1242,6 +1245,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 contextProvider=new DSContextProvider();
             return contextProvider;
           }
+        if (key == IPropertySheetPage.class)
+            return new TabbedPropertySheetPage(this);
+        
         return super.getAdapter( key );
     }
     
@@ -1698,6 +1704,13 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         doClearAllTests();
         updateView();
 	}
+
+    @Override
+    public String getContributorId() {
+
+        // TODO Auto-generated method stub
+        return getSite().getId();
+    }
 
 
 
