@@ -818,17 +818,16 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
             		handlerService.executeCommand(parmCommand, null);
             	} catch (ExecutionException e) {
-            		// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Could not execute command: " + 
+					        e.getMessage() );
 				} catch (NotDefinedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Parameter or command not defined: " + 
+					        e.getMessage() );
 				} catch (NotEnabledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Command not enable: " + e.getMessage() );
 				} catch (NotHandledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Command not handled correct: " + 
+					        e.getMessage() );
 				}            	
             	
             }
@@ -1219,7 +1218,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		try {
 			reportmodel = new DSSingleReportModel(mol, ds.getFullEndpoints());
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.debug( "Could not get end points: " + e.getMessage() );
 		}
 
         return reportmodel;
@@ -1357,7 +1356,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 					ep.getTestruns().clear();
 			}
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.error( "Could not get end points: " + e.getMessage() );
 		}
 		
 		//Also turn off generators
@@ -1691,7 +1690,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 			    }
 			}
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.error( "Could not get end points: " + e.getMessage() );
 		}
 		
         updateView();
