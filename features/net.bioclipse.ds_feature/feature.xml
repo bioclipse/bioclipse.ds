@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.bioclipse.ds_feature"
-      label="Bioclipse Decision Support"
+      label="Decision Support"
       version="2.6.2.qualifier"
       provider-name="bioclipse.net"
       plugin="net.bioclipse.ds.ui">
