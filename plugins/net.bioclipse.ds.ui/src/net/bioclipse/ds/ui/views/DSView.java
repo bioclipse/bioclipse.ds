@@ -949,7 +949,13 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
         IDSManager ds=net.bioclipse.ds.Activator.getDefault().getJavaManager();
         for (final TestRun tr : activeTestRuns){
-
+            
+            /* SpotRM sometimes need some of the explicit hydrogens. However, 
+             * this will not help if any other test is run before SpotRm. 
+             * TODO find a better solution. */
+//            if (!tr.getTitle().equals( "SpotRM" ))
+//                jcpmanager.removeExplicitHydrogens();
+            
             if (tr.getTest().getTestErrorMessage().length()<1){
 
                 if (tr.getStatus()==TestRun.EXCLUDED || tr.getTest().isExcluded()){
