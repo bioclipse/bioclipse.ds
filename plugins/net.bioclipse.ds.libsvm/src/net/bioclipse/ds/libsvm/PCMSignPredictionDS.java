@@ -22,6 +22,7 @@ import net.bioclipse.ds.model.IDSTest;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +86,20 @@ public class PCMSignPredictionDS extends PCMSignLibSvmPrediction implements IDST
     public List<String> getRequiredParameters() {
         return Collections.emptyList();
     }
+
+    final private Bundle lookupBundle() {
+
+        String bsn = getParameters().get( "Bundle-SymbolicName" );
+        Bundle[] bundles = FrameworkUtil.getBundle( this.getClass() )
+                        .getBundleContext().getBundles();
+        for ( Bundle bundle : bundles ) {
+            if ( bundle.getSymbolicName().equals( bsn ) ) {
+                return bundle;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void initialize( IProgressMonitor monitor ) throws DSException {
         logger.info("Initializing ds pcym model");
@@ -97,6 +112,7 @@ public class PCMSignPredictionDS extends PCMSignLibSvmPrediction implements IDST
                 try {
                     //config = Configurable.createConfigurable( PCMConfig.class, getParameters() );
                     config = createConfig( getParameters() );
+                    initResource( lookupBundle() );
                 } catch(Exception e){
                     logger.error("Faild to initilize configuration from parameters");
                     throw new DSException( "Faild to initialize configuration from parameters", e );

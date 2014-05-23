@@ -229,6 +229,8 @@ public class DSBusinessModel {
                                     test.addParameter(name,value);
                                 }
                             }
+                            test.addParameter( "Bundle-SymbolicName", extension
+                                            .getContributor().getName() );
                             tests.add( test );
 
                             logger.debug("Added Decision support Test from EP: "
