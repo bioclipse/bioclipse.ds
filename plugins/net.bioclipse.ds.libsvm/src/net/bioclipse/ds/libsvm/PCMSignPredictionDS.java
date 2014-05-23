@@ -151,11 +151,12 @@ public class PCMSignPredictionDS extends PCMSignLibSvmPrediction implements IDST
 			logger.error( "Failed to load svm model",e );
 			e.printStackTrace();
 		}
-
+            logger.info( "signature file initilized" );
         protNames = Arrays.asList( config.proteinNames() );
         proteinDescriptorStartIndex = config.proteinDescriptorStartIndex();
 
         protDescList = initializeResource(new BufferedReader(new InputStreamReader(protDescInput,"UTF-8")));
+            logger.info( "Initilizing compleat" );
 			
         } catch( Throwable t) {
             logger.error( "Failed to initialize test "+ getId() +" got exception "+t.getClass().getName(),t );
@@ -179,13 +180,19 @@ public class PCMSignPredictionDS extends PCMSignLibSvmPrediction implements IDST
         }
     }
     
-    private static PCMConfig createConfig( final Map<String, ? extends Object> input ) {
+    private PCMConfig createConfig( final Map<String, ? extends Object> input ) {
         return new PCMConfig() {
             
             <T> T readMap( String key,
                            Map<String, ? extends Object> map,
                            Class<T> type ) {
                 Object value = map.get( key );
+                if ( value == null ) {
+                    logger.error( "Key " + key + " is null" );
+                    // throw new NullPointerException( "Key " + key + " is null"
+                    // );
+                    return null;
+                }
                 if(type.isAssignableFrom( value.getClass() )) {
                     return type.cast( value );
                 } else {
@@ -226,7 +233,7 @@ public class PCMSignPredictionDS extends PCMSignLibSvmPrediction implements IDST
             }
             @Override
             public String signaturesFile() {
-                return readMap("signaturesfilet",input,String.class);
+                return readMap("signaturesfile",input,String.class);
             }
             @Override
             public String[] proteinNames() {
@@ -297,9 +304,10 @@ public class PCMSignPredictionDS extends PCMSignLibSvmPrediction implements IDST
             }
             
             @Override
-            public boolean informative() {
-                return readMap("informative",input,Boolean.class);
-            }
+             public boolean informative() {
+
+                return isInformative();
+             }
             
             @Override
             public String id() {
