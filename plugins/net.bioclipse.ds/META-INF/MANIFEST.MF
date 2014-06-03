@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  org.openscience.cdk.silent,
  org.openscience.cdk.valencycheck,
  org.eclipse.jface.text,
- net.bioclipse.browser
+ net.bioclipse.browser,
+ org.eclipse.jface
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.vecmath,
  net.bioclipse.cdk.renderer.blur,

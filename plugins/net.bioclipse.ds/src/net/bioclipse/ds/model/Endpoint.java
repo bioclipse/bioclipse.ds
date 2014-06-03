@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.help.IContext2;
 import org.eclipse.help.IHelpResource;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.ds.Activator;
@@ -100,10 +101,15 @@ public class Endpoint implements IContext2{
     }
 
     public Image getIcon() {
+
+        ImageDescriptor imageDesc;
         //Create the icon if not already done so
-        if (icon==null && plugin!=null && iconpath!=null)
-            icon=Activator.imageDescriptorFromPlugin( 
-                      plugin, iconpath ).createImage();
+        if ( icon == null && plugin != null && iconpath != null ) {
+            imageDesc = Activator.imageDescriptorFromPlugin( plugin, iconpath );
+            if ( imageDesc == null )
+                return null;
+            icon= imageDesc.createImage();
+        }
         return icon;
     }
 
