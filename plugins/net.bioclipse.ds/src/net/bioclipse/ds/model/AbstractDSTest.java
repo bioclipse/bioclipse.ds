@@ -29,6 +29,7 @@ import net.bioclipse.ds.model.result.SimpleResult;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.help.IHelpResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
@@ -247,7 +248,7 @@ public abstract class AbstractDSTest implements IDSTest{
         if (adapter.isAssignableFrom(IPropertySource.class)) {
             return new ModelPropertySource(this);
         }
-        return null;
+        return Platform.getAdapterManager().getAdapter( this, adapter );
     }
 
     
