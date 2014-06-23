@@ -91,6 +91,9 @@ import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.slf4j.Logger;
@@ -101,7 +104,7 @@ import org.slf4j.LoggerFactory;
  * @author ola
  *
  */
-public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener {
+public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener, ITabbedPropertySheetPageContributor {
 
     private static final Logger logger = LoggerFactory.getLogger(DSView.class);
 
@@ -815,17 +818,16 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
             		handlerService.executeCommand(parmCommand, null);
             	} catch (ExecutionException e) {
-            		// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Could not execute command: " + 
+					        e.getMessage() );
 				} catch (NotDefinedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Parameter or command not defined: " + 
+					        e.getMessage() );
 				} catch (NotEnabledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Command not enable: " + e.getMessage() );
 				} catch (NotHandledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Command not handled correct: " + 
+					        e.getMessage() );
 				}            	
             	
             }
@@ -947,7 +949,13 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
         IDSManager ds=net.bioclipse.ds.Activator.getDefault().getJavaManager();
         for (final TestRun tr : activeTestRuns){
-
+            
+            /* SpotRM sometimes need some of the explicit hydrogens. However, 
+             * this will not help if any other test is run before SpotRm. 
+             * TODO find a better solution. */
+//            if (!tr.getTitle().equals( "SpotRM" ))
+//                jcpmanager.removeExplicitHydrogens();
+            
             if (tr.getTest().getTestErrorMessage().length()<1){
 
                 if (tr.getStatus()==TestRun.EXCLUDED || tr.getTest().isExcluded()){
@@ -1216,7 +1224,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		try {
 			reportmodel = new DSSingleReportModel(mol, ds.getFullEndpoints());
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.debug( "Could not get end points: " + e.getMessage() );
 		}
 
         return reportmodel;
@@ -1242,6 +1250,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 contextProvider=new DSContextProvider();
             return contextProvider;
           }
+        if (key == IPropertySheetPage.class)
+            return new TabbedPropertySheetPage(this);
+        
         return super.getAdapter( key );
     }
     
@@ -1351,7 +1362,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 					ep.getTestruns().clear();
 			}
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.error( "Could not get end points: " + e.getMessage() );
 		}
 		
 		//Also turn off generators
@@ -1685,7 +1696,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 			    }
 			}
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.error( "Could not get end points: " + e.getMessage() );
 		}
 		
         updateView();
@@ -1698,6 +1709,13 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         doClearAllTests();
         updateView();
 	}
+
+    @Override
+    public String getContributorId() {
+
+        // TODO Auto-generated method stub
+        return getSite().getId();
+    }
 
 
 
