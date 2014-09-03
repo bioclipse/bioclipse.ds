@@ -437,8 +437,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             getSite().getWorkbenchWindow().getPartService().addPartListener(DSView.getInstance());
 
                             //Make viewer post selection to Eclipse
-                            getSite().setSelectionProvider(viewer);
                             
+
                             //If editor is open, react on it
                             if (getSite()==null) return;
                             if (getSite().getWorkbenchWindow()==null) return;
@@ -479,7 +479,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         };
         job.setUser( false );
         job.schedule();
-        
+        getSite().setSelectionProvider( viewer );
     }
 
     @SuppressWarnings("unused")

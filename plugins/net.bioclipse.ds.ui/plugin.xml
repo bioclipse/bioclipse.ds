@@ -75,4 +75,37 @@
         	file="toc.xml"
          	primary="true"/>
 	</extension>
+	
+	<extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor contributorId="net.bioclipse.ds.ui.views.DSView">
+      <propertyCategory
+               category="net.bioclipse.ui.properties.category.general">
+         </propertyCategory>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="net.bioclipse.ds.ui.views.DSView">        
+         <propertyTab
+               category="net.bioclipse.ui.properties.category.general"
+               id="net.bioclipse.ui.properties.general"
+               label="General">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="net.bioclipse.ds.ui.views.DSView">
+         <propertySection
+              class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
+              id="net.bioclipse.ui.properties.section.General"
+              tab="net.bioclipse.ui.properties.general">
+           <input
+                  type="net.bioclipse.ds.model.ITestResult">
+            </input>
+           </propertySection>
+      </propertySections>
+   </extension>
 </plugin>
