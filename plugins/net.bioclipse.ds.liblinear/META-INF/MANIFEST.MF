@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DS Liblinear
+Bundle-SymbolicName: net.bioclipse.ds.liblinear
+Bundle-Version: 0.1.1
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.help,
+ org.eclipse.core.resources,
+ net.bioclipse.ds,
+ net.bioclipse.liblinear,
+ net.bioclipse.cdk.business,
+ net.bioclipse.core,
+ net.bioclipse.ds.signatures,
+ org.openscience.cdk.interfaces,
+ org.openscience.cdk.standard,
+ org.openscience.cdk.io,
+ net.bioclipse.ds.common,
+ net.bioclipse.cdk.ui.sdfeditor,
+ signatures,
+ org.openscience.cdk.valencycheck,
+ net.bioclipse.ds.libsvm;bundle-version="2.6.2"
+Import-Package: org.apache.log4j,
+ org.slf4j
+Export-Package: net.bioclipse.ds.liblinear
