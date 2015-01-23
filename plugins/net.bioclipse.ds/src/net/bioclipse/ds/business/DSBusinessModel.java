@@ -94,6 +94,17 @@ public class DSBusinessModel {
                     String picon=element.getAttribute("icon");
                     String pluginID=element.getNamespaceIdentifier();
 
+                    boolean exists = false;
+                    for ( Endpoint endP : endpoints ) {
+                        if ( endP.getId().equals( pid ) ) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if ( exists ) {
+                        break;
+                    }
+
                     Endpoint ep=new Endpoint(pid, pname, pdesc, picon, pluginID);
                     endpoints.add( ep );
                     
