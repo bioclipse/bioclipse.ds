@@ -19,5 +19,5 @@ Require-Bundle: net.bioclipse.ds.libsvm,
  org.openscience.cdk.io,
  net.bioclipse.ds.common,
  net.bioclipse.cdk.ui.sdfeditor,
- org.junit4,
- org.openscience.cdk.extra;bundle-version="1.4.15"
+ org.openscience.cdk.extra;bundle-version="1.4.15",
+ org.junit;bundle-version="4.11.0"
