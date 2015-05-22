@@ -48,6 +48,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
@@ -810,7 +811,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             	try {
             		IParameter rparam = repoCmd.getParameter("org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter");
             		IParameter rsparam = repoCmd.getParameter("net.bioclipse.ui.install.commands.RepositoryStrategyParameter");
-            		Parameterization parm1 = new Parameterization(rparam, "http://pele.farmbio.uu.se/bioclipse/dsmodels");
+            		
+            		String repository = Platform.getPreferencesService().getString("net.bioclipse.ds","net.bioclipse.ds.model.repository","http://pele.farmbio.uu.se/bioclipse/dsmodels",null);
+            		
+            		Parameterization parm1 = new Parameterization(rparam, repository);
             		Parameterization parm2 = new Parameterization(rsparam, "net.bioclipse.ui.install.discovery.DSModelsDiscoveryStrategy");
 
             		ParameterizedCommand parmCommand = new ParameterizedCommand(
