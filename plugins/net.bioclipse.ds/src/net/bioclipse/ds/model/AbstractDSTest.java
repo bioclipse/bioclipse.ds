@@ -10,6 +10,12 @@
  ******************************************************************************/
 package net.bioclipse.ds.model;
 
+import static java.lang.String.format;
+import static net.bioclipse.ds.Activator.PLUGIN_ID;
+import static org.eclipse.jface.resource.ImageDescriptor.createFromURL;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +37,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.help.IHelpResource;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
@@ -173,36 +180,47 @@ public abstract class AbstractDSTest implements IDSTest{
     }
 
     public Image getIcon() {
+        ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
         //Create the icon if not already done so
         if (testErrorMessage!=null && testErrorMessage.length()>1){
             if (errorIcon==null)
-                errorIcon=Activator.imageDescriptorFromPlugin( 
-                                           net.bioclipse.ds.Activator.PLUGIN_ID, 
-                                           ERROR_ICON ).createImage();
+                initIcon( PLUGIN_ID, ERROR_ICON );
+            errorIcon = imageRegistry.get( PLUGIN_ID + ERROR_ICON );
             return errorIcon;
                        
         }
         else if (isExcluded()){
             if (excludedIcon==null)
-                excludedIcon=Activator.imageDescriptorFromPlugin( 
-                                           net.bioclipse.ds.Activator.PLUGIN_ID, 
-                                           EXCLUDED_ICON ).createImage();
+                initIcon( PLUGIN_ID, EXCLUDED_ICON );
+            errorIcon = imageRegistry.get( PLUGIN_ID + EXCLUDED_ICON );
             return excludedIcon;
                        
         }
-        else if (iconpath==null)
-            icon=Activator.imageDescriptorFromPlugin( 
-                                    net.bioclipse.ds.Activator.PLUGIN_ID, 
-                                    DEFAULT_TEST_ICON ).createImage();
-        else if (icon==null && pluginID!=null && iconpath!=null){
-        	ImageDescriptor ide = Activator.imageDescriptorFromPlugin( 
-        			pluginID, iconpath );
-        	if (ide!=null)
-        		icon=ide.createImage();
+        else if (iconpath==null) {
+            initIcon( PLUGIN_ID, EXCLUDED_ICON );
+            icon = imageRegistry.get( PLUGIN_ID + DEFAULT_TEST_ICON );
+        }else if (icon==null && pluginID!=null && iconpath!=null){
+            if ( icon == null )
+                initIcon( pluginID, iconpath );
+            icon = imageRegistry.get( pluginID + iconpath );
         }        
         return icon;
     }
     
+    private void initIcon( String id, String path ) {
+
+        ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
+        if ( imageRegistry.get( id + path ) != null )
+            return;
+
+        final String platformPath = "platform:plugin/%s/%s";
+        try {
+            URL imageUrl = new URL( format( platformPath, id, path ) );
+            imageRegistry.put( id + path, createFromURL( imageUrl ) );
+        } catch ( MalformedURLException e ) {
+            logger.warn( format( "Faild to read icon %", path ) );
+        }
+    }
     
     public String getPluginID() {
     

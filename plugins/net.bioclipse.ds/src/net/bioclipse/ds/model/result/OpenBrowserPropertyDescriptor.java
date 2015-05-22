@@ -1,8 +1,13 @@
 package net.bioclipse.ds.model.result;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import net.bioclipse.browser.editors.RichBrowserEditor;
 import net.bioclipse.cdk.business.Activator;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.hyperlink.MultipleHyperlinkPresenter;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.DialogCellEditor;
@@ -31,10 +36,20 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 public class OpenBrowserPropertyDescriptor extends PropertyDescriptor {
 
 	private String url;
+    final private String imageKey;
 
 	public OpenBrowserPropertyDescriptor(Object id, String displayName, String url) {
 		super(id, displayName);
 		this.url=url;
+        imageKey = net.bioclipse.ds.Activator.PLUGIN_ID + "/icons/expand.png";
+        try {
+            URL imageUrl = new URL( String.format( "platform:/%s/%s", imageKey ) );
+            ImageDescriptor descp = ImageDescriptor.createFromURL( imageUrl );
+            JFaceResources.getImageRegistry().put( imageKey, descp );
+
+        } catch ( MalformedURLException ex ) {
+
+        }
 	}
 
 	@Override
@@ -42,12 +57,7 @@ public class OpenBrowserPropertyDescriptor extends PropertyDescriptor {
 		return new LabelProvider(){
 			@Override
 			public Image getImage(Object element) {
-
-				Image errorIcon = Activator.imageDescriptorFromPlugin( 
-						net.bioclipse.ds.Activator.PLUGIN_ID, 
-						"/icons/expand.png" ).createImage();
-
-				return errorIcon;
+			    return JFaceResources.getImage( imageKey );
 			}
 
 		};
