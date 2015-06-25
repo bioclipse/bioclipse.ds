@@ -21,7 +21,7 @@ public class CheatSelectTest extends Action implements ICheatSheetAction {
 
     public void run( String[] params, ICheatSheetManager manager ) {
 
-        DSView.getInstance().externalSelect();
+        DSView.getInstance().externalSelect(params);
 
     }
 

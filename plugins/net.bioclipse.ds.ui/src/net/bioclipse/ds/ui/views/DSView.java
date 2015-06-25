@@ -1721,13 +1721,30 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         return getSite().getId();
     }
 
-	public void externalSelect() {
-        for (TestRun tr : activeTestRuns){
-            if (tr.getTest().getId().equals("ames.hansen.r")) {
-            	setFocus();
-            	viewer.setSelection(new StructuredSelection(tr.getMatches()));
-            }
-        }
+	public void externalSelect(String[] modelID) {
+		Integer c = 0;
+		if (activeTestRuns==null) {
+			showMessage("No models have been run!");
+		} else {
+			for (final TestRun tr : activeTestRuns){
+                if (tr.getStatus()==TestRun.NOT_STARTED)
+            	c++;
+			}
+
+			if (c!=0) {
+				showMessage("No models have been run!");
+			} else {
+				for (TestRun tr : activeTestRuns) {
+					for (String mod :modelID) {
+						if (tr.getTest().getId().equals(mod)) {
+							setFocus();
+							viewer.setSelection(new StructuredSelection(tr.getMatches()));
+						}
+					}
+				}
+			}
+
+		}
 	}
 
 
