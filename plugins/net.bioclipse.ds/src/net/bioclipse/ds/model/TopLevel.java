@@ -3,6 +3,7 @@ package net.bioclipse.ds.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.help.IContext2;
@@ -105,6 +106,9 @@ public class TopLevel implements IContext2{
 
 
     public List<Endpoint> getEndpoints() {
+
+        if ( endpoints == null )
+            return Collections.emptyList();
 		return endpoints;
 	}
 

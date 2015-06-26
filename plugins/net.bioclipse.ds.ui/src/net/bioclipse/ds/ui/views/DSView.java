@@ -469,10 +469,34 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             //Init viewer with available endpoints
                             IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
                             try {
-                            	if (ds.getFullTopLevels().size()>1) //There is always the uncategorized...
-                            		viewer.setInput(ds.getFullTopLevels().toArray());
-                            	else if(ds.getFullTopLevels().size()==1 && ds.getFullEndpoints().size()>1) {
-                            	    viewer.setInput( ds.getFullEndpoints() );
+                            	if (!ds.getFullTests().isEmpty()) {
+                            	    List<TopLevel> toplevels = ds.getFullTopLevels();
+                                    boolean skipToplevels = true;
+                            	    for(TopLevel toplevel:toplevels) {
+                            	        if( !toplevel.getEndpoints().isEmpty() && 
+                            	            !toplevel.getId().equals( "net.bioclipse.ds.toplevel.other" )) {
+                            	            skipToplevels = false;
+                            	        }
+                            	    }
+                            	    if(skipToplevels) {
+                            	        List<Endpoint> endpoints = ds.getFullEndpoints();
+                            	        boolean skipEndpoints = true;
+                            	        for(Endpoint endpoint:endpoints) {
+                            	            if( !endpoint.getTests().isEmpty() &&
+                            	                !endpoint.getId().equals( "net.bioclipse.ds.uncategorized" ) ) {
+                            	                skipEndpoints=false;
+                            	            }
+                            	        }
+                            	        
+                            	        if(skipEndpoints) {
+                            	            viewer.setInput( ds.getFullTests().toArray() );
+                            	        } else {
+                            	            viewer.setInput( ds.getFullEndpoints().toArray() );
+                            	        }
+                            	        
+                            	    } else {
+                            	        viewer.setInput(ds.getFullTopLevels().toArray());
+                            	    }
                             	} else {
                             		String[] msg = new String[2];
                             		msg[0]="   No models available.";

@@ -3,6 +3,7 @@ package net.bioclipse.ds.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.help.IContext2;
@@ -83,7 +84,9 @@ public class Endpoint implements IContext2{
 
     
     public List<IDSTest> getTests() {
-    
+
+        if ( tests == null )
+            return Collections.emptyList();
         return tests;
     }
 
