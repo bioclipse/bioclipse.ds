@@ -22,6 +22,7 @@ import java.util.Map;
 
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.cdk.jchempaint.rendering.AWTDrawVisitorFactory;
 import net.bioclipse.cdk.jchempaint.view.ChoiceGenerator;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.model.ITestResult;
@@ -39,6 +40,10 @@ import org.openscience.cdk.renderer.generators.BasicSceneGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,13 +140,51 @@ public class ImageHelper {
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, WIDTH, HEIGHT);
         
+        AWTDrawVisitor awtVisitor = createAWTDrawVisitor( g2 );
+
+        
+        
+
         // the paint method also needs a toolkit-specific renderer
         Double bounds = new Rectangle2D.Double(0, 0, WIDTH, HEIGHT);
-        renderer.paint(mol, new AWTDrawVisitor(g2), bounds, true);
+        renderer.paint( mol, awtVisitor, bounds, true );
 //        renderer.paint(mol, new AWTDrawVisitor(g2));
         
         return image;
 
+    }
+
+    protected static AWTDrawVisitor createAWTDrawVisitor( Graphics2D g2 ) {
+
+        AWTDrawVisitor awtVisitor;
+        BundleContext context = FrameworkUtil
+                        .getBundle( AWTDrawVisitorFactory.class )
+                        .getBundleContext();
+
+        ServiceTracker<AWTDrawVisitorFactory, AWTDrawVisitorFactory> tracker = new ServiceTracker<AWTDrawVisitorFactory, AWTDrawVisitorFactory>(
+            context, AWTDrawVisitorFactory.class, null );
+
+        tracker.open();
+        try {
+            tracker.waitForService( 3000 );
+        } catch ( InterruptedException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        ServiceReference<AWTDrawVisitorFactory> sRef = context
+                        .getServiceReference( AWTDrawVisitorFactory.class );
+
+        AWTDrawVisitorFactory fact = tracker.getService();
+        if ( fact != null ) {
+            awtVisitor = fact.createAWTDrawVisitor( g2 );
+        } else if ( sRef != null ) {
+            AWTDrawVisitorFactory factory = context.getService( sRef );
+            awtVisitor = factory.createAWTDrawVisitor( g2 );
+        } else
+            awtVisitor = new AWTDrawVisitor( g2 );
+        return awtVisitor;
+        // return new AWTDrawVisitor( g2 );
     }
 
 	private static void enableSelectedExternalGenerators(ITestResult match,
