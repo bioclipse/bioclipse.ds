@@ -357,7 +357,7 @@ public abstract class AbstractDSTest implements IDSTest{
             }
         } catch ( Exception e1 ) {
             logger.error( "Failed to initialize test: " + getId() + " due to: " 
-                          + e1.getMessage() );
+ + e1.getMessage(), e1 );
             setTestErrorMessage( "Initialization error: " + e1.getMessage() );
         }
 
