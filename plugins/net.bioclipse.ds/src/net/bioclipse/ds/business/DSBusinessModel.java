@@ -101,6 +101,8 @@ public class DSBusinessModel {
                     String phelppage=element.getAttribute("helppage");
                     String pluginID=element.getNamespaceIdentifier();
 
+                    String sortingWeight = element.getAttribute( "sortingWeight" );
+
                     boolean exists = false;
                     for ( Endpoint endP : endpoints ) {
                         if ( endP.getId().equals( pid ) ) {
@@ -114,6 +116,7 @@ public class DSBusinessModel {
 
                     Endpoint ep=new Endpoint(pid, pname, pdesc, picon, pluginID);
                     ep.setHelppage(phelppage);
+                    ep.setSortingWeight( sortingWeight );
                     endpoints.add( ep );
                     
                     //Add dedicated consensus calculator, or use default
