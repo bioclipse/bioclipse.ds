@@ -39,6 +39,7 @@ import org.openscience.cdk.renderer.generators.BasicBondGenerator;
 import org.openscience.cdk.renderer.generators.BasicSceneGenerator;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
+import org.openscience.cdk.renderer.generators.BasicSceneGenerator.Margin;
 import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -130,6 +131,7 @@ public class ImageHelper {
 //        model.set(BasicAtomGenerator.CompactAtom.class, true);
 
         enableSelectedExternalGenerators(match, model);
+        model.set( Margin.class, 30.0 );
 
         //TODO: belows does not seem to work properly
 //        renderer.setZoomToFit( WIDTH, HEIGHT, WIDTH, HEIGHT );
