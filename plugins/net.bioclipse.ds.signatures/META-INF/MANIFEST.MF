@@ -30,7 +30,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.databinding.beans,
  org.eclipse.core.databinding.property,
  org.eclipse.jface.databinding,
- org.openscience.cdk.silent
+ org.openscience.cdk.silent,
+ org.openscience.cdk.core;bundle-version="1.5.13"
 Import-Package: org.apache.log4j
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

@@ -27,7 +27,8 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.jchempaint.view,
  org.openscience.cdk.rendercontrol,
  org.eclipse.ui.views,
- org.eclipse.ui.views.properties.tabbed
+ org.eclipse.ui.views.properties.tabbed,
+ org.openscience.cdk.core;bundle-version="1.5.13"
 Bundle-ActivationPolicy: lazy
 Export-Package: net.bioclipse.ds.ui,
  net.bioclipse.ds.ui.actions,
