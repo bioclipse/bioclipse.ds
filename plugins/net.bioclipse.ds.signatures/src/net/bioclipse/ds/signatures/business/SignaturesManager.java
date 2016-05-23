@@ -12,14 +12,12 @@ package net.bioclipse.ds.signatures.business;
 
 import java.awt.Point;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import net.bioclipse.cdk.business.Activator;
 import net.bioclipse.cdk.business.ICDKManager;
@@ -37,8 +35,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
+import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.signature.AtomSignature;
@@ -484,9 +484,9 @@ public class SignaturesManager implements IBioclipseManager {
 				mol.removeAtomAndConnectedElectronContainers(atom);
 			}
 		}
-
-		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-		CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        Aromaticity aromaticity = new Aromaticity( ElectronDonation.cdk(), Cycles.cdkAromaticSet() );
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms( mol );
+        aromaticity.apply( mol );
 
 		CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(mol.getBuilder());
 		hAdder.addImplicitHydrogens(mol);

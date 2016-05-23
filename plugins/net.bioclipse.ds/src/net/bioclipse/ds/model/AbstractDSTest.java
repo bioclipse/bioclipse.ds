@@ -41,8 +41,10 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
+import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
@@ -432,7 +434,8 @@ public abstract class AbstractDSTest implements IDSTest{
 		}
 
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-		CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        Aromaticity aromaticity = new Aromaticity( ElectronDonation.cdk(), Cycles.cdkAromaticSet() );
+        aromaticity.apply( mol );
 
 		CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(mol.getBuilder());
 		hAdder.addImplicitHydrogens(mol);
