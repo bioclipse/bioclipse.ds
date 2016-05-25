@@ -3,7 +3,7 @@ package net.bioclipse.ds.libsvm.tests;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
