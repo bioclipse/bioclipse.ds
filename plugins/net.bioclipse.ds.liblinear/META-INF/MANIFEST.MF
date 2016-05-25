@@ -13,14 +13,11 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.business,
  net.bioclipse.core,
  net.bioclipse.ds.signatures,
- org.openscience.cdk.interfaces,
- org.openscience.cdk.standard,
- org.openscience.cdk.io,
  net.bioclipse.ds.common,
  net.bioclipse.cdk.ui.sdfeditor,
  signatures,
- org.openscience.cdk.valencycheck,
  net.bioclipse.ds.libsvm;bundle-version="2.6.2"
 Import-Package: org.apache.log4j,
+ org.openscience.cdk.interfaces;version="1.5.13",
  org.slf4j
 Export-Package: net.bioclipse.ds.liblinear

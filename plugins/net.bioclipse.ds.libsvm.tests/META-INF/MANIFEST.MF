@@ -14,10 +14,8 @@ Require-Bundle: net.bioclipse.ds.libsvm,
  net.bioclipse.cdk.business,
  net.bioclipse.core,
  net.bioclipse.ds.signatures,
- org.openscience.cdk.interfaces,
- org.openscience.cdk.standard,
- org.openscience.cdk.io,
  net.bioclipse.ds.common,
  net.bioclipse.cdk.ui.sdfeditor,
- org.openscience.cdk.extra;bundle-version="1.4.15",
  org.junit;bundle-version="4.11.0"
+Import-Package: org.openscience.cdk.interfaces;version="1.5.13",
+ org.openscience.cdk.templates;version="1.5.13"

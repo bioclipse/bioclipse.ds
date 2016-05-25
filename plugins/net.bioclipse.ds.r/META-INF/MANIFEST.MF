@@ -18,7 +18,6 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ds.ui,
  net.bioclipse.ds.libsvm,
  net.bioclipse.r.business,
- org.openscience.cdk.interfaces,
  net.bioclipse.ds.signatures,
  signatures,
  org.eclipse.core.resources,
@@ -26,4 +25,5 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.balloon.business
 Export-Package: net.bioclipse.ds.r
 Import-Package: de.walware.rj.servi,
- org.apache.log4j
+ org.apache.log4j,
+ org.openscience.cdk.interfaces;version="1.5.13"
