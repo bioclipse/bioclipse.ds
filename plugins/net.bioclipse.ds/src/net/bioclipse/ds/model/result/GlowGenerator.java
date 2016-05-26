@@ -86,8 +86,7 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 		ElementGroup group = new ElementGroup();
 		ElementGroup grayGroup = new ElementGroup();
 		ElementGroup colorGroup = new ElementGroup();
-		group.add(grayGroup);
-		group.add(colorGroup);
+
 		Color defaultColor = new Color(0xDCDCDC);
 //		Color defaultColor = new Color(0x0CDC0C);
 		
@@ -102,7 +101,8 @@ public class GlowGenerator implements IGenerator<IAtomContainer> {
 				colorGroup.add(circleElement(atom, model, color,radius));
 			}
 		}
-		
+        group.add( grayGroup );
+        group.add( colorGroup );
         return new BlurRenderingElement( group, model.get( StencilSize.class ) );
 	}
 	
