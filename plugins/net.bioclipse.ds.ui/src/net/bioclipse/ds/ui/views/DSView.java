@@ -1247,8 +1247,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             //from the cloned
                             Map<Object, Object> clonedProps = clonedMol
                                             .getAtomContainer().getProperties();
-                            Map<Object, Object> originalProps = originalMol
-                                            .getAtomContainer().getProperties();
+                            Map<Object, Object> originalProps = new HashMap<Object, Object>( originalMol
+                                            .getAtomContainer().getProperties() );
 
                             for ( Object obj : clonedProps.keySet() ) {
                                 if ( !originalProps.containsKey( obj ) ) {
@@ -1256,7 +1256,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                                                        clonedProps.get( obj ) );
                                 }
                             }
-                            
+                            originalMol.getAtomContainer().setProperties( originalProps );
                             for (ITestResult result : matches){
                                     result.setTestRun( tr );
                                     tr.addResult(result);
