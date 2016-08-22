@@ -4,9 +4,8 @@ Bundle-Name: Libsvm
 Bundle-SymbolicName: net.bioclipse.libsvm;singleton:=true
 Bundle-Version: 2.6.2.qualifier
 Bundle-Vendor: The Bioclipse Team
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.core.runtime
 Bundle-ClassPath: .,
  lib/libsvm.jar
 Export-Package: libsvm

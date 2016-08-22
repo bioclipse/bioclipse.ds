@@ -4,8 +4,7 @@ Bundle-Name: DS Report
 Bundle-SymbolicName: net.bioclipse.ds.report;singleton:=true
 Bundle-Version: 2.6.2.qualifier
 Bundle-Vendor: The Bioclipse Team
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  net.bioclipse.ds,
  net.bioclipse.core,
  net.bioclipse.jasper,
@@ -17,6 +16,9 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j,
+ org.eclipse.core.commands,
+ org.eclipse.jface.resource,
+ org.eclipse.swt.graphics,
  org.openscience.cdk.exception;version="1.5.13",
  org.openscience.cdk.interfaces;version="1.5.13",
  org.openscience.cdk.qsar;version="1.5.13",

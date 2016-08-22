@@ -3,10 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DS Commons
 Bundle-SymbolicName: net.bioclipse.ds.common;singleton:=true
 Bundle-Version: 2.6.2.qualifier
-Bundle-Activator: net.bioclipse.ds.common.Activator
 Bundle-Vendor: The Bioclipse Team
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.help,
  org.eclipse.core.resources,
  net.bioclipse.core,
@@ -22,12 +20,12 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.codec
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: net.bioclipse.ds.common,
- net.bioclipse.ds.cons,
+Export-Package: net.bioclipse.ds.cons,
  net.bioclipse.ds.matcher,
  net.bioclipse.ds.matcher.model,
  net.bioclipse.ds.prop.calc
 Import-Package: org.apache.log4j,
+ org.eclipse.swt.graphics,
  org.openscience.cdk;version="1.5.13",
  org.openscience.cdk.exception;version="1.5.13",
  org.openscience.cdk.fingerprint;version="1.5.13",
