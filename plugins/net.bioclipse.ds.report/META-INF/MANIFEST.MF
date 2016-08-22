@@ -17,8 +17,11 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j,
  org.eclipse.core.commands,
+ org.eclipse.jface.dialogs,
  org.eclipse.jface.resource,
  org.eclipse.swt.graphics,
+ org.eclipse.swt.widgets,
+ org.eclipse.ui.handlers,
  org.openscience.cdk.exception;version="1.5.13",
  org.openscience.cdk.interfaces;version="1.5.13",
  org.openscience.cdk.qsar;version="1.5.13",
