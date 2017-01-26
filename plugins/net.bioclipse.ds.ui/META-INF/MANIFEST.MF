@@ -27,6 +27,7 @@ Export-Package: net.bioclipse.ds.ui,
  net.bioclipse.ds.ui.utils,
  net.bioclipse.ds.ui.views
 Import-Package: javax.vecmath,
+ net.bioclipse.cdk.jchempaint.rendering,
  org.eclipse.ui.views.properties.tabbed,
  org.openscience.cdk.interfaces;version="1.5.13",
  org.openscience.cdk.layout;version="1.5.13",
