@@ -3,10 +3,12 @@ package net.bioclipse.ds.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.help.IContext2;
 import org.eclipse.help.IHelpResource;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 import net.bioclipse.ds.Activator;
@@ -28,8 +30,12 @@ public class Endpoint implements IContext2{
     private Image icon;
     private String iconpath;
     private IConsensusCalculator consensusCalculator;
+    private TopLevel toplevel;
 
-    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+	private String helppage;
+
+
+	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		changeSupport.addPropertyChangeListener(listener);
@@ -57,7 +63,15 @@ public class Endpoint implements IContext2{
     }
 
     
-    public String getDescription() {
+    public String getHelppage() {
+		return helppage;
+	}
+
+	public void setHelppage(String helppage) {
+		this.helppage = helppage;
+	}
+
+	public String getDescription() {
     
         return description;
     }
@@ -70,7 +84,9 @@ public class Endpoint implements IContext2{
 
     
     public List<IDSTest> getTests() {
-    
+
+        if ( tests == null )
+            return Collections.emptyList();
         return tests;
     }
 
@@ -100,10 +116,15 @@ public class Endpoint implements IContext2{
     }
 
     public Image getIcon() {
+
+        ImageDescriptor imageDesc;
         //Create the icon if not already done so
-        if (icon==null && plugin!=null && iconpath!=null)
-            icon=Activator.imageDescriptorFromPlugin( 
-                      plugin, iconpath ).createImage();
+        if ( icon == null && plugin != null && iconpath != null ) {
+            imageDesc = Activator.imageDescriptorFromPlugin( plugin, iconpath );
+            if ( imageDesc == null )
+                return null;
+            icon= imageDesc.createImage();
+        }
         return icon;
     }
 
@@ -141,6 +162,15 @@ public class Endpoint implements IContext2{
 
         return consensusCalculator;
     }
+    
+    public TopLevel getToplevel() {
+		return toplevel;
+	}
+
+	public void setToplevel(TopLevel toplevel) {
+		this.toplevel = toplevel;
+	}
+
 
     
     /*

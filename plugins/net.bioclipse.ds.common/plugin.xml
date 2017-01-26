@@ -14,33 +14,49 @@
              id="net.bioclipse.ds.consensus.majority"
              name="Majority Voting"
              class="net.bioclipse.ds.cons.MajorityVote"
-             description="A majority voting algorithm. Empty if no results">
+             description="A majority voting algorithm. Inconclusive if equal positive and negative. Empty if no results">
        </consensus>
        <consensus
              id="net.bioclipse.ds.consensus.majority.emptyinconclusive"
              name="Majority Voting, inconclusive if no results"
              class="net.bioclipse.ds.cons.MajorityVoteEmptyInconclusive"
-             description="A majority voting algorithm. Inconclusive if no results">
+             description="A majority voting algorithm. Inconclusive if equal positive and negative. Inconclusive if no results">
        </consensus>
        <consensus
              id="net.bioclipse.ds.consensus.majority.emptynegative"
              name="Majority voting, negative if empty"
              class="net.bioclipse.ds.cons.MajorityVoteEmptyNegative"
-             description="A majority voting algorithm. Negative if no results">
+             description="A majority voting algorithm. Inconclusive if equal positive and negative. Negative if no results">
        </consensus>
        <consensus
              id="net.bioclipse.ds.consensus.conservative"
              name="Conservative Consensus"
              class="net.bioclipse.ds.cons.ConsensusConservative"
-             description="A conservative consensus calculation. At least one positive means consensus is positive.">
+             description="A conservative consensus calculation. At least one positive means consensus will be positive.">
        </consensus>
        
        <endpoint
                id="net.bioclipse.ds.uncategorized"
                icon="icons/test_container.gif"
                description="Tests that are not categorized"
+               toplevel="net.bioclipse.ds.topLevel.other"
                name="Uncategorized">
          </endpoint>
+         <toplevel 
+         	   id="net.bioclipse.ds.toplevel.other"
+               icon="icons/1382400547_folder.png"
+	           name="Other">
+         </toplevel>
+         <toplevel 
+         	   id="net.bioclipse.ds.toplevel.safety"
+               icon="icons/1382400547_folder.png"
+	           name="Safety">
+         </toplevel>
+         <toplevel 
+         	   id="net.bioclipse.ds.toplevel.dmpk"
+               icon="icons/1382400547_folder.png"
+	           name="DMPK">
+         </toplevel>
  </extension>
 
 

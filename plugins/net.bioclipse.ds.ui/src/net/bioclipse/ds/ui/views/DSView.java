@@ -28,6 +28,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.TopLevel;
 import net.bioclipse.ds.model.result.AtomResultMatch;
 import net.bioclipse.ds.model.result.SimpleResult;
 import net.bioclipse.ds.report.DSSingleReportModel;
@@ -48,12 +49,14 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.help.IContextProvider;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -65,12 +68,15 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -84,13 +90,23 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveListener;
+import org.eclipse.ui.IPerspectiveListener2;
+import org.eclipse.ui.IPerspectiveListener3;
+import org.eclipse.ui.IPerspectiveListener4;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.generators.IGeneratorParameter;
 import org.slf4j.Logger;
@@ -101,7 +117,7 @@ import org.slf4j.LoggerFactory;
  * @author ola
  *
  */
-public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener {
+public class DSView extends ViewPart implements IPartListener2, IPropertyChangeListener, ITabbedPropertySheetPageContributor {
 
     private static final Logger logger = LoggerFactory.getLogger(DSView.class);
 
@@ -136,15 +152,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
     private boolean executed;
 
     private Action clearAction;
-
     private Action excludeAction;
-
     private Action includeAction;
-
     private Action expandAllAction;
-
     private Action collapseAllAction;
-
     private Action refreshAction;
 
     private List<BioclipseJob<List<ITestResult>>> runningJobs;
@@ -176,6 +187,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 	private Action filterOutErrorAction;
 	private Action filterOutEmptyAction;
 	private Action installModelsAction;
+	private Action performanceAction;
+	
+	private boolean performance=true;
 	
     private static DSView instance;
     
@@ -223,6 +237,47 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         
         DSView.instance=this;
         
+        
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().addPerspectiveListener(new IPerspectiveListener3(){
+
+			@Override
+			public void perspectiveChanged(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1, IWorkbenchPartReference arg2,
+					String arg3) {}
+			@Override
+			public void perspectiveActivated(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {}
+			@Override
+			public void perspectiveChanged(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1, String arg2) {}
+
+			@Override
+			public void perspectiveClosed(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {}
+
+			@Override
+			public void perspectiveDeactivated(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {
+
+				if ("net.bioclipse.ds.ui.perspective".equals(arg1.getId())){
+	                JChemPaintEditor jcp=getJCPfromActiveEditor();
+	                if (jcp==null) return;
+
+	                GeneratorHelper.turnOffAllExternalGenerators(jcp);
+				}
+				
+			}
+
+			@Override
+			public void perspectiveOpened(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1) {}
+
+			@Override
+			public void perspectiveSavedAs(IWorkbenchPage arg0,
+					IPerspectiveDescriptor arg1, IPerspectiveDescriptor arg2) {}
+        });
+        
+        //Gui component
         GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 1;
         parent.setLayout(gridLayout);
@@ -291,6 +346,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 						if (tr instanceof AtomResultMatch) {
 							AtomResultMatch atomResMatch = (AtomResultMatch) tr;
 		                    model.set(atomMapParam, atomResMatch.getResultMap());
+		                    jcp.getWidget().redraw();
 	    					logger.debug("  ...and AtomMapGeneratorParameter is used with content. Should now be displayed.");
 						}else{
 	    					logger.debug("  ...however, an AtomMapGeneratorParameter is available but TestResult is not AtomResultMatch.");
@@ -310,6 +366,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         viewer.getTree().setLayoutData(gridData);
+        viewer.setSorter(new ViewerSorter());
         
         viewer.setInput(new String[]{"Initializing..."});
 
@@ -412,9 +469,35 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             //Init viewer with available endpoints
                             IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
                             try {
-                            	if (ds.getFullEndpoints().size()>1) //There is always the uncategorized EP...
-                            		viewer.setInput(ds.getFullEndpoints().toArray());
-                            	else{
+                            	if (!ds.getFullTests().isEmpty()) {
+                            	    List<TopLevel> toplevels = ds.getFullTopLevels();
+                                    boolean skipToplevels = true;
+                            	    for(TopLevel toplevel:toplevels) {
+                            	        if( !toplevel.getEndpoints().isEmpty() && 
+                            	            !toplevel.getId().equals( "net.bioclipse.ds.toplevel.other" )) {
+                            	            skipToplevels = false;
+                            	        }
+                            	    }
+                            	    if(skipToplevels) {
+                            	        List<Endpoint> endpoints = ds.getFullEndpoints();
+                            	        boolean skipEndpoints = true;
+                            	        for(Endpoint endpoint:endpoints) {
+                            	            if( !endpoint.getTests().isEmpty() &&
+                            	                !endpoint.getId().equals( "net.bioclipse.ds.uncategorized" ) ) {
+                            	                skipEndpoints=false;
+                            	            }
+                            	        }
+                            	        
+                            	        if(skipEndpoints) {
+                            	            viewer.setInput( ds.getFullTests().toArray() );
+                            	        } else {
+                            	            viewer.setInput( ds.getFullEndpoints().toArray() );
+                            	        }
+                            	        
+                            	    } else {
+                            	        viewer.setInput(ds.getFullTopLevels().toArray());
+                            	    }
+                            	} else {
                             		String[] msg = new String[2];
                             		msg[0]="   No models available.";
                             		msg[1]="link:Install models...";// from menu: 'Install > DS Models...'";
@@ -434,8 +517,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                             getSite().getWorkbenchWindow().getPartService().addPartListener(DSView.getInstance());
 
                             //Make viewer post selection to Eclipse
-                            getSite().setSelectionProvider(viewer);
                             
+
                             //If editor is open, react on it
                             if (getSite()==null) return;
                             if (getSite().getWorkbenchWindow()==null) return;
@@ -476,7 +559,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         };
         job.setUser( false );
         job.schedule();
-        
+        getSite().setSelectionProvider( viewer );
     }
 
     @SuppressWarnings("unused")
@@ -553,6 +636,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         molListenerMap.clear();
         molListenerMap=null;
         
+        //terminate any remaining jobs
+        //TODO
+        
     }
 
     private void hookContextMenu() {
@@ -589,12 +675,103 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         manager.add(refreshAction);
         manager.add(installModelsAction);
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        
+        ISelection sel = viewer.getSelection();
+    	IStructuredSelection ssel = (IStructuredSelection)sel;
+    	Object selobj = ssel.getFirstElement();
+        IDSTest test=null;
+        
+        if (selobj instanceof TestRun) {
+        	TestRun tr = (TestRun) selobj;
+        	test = tr.getTest();
+        }
+        else if (selobj instanceof IDSTest) {
+        	test = (IDSTest) selobj;
+        }
+
+        if (test!=null){
+
+        	//If model has a heppage, add action here to go directly to it 
+        	final String helpPath = test.getHelppage();
+        	if (helpPath==null) return;
+
+        	final String pagePath = "/" + test.getPluginID() + "/" + helpPath;
+        	Action modelHelpAction = new Action() {
+        		public void run() {
+
+        			logger.debug("Opening help page: " + pagePath);
+
+        			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        					.getHelpSystem();
+        			helpSystem.displayHelpResource(pagePath);
+        		}
+        	};
+        	modelHelpAction.setText("Model Description");
+        	modelHelpAction.setToolTipText("Open description for the selected models");
+        	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        	manager.add(modelHelpAction);
+        	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	return;
+        }
+        
+        //If EP
+        if (selobj instanceof Endpoint) {
+        	Endpoint ep = (Endpoint) selobj;
+
+        	//If EP has a heppage, add action here to go directly to it 
+        	final String helpPath = ep.getHelppage();
+        	if (helpPath==null) return;
+
+        	final String pagePath = "/" + ep.getPlugin() + "/" + helpPath;
+        	Action modelHelpAction = new Action() {
+        		public void run() {
+        			logger.debug("Opening help page: " + pagePath);
+        			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        					.getHelpSystem();
+        			helpSystem.displayHelpResource(pagePath);
+        		}
+        	};
+        	modelHelpAction.setText("Endpoint Description");
+        	modelHelpAction.setToolTipText("Open description for the selected endpoint");
+        	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        	manager.add(modelHelpAction);
+        	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	return;
+        }
+
+        //If EP
+        if (selobj instanceof TopLevel) {
+        	TopLevel tl = (TopLevel) selobj;
+
+
+        	//If EP has a heppage, add action here to go directly to it 
+        	final String helpPath = tl.getHelppage();
+        	if (helpPath==null) return;
+
+        	final String pagePath = "/" + tl.getPlugin() + "/" + helpPath;
+        	Action modelHelpAction = new Action() {
+        		public void run() {
+        			logger.debug("Opening help page: " + pagePath);
+        			IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench()
+        					.getHelpSystem();
+        			helpSystem.displayHelpResource(pagePath);
+        		}
+        	};
+        	modelHelpAction.setText("Toplevel Description");
+        	modelHelpAction.setToolTipText("Open description for the selected toplevel");
+        	modelHelpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
+        	manager.add(modelHelpAction);
+        	manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        	return;
+        }
+
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
         manager.add(autoRunAction);
         manager.add(runAction);
         manager.add(clearAction);
+//        manager.add(performanceAction);
         manager.add(filterOutErrorAction);
         manager.add(filterOutEmptyAction);
         manager.add(new Separator());
@@ -793,6 +970,24 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
         helpAction.setToolTipText("Open help for the Decision Support");
         helpAction.setImageDescriptor(Activator.getImageDecriptor( "icons/help.gif" ));
 
+        performanceAction = new Action() {
+            public void run() {
+
+            	//If performance mode is on, turn it off
+            	if (performance){
+                    performance=false;
+                    performanceAction.setImageDescriptor(Activator.getImageDecriptor( "icons/snail16.png" ));
+            	}else{
+                    performance=true;
+                    performanceAction.setImageDescriptor(Activator.getImageDecriptor( "icons/snail16-dis.png" ));
+            	}
+            }
+        };
+        performanceAction.setText("Toggle Performance Mode");
+        performanceAction.setToolTipText("Toggle Low Performance Mode. "
+        		+ "Off for using all available processors. On for using only one process. ");
+        performanceAction.setImageDescriptor(Activator.getImageDecriptor( "icons/snail16-dis.png" ));
+        
         installModelsAction = new Action() {
             public void run() {
 
@@ -807,7 +1002,10 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             	try {
             		IParameter rparam = repoCmd.getParameter("org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter");
             		IParameter rsparam = repoCmd.getParameter("net.bioclipse.ui.install.commands.RepositoryStrategyParameter");
-            		Parameterization parm1 = new Parameterization(rparam, "http://pele.farmbio.uu.se/bioclipse/dsmodels");
+            		
+            		String repository = Platform.getPreferencesService().getString("net.bioclipse.ds","net.bioclipse.ds.model.repository","http://pele.farmbio.uu.se/bioclipse/dsmodels",null);
+            		
+            		Parameterization parm1 = new Parameterization(rparam, repository);
             		Parameterization parm2 = new Parameterization(rsparam, "net.bioclipse.ui.install.discovery.DSModelsDiscoveryStrategy");
 
             		ParameterizedCommand parmCommand = new ParameterizedCommand(
@@ -815,17 +1013,16 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
             		handlerService.executeCommand(parmCommand, null);
             	} catch (ExecutionException e) {
-            		// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Could not execute command: " + 
+					        e.getMessage() );
 				} catch (NotDefinedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Parameter or command not defined: " + 
+					        e.getMessage() );
 				} catch (NotEnabledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Command not enable: " + e.getMessage() );
 				} catch (NotHandledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error( "Command not handled correct: " + 
+					        e.getMessage() );
 				}            	
             	
             }
@@ -894,7 +1091,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 	private void doRunAllTests() {
 
-        logger.debug("Running tests...");
+        logger.debug("Running tests.... (performance mode is on: " + performance + ")");
 
         if (activeTestRuns==null || activeTestRuns.size()<=0){
             showMessage( "No active testruns to run" );
@@ -935,6 +1132,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
             } catch ( InterruptedException e ) {
             }
             logger.debug("Job: " + job.getName() + " finished.");
+            runningJobs.remove(job);
         }
 
         //We need to clear previous tests if already run
@@ -947,7 +1145,13 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
         IDSManager ds=net.bioclipse.ds.Activator.getDefault().getJavaManager();
         for (final TestRun tr : activeTestRuns){
-
+            
+            /* SpotRM sometimes need some of the explicit hydrogens. However, 
+             * this will not help if any other test is run before SpotRm. 
+             * TODO find a better solution. */
+//            if (!tr.getTitle().equals( "SpotRM" ))
+//                jcpmanager.removeExplicitHydrogens();
+            
             if (tr.getTest().getTestErrorMessage().length()<1){
 
                 if (tr.getStatus()==TestRun.EXCLUDED || tr.getTest().isExcluded()){
@@ -1162,8 +1366,8 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 
     	if (viewer.getControl().isDisposed()) return;
         viewer.refresh();
-//        viewer.expandToLevel( 1 );
-        viewer.expandAll();
+        viewer.expandToLevel( 2 );
+//        viewer.expandAll();
         updateActionStates();
         
         //Also update consensus part
@@ -1216,7 +1420,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 		try {
 			reportmodel = new DSSingleReportModel(mol, ds.getFullEndpoints());
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.debug( "Could not get end points: " + e.getMessage() );
 		}
 
         return reportmodel;
@@ -1242,6 +1446,9 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
                 contextProvider=new DSContextProvider();
             return contextProvider;
           }
+        if (key == IPropertySheetPage.class)
+            return new TabbedPropertySheetPage(this);
+        
         return super.getAdapter( key );
     }
     
@@ -1351,7 +1558,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 					ep.getTestruns().clear();
 			}
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.error( "Could not get end points: " + e.getMessage() );
 		}
 		
 		//Also turn off generators
@@ -1685,7 +1892,7 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 			    }
 			}
 		} catch (BioclipseException e) {
-			e.printStackTrace();
+			logger.error( "Could not get end points: " + e.getMessage() );
 		}
 		
         updateView();
@@ -1694,10 +1901,46 @@ public class DSView extends ViewPart implements IPartListener2, IPropertyChangeL
 
 	public void externalRefresh() throws BioclipseException {
         IDSManager ds = net.bioclipse.ds.Activator.getDefault().getJavaManager();
-        viewer.setInput(ds.getFullEndpoints().toArray());
+//        viewer.setInput(ds.getFullEndpoints().toArray());
+        viewer.setInput(ds.getFullTopLevels().toArray());
         doClearAllTests();
         updateView();
 	}
+
+    @Override
+    public String getContributorId() {
+
+        // TODO Auto-generated method stub
+        return getSite().getId();
+    }
+
+	public void externalSelect(String[] modelID) {
+		Integer c = 0;
+		if (activeTestRuns==null) {
+			showMessage("No models have been run!");
+		} else {
+			for (final TestRun tr : activeTestRuns){
+                if (tr.getStatus()==TestRun.NOT_STARTED)
+            	c++;
+			}
+
+			if (c!=0) {
+				showMessage("No models have been run!");
+			} else {
+				for (TestRun tr : activeTestRuns) {
+					for (String mod :modelID) {
+						if (tr.getTest().getId().equals(mod)) {
+							setFocus();
+							viewer.setSelection(new StructuredSelection(tr.getMatches()));
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	
 
 
 

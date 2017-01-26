@@ -18,15 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.qsar.DescriptorValue;
-import org.openscience.cdk.qsar.descriptors.molecular.ALOGPDescriptor;
-import org.openscience.cdk.qsar.descriptors.molecular.HBondAcceptorCountDescriptor;
-import org.openscience.cdk.qsar.descriptors.molecular.XLogPDescriptor;
-import org.openscience.cdk.qsar.result.DoubleArrayResult;
-import org.openscience.cdk.qsar.result.IntegerResult;
-
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
@@ -38,8 +29,8 @@ import net.bioclipse.ds.report.model.Endpoint;
 import net.bioclipse.ds.report.model.Result;
 import net.bioclipse.ds.report.model.Test;
 import net.bioclipse.ds.ui.ImageHelper;
-import net.bioclipse.ds.ui.VotingConsensus;
-import net.bioclipse.ds.ui.views.DSView;
+
+import org.apache.log4j.Logger;
 
 /**
  * A helper class for DS Jasper Reports.
@@ -110,26 +101,6 @@ public class ReportHelper {
 		} catch (BioclipseException e) {
 			parameters.put("DS_PROP_MW", "N/A");
 		}
-
-		try {
-			ALOGPDescriptor alogp=new ALOGPDescriptor();
-			DescriptorValue res = alogp.calculate( mol.getAtomContainer() );
-			DoubleArrayResult  val = (DoubleArrayResult ) res.getValue();
-
-			parameters.put("DS_PROP_ALOGP", "" + format.format(val.get(0)));
-		} catch (CDKException e) {
-			parameters.put("DS_PROP_ALOGP", "N/A");
-		}
-
-		HBondAcceptorCountDescriptor haccdesc= new HBondAcceptorCountDescriptor();
-		DescriptorValue res = haccdesc.calculate( mol.getAtomContainer() );
-		IntegerResult  val = (IntegerResult) res.getValue();
-		parameters.put("DS_PROP_HACC", "" + val.intValue());
-
-		HBondAcceptorCountDescriptor hdondesc= new HBondAcceptorCountDescriptor();
-		res = hdondesc.calculate( mol.getAtomContainer() );
-		val = (IntegerResult) res.getValue();
-		parameters.put("DS_PROP_HDONORS", "" + val.intValue());
 
 		parameters.put("DS_PAGE_FOOTER", "This safety prediction was done " +
 				"with Bioclipse version: " + System.getProperty( "eclipse.buildId" ));

@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds.product"
       label="Product"
-      version="1.0.0.qualifier">
+      version="2.6.2.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

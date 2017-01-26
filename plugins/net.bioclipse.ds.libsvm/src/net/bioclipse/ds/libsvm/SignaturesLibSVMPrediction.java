@@ -11,6 +11,7 @@
 
 package net.bioclipse.ds.libsvm;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.Map;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.libsvm.model.PredictionModel;
@@ -32,6 +32,7 @@ import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
+import net.bioclipse.ds.model.result.BlurredAtomColorMatch;
 import net.bioclipse.ds.model.result.PosNegIncMatch;
 import net.bioclipse.ds.model.result.ScaledResultMatch;
 import net.bioclipse.ds.signatures.business.ISignaturesManager;
@@ -76,9 +77,9 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 	protected Float regrLowerThreshold=null;
 	protected boolean lowIsNegative=true;
 
-	private String positiveValue;
-	private String negativeValue;
-	private List<String> classLabels;
+	protected String positiveValue;
+	protected String negativeValue;
+	protected List<String> classLabels;
 
 	//The SVM model, holds the signatures list and native svm_model
 	public SignLibsvmModel signSvmModel;
@@ -192,6 +193,8 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		//Load the model file into memory using SVM
 		try {
 			svm_model svmModel = svm.svm_load_model(modelPath);
+			if (svmModel.nr_class>3)
+				throw new DSException("Max 3 class problems supported, model nr_class is: " + svmModel.nr_class);
 			signSvmModel = new SignLibsvmModel(svmModel, modelSignatures);
 		} catch (IOException e) {
 			throw new DSException("Could not read model file '" + modelPath 
@@ -287,7 +290,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		}
 		
 		//Create the result for the classification, overwrite name later if we have sign signature
-		AtomResultMatch match = new PosNegIncMatch("No significant signature", 
+		AtomResultMatch match = new BlurredAtomColorMatch("No significant signature", 
 				ITestResult.INCONCLUSIVE);
 		results.add(match);
 
@@ -375,11 +378,16 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			double gradComponentValue = 0.0;
 			if (svmModel.nr_class == 2) { // Two class case.
 				for (int curDecisionFunc = 0; curDecisionFunc < nOverk; curDecisionFunc++) {
-					if (svmModel.rho[curDecisionFunc] > 0.0){ // Check if the decision function is reversed.
+					if (svmModel.param.svm_type==svmModel.param.EPSILON_SVR){
 						gradComponentValue = gradComponentValue + higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc];
 					}
-					else{
-						gradComponentValue = gradComponentValue + lowerPointValue[curDecisionFunc]-higherPointValue[curDecisionFunc];						
+					else { // Binary classification, check also sign of rho.
+						if (svmModel.rho[curDecisionFunc] > 0.0){ // Check if the decision function is reversed.
+							gradComponentValue = gradComponentValue + higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc];
+						}
+						else{
+							gradComponentValue = gradComponentValue + lowerPointValue[curDecisionFunc]-higherPointValue[curDecisionFunc];                                                
+						}
 					}
 				}
 			}
@@ -388,6 +396,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 					gradComponentValue = gradComponentValue + Math.abs(higherPointValue[curDecisionFunc]-lowerPointValue[curDecisionFunc]);
 				}
 			}
+
 			gradientComponents.add(gradComponentValue);
 			// Set the value back to what it was.
 			svmPredictionArray[element].value = svmPredictionArray[element].value - 1.00;
@@ -480,8 +489,10 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 				for (int centerAtom : centerAtoms){
 
-					match.putAtomResult( centerAtom, 
-							match.getClassification() );
+					//Interpret the value as (-1 = blue = negative), (0 = no color = inconclusive), (1=red=positive) 
+					double classificationValue= getScaledClassificationValues(match.getClassification());
+					
+					match.putAtomResult( centerAtom, classificationValue );
 
 					int currentHeight=0;
 					List<Integer> lastNeighbours=new ArrayList<Integer>();
@@ -498,7 +509,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 
 								//Set each neighbour atom to overall match classification
 								int nbrAtomNr = cdkmol.getAtomContainer().getAtomNumber(nbr);
-								match.putAtomResult( nbrAtomNr, match.getClassification() );
+								match.putAtomResult( nbrAtomNr, classificationValue );
 
 								newNeighbours.add(nbrAtomNr);
 
@@ -539,9 +550,9 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 					}
 				}
 			}
-			System.out.println(atomGreadientComponents.toString());					
+//			System.out.println(atomGreadientComponents.toString());					
 
-			match = new ScaledResultMatch("Result: " 
+			match = new BlurredAtomColorMatch("Result: " 
 					+ formatter.format( prediction ), 
 					ITestResult.INFORMATIVE);
 			results.clear();
@@ -570,6 +581,7 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 			for (int currentAtomNr : atomGreadientComponents.keySet()){
 				Double currentDeriv = atomGreadientComponents.get(currentAtomNr);
 
+				//Obtain a number between -1 and 1
 				double scaledDeriv = scaleDerivative(currentDeriv);
 				match.putAtomResult( currentAtomNr, scaledDeriv );
 				System.out.println("Atom: " + currentAtomNr + " has deriv=" + currentDeriv +" scaled=" + scaledDeriv );
@@ -579,6 +591,14 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		}
 
 		return results;
+	}
+
+	private double getScaledClassificationValues(int classification) {
+    	if (classification==ITestResult.POSITIVE)
+    		return 1;
+    	else if (classification==ITestResult.NEGATIVE)
+    		return -1;
+		return 0;  //No color, inconclusive
 	}
 
 	/**
@@ -650,7 +670,6 @@ public class SignaturesLibSVMPrediction extends AbstractDSTest{
 		else
 			return currentDeriv/highPercentile;
 	}
-
 
 
 	/**

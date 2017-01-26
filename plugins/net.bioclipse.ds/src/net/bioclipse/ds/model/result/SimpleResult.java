@@ -101,10 +101,10 @@ public class SimpleResult implements ITestResult{
 //        pos_icon=Activator.getImageDecriptor( "icons/ico_hit.gif" ).createImage();
 //        neg_icon=Activator.getImageDecriptor( "icons/check.gif" ).createImage();
         pos_icon=Activator.getImageDecriptor( "icons/target-red.gif" ).createImage();
-        neg_icon=Activator.getImageDecriptor( "icons/target-green.gif" ).createImage();
-        incon_icon=Activator.getImageDecriptor( "icons/target-orange.gif" ).createImage();
+        neg_icon=Activator.getImageDecriptor( "icons/target-blue.gif" ).createImage();
+        incon_icon=Activator.getImageDecriptor( "icons/target-gray.gif" ).createImage();
         error_icon=Activator.getImageDecriptor( "icons/fatalerror.gif" ).createImage();
-        inform_icon=Activator.getImageDecriptor( "icons/bulb.png" ).createImage();
+        inform_icon=Activator.getImageDecriptor( "icons/target-gray.gif" ).createImage();
         empty_icon=Activator.getImageDecriptor( "icons/target-gray.gif" ).createImage();
     }
 

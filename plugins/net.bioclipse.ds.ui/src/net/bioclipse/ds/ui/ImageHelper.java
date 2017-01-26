@@ -28,9 +28,7 @@ import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.result.AtomResultMatch;
 import net.bioclipse.ds.model.result.ExternalMoleculeMatch;
 
-import org.openscience.cdk.Molecule;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.renderer.AtomContainerRenderer;
 import org.openscience.cdk.renderer.RendererModel;
@@ -94,7 +92,7 @@ public class ImageHelper {
                 WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         
         //Generate 2D
-        IMolecule mol = new Molecule(cdkmol.getAtomContainer());
+        IAtomContainer mol = cdkmol.getAtomContainer();
         StructureDiagramGenerator sdg = new StructureDiagramGenerator();
         sdg.setMolecule(mol, true);
         try {

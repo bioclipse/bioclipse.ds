@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Liblinear
+Bundle-SymbolicName: net.bioclipse.liblinear
+Bundle-Version: 1.95
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: lib/liblinear-java-1.95.jar,
+ .
+Export-Package: de.bwaldvogel.liblinear

@@ -15,6 +15,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.ds.model.TestRun;
+import net.bioclipse.ds.model.TopLevel;
 import net.bioclipse.ds.ui.Activator;
 import net.bioclipse.ds.ui.utils.PieChartProducer;
 
@@ -42,7 +43,7 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 			if (ep.getTestruns()!=null){
 				int pos=0;
 				int neg=0;
-				int inc=0;
+	  			int inc=0;
 				for (TestRun run : ep.getTestruns()){
 
 					if (run.getTest().isExcluded() || !run.getTest().isVisible()
@@ -55,10 +56,12 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 						pos++;
 					else if (run.getConsensusStatus()==ITestResult.NEGATIVE)
 						neg++;
-					else if (run.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+//					else if (run.getConsensusStatus()==ITestResult.INCONCLUSIVE)
+					else
 						inc++;
 				}
 				if ( neg!=0 || pos!=0 || inc!=0){
+					System.out.println("EP has neg=" + neg + ", pos=" + pos + ", inc="+inc);
 					Display display = PlatformUI.getWorkbench().getDisplay();
 					Image img = PieChartProducer.generatePieChart(display, 
 							neg, pos, inc, 12, 16);
@@ -75,6 +78,10 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 		else if ( element instanceof IDSTest ) {
 			IDSTest test = (IDSTest)element;
 			return test.getIcon();
+		}
+		else if ( element instanceof TopLevel ) {
+			TopLevel tp = (TopLevel)element;
+			return tp.getIcon();
 		}
 		else if ( element instanceof TestRun ) {
 			TestRun run = (TestRun) element;
@@ -132,6 +139,11 @@ public class DSViewLabelProvider extends ColumnLabelProvider{
 		if ( element instanceof Endpoint ) {
 			Endpoint ep = (Endpoint)element;
 			return ep.getName();
+		}
+
+		if ( element instanceof TopLevel) {
+			TopLevel tp = (TopLevel)element;
+			return tp.getName();
 		}
 
 		else if ( element instanceof ITestResult ) {

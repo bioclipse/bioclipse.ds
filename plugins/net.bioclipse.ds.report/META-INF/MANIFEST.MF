@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DS Report
 Bundle-SymbolicName: net.bioclipse.ds.report;singleton:=true
-Bundle-Version: 2.6.1.qualifier
+Bundle-Version: 2.6.2.qualifier
 Bundle-Activator: net.bioclipse.ds.report.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
@@ -13,9 +13,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  net.bioclipse.ds.ui,
  org.eclipse.ui.ide,
- org.openscience.cdk.qsar,
- org.openscience.cdk.qsaratomic,
- org.openscience.cdk.qsarmolecular,
  org.openscience.cdk.standard,
  org.openscience.cdk.interfaces,
  net.bioclipse.cdk.business,

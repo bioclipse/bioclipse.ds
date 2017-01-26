@@ -20,6 +20,7 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestDiscovery;
+import net.bioclipse.ds.model.TopLevel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
@@ -43,6 +44,7 @@ public class DSBusinessModel {
 
     volatile List<IDSTest> tests;
     volatile List<Endpoint> endpoints;
+    volatile List<TopLevel> toplevels;
 
     public List<IDSTest> getTests() {
         return tests;
@@ -51,8 +53,12 @@ public class DSBusinessModel {
     public List<Endpoint> getEndpoints() {
         return endpoints;
     }
+    public List<TopLevel> getToplevels() {
+        return toplevels;
+    }
 
     public void initialize() {
+        readToplevelsFromEP();
         readEndpointsFromEP();
         readTestsFromEP();
         addTestsFromDiscovery();
@@ -92,9 +98,22 @@ public class DSBusinessModel {
                     
                     String pdesc=element.getAttribute("description");
                     String picon=element.getAttribute("icon");
+                    String phelppage=element.getAttribute("helppage");
                     String pluginID=element.getNamespaceIdentifier();
 
+                    boolean exists = false;
+                    for ( Endpoint endP : endpoints ) {
+                        if ( endP.getId().equals( pid ) ) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if ( exists ) {
+                        break;
+                    }
+
                     Endpoint ep=new Endpoint(pid, pname, pdesc, picon, pluginID);
+                    ep.setHelppage(phelppage);
                     endpoints.add( ep );
                     
                     //Add dedicated consensus calculator, or use default
@@ -103,8 +122,75 @@ public class DSBusinessModel {
                     IConsensusCalculator conscalc = createNewConsCalc(pconsid);
                     ep.setConsensusCalculator( conscalc );
 
+                    //Add toplevel
+                    String pep=element.getAttribute("toplevel");
+                    //Look up endpoint by id and add to test
+                    for (TopLevel tp : toplevels){
+                        if (tp.getId().equals( pep )){
+                            ep.setToplevel(tp );
+                            tp.addEndpoint(ep);
+                            break;
+                        }
+                    }
+
+                    //If we found no matching toplevel, add to "other" toplevel
+                    if (ep.getToplevel()==null){
+                        logger.debug("No toplevel found for endppoint " + ep.getId() + " so assigning to 'other'");
+                        for (TopLevel tp : toplevels){
+                            if (tp.getId().equals( "net.bioclipse.ds.toplevel.other" )){
+                                ep.setToplevel(tp );
+                                tp.addEndpoint(ep);
+                                break;
+                            }
+                        }
+                    }
                     
                 }
+            }
+        }
+    }
+
+    public void readToplevelsFromEP(){
+
+        toplevels = new ArrayList<TopLevel>();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+        if ( registry == null ) 
+            throw new UnsupportedOperationException("Extension registry is null. " +
+                    "Cannot read tests from EP.");
+        // it likely means that the Eclipse workbench has not
+        // started, for example when running tests
+
+        IExtensionPoint serviceObjectExtensionPoint = registry
+                .getExtensionPoint("net.bioclipse.decisionsupport");
+
+        IExtension[] serviceObjectExtensions
+        = serviceObjectExtensionPoint.getExtensions();
+
+        for(IExtension extension : serviceObjectExtensions) {
+            for( IConfigurationElement element
+                    : extension.getConfigurationElements() ) {
+
+                //Read all toplevels
+                if (element.getName().equals("toplevel")){
+
+                    String pid=element.getAttribute("id");
+                    String pname=element.getAttribute("name");
+                    while(pname.contains("  "))
+                        pname = pname.replace("  "," ");
+
+                    String pdesc=element.getAttribute("description");
+                    String picon=element.getAttribute("icon");
+                    String phelppage=element.getAttribute("helppage");
+                    String pluginID=element.getNamespaceIdentifier();
+
+                    TopLevel tp=new TopLevel(pid, pname, pdesc, picon, pluginID);
+                    tp.setHelppage(phelppage);
+                    toplevels.add( tp );
+
+                }                
+
             }
         }
     }
@@ -168,6 +254,17 @@ public class DSBusinessModel {
                                 if (ep.getId().equals( pep )){
                                     test.setEndpoint( ep );
                                     ep.addTest(test);
+                                    break;
+                                }
+                            }
+                            //If no endpoint found, add to other
+                            if (test.getEndpoint()==null){
+                                for (Endpoint ep : endpoints){
+                                    if (ep.getId().equals( "net.bioclipse.ds.uncategorized" )){
+                                        test.setEndpoint( ep );
+                                        ep.addTest(test);
+                                        break;
+                                    }
                                 }
                             }
 
@@ -229,6 +326,8 @@ public class DSBusinessModel {
                                     test.addParameter(name,value);
                                 }
                             }
+                            test.addParameter( "Bundle-SymbolicName", extension
+                                            .getContributor().getName() );
                             tests.add( test );
 
                             logger.debug("Added Decision support Test from EP: "

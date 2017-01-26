@@ -44,9 +44,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.openscience.cdk.interfaces.IMolecule;
-import org.openscience.cdk.io.iterator.IteratingMDLReader;
-import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.io.iterator.IteratingSDFReader;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
 /**
@@ -79,8 +78,8 @@ public abstract class AbstractSignaturesDatasetFromSDF extends AbstractHandler{
 		//Read mol 1 into mem and extract properties
 		List<String> availableProperties = new ArrayList<String>();
 		try {
-			IteratingMDLReader reader = new IteratingMDLReader(file.getContents(), SilentChemObjectBuilder.getInstance());
-			IMolecule mol = (IMolecule)reader.next();
+			IteratingSDFReader reader = new IteratingSDFReader(file.getContents(), SilentChemObjectBuilder.getInstance());
+            IAtomContainer mol = reader.next();
 			for (Object p : mol.getProperties().keySet()){
 				availableProperties.add((String) p);
 			}

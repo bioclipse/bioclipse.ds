@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import junit.framework.Assert;
-
 import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
@@ -13,7 +12,7 @@ import net.bioclipse.ds.libsvm.model.SignLibsvmUtils;
 import net.bioclipse.ds.model.DSException;
 
 import org.junit.Test;
-import org.openscience.cdk.Molecule;
+import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.templates.MoleculeFactory;
 
 public class TestSignLibsvm {
@@ -31,7 +30,7 @@ public class TestSignLibsvm {
 		Assert.assertEquals(23226,model.getModelSignatures().size());
 		Assert.assertNotNull(model.getSvmModel());
 		
-		Molecule mol = MoleculeFactory.makeBenzene();
+		IAtomContainer mol = MoleculeFactory.makeBenzene();
 		ICDKMolecule cdkmol = new CDKMolecule(mol);
 
 		List<String> molsigns = SignLibsvmUtils.generateSignatures(cdkmol,0,3);

@@ -2,8 +2,7 @@
 <feature
       id="net.bioclipse.ds_site"
       label="Ds_site"
-      version="2.6.1.qualifier"
-      >
+      version="2.6.2.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -23,6 +22,20 @@
 
    <plugin
          id="net.bioclipse.ds.r"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.liblinear"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.liblinear"
          download-size="0"
          install-size="0"
          version="0.0.0"

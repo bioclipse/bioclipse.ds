@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
 import net.bioclipse.cdk.domain.ICDKMolecule;
@@ -176,7 +177,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
     //Test if a smarts is valid
     private boolean isValidSmarts( String smarts ) {
         try {
-            new SMARTSQueryTool(smarts);
+            new SMARTSQueryTool( smarts, SilentChemObjectBuilder.getInstance() );
             return true;
         } catch ( Exception e ) {
             return false;
@@ -210,7 +211,7 @@ public class SmartsMatcher extends AbstractDSTest implements IDSTest{
             SMARTSQueryTool querytool=null;
             boolean status=false;
             try {
-                querytool = new SMARTSQueryTool(currentSmarts);
+                querytool = new SMARTSQueryTool(currentSmarts,SilentChemObjectBuilder.getInstance());
                 status = querytool.matches(ac);
             } catch(Exception e){
 
