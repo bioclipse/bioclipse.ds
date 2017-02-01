@@ -21,12 +21,10 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.util.FileUtil;
 import net.bioclipse.core.util.ImageUtils;
 import net.bioclipse.core.util.LogUtils;
-import net.bioclipse.ds.report.Activator;
 import net.bioclipse.ds.report.DSSingleReportModel;
 import net.bioclipse.ds.report.ReportHelper;
 import net.bioclipse.ds.report.model.TestEndpoint;
@@ -45,14 +43,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.osgi.framework.FrameworkUtil;
 
 
 /**
@@ -84,7 +81,10 @@ public class ReportHandler extends AbstractHandler{
 			
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				
+
+                final String BUNDLE_ID = FrameworkUtil
+                                .getBundle( ReportHandler.class )
+                                .getSymbolicName();
 				monitor.beginTask("Creating decision support report", 4);
 
 				monitor.subTask("Waiting for tests and gathering data");
@@ -97,7 +97,7 @@ public class ReportHandler extends AbstractHandler{
 		        
 		        if (rmodel==null || rmodel.getQueryMol()==null 
 		        		         || rmodel.getEndpoints()==null){
-		    		return new Status(IStatus.ERROR, Activator.PLUGIN_ID, 
+                    return new Status( IStatus.ERROR, BUNDLE_ID,
     				"Could not get data for report from View.");
 		        }
 
@@ -108,13 +108,13 @@ public class ReportHandler extends AbstractHandler{
 		    	final Map parameters=ReportHelper.createParameters(rmodel);
 		    	
 		    	if (beanCollection==null || beanCollection.size()<=0){
-		    		return new Status(IStatus.ERROR, Activator.PLUGIN_ID, 
+                    return new Status( IStatus.ERROR, BUNDLE_ID,
 		    				"Report BeanCollection is empty.");
 //		    		throw new ExecutionException("Report BeanCollection is empty.");
 		    	}
 		    	if (parameters==null || parameters.size()<=0){
 //		    		throw new ExecutionException("Report Parameters is empty.");
-		    		return new Status(IStatus.ERROR, Activator.PLUGIN_ID, 
+                    return new Status( IStatus.ERROR, BUNDLE_ID,
 		    				"Report Parameters is empty.");
 		    	}
 
@@ -132,8 +132,8 @@ public class ReportHandler extends AbstractHandler{
 
 		    			try {
 
-		    				String reportPath = FileUtil.getFilePath("reports/ds-safety.jasper", Activator.PLUGIN_ID);
-		    				String basePath = FileUtil.getFilePath("reports/", Activator.PLUGIN_ID);
+		    				String reportPath = FileUtil.getFilePath("reports/ds-safety.jasper", BUNDLE_ID);
+		    				String basePath = FileUtil.getFilePath("reports/", BUNDLE_ID);
 		    				parameters.put("DS_BASE_PATH",basePath);
 
 		    				IWorkbenchPage page = PlatformUI.getWorkbench()
@@ -147,7 +147,7 @@ public class ReportHandler extends AbstractHandler{
 		    				}
 
 		    			} catch ( Exception e ) {
-		    				LogUtils.handleException(e, logger, Activator.PLUGIN_ID);
+                            LogUtils.handleException( e, logger, BUNDLE_ID );
 		    			} 
 
 		    		}

@@ -200,7 +200,7 @@ public class ReportHelper {
 	private static Image createResultImage(ICDKMolecule mol,
 			ITestResult match) throws BioclipseException {
 
-		return ImageHelper.createImage(mol, match, 150, 150 , 0.5);
+        return ImageHelper.createImage( mol, match, 150 * 2, 150 * 2, 0.5 );
 
 	}
 
@@ -220,7 +220,7 @@ public class ReportHelper {
 	private static Image createQueryMolImage(ICDKMolecule mol) 
 	throws BioclipseException {
 
-		return ImageHelper.createImage(mol, null, 190, 190 , 1);
+        return ImageHelper.createImage( mol, null, 190 * 2, 190 * 2, 1 );
 
 	}
 

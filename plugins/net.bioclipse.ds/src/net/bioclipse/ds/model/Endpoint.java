@@ -34,6 +34,8 @@ public class Endpoint implements IContext2{
 
 	private String helppage;
 
+    private String                sortingWeight;
+
 
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
@@ -235,6 +237,16 @@ public class Endpoint implements IContext2{
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public String getSortingWeight() {
+
+        return sortingWeight;
+    }
+
+    public void setSortingWeight( String order ) {
+
+        this.sortingWeight = order;
+    }
 
 	@Override
 	public String toString() {

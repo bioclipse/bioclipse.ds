@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Signatures
 Bundle-SymbolicName: net.bioclipse.ds.signatures; singleton:=true
-Bundle-Version: 2.6.2.qualifier
+Bundle-Version: 2.7.0.qualifier
 Bundle-Activator: net.bioclipse.ds.signatures.Activator
 Bundle-Vendor: The Bioclipse Team
 Export-Package: net.bioclipse.ds.signatures,
@@ -19,18 +19,21 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.business,
  net.bioclipse.cdk.ui.sdfeditor,
  org.eclipse.core.resources,
- org.openscience.cdk.interfaces,
- org.openscience.cdk.standard,
  net.bioclipse.ui.business,
- org.openscience.cdk.signature,
  signatures,
- org.openscience.cdk.valencycheck,
- org.openscience.cdk.io,
  org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
  org.eclipse.core.databinding.property,
- org.eclipse.jface.databinding,
- org.openscience.cdk.silent
-Import-Package: org.apache.log4j
+ org.eclipse.jface.databinding
+Import-Package: org.apache.log4j,
+ org.openscience.cdk.aromaticity;version="1.5.13",
+ org.openscience.cdk.exception;version="1.5.13",
+ org.openscience.cdk.graph;version="1.5.13",
+ org.openscience.cdk.interfaces;version="1.5.13",
+ org.openscience.cdk.io.iterator;version="1.5.13",
+ org.openscience.cdk.signature;version="1.5.13",
+ org.openscience.cdk.silent;version="1.5.13",
+ org.openscience.cdk.tools;version="1.5.13",
+ org.openscience.cdk.tools.manipulator;version="1.5.13"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

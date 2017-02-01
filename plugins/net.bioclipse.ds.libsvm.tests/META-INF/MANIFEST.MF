@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ds libsvm tests
 Bundle-SymbolicName: net.bioclipse.ds.libsvm.tests
-Bundle-Version: 2.6.2.qualifier
+Bundle-Version: 2.7.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: net.bioclipse.ds.libsvm,
  org.eclipse.ui,
@@ -14,10 +14,8 @@ Require-Bundle: net.bioclipse.ds.libsvm,
  net.bioclipse.cdk.business,
  net.bioclipse.core,
  net.bioclipse.ds.signatures,
- org.openscience.cdk.interfaces,
- org.openscience.cdk.standard,
- org.openscience.cdk.io,
  net.bioclipse.ds.common,
  net.bioclipse.cdk.ui.sdfeditor,
- org.openscience.cdk.extra;bundle-version="1.4.15",
  org.junit;bundle-version="4.11.0"
+Import-Package: org.openscience.cdk.interfaces;version="1.5.13",
+ org.openscience.cdk.templates;version="1.5.13"

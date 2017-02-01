@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.ds_feature"
       label="Decision Support"
-      version="2.6.2.qualifier"
+      version="2.7.0.qualifier"
       provider-name="bioclipse.net"
       plugin="net.bioclipse.ds.ui">
 
@@ -74,13 +74,6 @@ The Eclipse Public License accompanies this distribution, and is available at ht
          unpack="false"/>
 
    <plugin
-         id="org.openscience.cdk.signature"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="signatures"
          download-size="0"
          install-size="0"
@@ -88,6 +81,13 @@ The Eclipse Public License accompanies this distribution, and is available at ht
 
    <plugin
          id="net.bioclipse.jasper"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ds.liblinear"
          download-size="0"
          install-size="0"
          version="0.0.0"

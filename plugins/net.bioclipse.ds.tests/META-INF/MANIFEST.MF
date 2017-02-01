@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Decision Support Tests
 Bundle-SymbolicName: net.bioclipse.ds.tests
-Bundle-Version: 2.6.2.qualifier
+Bundle-Version: 2.7.0.qualifier
 Bundle-Activator: net.bioclipse.ds.tests.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -13,7 +13,6 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.scripting,
  net.bioclipse.scripting.ui,
  net.bioclipse.cdk.business,
- org.openscience.cdk.interfaces,
  org.eclipse.core.resources
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
@@ -21,4 +20,5 @@ Bundle-Vendor: The Bioclipse Team
 Export-Package: net.bioclipse.ds.tests
 Import-Package: org.junit,
  org.junit.runner,
- org.junit.runners
+ org.junit.runners,
+ org.openscience.cdk.interfaces;version="1.5.13"

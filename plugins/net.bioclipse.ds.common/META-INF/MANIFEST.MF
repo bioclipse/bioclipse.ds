@@ -2,21 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DS Commons
 Bundle-SymbolicName: net.bioclipse.ds.common;singleton:=true
-Bundle-Version: 2.6.2.qualifier
-Bundle-Activator: net.bioclipse.ds.common.Activator
+Bundle-Version: 2.7.0.qualifier
 Bundle-Vendor: The Bioclipse Team
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.help,
  org.eclipse.core.resources,
- org.openscience.cdk.interfaces,
- org.openscience.cdk.standard,
- org.openscience.cdk.data,
- org.openscience.cdk.render,
- org.openscience.cdk.sdg,
- org.openscience.cdk.smarts,
- org.openscience.cdk.renderbasic,
- org.openscience.cdk.renderawt,
  net.bioclipse.core,
  net.bioclipse.ds,
  net.bioclipse.cdk.ui.sdfeditor,
@@ -27,14 +17,20 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.inchi,
  net.bioclipse.ds.signatures,
  org.eclipse.ui.views,
- org.apache.commons.codec,
- org.openscience.cdk.smiles,
- org.openscience.cdk.silent
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ org.apache.commons.codec
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: net.bioclipse.ds.common,
- net.bioclipse.ds.cons,
+Export-Package: net.bioclipse.ds.cons,
  net.bioclipse.ds.matcher,
  net.bioclipse.ds.matcher.model,
  net.bioclipse.ds.prop.calc
-Import-Package: org.apache.log4j
+Import-Package: org.apache.log4j,
+ org.eclipse.swt.graphics,
+ org.openscience.cdk;version="1.5.13",
+ org.openscience.cdk.exception;version="1.5.13",
+ org.openscience.cdk.fingerprint;version="1.5.13",
+ org.openscience.cdk.interfaces;version="1.5.13",
+ org.openscience.cdk.silent;version="1.5.13",
+ org.openscience.cdk.smiles;version="1.5.13",
+ org.openscience.cdk.smiles.smarts;version="1.5.13",
+ org.openscience.cdk.tools.manipulator;version="1.5.13"

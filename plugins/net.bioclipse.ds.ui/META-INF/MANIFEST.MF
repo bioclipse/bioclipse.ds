@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Decision Support UI
 Bundle-SymbolicName: net.bioclipse.ds.ui;singleton:=true
-Bundle-Version: 2.6.2.qualifier
+Bundle-Version: 2.7.0.qualifier
 Bundle-Activator: net.bioclipse.ds.ui.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
@@ -15,17 +15,10 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.core,
  net.bioclipse.ui,
  net.bioclipse.cdk.business,
- org.openscience.cdk.interfaces,
- org.openscience.cdk.data,
- org.openscience.cdk.render,
- org.openscience.cdk.sdg,
- org.openscience.cdk.renderbasic,
- org.openscience.cdk.renderawt,
  net.bioclipse.cdk.ui,
  net.bioclipse.cdk.jchempaint,
  net.bioclipse.cdk.ui.sdfeditor,
  net.bioclipse.cdk.jchempaint.view,
- org.openscience.cdk.rendercontrol,
  org.eclipse.ui.views,
  org.eclipse.ui.views.properties.tabbed
 Bundle-ActivationPolicy: lazy
@@ -34,5 +27,12 @@ Export-Package: net.bioclipse.ds.ui,
  net.bioclipse.ds.ui.utils,
  net.bioclipse.ds.ui.views
 Import-Package: javax.vecmath,
+ net.bioclipse.cdk.jchempaint.rendering,
  org.eclipse.ui.views.properties.tabbed,
+ org.openscience.cdk.interfaces;version="1.5.13",
+ org.openscience.cdk.layout;version="1.5.13",
+ org.openscience.cdk.renderer;version="1.5.13",
+ org.openscience.cdk.renderer.font;version="1.5.13",
+ org.openscience.cdk.renderer.generators;version="1.5.13",
+ org.openscience.cdk.renderer.visitor;version="1.5.13",
  org.slf4j
