@@ -8,6 +8,7 @@
         <dependency name="com.springsource.nu.xom" componentType="osgi.bundle"/>
         <dependency name="net.bioclipse.cdk.renderer.blur" componentType="osgi.bundle"/>
         <dependency name="org.openscience.cdk_bundle" componentType="osgi.bundle"/>
+        <dependency name="net.bioclipse.cdk.jchempaint.rendering" componentType="osgi.bundle"/>
         <!--
         <dependency name="slf4j.api" componentType="osgi.bundle"/>
         <dependency name="jcl.over.slf4j" componentType="osgi.bundle"/>
